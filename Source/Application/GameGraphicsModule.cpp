@@ -1,0 +1,65 @@
+#include "GameGraphicsModule.h"
+
+#include <Runtime/Graphics/Swapchain/Swapchain.h>
+#include <Runtime/Window/WindowManager.h>
+
+namespace Hollow
+{
+	GameGraphicsModule::GameGraphicsModule()
+	{
+		SetModuleName("GameGraphicsModule");
+	}
+
+	void GameGraphicsModule::Start()
+	{
+	}
+
+	void GameGraphicsModule::Update()
+	{
+		mSwapchain->Present();
+	}
+
+	void GameGraphicsModule::Stop()
+	{
+	}
+
+	bool GameGraphicsModule::OnInitialize()
+	{
+		GraphicsInstanceDesc instanceDesc;
+		instanceDesc.API = GraphicsAPI::D3D11;
+		mInstance = GraphicsInstance::Create(instanceDesc);
+
+		mAdapter = mInstance->GetAdapter(0);
+
+		GraphicsDeviceDesc deviceDesc;
+		deviceDesc.Adapter = mAdapter;
+		deviceDesc.API = GraphicsAPI::D3D11;
+		mAdapter->CreateDevice(deviceDesc);
+
+		mGraphicsDevice = mAdapter->GetDevice();
+
+		SwapchainDesc swapchainDesc;
+		swapchainDesc.BufferCount = 3;
+		swapchainDesc.pInstance = mInstance;
+		swapchainDesc.SwapchainFormat = TextureFormat::RGBA8_UNorm;
+		swapchainDesc.VSync = true;
+		swapchainDesc.Windowed = true;
+		swapchainDesc.SampleCount = 1;
+
+		mSwapchain = mGraphicsDevice->CreateSwapchain(swapchainDesc);
+		return true;
+	}
+
+	void GameGraphicsModule::OnPreUpdate()
+	{
+	}
+
+	void GameGraphicsModule::OnPostUpdate()
+	{
+	}
+
+	void GameGraphicsModule::OnShutdown()
+	{
+		DEV_LOG(HE_INFO, "Game Graphics Module is shutting down.");
+	}
+}
