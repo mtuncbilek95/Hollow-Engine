@@ -18,10 +18,10 @@ namespace Hollow
 		void SetVSync(bool vsync);
 
 		TextureFormat GetSwapchainFormat() const { return mSwapchainFormat; }
-		bool GetVSync() const { return mVSync; }
-		bool GetWindowed() const { return mWindowed; }
-		byte GetBufferCount() const { return mBufferCount; }
-		byte GetSampleCount() const { return mSampleCount; }
+		const bool GetVSync() const { return mVSync; }
+		const bool GetWindowed() const { return mWindowed; }
+		const byte& GetBufferCount() const { return mBufferCount; }
+		const byte& GetSampleCount() const { return mSampleCount; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept final { return GraphicsDeviceObjectType::Swapchain; }
 
@@ -32,7 +32,7 @@ namespace Hollow
 	private:
 		TextureFormat mSwapchainFormat;
 		bool mVSync;
-		bool mWindowed;
+		bool mWindowed;const 
 		byte mBufferCount;
 		byte mSampleCount;
 	};

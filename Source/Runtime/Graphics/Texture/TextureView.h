@@ -20,9 +20,11 @@ namespace Hollow
 		{}
 		virtual ~TextureView() override = default;
 
-		byte GetArraySize() const { return mArraySize; }
-		byte GetMipLevels() const { return mMipLevels; }
-		SharedPtr<Texture> GetTexture() const { return mTexture; }
+		const byte& GetArraySize() const { return mArraySize; }
+		const byte& GetMipLevels() const { return mMipLevels; }
+		const SharedPtr<Texture>& GetTexture() const { return mTexture; }
+
+		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::TextureView; }
 
 	private:
 		byte mArraySize;

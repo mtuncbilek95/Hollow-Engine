@@ -2,6 +2,14 @@
 
 #include <Runtime/D3D11/Adapter/D3D11Adapter.h>
 #include <Runtime/D3D11/Swapchain/D3D11Swapchain.h>
+#include <Runtime/D3D11/Shader/D3D11Shader.h>
+#include <Runtime/D3D11/Buffer/D3D11GraphicsView.h>
+#include <Runtime/D3D11/Texture/D3D11TextureView.h>
+#include <Runtime/D3D11/Texture/D3D11Texture.h>
+#include <Runtime/D3D11/Command/D3D11CommandView.h>
+#include <Runtime/D3D11/Pipeline/D3D11Pipeline.h>
+//#include <Runtime/D3D11/ResourceLayout/D3D11ResourceLayout.h>
+#include <Runtime/D3D11/Command/D3D11CommandView.h>
 
 namespace Hollow
 {
@@ -30,22 +38,22 @@ namespace Hollow
 
 	SharedPtr<Shader> D3D11Device::CreateShaderCore(const ShaderDesc& desc)
 	{
-		return SharedPtr<Shader>();
+		return std::make_shared<D3D11Shader>(desc, mD3DDevice.Get());
 	}
 
-	SharedPtr<GraphicsBuffer> D3D11Device::CreateGraphicsBufferCore(const GraphicsBufferDesc& desc)
+	SharedPtr<GraphicsView> D3D11Device::CreateGraphicsViewCore(const GraphicsViewDesc& desc)
 	{
-		return SharedPtr<GraphicsBuffer>();
+		return SharedPtr<GraphicsView>();
 	}
 
 	SharedPtr<Texture> D3D11Device::CreateTextureCore(const TextureDesc& desc)
 	{
-		return SharedPtr<Texture>();
+		return std::make_shared<D3D11Texture>(desc, mD3DDevice.Get());
 	}
 
 	SharedPtr<TextureView> D3D11Device::CreateTextureViewCore(const TextureViewDesc& desc)
 	{
-		return SharedPtr<TextureView>();
+		return std::make_shared<D3D11TextureView>(desc, mD3DDevice.Get());
 	}
 
 	SharedPtr<Sampler> D3D11Device::CreateSamplerCore(const SamplerDesc& desc)
@@ -68,11 +76,17 @@ namespace Hollow
 		return SharedPtr<ResourceLayout>();
 	}
 
-	void D3D11Device::UpdateBufferCore(SharedPtr<GraphicsBuffer> buffer, const GraphicsBufferUpdateDesc& desc)
+	SharedPtr<CommandView> D3D11Device::CreateCommandViewCore(const CommandViewDesc& desc)
 	{
+		return SharedPtr<CommandView>();
 	}
 
-	void D3D11Device::UpdateResourceLayoutCore(SharedPtr<ResourceLayout> layout, const ResourceLayoutDesc& desc)
+	void D3D11Device::SubmitCommandViewCore(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount)
 	{
+		for (auto& commandView : commandViews)
+		{
+			mD3DContext->ExecuteCommandList(std::dynamic_pointer_cast<D3D11CommandView>(commandView)->GetD3DCommandList().Get(), false);
+			std::dynamic_pointer_cast<D3D11CommandView>(commandView)->ResetCommandList();
+		}
 	}
 }

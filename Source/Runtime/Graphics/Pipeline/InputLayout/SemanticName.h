@@ -11,7 +11,6 @@ namespace Hollow
 		TexCoord,
 		Tangent,
 		BiNormal,
-		Color,
-		Count
+		Color
 	};
 }

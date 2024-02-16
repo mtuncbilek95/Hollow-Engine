@@ -9,10 +9,12 @@ namespace Hollow
 		Swapchain,
 		Texture,
 		TextureView,
-		GraphicsBuffer,
+		GraphicsView,
+		RenderPass,
 		Shader,
 		Sampler,
 		Pipeline,
-		ResourceLayout
+		ResourceLayout,
+		CommandView
 	};
 }

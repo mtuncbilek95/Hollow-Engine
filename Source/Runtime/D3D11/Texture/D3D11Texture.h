@@ -16,9 +16,9 @@ namespace Hollow
 		D3D11Texture(const TextureDesc& desc, ID3D11Device* pDevice);
 		~D3D11Texture() override = default;
 
-		ComPtr<ID3D11Texture2D> GetTexture() const { return mD3DTexture; }
+		ComPtr<ID3D11Resource> GetD3DTexture() const { return mD3DTexture; }
 
 	private:
-		ComPtr<ID3D11Texture2D> mD3DTexture;
+		ComPtr<ID3D11Resource> mD3DTexture;
 	};
 }

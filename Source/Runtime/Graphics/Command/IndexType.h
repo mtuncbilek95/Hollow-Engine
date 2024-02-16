@@ -4,8 +4,9 @@
 
 namespace Hollow
 {
-	struct RUNTIME_API GraphicsBufferUpdateDesc
+	enum class RUNTIME_API IndexType : byte
 	{
-
+		Index16,
+		Index32
 	};
 }

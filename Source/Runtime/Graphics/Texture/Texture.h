@@ -15,13 +15,15 @@ namespace Hollow
 		{}
 		virtual ~Texture() override = default;
 
-		Vector2u GetImageSize() const { return mImageSize; }
-		byte GetArraySize() const { return mArraySize; }
-		byte GetMipLevels() const { return mMipLevels; }
+		const Vector2u& GetImageSize() const { return mImageSize; }
+		const byte& GetArraySize() const { return mArraySize; }
+		const byte& GetMipLevels() const { return mMipLevels; }
 		TextureFormat GetFormat() const { return mFormat; }
 		TextureUsage GetUsage() const { return mUsage; }
 		TextureType GetType() const { return mType; }
-		uint64 GetData() const { return mData; }
+		const uint64& GetData() const { return mData; }
+
+		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Texture; }
 
 	private:
 		Vector2u mImageSize;

@@ -16,9 +16,9 @@ namespace Hollow
 		D3D11TextureView(const TextureViewDesc& desc, ID3D11Device* pDevice);
 		~D3D11TextureView() = default;
 
-		ComPtr<ID3D11ShaderResourceView> GetShaderResourceView() const { return mShaderResourceView; }
+		ComPtr<ID3D11ShaderResourceView> GetD3DShaderResourceView() const { return mD3DShaderResourceView; }
 
 	private:
-		ComPtr<ID3D11ShaderResourceView> mShaderResourceView;
+		ComPtr<ID3D11ShaderResourceView> mD3DShaderResourceView;
 	};
 }

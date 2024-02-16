@@ -3,7 +3,7 @@
 #include <Runtime/Core/Core.h>
 
 #include <Runtime/Graphics/Pipeline/DepthStencil/DepthMask.h>
-#include <Runtime/Graphics/Pipeline/DepthStencil/DepthStencilComparisonFunc.h>
+#include <Runtime/Graphics/Pipeline/DepthStencil/ComparisonFunc.h>
 
 namespace Hollow
 {

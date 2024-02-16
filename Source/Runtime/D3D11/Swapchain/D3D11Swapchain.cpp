@@ -8,8 +8,6 @@ namespace Hollow
 {
 	D3D11Swapchain::D3D11Swapchain(const SwapchainDesc& desc, ID3D11Device* pDevice) : Swapchain(desc)
 	{
-		mD3DDevice = pDevice;
-
 		DXGI_SWAP_CHAIN_DESC swapchainDesc = {};
 		swapchainDesc.BufferCount = GetBufferCount();
 		swapchainDesc.BufferDesc.Format = D3D11TextureUtils::GetDXTextureFormat(GetSwapchainFormat());
@@ -25,7 +23,7 @@ namespace Hollow
 		swapchainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 		swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	
-		DEV_ASSERT(SUCCEEDED(static_cast<D3D11Instance*>(desc.pInstance.get())->GetD3DInstance()->CreateSwapChain(mD3DDevice, 
+		DEV_ASSERT(SUCCEEDED(static_cast<D3D11Instance*>(desc.pInstance.get())->GetD3DInstance()->CreateSwapChain(pDevice,
 			&swapchainDesc, mD3DSwapchain.GetAddressOf())), "D3D11Swapchain", "Failed to create D3D11Swapchain");
 
 		CORE_LOG(HE_VERBOSE, "D3D11Swapchain", "Operation is successful.");
@@ -38,6 +36,9 @@ namespace Hollow
 
 	void D3D11Swapchain::ResizeCore(Vector2u newSize)
 	{
+		ID3D11Device* pDevice = nullptr;
+		DEV_ASSERT(SUCCEEDED(mD3DSwapchain->GetDevice(__uuidof(ID3D11Device), (void**)&pDevice)), "D3D11Swapchain", "Failed to get D3D11Device from DXGISwapchain");
+
 		DXGI_SWAP_CHAIN_DESC swapchainDesc;
 		mD3DSwapchain->GetDesc(&swapchainDesc);
 
@@ -45,5 +46,7 @@ namespace Hollow
 		DEV_ASSERT(SUCCEEDED(mD3DSwapchain->ResizeBuffers(swapchainDesc.BufferCount, newSize.x, newSize.y, swapchainDesc.BufferDesc.Format,
 			swapchainDesc.Flags)), "D3D11Swapchain", "Failed to resize DXGISwapchain");
 		DEV_LOG(HE_VERBOSE, "Resized Swapchain to size: { %d, %d }", newSize.x, newSize.y);
+
+		pDevice->Release();
 	}
 }

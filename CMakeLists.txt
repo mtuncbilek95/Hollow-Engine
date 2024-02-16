@@ -22,5 +22,6 @@ endif ()
 
 # ------------------ SUBDIRECTORIES ----------------
 add_subdirectory("Source/Runtime")
+add_subdirectory("Source/Test")
 add_subdirectory("Source/Application")
 # --------------------------------------------------

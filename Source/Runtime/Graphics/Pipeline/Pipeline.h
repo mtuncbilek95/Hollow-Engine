@@ -1,0 +1,48 @@
+#pragma once
+
+#include <Runtime/Core/Core.h>
+#include <Runtime/Graphics/Device/GraphicsDeviceObject.h>
+#include <Runtime/Graphics/Pipeline/GraphicsPipelineDesc.h>
+#include <Runtime/Graphics/Pipeline/ComputePipelineDesc.h>
+
+#include <Runtime/Graphics/Pipeline/PipelineBindPoint.h>
+
+namespace Hollow
+{
+	class RUNTIME_API Pipeline : public GraphicsDeviceObject
+	{
+	public:
+		Pipeline(const GraphicsPipelineDesc& desc) : mBindPoint(PipelineBindPoint::Graphics), 
+			mGraphicsShaders(desc.Shaders), mInputLayout(desc.InputLayout),
+			mRasterizer(desc.Rasterizer), mDepthStencil(desc.DepthStencil), mBlend(desc.Blend), 
+			mPrimitiveMode(desc.PrimitiveMode) 
+		{}
+
+		Pipeline(const ComputePipelineDesc& desc) : mBindPoint(PipelineBindPoint::Compute), 
+			mComputeShader(desc.ComputeShader), mResourceLayouts(desc.ResourceLayouts)
+		{}
+		virtual ~Pipeline() override = default;
+
+		const ArrayList<SharedPtr<Shader>>& GetShaders() const { return mGraphicsShaders; }
+		const SharedPtr<Shader>& GetComputeShader() const { return mComputeShader; }
+		const InputLayoutDesc& GetInputLayout() const { return mInputLayout; }
+		const RasterizerDesc& GetRasterizer() const { return mRasterizer; }
+		const DepthStencilDesc& GetDepthStencil() const { return mDepthStencil; }
+		const BlendStateDesc& GetBlend() const { return mBlend; }
+		PrimitiveMode GetPrimitiveMode() const { return mPrimitiveMode; }
+
+		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Pipeline; }
+
+	private:
+		PipelineBindPoint mBindPoint;
+		ArrayList<SharedPtr<Shader>> mGraphicsShaders;
+		InputLayoutDesc mInputLayout;
+		RasterizerDesc mRasterizer;
+		DepthStencilDesc mDepthStencil;
+		BlendStateDesc mBlend;
+		PrimitiveMode mPrimitiveMode;
+
+		ArrayList<SharedPtr<ResourceLayout>> mResourceLayouts;
+		SharedPtr<Shader> mComputeShader;
+	};
+}

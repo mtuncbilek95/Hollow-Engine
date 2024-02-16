@@ -20,10 +20,9 @@ namespace Hollow
 		void PresentCore() override;
 		void ResizeCore(Vector2u newSize) override;
 
-		ComPtr<IDXGISwapChain>& GetSwapchain() { return mD3DSwapchain; }
+		ComPtr<IDXGISwapChain>& GetD3DSwapchain() { return mD3DSwapchain; }
 
 	private:
-		ID3D11Device* mD3DDevice;
 		ComPtr<IDXGISwapChain> mD3DSwapchain;
 	};
 }

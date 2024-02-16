@@ -30,7 +30,7 @@ namespace Hollow
 		return nullptr;
 	}
 
-	SharedPtr<GraphicsBuffer> GraphicsDevice::CreateGraphicsBuffer(const GraphicsBufferDesc& desc)
+	SharedPtr<GraphicsView> GraphicsDevice::CreateGraphicsView(const GraphicsViewDesc& desc)
 	{
 		return nullptr;
 	}
@@ -65,15 +65,12 @@ namespace Hollow
 		return nullptr;
 	}
 
-	void GraphicsDevice::UpdateBuffer(SharedPtr<GraphicsBuffer> buffer, const GraphicsBufferUpdateDesc& desc)
+	SharedPtr<CommandView> GraphicsDevice::CreateCommandView(const CommandViewDesc& desc)
 	{
+		return nullptr;
 	}
 
-	void GraphicsDevice::UpdateResourceLayout(SharedPtr<ResourceLayout> layout, const ResourceLayoutDesc& desc)
-	{
-	}
-
-	void GraphicsDevice::DestroyDeviceObject(SharedPtr<GraphicsDeviceObject>& object)
+	void GraphicsDevice::SubmitCommandView(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount)
 	{
 	}
 }

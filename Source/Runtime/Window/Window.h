@@ -18,9 +18,9 @@ namespace Hollow
 		Window(const WindowDesc& desc);
 		~Window();
 
-		String GetTitle() const { return mWindowName; }
-		Vector2u GetWindowSize() const { return mWindowSize; }
-		Vector2i GetWindowPosition() const { return mWindowPosition; }
+		const String& GetTitle() const { return mWindowName; }
+		const Vector2u& GetWindowSize() const { return mWindowSize; }
+		const Vector2i& GetWindowPosition() const { return mWindowPosition; }
 
 		GLFWwindow* GetWindowHandle() const { return mWindowHandle; }
 		HWND GetWindowNativeHandle() const { return glfwGetWin32Window(mWindowHandle); }

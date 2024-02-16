@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Runtime/Graphics/Texture/TextureFormat.h>
+#include <Runtime/Graphics/Texture/TextureUsage.h>
 
 #include <d3d11_4.h>
 
@@ -79,6 +80,19 @@ namespace Hollow
 			case TextureFormat::R8_Int:					return DXGI_FORMAT_R8_SINT;
 			case TextureFormat::A8_UNorm:				return DXGI_FORMAT_A8_UNORM;
 			default: 									return DXGI_FORMAT_UNKNOWN;
+			}
+		}
+
+		static D3D11_BIND_FLAG GetDXTextureUsage(TextureUsage usage)
+		{
+			switch (usage)
+			{
+			case TextureUsage::Unknown:					return D3D11_BIND_RENDER_TARGET;
+			case TextureUsage::RenderTarget:			return D3D11_BIND_RENDER_TARGET;
+			case TextureUsage::ShaderResource:			return D3D11_BIND_SHADER_RESOURCE;
+			case TextureUsage::DepthStencil:			return D3D11_BIND_DEPTH_STENCIL;
+			case TextureUsage::UnorderedAccess:			return D3D11_BIND_UNORDERED_ACCESS;
+			default:									return D3D11_BIND_RENDER_TARGET;
 			}
 		}
 	public:

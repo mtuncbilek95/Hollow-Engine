@@ -34,6 +34,7 @@ namespace Hollow
 		GraphicsDeviceDesc deviceDesc;
 		deviceDesc.Adapter = mAdapter;
 		deviceDesc.API = GraphicsAPI::D3D11;
+
 		mAdapter->CreateDevice(deviceDesc);
 
 		mGraphicsDevice = mAdapter->GetDevice();

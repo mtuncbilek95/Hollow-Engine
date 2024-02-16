@@ -18,7 +18,7 @@ namespace Hollow
 		D3D11Adapter(const GraphicsAdapterDesc& desc, ComPtr<IDXGIAdapter1> adapter);
 		~D3D11Adapter() override = default;
 
-		ComPtr<IDXGIAdapter1>& GetD3DAdapter() { return mD3DAdapter; }
+		const ComPtr<IDXGIAdapter1>& GetD3DAdapter() const { return mD3DAdapter; }
 
 	protected:
 		virtual SharedPtr<GraphicsDevice> CreateDeviceCore(const GraphicsDeviceDesc& desc) override;
