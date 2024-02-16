@@ -1,0 +1,20 @@
+#pragma once
+
+#include <Runtime/Core/Core.h>
+#include <Runtime/Graphics/Texture/TextureFormat.h>
+#include <Runtime/Graphics/Texture/TextureUsage.h>
+#include <Runtime/Graphics/Texture/TextureType.h>
+
+namespace Hollow
+{
+	struct RUNTIME_API TextureDesc
+	{
+		Vector2u ImageSize;
+		byte ArraySize;
+		byte MipLevels;
+		TextureFormat Format;
+		TextureUsage Usage;
+		TextureType Type;
+		uint64 Data;
+	};
+}

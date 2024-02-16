@@ -19,7 +19,7 @@ namespace Hollow
 
 		DEV_ASSERT(mWindowHandle != nullptr, "Window", "Failed to create window");
 
-		DEV_LOG(HE_VERBOSE, "Window has been created successfully");
+		CORE_LOG(HE_VERBOSE, "PlatformWindow", "Operation is successful.");
 
 		glfwSetWindowUserPointer(mWindowHandle, this);
 

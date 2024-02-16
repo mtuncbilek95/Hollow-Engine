@@ -28,7 +28,7 @@ namespace Hollow
 		DEV_ASSERT(SUCCEEDED(static_cast<D3D11Instance*>(desc.pInstance.get())->GetD3DInstance()->CreateSwapChain(mD3DDevice, 
 			&swapchainDesc, mD3DSwapchain.GetAddressOf())), "D3D11Swapchain", "Failed to create D3D11Swapchain");
 
-		DEV_LOG(HE_VERBOSE, "D3D11Swapchain has been created successfully.");
+		CORE_LOG(HE_VERBOSE, "D3D11Swapchain", "Operation is successful.");
 	}
 
 	void D3D11Swapchain::PresentCore()

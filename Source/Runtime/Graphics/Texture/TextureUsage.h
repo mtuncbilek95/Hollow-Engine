@@ -5,6 +5,7 @@ namespace Hollow
     enum class RUNTIME_API TextureUsage
     {
         Unknown,
+        Default,
         Dynamic,
         Read_Write,
         Scratch,

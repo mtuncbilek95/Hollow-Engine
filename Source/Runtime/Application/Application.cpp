@@ -18,12 +18,12 @@ namespace Hollow
 				if (module->OnInitialize())
 				{
 					module->SetState(ApplicationModuleState::Validated);
-					DEV_LOG(HE_INFO, "%s has been validated.", module->GetModuleName().c_str());
+					CORE_LOG(HE_VERBOSE, "Validation", "%s has been validated.", module->GetModuleName().c_str());
 				}
 				else
 				{
 					module->SetState(ApplicationModuleState::Invalidated);
-					DEV_LOG(HE_WARNING, "%s has been invalidated. You won't be able to use this module.", module->GetModuleName().c_str());
+					CORE_LOG(HE_WARNING, "Validation", "%s has been invalidated. You won't be able to use this module.", module->GetModuleName().c_str());
 				}
 			}
 
@@ -68,17 +68,17 @@ namespace Hollow
 			}
 		}
 
-		DEV_LOG(HE_INFO, "Application is shutting down...");
-
 		for (int i = static_cast<int>(mModules.size()) - 1; i >= 0; i--)
 		{
 			mModules[i]->Stop();
 			mModules[i]->OnShutdown();
 		}
+
+		CORE_LOG(HE_WARNING, "Application", "Shutting down.");
 	}
 
 	void Application::QuitReason(const String& reason)
 	{
-		DEV_LOG(HE_WARNING, "Quit reason: %s", reason.c_str());
+		CORE_LOG(HE_WARNING, "Quit Reason", "%s", reason.c_str());
 	}
 }

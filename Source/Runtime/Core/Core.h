@@ -24,11 +24,13 @@ namespace Hollow
 		Info,
 		Verbose,
 		Warning,
-		Error
+		Error,
+		Fatal
 	};
 
 	void RUNTIME_API DevLog(LogLevel type, const char* pMessage, ...);
 	void RUNTIME_API DevAssert(bool condition, const char* pTitle, const char* pFailed, ...);
+	void RUNTIME_API CoreLog(LogLevel type, const char* pTitle, const char* pMessage, ...);
 }
 
 #if defined(HOLLOW_DEBUG)
@@ -37,9 +39,11 @@ namespace Hollow
 #define HE_VERBOSE Hollow::LogLevel::Verbose
 #define HE_WARNING Hollow::LogLevel::Warning
 #define HE_ERROR Hollow::LogLevel::Error
+#define HE_FATAL Hollow::LogLevel::Fatal
 
 #define DEV_ASSERT(condition, title, message, ...) Hollow::DevAssert(condition, title, message, __VA_ARGS__)
 #define DEV_LOG(logType, message, ...) Hollow::DevLog(logType, message, __VA_ARGS__)
+#define CORE_LOG(logType, title, message, ...) Hollow::CoreLog(logType, title, message, __VA_ARGS__)
 #else
 #define DEV_ASSERT(condition, title, message, ...) (condition)
 #endif

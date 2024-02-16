@@ -60,6 +60,6 @@ namespace Hollow
 
 	void GameGraphicsModule::OnShutdown()
 	{
-		DEV_LOG(HE_INFO, "Game Graphics Module is shutting down.");
+		CORE_LOG(HE_INFO, "GameGraphicsModule", "Shutting down.");
 	}
 }

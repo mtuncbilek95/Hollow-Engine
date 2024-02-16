@@ -20,7 +20,7 @@ namespace Hollow
 
 			mModules.push_back(module);
 
-			DEV_LOG(HE_INFO, "%s has been registered", module->GetModuleName().c_str());
+			CORE_LOG(HE_INFO, "Application", "%s has been registered", module->GetModuleName().c_str());
 		}
 
 		void Run();

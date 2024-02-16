@@ -49,6 +49,6 @@ namespace Hollow
 
 	void GameWindowModule::OnShutdown()
 	{
-		DEV_LOG(HE_INFO, "Game Window Module is shutting down.");
+		CORE_LOG(HE_INFO, "GameWindowModule", "Shutting down.");
 	}
 }

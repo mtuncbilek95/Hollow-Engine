@@ -8,7 +8,7 @@ namespace Hollow
 	{
 		DEV_ASSERT(SUCCEEDED(CreateDXGIFactory1(__uuidof(IDXGIFactory), &mD3DInstance)), "D3D11Instance", "Failed to create DXGIFactory");
 
-		DEV_LOG(HE_INFO, "DXGIFactory has been created successfully.");
+		CORE_LOG(HE_INFO, "D3D11Instance", "Operation is successful.");
 
 		// Enumarate all the adapters
 		ComPtr<IDXGIAdapter1> adapter;
@@ -22,11 +22,11 @@ namespace Hollow
 			String strTo(requiredSize, 0);
 			WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &strTo[0], requiredSize, nullptr, nullptr);
 
-			DEV_LOG(HE_INFO, "Adapter: %s has been found.", strTo.c_str());
+			CORE_LOG(HE_INFO, "Adapter", "%s has been found.", strTo.c_str());
 
 			if (adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
 			{
-				DEV_LOG(HE_WARNING, "Software Adapter: %s has been ignored", strTo.c_str());
+				CORE_LOG(HE_WARNING, "Software Adapter", "%s has been ignored", strTo.c_str());
 				continue;
 			}
 

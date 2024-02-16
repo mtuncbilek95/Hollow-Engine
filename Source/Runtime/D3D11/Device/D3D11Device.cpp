@@ -20,7 +20,7 @@ namespace Hollow
 		DEV_ASSERT(SUCCEEDED(D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN,
 			nullptr, flags, nullptr, 0, D3D11_SDK_VERSION, &mD3DDevice, &featureLevel, &mD3DContext)), "D3D11Device", "Failed to create D3D11Device");
 
-		DEV_LOG(HE_VERBOSE, "D3D11Device has been created successfully.");
+		CORE_LOG(HE_VERBOSE, "D3D11Device", "Operation is successful.");
 	}
 
 	SharedPtr<Swapchain> D3D11Device::CreateSwapchainCore(const SwapchainDesc& desc)
