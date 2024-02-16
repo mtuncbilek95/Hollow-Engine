@@ -12,6 +12,7 @@ namespace Hollow
 {
 	class RUNTIME_API D3D11Texture : public Texture
 	{
+	public:
 		D3D11Texture(const TextureDesc& desc, ID3D11Device* pDevice);
 		~D3D11Texture() override = default;
 
