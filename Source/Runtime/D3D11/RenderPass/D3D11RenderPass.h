@@ -2,6 +2,7 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/RenderPass/RenderPass.h>
+#include <Runtime/D3D11/Device/D3D11Device.h>
 
 #include <d3d11.h>
 #include <wrl.h>
@@ -13,7 +14,7 @@ namespace Hollow
 	class RUNTIME_API D3D11RenderPass : public RenderPass
 	{
 	public:
-		D3D11RenderPass(const RenderPassDesc& desc, ID3D11Device* pDevice);
+		D3D11RenderPass(const RenderPassDesc& desc, D3D11Device* pDevice);
 		~D3D11RenderPass() override = default;
 
 		const ArrayList<ComPtr<ID3D11RenderTargetView>>& GetRenderTargetViews() const { return mD3DRenderTargetViews; }

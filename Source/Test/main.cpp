@@ -5,11 +5,14 @@
 #include <Runtime/Graphics/Adapter/GraphicsAdapter.h>
 #include <Runtime/Graphics/Device/GraphicsDevice.h>
 #include <Runtime/Graphics/Swapchain/Swapchain.h>
+#include <Runtime/Graphics/RenderPass/RenderPass.h>
+
+#include <Runtime/D3D11/Device/D3D11Device.h>
+#include <Runtime/D3D11/RenderPass/D3D11RenderPass.h>
 
 
 namespace Hollow
 {
-	void ClearColorTest();
 	void RenderPassTest();
 	void TriangleTest();
 	void PostProcessTest();
@@ -34,14 +37,15 @@ namespace Hollow
 
 int main()
 {
-	DEV_LOG(HE_INFO, "Hello, World!");
+	Hollow::RenderPassTest();
 	return 0;
 }
 
 namespace Hollow
 {
-	void ClearColorTest()
+	void RenderPassTest()
 	{
+		// Create Window
 		WindowDesc windowDesc;
 		windowDesc.WindowPosition = { 1000, 100 };
 		windowDesc.WindowSize = { 800, 600 };
@@ -49,13 +53,16 @@ namespace Hollow
 		windowDesc.Windowed = true;
 
 		auto mGameWindow = WindowManager::GetInstance().CreateAppWindow(windowDesc);
-
+		
+		// Create Instance
 		GraphicsInstanceDesc instanceDesc;
 		instanceDesc.API = GraphicsAPI::D3D11;
 		auto mInstance = GraphicsInstance::Create(instanceDesc);
 
+		// Get Adapter
 		auto mAdapter = mInstance->GetAdapter(0);
 
+		// Create Device
 		GraphicsDeviceDesc deviceDesc;
 		deviceDesc.Adapter = mAdapter;
 		deviceDesc.API = GraphicsAPI::D3D11;
@@ -64,8 +71,9 @@ namespace Hollow
 
 		auto mGraphicsDevice = mAdapter->GetDevice();
 
+		// Create Swapchain
 		SwapchainDesc swapchainDesc;
-		swapchainDesc.BufferCount = 3;
+		swapchainDesc.BufferCount = 2;
 		swapchainDesc.pInstance = mInstance;
 		swapchainDesc.SwapchainFormat = TextureFormat::RGBA8_UNorm;
 		swapchainDesc.VSync = true;
@@ -73,5 +81,83 @@ namespace Hollow
 		swapchainDesc.SampleCount = 1;
 
 		auto mSwapchain = mGraphicsDevice->CreateSwapchain(swapchainDesc);
+
+		// Create Texture For Color Attachment
+		TextureDesc colorAttachmentDesc;
+		colorAttachmentDesc.ImageSize = { 800, 600 };
+		colorAttachmentDesc.Format = TextureFormat::RGBA8_UNorm;
+		colorAttachmentDesc.ArraySize = 1;
+		colorAttachmentDesc.MipLevels = 0;
+		colorAttachmentDesc.Type = TextureType::Texture2D;
+		colorAttachmentDesc.Usage = TextureUsage::RenderTarget;
+		colorAttachmentDesc.CPUAccess = BufferCPUAccess::Write;
+
+		auto mRenderTarget = mGraphicsDevice->CreateTexture(colorAttachmentDesc);
+
+		// Create Texture For Depth Attachment
+		TextureDesc depthAttachmentDesc;
+		depthAttachmentDesc.ImageSize = { 800, 600 };
+		depthAttachmentDesc.Format = TextureFormat::D24_UNorm_S8_UInt;
+		depthAttachmentDesc.ArraySize = 1;
+		depthAttachmentDesc.MipLevels = 0;
+		depthAttachmentDesc.Type = TextureType::Texture2D;
+		depthAttachmentDesc.Usage = TextureUsage::DepthStencil;
+		depthAttachmentDesc.CPUAccess = BufferCPUAccess::None;
+
+		auto mDepthStencil = mGraphicsDevice->CreateTexture(depthAttachmentDesc);
+
+		// Create ColorAttachment
+		RenderPassAttachmentDesc colorAttachment;
+		colorAttachment.pTexture = mRenderTarget;
+		colorAttachment.ArrayLevel = 1;
+		colorAttachment.MipLevel = 0;
+
+		// Create DepthAttachment
+		RenderPassAttachmentDesc depthAttachment;
+		depthAttachment.pTexture = mDepthStencil;
+		depthAttachment.ArrayLevel = 1;
+		depthAttachment.MipLevel = 0;
+
+		// Create RenderPass
+		RenderPassDesc renderPassDesc;
+		renderPassDesc.ColorAttachments.push_back(colorAttachment);
+		renderPassDesc.DepthStencilAttachment = depthAttachment;
+		renderPassDesc.FramebufferSize = { 800, 600 };
+		renderPassDesc.IsSwapchainTarget = true;
+
+		auto mRenderPass = mGraphicsDevice->CreateRenderPass(renderPassDesc);
+
+		D3D11Device* pDevice = static_cast<D3D11Device*>(mGraphicsDevice.get());
+		D3D11RenderPass* pRenderPass = static_cast<D3D11RenderPass*>(mRenderPass.get());
+
+		float color[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
+
+		D3D11_VIEWPORT viewport = {};
+		viewport.Width = 800;
+		viewport.Height = 600;
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+
+		while (!mGameWindow->ShouldClose())
+		{
+			mGameWindow->PollMessages();
+			
+			pDevice->GetD3DContext()->OMSetRenderTargets(1, pRenderPass->GetRenderTargetViews()[0].GetAddressOf(), pRenderPass->GetDepthStencilView().Get());
+			pDevice->GetD3DContext()->RSSetViewports(1, &viewport);
+			pDevice->GetD3DContext()->ClearRenderTargetView(pRenderPass->GetRenderTargetViews()[0].Get(), color);
+			pDevice->GetD3DContext()->ClearDepthStencilView(pRenderPass->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+			mSwapchain->Present();
+		}
+	}
+
+	void TriangleTest()
+	{
+	}
+
+	void PostProcessTest()
+	{
 	}
 }

@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	D3D11Swapchain::D3D11Swapchain(const SwapchainDesc& desc, ID3D11Device* pDevice) : Swapchain(desc)
+	D3D11Swapchain::D3D11Swapchain(const SwapchainDesc& desc, D3D11Device* pDevice) : Swapchain(desc)
 	{
 		DXGI_SWAP_CHAIN_DESC swapchainDesc = {};
 		swapchainDesc.BufferCount = GetBufferCount();
@@ -23,7 +23,7 @@ namespace Hollow
 		swapchainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 		swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	
-		DEV_ASSERT(SUCCEEDED(static_cast<D3D11Instance*>(desc.pInstance.get())->GetD3DInstance()->CreateSwapChain(pDevice,
+		DEV_ASSERT(SUCCEEDED(static_cast<D3D11Instance*>(desc.pInstance.get())->GetD3DInstance()->CreateSwapChain(pDevice->GetD3DDevice().Get(),
 			&swapchainDesc, mD3DSwapchain.GetAddressOf())), "D3D11Swapchain", "Failed to create D3D11Swapchain");
 
 		CORE_LOG(HE_VERBOSE, "D3D11Swapchain", "Operation is successful.");

@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	D3D11Shader::D3D11Shader(const ShaderDesc& desc, ID3D11Device* pDevice) : Shader(desc)
+	D3D11Shader::D3D11Shader(const ShaderDesc& desc, D3D11Device* pDevice) : Shader(desc)
 	{
 		ComPtr<ID3DBlob> errorBlob = {};
 
@@ -20,37 +20,37 @@ namespace Hollow
 		{
 		case ShaderType::Vertex:
 		{
-			DEV_ASSERT(SUCCEEDED(pDevice->CreateVertexShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DVertexShader.GetAddressOf())), "D3D11Shader",
+			DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateVertexShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DVertexShader.GetAddressOf())), "D3D11Shader",
 				"Failed to create vertex shader %s", desc.ShaderName.c_str());
 			break;
 		}
 		case ShaderType::Pixel:
 		{
-			DEV_ASSERT(SUCCEEDED(pDevice->CreatePixelShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DPixelShader.GetAddressOf())), "D3D11Shader",
+			DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreatePixelShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DPixelShader.GetAddressOf())), "D3D11Shader",
 				"Failed to create pixel shader %s", desc.ShaderName.c_str());
 			break;
 		}
 		case ShaderType::Geometry:
 		{
-			DEV_ASSERT(SUCCEEDED(pDevice->CreateGeometryShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DGeometryShader.GetAddressOf())), "D3D11Shader",
+			DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateGeometryShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DGeometryShader.GetAddressOf())), "D3D11Shader",
 				"Failed to create geometry shader %s", desc.ShaderName.c_str());
 			break;
 		}
 		case ShaderType::Domain:
 		{
-			DEV_ASSERT(SUCCEEDED(pDevice->CreateDomainShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DDomainShader.GetAddressOf())), "D3D11Shader",
+			DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateDomainShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DDomainShader.GetAddressOf())), "D3D11Shader",
 				"Failed to create domain shader %s", desc.ShaderName.c_str());
 			break;
 		}
 		case ShaderType::Hull:
 		{
-			DEV_ASSERT(SUCCEEDED(pDevice->CreateHullShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DHullShader.GetAddressOf())), "D3D11Shader",
+			DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateHullShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DHullShader.GetAddressOf())), "D3D11Shader",
 				"Failed to create hull shader %s", desc.ShaderName.c_str());
 			break;
 		}
 		case ShaderType::Compute:
 		{
-			DEV_ASSERT(SUCCEEDED(pDevice->CreateComputeShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DComputeShader.GetAddressOf())), "D3D11Shader",
+			DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateComputeShader(mShaderBlob->GetBufferPointer(), mShaderBlob->GetBufferSize(), nullptr, mD3DComputeShader.GetAddressOf())), "D3D11Shader",
 				"Failed to create compute shader %s", desc.ShaderName.c_str());
 			break;
 		}

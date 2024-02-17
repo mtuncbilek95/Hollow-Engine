@@ -10,6 +10,8 @@
 #include <Runtime/D3D11/Pipeline/D3D11Pipeline.h>
 //#include <Runtime/D3D11/ResourceLayout/D3D11ResourceLayout.h>
 #include <Runtime/D3D11/Command/D3D11CommandView.h>
+#include <Runtime/D3D11/RenderPass/D3D11RenderPass.h>
+#include <Runtime/D3D11/Sampler/D3D11Sampler.h>
 
 namespace Hollow
 {
@@ -17,7 +19,7 @@ namespace Hollow
 	{
 		IDXGIAdapter1* adapter = static_cast<D3D11Adapter*>(desc.Adapter.get())->GetD3DAdapter().Get();
 
-		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
+		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
 
 #ifdef HOLLOW_DEBUG
 		UINT flags = D3D11_CREATE_DEVICE_DEBUG;
@@ -33,52 +35,57 @@ namespace Hollow
 
 	SharedPtr<Swapchain> D3D11Device::CreateSwapchainCore(const SwapchainDesc& desc)
 	{
-		return std::make_shared<D3D11Swapchain>(desc, mD3DDevice.Get());
+		return std::make_shared<D3D11Swapchain>(desc, this);
 	}
 
 	SharedPtr<Shader> D3D11Device::CreateShaderCore(const ShaderDesc& desc)
 	{
-		return std::make_shared<D3D11Shader>(desc, mD3DDevice.Get());
+		return std::make_shared<D3D11Shader>(desc, this);
 	}
 
 	SharedPtr<GraphicsView> D3D11Device::CreateGraphicsViewCore(const GraphicsViewDesc& desc)
 	{
-		return SharedPtr<GraphicsView>();
+		return std::make_shared<D3D11GraphicsView>(desc, this);
 	}
 
 	SharedPtr<Texture> D3D11Device::CreateTextureCore(const TextureDesc& desc)
 	{
-		return std::make_shared<D3D11Texture>(desc, mD3DDevice.Get());
+		return std::make_shared<D3D11Texture>(desc, this);
 	}
 
 	SharedPtr<TextureView> D3D11Device::CreateTextureViewCore(const TextureViewDesc& desc)
 	{
-		return std::make_shared<D3D11TextureView>(desc, mD3DDevice.Get());
+		return std::make_shared<D3D11TextureView>(desc, this);
 	}
 
 	SharedPtr<Sampler> D3D11Device::CreateSamplerCore(const SamplerDesc& desc)
 	{
-		return SharedPtr<Sampler>();
+		return std::make_shared<D3D11Sampler>(desc, this);
 	}
 
 	SharedPtr<Pipeline> D3D11Device::CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc)
 	{
-		return SharedPtr<Pipeline>();
+		return std::make_shared<D3D11Pipeline>(desc, this);
 	}
 
 	SharedPtr<Pipeline> D3D11Device::CreateComputePipelineCore(const ComputePipelineDesc& desc)
 	{
-		return SharedPtr<Pipeline>();
+		return std::make_shared<D3D11Pipeline>(desc, this);
 	}
 
 	SharedPtr<ResourceLayout> D3D11Device::CreateResourceLayoutCore(const ResourceLayoutDesc& desc)
 	{
-		return SharedPtr<ResourceLayout>();
+		return SharedPtr<ResourceLayout>(); // TODO: Implement
 	}
 
 	SharedPtr<CommandView> D3D11Device::CreateCommandViewCore(const CommandViewDesc& desc)
 	{
-		return SharedPtr<CommandView>();
+		return std::make_shared<D3D11CommandView>(desc, this);
+	}
+
+	SharedPtr<RenderPass> D3D11Device::CreateRenderPassCore(const RenderPassDesc& desc)
+	{
+		return std::make_shared<D3D11RenderPass>(desc, this);
 	}
 
 	void D3D11Device::SubmitCommandViewCore(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount)

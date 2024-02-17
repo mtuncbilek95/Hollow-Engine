@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	D3D11Pipeline::D3D11Pipeline(const GraphicsPipelineDesc& desc, ID3D11Device* pDevice) : Pipeline(desc)
+	D3D11Pipeline::D3D11Pipeline(const GraphicsPipelineDesc& desc, D3D11Device* pDevice) : Pipeline(desc)
 	{
 		ArrayList<D3D11_INPUT_ELEMENT_DESC> inputElementDescs;
 		inputElementDescs.reserve(desc.InputLayout.SemanticName.size());
@@ -96,7 +96,7 @@ namespace Hollow
 			if (shader->GetType() == ShaderType::Vertex)
 			{
 				D3D11Shader* vertexShader = static_cast<D3D11Shader*>(shader.get());
-				DEV_ASSERT(SUCCEEDED(pDevice->CreateInputLayout(inputElementDescs.data(), inputElementDescs.size(), vertexShader->GetD3DBlob()->GetBufferPointer(),
+				DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateInputLayout(inputElementDescs.data(), inputElementDescs.size(), vertexShader->GetD3DBlob()->GetBufferPointer(),
 					vertexShader->GetD3DBlob()->GetBufferSize(), mD3DInputLayout.GetAddressOf())), "D3D11Pipeline", "Failed to create input layout");
 			}
 		}
@@ -116,7 +116,7 @@ namespace Hollow
 		rasterizerDesc.MultisampleEnable = desc.Rasterizer.MultisampleEnabled;
 		rasterizerDesc.AntialiasedLineEnable = desc.Rasterizer.AntialiasedLineEnabled;
 
-		DEV_ASSERT(SUCCEEDED(pDevice->CreateRasterizerState(&rasterizerDesc, mD3DRasterizerState.GetAddressOf())), 
+		DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateRasterizerState(&rasterizerDesc, mD3DRasterizerState.GetAddressOf())),
 			"D3D11Pipeline", "Failed to create rasterizer state");
 
 		CORE_LOG(HE_VERBOSE, "D3D11GraphicsPipeline", "Rasterizer state has been created successfully.");
@@ -130,7 +130,7 @@ namespace Hollow
 		depthStencilDesc.StencilReadMask = desc.DepthStencil.StencilReadMask;
 		depthStencilDesc.StencilWriteMask = desc.DepthStencil.StencilWriteMask;
 
-		DEV_ASSERT(SUCCEEDED(pDevice->CreateDepthStencilState(&depthStencilDesc, mD3DDepthStencilState.GetAddressOf())),
+		DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateDepthStencilState(&depthStencilDesc, mD3DDepthStencilState.GetAddressOf())),
 						"D3D11Pipeline", "Failed to create depth stencil state");
 
 		CORE_LOG(HE_VERBOSE, "D3D11GraphicsPipeline", "Depth stencil state has been created successfully.");
@@ -150,13 +150,13 @@ namespace Hollow
 
 		blendDesc.RenderTarget[0] = rtBlendDesc;
 
-		DEV_ASSERT(SUCCEEDED(pDevice->CreateBlendState(&blendDesc, mD3DBlendState.GetAddressOf())),
+		DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateBlendState(&blendDesc, mD3DBlendState.GetAddressOf())),
 						"D3D11Pipeline", "Failed to create blend state");
 
 		CORE_LOG(HE_VERBOSE, "D3D11GraphicsPipeline", "Blend state has been created successfully.");
 	}
 
-	D3D11Pipeline::D3D11Pipeline(const ComputePipelineDesc& desc, ID3D11Device* pDevice) : Pipeline(desc)
+	D3D11Pipeline::D3D11Pipeline(const ComputePipelineDesc& desc, D3D11Device* pDevice) : Pipeline(desc)
 	{
 	}
 

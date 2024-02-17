@@ -2,6 +2,7 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
+#include <Runtime/D3D11/Device/D3D11Device.h>
 
 #include <d3d11.h>
 #include <wrl.h>
@@ -12,8 +13,8 @@ namespace Hollow
 	class RUNTIME_API D3D11Pipeline : public Pipeline
 	{
 	public:
-		D3D11Pipeline(const GraphicsPipelineDesc& desc, ID3D11Device* pDevice);
-		D3D11Pipeline(const ComputePipelineDesc& desc, ID3D11Device* pDevice);
+		D3D11Pipeline(const GraphicsPipelineDesc& desc, D3D11Device* pDevice);
+		D3D11Pipeline(const ComputePipelineDesc& desc, D3D11Device* pDevice);
 		~D3D11Pipeline() override = default;
 
 		const ComPtr<ID3D11InputLayout>& GetD3DInputLayout() const { return mD3DInputLayout; }

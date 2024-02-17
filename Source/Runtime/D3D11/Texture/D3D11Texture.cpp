@@ -1,11 +1,15 @@
 #include "D3D11Texture.h"
 
 #include <Runtime/D3D11/Texture/D3D11TextureUtils.h>
+#include <Runtime/D3D11/Buffer/D3D11BufferUtils.h>
 #include <Runtime/Graphics/Texture/TextureUtils.h>
+
+#include <Runtime/D3D11/Device/D3D11Device.h>
+#include <Runtime/D3D11/Swapchain/D3D11Swapchain.h>
 
 namespace Hollow
 {
-	D3D11Texture::D3D11Texture(const TextureDesc& desc, ID3D11Device* pDevice) : Texture(desc)
+	D3D11Texture::D3D11Texture(const TextureDesc& desc, D3D11Device* pDevice) : Texture(desc)
 	{
 		switch (desc.Type)
 		{
@@ -21,24 +25,26 @@ namespace Hollow
 			textureDesc.MipLevels = desc.MipLevels;
 			textureDesc.ArraySize = desc.ArraySize;
 			textureDesc.Format = D3D11TextureUtils::GetDXTextureFormat(desc.Format);
-			textureDesc.SampleDesc.Count = 1;
-			textureDesc.SampleDesc.Quality = 0;
-			textureDesc.Usage = D3D11_USAGE_DEFAULT;
 			textureDesc.BindFlags = D3D11TextureUtils::GetDXTextureUsage(desc.Usage);
-			textureDesc.CPUAccessFlags = 0;
+			textureDesc.CPUAccessFlags = D3D11BufferUtils::GetBufferCPUAccess(desc.CPUAccess);
+			textureDesc.Usage = D3D11_USAGE_DEFAULT;
 			textureDesc.MiscFlags = 0;
 
 			if (desc.Usage == TextureUsage::RenderTarget)
 			{
+				textureDesc.SampleDesc.Count = std::dynamic_pointer_cast<D3D11Swapchain>(pDevice->GetSwapchain())->GetSampleCount();
+				textureDesc.SampleDesc.Quality = std::dynamic_pointer_cast<D3D11Swapchain>(pDevice->GetSwapchain())->GetSampleCount() > 1 ? 1 : 0;
 				textureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
 
-				DEV_ASSERT(SUCCEEDED(pDevice->CreateTexture2D(&textureDesc, nullptr, reinterpret_cast<ID3D11Texture2D**>(mD3DTexture.GetAddressOf()))), "D3D11Texture",
+				DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateTexture2D(&textureDesc, nullptr, mD3DTexture.GetAddressOf())), "D3D11Texture",
 					"Failed to create D3D11Texture");
 			}
 
 			if (desc.Usage == TextureUsage::DepthStencil)
 			{
-				DEV_ASSERT(SUCCEEDED(pDevice->CreateTexture2D(&textureDesc, nullptr, reinterpret_cast<ID3D11Texture2D**>(mD3DTexture.GetAddressOf()))), "D3D11Texture",
+				textureDesc.SampleDesc.Count = std::dynamic_pointer_cast<D3D11Swapchain>(pDevice->GetSwapchain())->GetSampleCount();
+				textureDesc.SampleDesc.Quality = std::dynamic_pointer_cast<D3D11Swapchain>(pDevice->GetSwapchain())->GetSampleCount() > 1 ? 1 : 0;
+				DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateTexture2D(&textureDesc, nullptr, mD3DTexture.GetAddressOf())), "D3D11Texture",
 					"Failed to create D3D11Texture");
 			}
 
@@ -48,7 +54,7 @@ namespace Hollow
 				pInitialData.pSysMem = reinterpret_cast<void*>(desc.Data);
 				pInitialData.SysMemPitch = desc.ImageSize.x * TextureUtils::GetTextureSize(desc.Format);
 
-				DEV_ASSERT(SUCCEEDED(pDevice->CreateTexture2D(&textureDesc, &pInitialData, reinterpret_cast<ID3D11Texture2D**>(mD3DTexture.GetAddressOf()))), "D3D11Texture",
+				DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateTexture2D(&textureDesc, &pInitialData, mD3DTexture.GetAddressOf())), "D3D11Texture",
 					"Failed to create D3D11Texture");
 			}
 

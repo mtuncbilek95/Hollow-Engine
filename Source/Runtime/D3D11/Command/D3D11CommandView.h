@@ -2,6 +2,7 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Command/CommandView.h>
+#include <Runtime/D3D11/Device/D3D11Device.h>
 
 #include <d3d11.h>
 #include <wrl.h>
@@ -12,7 +13,7 @@ namespace Hollow
 	class RUNTIME_API D3D11CommandView : public CommandView
 	{
 	public:
-		D3D11CommandView(const CommandViewDesc& desc, ID3D11Device* pDevice);
+		D3D11CommandView(const CommandViewDesc& desc, D3D11Device* pDevice);
 		~D3D11CommandView() override = default;
 
 		const ComPtr<ID3D11DeviceContext>& GetD3DDeferredContext() const { return mD3DDeferredContext; }

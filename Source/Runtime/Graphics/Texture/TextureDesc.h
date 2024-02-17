@@ -4,6 +4,7 @@
 #include <Runtime/Graphics/Texture/TextureFormat.h>
 #include <Runtime/Graphics/Texture/TextureUsage.h>
 #include <Runtime/Graphics/Texture/TextureType.h>
+#include <Runtime/Graphics/Buffer/BufferCPUAccess.h>
 
 namespace Hollow
 {
@@ -14,6 +15,7 @@ namespace Hollow
 		byte MipLevels;
 		TextureFormat Format;
 		TextureUsage Usage;
+		BufferCPUAccess CPUAccess;
 		TextureType Type;
 		uint64 Data;
 	};

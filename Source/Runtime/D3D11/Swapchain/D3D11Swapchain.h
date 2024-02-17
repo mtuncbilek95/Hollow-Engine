@@ -2,6 +2,7 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Swapchain/Swapchain.h>
+#include <Runtime/D3D11/Device/D3D11Device.h>
 
 #include <d3d11.h>
 #include <dxgi1_2.h>
@@ -14,7 +15,7 @@ namespace Hollow
 	class RUNTIME_API D3D11Swapchain : public Swapchain
 	{
 	public:
-		D3D11Swapchain(const SwapchainDesc& desc, ID3D11Device* pDevice);
+		D3D11Swapchain(const SwapchainDesc& desc, D3D11Device* pDevice);
 		~D3D11Swapchain() override = default;
 
 		void PresentCore() override;

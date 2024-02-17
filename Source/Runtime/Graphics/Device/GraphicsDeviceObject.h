@@ -17,10 +17,7 @@ namespace Hollow
 		friend class GraphicsDevice;
 	public:
 		GraphicsDeviceObject() = default;
-		virtual ~GraphicsDeviceObject()
-		{
-			mOwnerDevice = nullptr;
-		}
+		virtual ~GraphicsDeviceObject() = default;
 
 		FORCEINLINE GraphicsDevice* GetOwnerDevice() const noexcept { return mOwnerDevice; }
 		FORCEINLINE virtual GraphicsDeviceObjectType GetDeviceObjectType() const noexcept = 0;
@@ -29,6 +26,6 @@ namespace Hollow
 		void _SetOwnerDevice(GraphicsDevice* ownerDevice) noexcept { mOwnerDevice = ownerDevice; }
 
 	private:
-		GraphicsDevice* mOwnerDevice = nullptr;
+		GraphicsDevice* mOwnerDevice;
 	};
 }

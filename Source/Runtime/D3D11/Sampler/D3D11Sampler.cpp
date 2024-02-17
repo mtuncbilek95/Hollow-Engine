@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	D3D11Sampler::D3D11Sampler(const SamplerDesc& desc, ID3D11Device* pDevice) : Sampler(desc)
+	D3D11Sampler::D3D11Sampler(const SamplerDesc& desc, D3D11Device* pDevice) : Sampler(desc)
 	{
 		D3D11_SAMPLER_DESC samplerDesc = {};
 
@@ -22,7 +22,7 @@ namespace Hollow
 		samplerDesc.MinLOD = desc.MinLOD;
 		samplerDesc.MaxLOD = desc.MaxLOD;
 
-		DEV_ASSERT(SUCCEEDED(pDevice->CreateSamplerState(&samplerDesc, mD3DSampler.GetAddressOf())), "D3D11Sampler", "Failed to create D3D11Sampler");
+		DEV_ASSERT(SUCCEEDED(pDevice->GetD3DDevice()->CreateSamplerState(&samplerDesc, mD3DSampler.GetAddressOf())), "D3D11Sampler", "Failed to create D3D11Sampler");
 
 		CORE_LOG(HE_VERBOSE, "D3D11Sampler", "Operation is successful.");
 	}

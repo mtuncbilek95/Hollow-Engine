@@ -11,7 +11,7 @@ namespace Hollow
 	public:
 		Texture(const TextureDesc& desc) : mImageSize(desc.ImageSize), mArraySize(desc.ArraySize), 
 			mMipLevels(desc.MipLevels), mFormat(desc.Format), mUsage(desc.Usage), mType(desc.Type), 
-			mData(desc.Data) 
+			mData(desc.Data), mCPUAccess(desc.CPUAccess)
 		{}
 		virtual ~Texture() override = default;
 
@@ -20,6 +20,7 @@ namespace Hollow
 		const byte& GetMipLevels() const { return mMipLevels; }
 		TextureFormat GetFormat() const { return mFormat; }
 		TextureUsage GetUsage() const { return mUsage; }
+		BufferCPUAccess GetCPUAccess() const { return mCPUAccess; }
 		TextureType GetType() const { return mType; }
 		const uint64& GetData() const { return mData; }
 
@@ -31,6 +32,7 @@ namespace Hollow
 		byte mMipLevels;
 		TextureFormat mFormat;
 		TextureUsage mUsage;
+		BufferCPUAccess mCPUAccess;
 		TextureType mType;
 		uint64 mData;
 	};

@@ -29,6 +29,7 @@ namespace Hollow
 		SharedPtr<Pipeline>			CreateComputePipelineCore(const ComputePipelineDesc& desc) override;
 		SharedPtr<ResourceLayout>	CreateResourceLayoutCore(const ResourceLayoutDesc& desc) override;
 		SharedPtr<CommandView>		CreateCommandViewCore(const CommandViewDesc& desc) override;
+		SharedPtr<RenderPass>		CreateRenderPassCore(const RenderPassDesc& desc) override;
 
 		void SubmitCommandViewCore(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount) override;
 

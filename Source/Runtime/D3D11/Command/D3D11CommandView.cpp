@@ -1,6 +1,5 @@
 #include "D3D11CommandView.h"
 
-#include <Runtime/D3D11/Device/D3D11Device.h>
 #include <Runtime/D3D11/Buffer/D3D11GraphicsView.h>
 #include <Runtime/D3D11/Texture/D3D11Texture.h>
 #include <Runtime/D3D11/Texture/D3D11TextureView.h>
@@ -12,9 +11,9 @@
 
 namespace Hollow
 {
-	D3D11CommandView::D3D11CommandView(const CommandViewDesc& desc, ID3D11Device* pDevice) : CommandView(desc)
+	D3D11CommandView::D3D11CommandView(const CommandViewDesc& desc, D3D11Device* pDevice) : CommandView(desc)
 	{
-		pDevice->CreateDeferredContext(0, &mD3DDeferredContext);
+		pDevice->GetD3DDevice()->CreateDeferredContext(0, &mD3DDeferredContext);
 	}
 
 	void D3D11CommandView::BeginRecordingCore()
@@ -65,6 +64,7 @@ namespace Hollow
 
 	void D3D11CommandView::BindGraphicsPipelineCore(const SharedPtr<Pipeline>& pipeline)
 	{
+		// Bind the shaders
 		for (auto& shader : pipeline->GetShaders())
 		{
 			switch (shader->GetType())
@@ -105,6 +105,7 @@ namespace Hollow
 			}
 		}
 
+		// Bind the pipeline state
 		mD3DDeferredContext->IASetInputLayout(std::dynamic_pointer_cast<D3D11Pipeline>(pipeline)->GetD3DInputLayout().Get());
 		float factor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		mD3DDeferredContext->OMSetBlendState(std::dynamic_pointer_cast<D3D11Pipeline>(pipeline)->GetD3DBlendState().Get(), factor, D3D11_APPEND_ALIGNED_ELEMENT);
@@ -115,6 +116,7 @@ namespace Hollow
 
 	void D3D11CommandView::BindComputePipelineCore(const SharedPtr<Pipeline>& pipeline)
 	{
+		// You only have one job.
 		mD3DDeferredContext->CSSetShader(std::dynamic_pointer_cast<D3D11Shader>(pipeline->GetComputeShader())->GetD3DComputeShader().Get(), nullptr, 0);
 	}
 
@@ -152,6 +154,7 @@ namespace Hollow
 
 	void D3D11CommandView::DrawIndexedCore(const uint32 indexCount, const uint32 indexOffset, const uint32 vertexOffset)
 	{
+		// You only have one job.
 		mD3DDeferredContext->DrawIndexed(indexCount, indexOffset, vertexOffset);
 	}
 

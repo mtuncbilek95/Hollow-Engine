@@ -20,6 +20,7 @@ namespace Hollow
 	class Pipeline;
 	class ResourceLayout;
 	class CommandView;
+	class RenderPass;
 
 	struct SwapchainDesc;
 	struct ShaderDesc;
@@ -31,6 +32,7 @@ namespace Hollow
 	struct ComputePipelineDesc;
 	struct ResourceLayoutDesc;
 	struct CommandViewDesc;
+	struct RenderPassDesc;
 
 	/**
 	 * @class GraphicsDevice
@@ -56,6 +58,7 @@ namespace Hollow
 		SharedPtr<Pipeline>					CreateComputePipeline(const ComputePipelineDesc& desc);
 		SharedPtr<ResourceLayout>			CreateResourceLayout(const ResourceLayoutDesc& desc);
 		SharedPtr<CommandView> 				CreateCommandView(const CommandViewDesc& desc);
+		SharedPtr<RenderPass>				CreateRenderPass(const RenderPassDesc& desc);
 
 		// Mostly will be used to submit command views to the GPU
 		void SubmitCommandView(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount);
@@ -77,6 +80,7 @@ namespace Hollow
 		virtual SharedPtr<Pipeline>			CreateComputePipelineCore(const ComputePipelineDesc& desc) = 0;
 		virtual SharedPtr<ResourceLayout>	CreateResourceLayoutCore(const ResourceLayoutDesc& desc) = 0;
 		virtual SharedPtr<CommandView>		CreateCommandViewCore(const CommandViewDesc& desc) = 0;
+		virtual SharedPtr<RenderPass>		CreateRenderPassCore(const RenderPassDesc& desc) = 0;
 
 		virtual void SubmitCommandViewCore(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount) = 0;
 
