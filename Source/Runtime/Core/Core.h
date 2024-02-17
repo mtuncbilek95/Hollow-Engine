@@ -54,9 +54,7 @@ namespace Hollow
 #include <unordered_map>
 
 template<typename T>
-using ArrayList = std::vector<T>;
-template<typename T, size_t N>
-using Array = std::array<T, N>;
+using Array = std::vector<T>;
 using String = std::string;
 using WString = std::wstring;
 template<typename T>

@@ -88,7 +88,7 @@ namespace Hollow
 		return std::make_shared<D3D11RenderPass>(desc, this);
 	}
 
-	void D3D11Device::SubmitCommandViewCore(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount)
+	void D3D11Device::SubmitCommandViewCore(const Array<SharedPtr<CommandView>>& commandViews, const byte amount)
 	{
 		for (auto& commandView : commandViews)
 		{

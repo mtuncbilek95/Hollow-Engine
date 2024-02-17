@@ -15,14 +15,14 @@ namespace Hollow
 		virtual ~RenderPass() override = default;
 
 		const Vector2u& GetFramebufferSize() const { return mFramebufferSize; }
-		const ArrayList<RenderPassAttachmentDesc>& GetColorAttachments() const { return mColorAttachments; }
+		const Array<RenderPassAttachmentDesc>& GetColorAttachments() const { return mColorAttachments; }
 		const RenderPassAttachmentDesc& GetDepthStencilAttachment() const { return mDepthStencilAttachment; }
 		bool IsSwapchainTarget() const { return mIsSwapchainTarget; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::RenderPass; }
 	private:
 		Vector2u mFramebufferSize;
-		ArrayList<RenderPassAttachmentDesc> mColorAttachments;
+		Array<RenderPassAttachmentDesc> mColorAttachments;
 		RenderPassAttachmentDesc mDepthStencilAttachment;
 		bool mIsSwapchainTarget;
 	};

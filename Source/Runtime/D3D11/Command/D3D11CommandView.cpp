@@ -120,9 +120,9 @@ namespace Hollow
 		mD3DDeferredContext->CSSetShader(std::dynamic_pointer_cast<D3D11Shader>(pipeline->GetComputeShader())->GetD3DComputeShader().Get(), nullptr, 0);
 	}
 
-	void D3D11CommandView::SetViewportCore(const ArrayList<ViewportDesc> viewports, const byte amount)
+	void D3D11CommandView::SetViewportCore(const Array<ViewportDesc> viewports, const byte amount)
 	{
-		ArrayList<D3D11_VIEWPORT> d3dViewports(viewports.size());
+		Array<D3D11_VIEWPORT> d3dViewports(viewports.size());
 
 		for (byte i = 0; i < amount; i++)
 		{
@@ -137,9 +137,9 @@ namespace Hollow
 		mD3DDeferredContext->RSSetViewports(viewports.size(), d3dViewports.data());
 	}
 
-	void D3D11CommandView::SetScissorCore(const ArrayList<ScissorDesc> scissors, const byte amount)
+	void D3D11CommandView::SetScissorCore(const Array<ScissorDesc> scissors, const byte amount)
 	{
-		ArrayList<D3D11_RECT> d3dScissors(scissors.size());
+		Array<D3D11_RECT> d3dScissors(scissors.size());
 
 		for (byte i = 0; i < amount; i++)
 		{

@@ -112,7 +112,7 @@ namespace Hollow
 		return renderPass;
 	}
 
-	void GraphicsDevice::SubmitCommandView(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount)
+	void GraphicsDevice::SubmitCommandView(const Array<SharedPtr<CommandView>>& commandViews, const byte amount)
 	{
 		SubmitCommandViewCore(commandViews, amount);
 	}

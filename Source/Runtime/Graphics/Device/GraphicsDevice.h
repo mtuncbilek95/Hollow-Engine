@@ -61,7 +61,7 @@ namespace Hollow
 		SharedPtr<RenderPass>				CreateRenderPass(const RenderPassDesc& desc);
 
 		// Mostly will be used to submit command views to the GPU
-		void SubmitCommandView(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount);
+		void SubmitCommandView(const Array<SharedPtr<CommandView>>& commandViews, const byte amount);
 
 		// Mostly will be used to call swapchain via GraphicsManager
 		const SharedPtr<Swapchain>& GetSwapchain() const { return mSwapchain; }
@@ -82,10 +82,10 @@ namespace Hollow
 		virtual SharedPtr<CommandView>		CreateCommandViewCore(const CommandViewDesc& desc) = 0;
 		virtual SharedPtr<RenderPass>		CreateRenderPassCore(const RenderPassDesc& desc) = 0;
 
-		virtual void SubmitCommandViewCore(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount) = 0;
+		virtual void SubmitCommandViewCore(const Array<SharedPtr<CommandView>>& commandViews, const byte amount) = 0;
 
 	protected:
-		ArrayList<SharedPtr<GraphicsDeviceObject>> mDeviceObjects;
+		Array<SharedPtr<GraphicsDeviceObject>> mDeviceObjects;
 		SharedPtr<Swapchain> mSwapchain;
 		GraphicsAPI mGraphicsAPI;
 		SharedPtr<GraphicsAdapter> mGraphicsAdapter;

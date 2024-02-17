@@ -32,7 +32,7 @@ namespace Hollow
 		virtual void OnInitialize() = 0;
 
 	private:
-		ArrayList<SharedPtr<ApplicationModule>> mModules;
+		Array<SharedPtr<ApplicationModule>> mModules;
 		bool mQuitRequested = false;
 	};
 }

@@ -31,6 +31,36 @@ target_link_libraries(Runtime PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(Runtime PRIVATE assimp)
 # ------------------------------------------------------------
 
+# ------------------ FORCE SHADER DIRECTORY ------------------
+target_include_directories(Runtime PRIVATE "${CMAKE_SOURCE_DIR}/External/")
+
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/dxcompilerd.lib")
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/glslangd.lib")
+
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/shaderc_combinedd.lib")
+
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/spirv-cross-cored.lib")
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/spirv-cross-glsld.lib")
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/spirv-cross-hlsld.lib")
+else()
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/dxcompiler.lib")
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/glslang.lib")
+
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/shaderc_combined.lib")
+
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/spirv-cross-core.lib")
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/spirv-cross-glsl.lib")
+    target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/spirv-cross-hlsl.lib")
+endif()
+# ------------------------------------------------------------
+
+# ------------------- VULKAN IMPLEMENTATION ------------------
+target_include_directories(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Vulkan/Include")
+
+target_link_libraries(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/External/Libs/vulkan-1.lib")
+# ------------------------------------------------------------
+
 # ----------------- STB IMAGE IMPLEMENTATION -----------------
 if (stbi_POPULATED) 
     target_compile_definitions(Runtime PUBLIC STB_IMAGE_IMPLEMENTATION)

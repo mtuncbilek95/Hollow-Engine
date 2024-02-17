@@ -42,8 +42,8 @@ namespace Hollow
 		void BindIndexBuffer(const SharedPtr<GraphicsView>& indexBuffer, const IndexType type);
 		void BindGraphicsPipeline(const SharedPtr<Pipeline>& pipeline);
 		void BindComputePipeline(const SharedPtr<Pipeline>& pipeline);
-		void SetViewport(const ArrayList<ViewportDesc> viewports, const byte amount);
-		void SetScissor(const ArrayList<ScissorDesc> scissors, const byte amount);
+		void SetViewport(const Array<ViewportDesc> viewports, const byte amount);
+		void SetScissor(const Array<ScissorDesc> scissors, const byte amount);
 		//void CommitResource();
 		void DrawIndexed(const uint32 indexCount, const uint32 indexOffset, const uint32 vertexOffset);
 		void UpdateBuffer(SharedPtr<GraphicsView> buffer, const GraphicsViewUpdateDesc& desc);
@@ -62,8 +62,8 @@ namespace Hollow
 		virtual void BindIndexBufferCore(const SharedPtr<GraphicsView>& indexBuffer, const IndexType type) = 0;
 		virtual void BindGraphicsPipelineCore(const SharedPtr<Pipeline>& pipeline) = 0;
 		virtual void BindComputePipelineCore(const SharedPtr<Pipeline>& pipeline) = 0;
-		virtual void SetViewportCore(const ArrayList<ViewportDesc> viewports, const byte amount) = 0;
-		virtual void SetScissorCore(const ArrayList<ScissorDesc> scissors, const byte amount) = 0;
+		virtual void SetViewportCore(const Array<ViewportDesc> viewports, const byte amount) = 0;
+		virtual void SetScissorCore(const Array<ScissorDesc> scissors, const byte amount) = 0;
 		//virtual void CommitResourceCore() = 0;
 		virtual void DrawIndexedCore(const uint32 indexCount, const uint32 indexOffset, const uint32 vertexOffset) = 0;
 		virtual void UpdateBufferCore(SharedPtr<GraphicsView> buffer, const GraphicsViewUpdateDesc& desc) = 0;

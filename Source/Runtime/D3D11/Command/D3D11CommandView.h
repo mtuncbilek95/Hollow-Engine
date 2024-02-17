@@ -30,8 +30,8 @@ namespace Hollow
 		virtual void BindIndexBufferCore(const SharedPtr<GraphicsView>& indexBuffer, const IndexType type) override;
 		virtual void BindGraphicsPipelineCore(const SharedPtr<Pipeline>& pipeline) override;
 		virtual void BindComputePipelineCore(const SharedPtr<Pipeline>& pipeline) override;
-		virtual void SetViewportCore(const ArrayList<ViewportDesc> viewports, const byte amount) override;
-		virtual void SetScissorCore(const ArrayList<ScissorDesc> scissors, const byte amount) override;
+		virtual void SetViewportCore(const Array<ViewportDesc> viewports, const byte amount) override;
+		virtual void SetScissorCore(const Array<ScissorDesc> scissors, const byte amount) override;
 		//virtual void CommitResourceCore() override;
 		virtual void DrawIndexedCore(const uint32 indexCount, const uint32 indexOffset, const uint32 vertexOffset) override;
 		virtual void UpdateBufferCore(SharedPtr<GraphicsView> buffer, const GraphicsViewUpdateDesc& desc) override;

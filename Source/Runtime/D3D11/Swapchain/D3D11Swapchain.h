@@ -22,7 +22,7 @@ namespace Hollow
 		void ResizeCore(Vector2u newSize) override;
 
 		ComPtr<IDXGISwapChain>& GetD3DSwapchain() { return mD3DSwapchain; }
-
+		ComPtr<ID3D11Texture2D> GetBackBuffer();
 	private:
 		ComPtr<IDXGISwapChain> mD3DSwapchain;
 	};

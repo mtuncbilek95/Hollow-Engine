@@ -9,7 +9,7 @@ namespace Hollow
 	struct RUNTIME_API RenderPassDesc
 	{
 		Vector2u FramebufferSize;
-		ArrayList<RenderPassAttachmentDesc> ColorAttachments;
+		Array<RenderPassAttachmentDesc> ColorAttachments;
 		RenderPassAttachmentDesc DepthStencilAttachment;
 		bool IsSwapchainTarget;
 	};

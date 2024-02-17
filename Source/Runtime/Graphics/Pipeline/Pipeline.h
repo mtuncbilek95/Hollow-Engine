@@ -23,7 +23,7 @@ namespace Hollow
 		{}
 		virtual ~Pipeline() override = default;
 
-		const ArrayList<SharedPtr<Shader>>& GetShaders() const { return mGraphicsShaders; }
+		const Array<SharedPtr<Shader>>& GetShaders() const { return mGraphicsShaders; }
 		const SharedPtr<Shader>& GetComputeShader() const { return mComputeShader; }
 		const InputLayoutDesc& GetInputLayout() const { return mInputLayout; }
 		const RasterizerDesc& GetRasterizer() const { return mRasterizer; }
@@ -35,14 +35,14 @@ namespace Hollow
 
 	private:
 		PipelineBindPoint mBindPoint;
-		ArrayList<SharedPtr<Shader>> mGraphicsShaders;
+		Array<SharedPtr<Shader>> mGraphicsShaders;
 		InputLayoutDesc mInputLayout;
 		RasterizerDesc mRasterizer;
 		DepthStencilDesc mDepthStencil;
 		BlendStateDesc mBlend;
 		PrimitiveMode mPrimitiveMode;
 
-		ArrayList<SharedPtr<ResourceLayout>> mResourceLayouts;
+		Array<SharedPtr<ResourceLayout>> mResourceLayouts;
 		SharedPtr<Shader> mComputeShader;
 	};
 }

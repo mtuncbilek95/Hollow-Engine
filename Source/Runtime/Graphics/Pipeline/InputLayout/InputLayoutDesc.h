@@ -12,12 +12,12 @@ namespace Hollow
 {
 	struct RUNTIME_API InputLayoutDesc
 	{
-		ArrayList<SemanticName> SemanticName;
-		ArrayList<TextureFormat> InputFormat;
-		ArrayList<uint32> SemanticIndex;
-		ArrayList<uint32> InputSlotIndex;
-		ArrayList<uint32> AlignedByteOffset;
-		ArrayList<SlotClass> SlotClass;
-		ArrayList<uint32> InstanceDataStep;
+		Array<SemanticName> SemanticName;
+		Array<TextureFormat> InputFormat;
+		Array<uint32> SemanticIndex;
+		Array<uint32> InputSlotIndex;
+		Array<uint32> AlignedByteOffset;
+		Array<SlotClass> SlotClass;
+		Array<uint32> InstanceDataStep;
 	};
 }

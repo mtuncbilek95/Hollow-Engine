@@ -9,6 +9,7 @@
 
 #include <Runtime/D3D11/Device/D3D11Device.h>
 #include <Runtime/D3D11/RenderPass/D3D11RenderPass.h>
+#include <Runtime/D3D11/Swapchain/D3D11Swapchain.h>
 
 
 namespace Hollow
@@ -30,9 +31,9 @@ namespace Hollow
 		Matrix4f Projection;
 	};
 
-	ArrayList<TestVertex> TestTriangleVtx;
-	ArrayList<uint16> TestTriangleIdx;
-	ArrayList<TestConstantBuffer> TestTriangleCB;
+	Array<TestVertex> TestTriangleVtx;
+	Array<uint16> TestTriangleIdx;
+	Array<TestConstantBuffer> TestTriangleCB;
 }
 
 int main()
@@ -127,28 +128,9 @@ namespace Hollow
 
 		auto mRenderPass = mGraphicsDevice->CreateRenderPass(renderPassDesc);
 
-		D3D11Device* pDevice = static_cast<D3D11Device*>(mGraphicsDevice.get());
-		D3D11RenderPass* pRenderPass = static_cast<D3D11RenderPass*>(mRenderPass.get());
-
-		float color[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
-
-		D3D11_VIEWPORT viewport = {};
-		viewport.Width = 800;
-		viewport.Height = 600;
-		viewport.MinDepth = 0.0f;
-		viewport.MaxDepth = 1.0f;
-		viewport.TopLeftX = 0;
-		viewport.TopLeftY = 0;
-
 		while (!mGameWindow->ShouldClose())
 		{
 			mGameWindow->PollMessages();
-			
-			pDevice->GetD3DContext()->OMSetRenderTargets(1, pRenderPass->GetRenderTargetViews()[0].GetAddressOf(), pRenderPass->GetDepthStencilView().Get());
-			pDevice->GetD3DContext()->RSSetViewports(1, &viewport);
-			pDevice->GetD3DContext()->ClearRenderTargetView(pRenderPass->GetRenderTargetViews()[0].Get(), color);
-			pDevice->GetD3DContext()->ClearDepthStencilView(pRenderPass->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
 			mSwapchain->Present();
 		}
 	}

@@ -31,7 +31,7 @@ namespace Hollow
 		SharedPtr<CommandView>		CreateCommandViewCore(const CommandViewDesc& desc) override;
 		SharedPtr<RenderPass>		CreateRenderPassCore(const RenderPassDesc& desc) override;
 
-		void SubmitCommandViewCore(const ArrayList<SharedPtr<CommandView>>& commandViews, const byte amount) override;
+		void SubmitCommandViewCore(const Array<SharedPtr<CommandView>>& commandViews, const byte amount) override;
 
 	private:
 		ComPtr<ID3D11Device> mD3DDevice;

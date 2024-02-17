@@ -27,6 +27,7 @@ namespace Hollow
 			&swapchainDesc, mD3DSwapchain.GetAddressOf())), "D3D11Swapchain", "Failed to create D3D11Swapchain");
 
 		CORE_LOG(HE_VERBOSE, "D3D11Swapchain", "Operation is successful.");
+
 	}
 
 	void D3D11Swapchain::PresentCore()
@@ -48,5 +49,13 @@ namespace Hollow
 		DEV_LOG(HE_VERBOSE, "Resized Swapchain to size: { %d, %d }", newSize.x, newSize.y);
 
 		pDevice->Release();
+	}
+
+	ComPtr<ID3D11Texture2D> D3D11Swapchain::GetBackBuffer()
+	{
+		ComPtr<ID3D11Texture2D> backBuffer;
+		DEV_ASSERT(SUCCEEDED(mD3DSwapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)), "D3D11Swapchain", "Failed to get back buffer from DXGISwapchain");
+
+		return backBuffer;
 	}
 }

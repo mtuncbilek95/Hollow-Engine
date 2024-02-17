@@ -11,7 +11,7 @@ namespace Hollow
 {
 	struct RUNTIME_API GraphicsPipelineDesc
 	{
-		ArrayList<SharedPtr<Shader>> Shaders;
+		Array<SharedPtr<Shader>> Shaders;
 		InputLayoutDesc InputLayout;
 		RasterizerDesc Rasterizer;
 		DepthStencilDesc DepthStencil;

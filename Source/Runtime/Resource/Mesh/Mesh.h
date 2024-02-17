@@ -16,6 +16,6 @@ namespace Hollow
 
 
 	private:
-		ArrayList<SharedPtr<Material>> mMaterials;
+		Array<SharedPtr<Material>> mMaterials;
 	};
 }

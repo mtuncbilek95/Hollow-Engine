@@ -8,7 +8,7 @@ namespace Hollow
 {
 	D3D11Pipeline::D3D11Pipeline(const GraphicsPipelineDesc& desc, D3D11Device* pDevice) : Pipeline(desc)
 	{
-		ArrayList<D3D11_INPUT_ELEMENT_DESC> inputElementDescs;
+		Array<D3D11_INPUT_ELEMENT_DESC> inputElementDescs;
 		inputElementDescs.reserve(desc.InputLayout.SemanticName.size());
 
 		int i = 0;

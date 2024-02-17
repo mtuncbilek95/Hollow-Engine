@@ -68,12 +68,12 @@ namespace Hollow
 		mBoundPipeline = pipeline;
 	}
 
-	void CommandView::SetViewport(const ArrayList<ViewportDesc> viewports, const byte amount)
+	void CommandView::SetViewport(const Array<ViewportDesc> viewports, const byte amount)
 	{
 		SetViewportCore(viewports, amount);
 	}
 
-	void CommandView::SetScissor(const ArrayList<ScissorDesc> scissors, const byte amount)
+	void CommandView::SetScissor(const Array<ScissorDesc> scissors, const byte amount)
 	{
 		SetScissorCore(scissors, amount);
 	}

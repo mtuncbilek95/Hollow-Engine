@@ -21,12 +21,12 @@ namespace Hollow
 		bool BindResourceLayout();
 
 		SharedPtr<ResourceLayout> GetResourceLayout() const;
-		const ArrayList<SharedPtr<TextureResource>>& GetTextures(ResourceType type) const;
-		const ArrayList<SharedPtr<Sampler>>& GetSamplers() const;
+		const Array<SharedPtr<TextureResource>>& GetTextures(ResourceType type) const;
+		const Array<SharedPtr<Sampler>>& GetSamplers() const;
 
 	private:
-		ArrayList<SharedPtr<TextureResource>> mTextures;
-		ArrayList<SharedPtr<Sampler>> mSamplers;
+		Array<SharedPtr<TextureResource>> mTextures;
+		Array<SharedPtr<Sampler>> mSamplers;
 		SharedPtr<ResourceLayout> mResourceLayout;
 	};
 } 

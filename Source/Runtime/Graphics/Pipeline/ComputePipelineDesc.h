@@ -9,7 +9,7 @@ namespace Hollow
 
 	struct RUNTIME_API ComputePipelineDesc
 	{
-		ArrayList<SharedPtr<ResourceLayout>> ResourceLayouts;
+		Array<SharedPtr<ResourceLayout>> ResourceLayouts;
 		SharedPtr<Shader> ComputeShader;
 	};
 }

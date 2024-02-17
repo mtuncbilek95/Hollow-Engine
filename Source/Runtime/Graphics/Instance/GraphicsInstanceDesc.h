@@ -9,5 +9,6 @@ namespace Hollow
 	struct RUNTIME_API GraphicsInstanceDesc
 	{
 		GraphicsAPI API;
+		Array<String> EnabledExtensions;
 	};
 }

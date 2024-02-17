@@ -23,7 +23,7 @@ namespace Hollow
 		void AddAdapter(SharedPtr<GraphicsAdapter> adapter) { mAdapters.push_back(adapter); }
 
 	private:
-		ArrayList<SharedPtr<GraphicsAdapter>> mAdapters;
+		Array<SharedPtr<GraphicsAdapter>> mAdapters;
 		GraphicsAPI mGraphicsAPI;
 	};
 }
