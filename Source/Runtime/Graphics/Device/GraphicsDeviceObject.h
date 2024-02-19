@@ -22,6 +22,8 @@ namespace Hollow
 		FORCEINLINE GraphicsDevice* GetOwnerDevice() const noexcept { return mOwnerDevice; }
 		FORCEINLINE virtual GraphicsDeviceObjectType GetDeviceObjectType() const noexcept = 0;
 
+		virtual void OnShutdown() noexcept = 0;
+
 	private:
 		void _SetOwnerDevice(GraphicsDevice* ownerDevice) noexcept { mOwnerDevice = ownerDevice; }
 

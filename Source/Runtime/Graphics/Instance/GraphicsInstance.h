@@ -19,6 +19,8 @@ namespace Hollow
 
 		SharedPtr<GraphicsAdapter>& GetAdapter(byte index) { return mAdapters[index]; }
 
+		virtual void OnShutdown() = 0;
+
 	protected:
 		void AddAdapter(SharedPtr<GraphicsAdapter> adapter) { mAdapters.push_back(adapter); }
 

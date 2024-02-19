@@ -19,14 +19,18 @@ namespace Hollow
 		SharedPtr<GraphicsDevice> GetDevice() { return mDevice; }
 		GraphicsInstance* GetInstance() { return mInstance; }
 
+		Vector3u GetImageDimensions() const { return mImageDimensions; }
 		String GetProductName() const { return mProductName; }
 		uint32 GetVRam() const { return mVRam; }
+
+		virtual void OnShutdown() = 0;
 
 	protected:
 		virtual SharedPtr<GraphicsDevice> CreateDeviceCore(const GraphicsDeviceDesc& desc) = 0;
 
 	private:
 		SharedPtr<GraphicsDevice> mDevice;
+		Vector3u mImageDimensions;
 		String mProductName;
 		uint32 mVRam;
 		GraphicsInstance* mInstance;

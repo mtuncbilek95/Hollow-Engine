@@ -4,9 +4,11 @@
 
 namespace Hollow
 {
-	GraphicsAdapter::GraphicsAdapter(const GraphicsAdapterDesc& desc) : mProductName(desc.ProductName), mVRam(desc.VRam), mInstance(desc.pInstance)
+	GraphicsAdapter::GraphicsAdapter(const GraphicsAdapterDesc& desc) : mProductName(desc.ProductName), mVRam(desc.VRam), 
+		mInstance(desc.pInstance), mImageDimensions(desc.ImageDimensions)
 	{
 	}
+
 	void GraphicsAdapter::CreateDevice(const GraphicsDeviceDesc& desc)
 	{
 		mDevice = CreateDeviceCore(desc);

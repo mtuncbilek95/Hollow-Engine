@@ -15,6 +15,7 @@ namespace Hollow
 
 		const VkInstance& GetVkInstance() const noexcept { return mVkInstance; }
 
+		virtual void OnShutdown() override;
 	private:
 		static PFN_vkCmdBeginRendering vkCmdBeginRendering;
 		static PFN_vkCmdEndRendering vkCmdEndRendering;

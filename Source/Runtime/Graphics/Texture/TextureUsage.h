@@ -7,7 +7,6 @@ namespace Hollow
         Unknown,
         ShaderResource,
         RenderTarget,
-        DepthStencil,
-        UnorderedAccess
+        DepthStencil
     };
 }

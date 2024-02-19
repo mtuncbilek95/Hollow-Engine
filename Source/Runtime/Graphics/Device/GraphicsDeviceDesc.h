@@ -10,5 +10,8 @@ namespace Hollow
 	{
 		GraphicsAPI API;
 		SharedPtr<GraphicsAdapter> Adapter;
+		byte GraphicsQueueCount;
+		byte ComputeQueueCount;
+		byte TransferQueueCount;
 	};
 }

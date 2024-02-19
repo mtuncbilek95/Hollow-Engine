@@ -41,11 +41,10 @@ namespace Hollow
 
 		SwapchainDesc swapchainDesc;
 		swapchainDesc.BufferCount = 3;
-		swapchainDesc.pInstance = mInstance;
 		swapchainDesc.SwapchainFormat = TextureFormat::RGBA8_UNorm;
-		swapchainDesc.VSync = true;
-		swapchainDesc.Windowed = true;
+		swapchainDesc.VSync = PresentMode::VSyncImmediate;
 		swapchainDesc.SampleCount = 1;
+		swapchainDesc.pQueue = nullptr;
 
 		mSwapchain = mGraphicsDevice->CreateSwapchain(swapchainDesc);
 		return true;

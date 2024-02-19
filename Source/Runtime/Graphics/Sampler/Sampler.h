@@ -35,6 +35,8 @@ namespace Hollow
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Sampler; }
 
+		virtual void OnShutdown() noexcept override = 0;
+
 	private:
 		SamplerFilter mFilter;
 		AddressMode mAddressU;

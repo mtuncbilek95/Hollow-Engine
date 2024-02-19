@@ -1,6 +1,6 @@
 #include "GraphicsInstance.h"
 
-#include <Runtime/D3D11/Instance/D3D11Instance.h>
+#include <Runtime/Vulkan/Instance/VulkanInstance.h>
 
 namespace Hollow
 {
@@ -9,10 +9,9 @@ namespace Hollow
 		switch (desc.API)
 		{
 		case GraphicsAPI::D3D11:
-			return std::make_shared<D3D11Instance>(desc);
-			break;
-		case GraphicsAPI::Vulkan:
 			return nullptr;
+		case GraphicsAPI::Vulkan:
+			return std::make_shared<VulkanInstance>(desc);
 		default:
 			DEV_LOG(HE_ERROR, "Invalid Graphics API");
 			return nullptr;

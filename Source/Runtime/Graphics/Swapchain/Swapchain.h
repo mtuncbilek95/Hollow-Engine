@@ -15,25 +15,28 @@ namespace Hollow
 
 		void Present();
 		void Resize(Vector2u newSize);
-		void SetVSync(bool vsync);
 
+		Vector2u GetImageSize() const { return mImageSize; }
 		TextureFormat GetSwapchainFormat() const { return mSwapchainFormat; }
-		const bool GetVSync() const { return mVSync; }
-		const bool GetWindowed() const { return mWindowed; }
+		PresentMode GetPresentMode() const { return mPresentMode; }
 		const byte& GetBufferCount() const { return mBufferCount; }
 		const byte& GetSampleCount() const { return mSampleCount; }
+		GraphicsQueue* GetQueue() const { return mGraphicsQueue; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept final { return GraphicsDeviceObjectType::Swapchain; }
+
+		virtual void OnShutdown() noexcept override = 0;
 
 	protected:
 		virtual void PresentCore() = 0;
 		virtual void ResizeCore(Vector2u newSize) = 0;
 
 	private:
+		Vector2u mImageSize;
 		TextureFormat mSwapchainFormat;
-		bool mVSync;
-		bool mWindowed;const 
+		PresentMode mPresentMode;
 		byte mBufferCount;
 		byte mSampleCount;
+		GraphicsQueue* mGraphicsQueue;
 	};
 }

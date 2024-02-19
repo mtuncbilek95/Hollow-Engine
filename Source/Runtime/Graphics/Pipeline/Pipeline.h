@@ -33,6 +33,8 @@ namespace Hollow
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Pipeline; }
 
+		virtual void OnShutdown() noexcept override = 0;
+
 	private:
 		PipelineBindPoint mBindPoint;
 		Array<SharedPtr<Shader>> mGraphicsShaders;

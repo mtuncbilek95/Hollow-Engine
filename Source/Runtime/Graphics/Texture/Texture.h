@@ -26,6 +26,8 @@ namespace Hollow
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Texture; }
 
+		virtual void OnShutdown() noexcept override = 0;
+
 	private:
 		Vector2u mImageSize;
 		byte mArraySize;

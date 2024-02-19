@@ -6,11 +6,10 @@
 #include <Runtime/Graphics/Shader/Shader.h>
 #include <Runtime/Graphics/Texture/Texture.h>	
 #include <Runtime/Graphics/Texture/TextureView.h>
-#include <Runtime/Graphics/Buffer/GraphicsView.h>
+#include <Runtime/Graphics/Buffer/GraphicsBuffer.h>
 #include <Runtime/Graphics/Sampler/Sampler.h>
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
-//#include <Runtime/Graphics/ResourceLayout/ResourceLayout.h>
-#include <Runtime/Graphics/Command/CommandView.h>
+#include <Runtime/Graphics/Command/CommandBuffer.h>
 #include <Runtime/Graphics/RenderPass/RenderPass.h>
 
 
@@ -43,12 +42,12 @@ namespace Hollow
 		return shader;
 	}
 
-	SharedPtr<GraphicsView> GraphicsDevice::CreateGraphicsView(const GraphicsViewDesc& desc)
+	SharedPtr<GraphicsBuffer> GraphicsDevice::CreateGraphicsBuffer(const GraphicsBufferDesc& desc)
 	{
-		SharedPtr<GraphicsView> graphicsView = CreateGraphicsViewCore(desc);
-		graphicsView->_SetOwnerDevice(this);
-		mDeviceObjects.push_back(graphicsView);
-		return graphicsView;
+		SharedPtr<GraphicsBuffer> graphicsBuffer = CreateGraphicsBufferCore(desc);
+		graphicsBuffer->_SetOwnerDevice(this);
+		mDeviceObjects.push_back(graphicsBuffer);
+		return graphicsBuffer;
 	}
 
 	SharedPtr<Texture> GraphicsDevice::CreateTexture(const TextureDesc& desc)
@@ -91,14 +90,9 @@ namespace Hollow
 		return pipeline;
 	}
 
-	SharedPtr<ResourceLayout> GraphicsDevice::CreateResourceLayout(const ResourceLayoutDesc& desc)
+	SharedPtr<CommandBuffer> GraphicsDevice::CreateCommandBuffer(const CommandBufferDesc& desc)
 	{
-		return nullptr;
-	}
-
-	SharedPtr<CommandView> GraphicsDevice::CreateCommandView(const CommandViewDesc& desc)
-	{
-		SharedPtr<CommandView> commandView = CreateCommandViewCore(desc);
+		SharedPtr<CommandBuffer> commandView = CreateCommandBufferCore(desc);
 		commandView->_SetOwnerDevice(this);
 		mDeviceObjects.push_back(commandView);
 		return commandView;
@@ -110,10 +104,5 @@ namespace Hollow
 		renderPass->_SetOwnerDevice(this);
 		mDeviceObjects.push_back(renderPass);
 		return renderPass;
-	}
-
-	void GraphicsDevice::SubmitCommandView(const Array<SharedPtr<CommandView>>& commandViews, const byte amount)
-	{
-		SubmitCommandViewCore(commandViews, amount);
 	}
 }

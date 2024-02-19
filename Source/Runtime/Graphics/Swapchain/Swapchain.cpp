@@ -2,8 +2,9 @@
 
 namespace Hollow
 {
-	Swapchain::Swapchain(const SwapchainDesc& desc) : mSwapchainFormat(desc.SwapchainFormat), mVSync(desc.VSync), 
-		mWindowed(desc.Windowed), mBufferCount(desc.BufferCount), mSampleCount(desc.SampleCount)
+	Swapchain::Swapchain(const SwapchainDesc& desc) : mSwapchainFormat(desc.SwapchainFormat), mPresentMode(desc.VSync), 
+		mBufferCount(desc.BufferCount), mSampleCount(desc.SampleCount), mImageSize(desc.ImageSize), 
+		mGraphicsQueue(desc.pQueue)
 	{
 	}
 
@@ -15,10 +16,5 @@ namespace Hollow
 	void Swapchain::Resize(Vector2u newSize)
 	{
 		ResizeCore(newSize);
-	}
-
-	void Swapchain::SetVSync(bool vsync)
-	{
-		mVSync = vsync;
 	}
 }

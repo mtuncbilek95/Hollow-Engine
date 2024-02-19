@@ -8,7 +8,6 @@ namespace Hollow
 	{
 		Texture1D,
 		Texture2D,
-		Texture3D,
-		TextureCube
+		Texture3D
 	};
 }

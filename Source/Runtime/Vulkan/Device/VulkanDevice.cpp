@@ -1,0 +1,295 @@
+#include "VulkanDevice.h"
+
+#include <Runtime/Vulkan/Adapter/VulkanAdapter.h>
+#include <Runtime/Vulkan/Swapchain/VulkanSwapchain.h>
+
+namespace Hollow
+{
+	PFN_vkCmdBeginRenderingKHR VulkanDevice::vkCmdBeginRenderingKHR = NULL;
+	PFN_vkCmdEndRenderingKHR VulkanDevice::vkCmdEndRenderingKHR = NULL;
+
+	VulkanDevice::VulkanDevice(const GraphicsDeviceDesc& desc) : GraphicsDevice(desc), mVkLogicalDevice(VK_NULL_HANDLE)
+	{
+		mVkPhysicalDevice = std::dynamic_pointer_cast<VulkanAdapter>(desc.Adapter)->GetVkPhysicalDevice();
+
+		VulkanDeviceDesc pDesc = (VulkanDeviceDesc&)desc;
+
+		// Get the queue family count
+		uint32 queueFamilyCount = 0;
+		vkGetPhysicalDeviceQueueFamilyProperties(mVkPhysicalDevice, &queueFamilyCount, nullptr);
+		DEV_ASSERT(queueFamilyCount > 0, "VulkanDevice", "Failed to get Queue Family Count.");
+
+		// Get the queue family properties
+		Array<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
+		vkGetPhysicalDeviceQueueFamilyProperties(mVkPhysicalDevice, &queueFamilyCount, queueFamilyProperties.data());
+
+		// Get the queue family indices
+		for (byte i = 0; i < queueFamilyCount; i++)
+		{
+			if (queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			{
+				mGraphicsQueueFamily.FamilyIndex = i;
+				mGraphicsQueueFamily.QueueCapacity = queueFamilyProperties[i].queueCount;
+				mGraphicsQueueFamily.RequestedCount = pDesc.GraphicsQueueCount > queueFamilyProperties[i].queueCount ? queueFamilyProperties[i].queueCount : pDesc.GraphicsQueueCount;
+			}
+
+			if (queueFamilyProperties[i].queueFlags & VK_QUEUE_COMPUTE_BIT)
+			{
+				mComputeQueueFamily.FamilyIndex = i;
+				mComputeQueueFamily.QueueCapacity = queueFamilyProperties[i].queueCount;
+				mComputeQueueFamily.RequestedCount = pDesc.ComputeQueueCount > queueFamilyProperties[i].queueCount ? queueFamilyProperties[i].queueCount : pDesc.ComputeQueueCount;
+			}
+
+			if (queueFamilyProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
+			{
+				mTransferQueueFamily.FamilyIndex = i;
+				mTransferQueueFamily.QueueCapacity = queueFamilyProperties[i].queueCount;
+				mTransferQueueFamily.RequestedCount = pDesc.TransferQueueCount > queueFamilyProperties[i].queueCount ? queueFamilyProperties[i].queueCount : pDesc.TransferQueueCount;
+			}
+		}
+
+		// Check if the queue families are valid
+		DEV_ASSERT(mGraphicsQueueFamily.QueueCapacity > 0, "VulkanDevice", "There is no queue support for graphics.");
+		DEV_ASSERT(mComputeQueueFamily.QueueCapacity > 0, "VulkanDevice", "There is no queue support for compute.");
+		DEV_ASSERT(mTransferQueueFamily.QueueCapacity > 0, "VulkanDevice", "There is no queue support for transfer.");
+
+		// Fill the queues
+		float queuePriorities[] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
+		Array<VkDeviceQueueCreateInfo> queueCreateInfos;
+
+		// Add graphics queue create infos
+		VkDeviceQueueCreateInfo graphicsQueueCreateInfo = {};
+		graphicsQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		graphicsQueueCreateInfo.queueFamilyIndex = mGraphicsQueueFamily.FamilyIndex;
+		graphicsQueueCreateInfo.queueCount = mGraphicsQueueFamily.QueueCapacity;
+		graphicsQueueCreateInfo.pQueuePriorities = queuePriorities;
+		graphicsQueueCreateInfo.pNext = nullptr;
+
+		queueCreateInfos.push_back(graphicsQueueCreateInfo);
+
+		// Add compute queue create infos
+		VkDeviceQueueCreateInfo computeQueueCreateInfo = {};
+		computeQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		computeQueueCreateInfo.queueFamilyIndex = mComputeQueueFamily.FamilyIndex;
+		computeQueueCreateInfo.queueCount = mComputeQueueFamily.QueueCapacity;
+		computeQueueCreateInfo.pQueuePriorities = queuePriorities;
+		computeQueueCreateInfo.pNext = nullptr;
+
+		queueCreateInfos.push_back(computeQueueCreateInfo);
+
+		// Add transfer queue create infos
+		VkDeviceQueueCreateInfo transferQueueCreateInfo = {};
+		transferQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		transferQueueCreateInfo.queueFamilyIndex = mTransferQueueFamily.FamilyIndex;
+		transferQueueCreateInfo.queueCount = mTransferQueueFamily.QueueCapacity;
+		transferQueueCreateInfo.pQueuePriorities = queuePriorities;
+		transferQueueCreateInfo.pNext = nullptr;
+
+		queueCreateInfos.push_back(transferQueueCreateInfo);
+
+		// Add logical device extensions
+		Array<const char*> deviceExtensions;
+		deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+		deviceExtensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
+		deviceExtensions.push_back(VK_KHR_DEPTH_STENCIL_RESOLVE_EXTENSION_NAME);
+		deviceExtensions.push_back(VK_KHR_CREATE_RENDERPASS_2_EXTENSION_NAME);
+		deviceExtensions.push_back(VK_KHR_MULTIVIEW_EXTENSION_NAME);
+		deviceExtensions.push_back(VK_KHR_MAINTENANCE2_EXTENSION_NAME);
+
+
+		// Add more extensions
+		for (const char* extension : ((VulkanDeviceDesc&)desc).deviceExtensions)
+		{
+			if (std::find(deviceExtensions.begin(), deviceExtensions.end(), extension) == deviceExtensions.end())
+				deviceExtensions.push_back(extension);
+		}
+
+		// Add logical device features
+		VkPhysicalDeviceFeatures deviceFeatures = {};
+		deviceFeatures = ((VulkanDeviceDesc&)desc).deviceFeatures.features;
+
+		// Create Device Info
+		VkDeviceCreateInfo deviceCreateInfo = {};
+		deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
+		deviceCreateInfo.queueCreateInfoCount = static_cast<uint32>(queueCreateInfos.size());
+		deviceCreateInfo.enabledExtensionCount = static_cast<uint32>(deviceExtensions.size());
+		deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+		deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+		deviceCreateInfo.flags = VkDeviceCreateFlags();
+		deviceCreateInfo.pNext = nullptr;
+
+		DEV_ASSERT(vkCreateDevice(mVkPhysicalDevice, &deviceCreateInfo, nullptr, &mVkLogicalDevice) == VK_SUCCESS, "VulkanDevice",
+			"Failed to create Logical Device.");
+
+		CORE_LOG(HE_VERBOSE, "VulkanDevice", "Created Logical Device.");
+
+		// Reserve the queues
+		mGraphicsQueueFamily.FreeQueues.reserve(desc.GraphicsQueueCount);
+		mComputeQueueFamily.FreeQueues.reserve(desc.ComputeQueueCount);
+		mTransferQueueFamily.FreeQueues.reserve(desc.TransferQueueCount);
+
+		// Get graphics queues
+		for (byte i = 0; i < mGraphicsQueueFamily.RequestedCount; i++)
+		{
+			VkQueue pQueue;
+			vkGetDeviceQueue(mVkLogicalDevice, mGraphicsQueueFamily.FamilyIndex, i, &pQueue);
+			mGraphicsQueueFamily.FreeQueues.push_back(pQueue);
+		}
+
+		// Get compute queues
+		for (byte i = 0; i < mComputeQueueFamily.RequestedCount; i++)
+		{
+			VkQueue pQueue;
+			vkGetDeviceQueue(mVkLogicalDevice, mComputeQueueFamily.FamilyIndex, i, &pQueue);
+			mComputeQueueFamily.FreeQueues.push_back(pQueue);
+		}
+
+		// Get transfer queues
+		for (byte i = 0; i < mTransferQueueFamily.RequestedCount; i++)
+		{
+			VkQueue pQueue;
+			vkGetDeviceQueue(mVkLogicalDevice, mTransferQueueFamily.FamilyIndex, i, &pQueue);
+			mTransferQueueFamily.FreeQueues.push_back(pQueue);
+		}
+
+		CORE_LOG(HE_VERBOSE, "VulkanDevice", "Reserved Queues.");
+	}
+
+	int32 VulkanDevice::GetQueueFamilyIndex(const VkSurfaceKHR surface)
+	{
+		VkBool32 bCanSupportGraphics = false;
+		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mGraphicsQueueFamily.FamilyIndex,
+			surface, &bCanSupportGraphics) == VK_SUCCESS, "VulkanDevice",
+			"Failed to get Physical Device Surface Support.");
+		if (bCanSupportGraphics)
+			return mGraphicsQueueFamily.FamilyIndex;
+
+		VkBool32 bCanSupportCompute = false;
+		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mComputeQueueFamily.FamilyIndex,
+			surface, &bCanSupportCompute) == VK_SUCCESS, "VulkanDevice",
+			"Failed to get Failed to get Physical Device Surface Support.");
+		if (bCanSupportCompute)
+			return mComputeQueueFamily.FamilyIndex;
+
+		VkBool32 bCanSupportTransfer = false;
+		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mTransferQueueFamily.FamilyIndex,
+			surface, &bCanSupportTransfer) == VK_SUCCESS, "VulkanDevice",
+			"Failed to get Physical Device Surface Support.");
+		if (bCanSupportTransfer)
+			return mTransferQueueFamily.FamilyIndex;
+
+		return -1;
+	}
+
+	VkQueue VulkanDevice::GetPresentQueue(const VkSurfaceKHR surface)
+	{
+		VkBool32 bCanSupportGraphics = false;
+		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mGraphicsQueueFamily.FamilyIndex,
+			surface, &bCanSupportGraphics) == VK_SUCCESS, "VulkanDevice",
+			"Failed to get Physical Device Surface Support.");
+		if (bCanSupportGraphics)
+			return mGraphicsQueueFamily.GetWorkingQueue();
+
+		VkBool32 bCanSupportCompute = false;
+		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mComputeQueueFamily.FamilyIndex,
+			surface, &bCanSupportCompute) == VK_SUCCESS, "VulkanDevice",
+			"Failed to get Failed to get Physical Device Surface Support.");
+		if (bCanSupportCompute)
+			return mComputeQueueFamily.GetWorkingQueue();
+
+		VkBool32 bCanSupportTransfer = false;
+		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mTransferQueueFamily.FamilyIndex,
+			surface, &bCanSupportTransfer) == VK_SUCCESS, "VulkanDevice",
+			"Failed to get Physical Device Surface Support.");
+		if (bCanSupportTransfer)
+			return mTransferQueueFamily.GetWorkingQueue();
+
+		return VK_NULL_HANDLE;
+	}
+
+	void VulkanDevice::OnShutdown()
+	{
+		vkDestroyDevice(mVkLogicalDevice, nullptr);
+		CORE_LOG(HE_WARNING, "VulkanDevice", "Shutting down...");
+	}
+
+	SharedPtr<Swapchain> VulkanDevice::CreateSwapchainCore(const SwapchainDesc& desc)
+	{
+		return std::make_shared<VulkanSwapchain>(desc, this);
+	}
+
+	SharedPtr<Shader> VulkanDevice::CreateShaderCore(const ShaderDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<GraphicsBuffer> VulkanDevice::CreateGraphicsBufferCore(const GraphicsBufferDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<Texture> VulkanDevice::CreateTextureCore(const TextureDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<TextureView> VulkanDevice::CreateTextureViewCore(const TextureViewDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<Sampler> VulkanDevice::CreateSamplerCore(const SamplerDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<Pipeline> VulkanDevice::CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<Pipeline> VulkanDevice::CreateComputePipelineCore(const ComputePipelineDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<GraphicsMemory> VulkanDevice::CreateGraphicsMemoryCore(const GraphicsMemoryDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<RenderPass> VulkanDevice::CreateRenderPassCore(const RenderPassDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<CommandBuffer> VulkanDevice::CreateCommandBufferCore(const CommandBufferDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<CommandPool> VulkanDevice::CreateCommandPoolCore(const CommandPoolDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<DescriptorSet> VulkanDevice::CreateDescriptorSetCore(const DescriptorSetDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<DescriptorPool> VulkanDevice::CreateDescriptorPoolCore(const DescriptorPoolDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<DescriptorLayout> VulkanDevice::CreateDescriptorLayoutCore(const DescriptorLayoutDesc& desc)
+	{
+		return  nullptr;
+	}
+
+	void VulkanDevice::UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc)
+	{
+	}
+}

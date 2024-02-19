@@ -23,7 +23,11 @@ namespace Hollow
 		const Vector2i& GetWindowPosition() const { return mWindowPosition; }
 
 		GLFWwindow* GetWindowHandle() const { return mWindowHandle; }
+
+		// If the platform is Windows, be able to get the native handle.
+#ifdef HOLLOW_PLATFORM_WINDOWS 
 		HWND GetWindowNativeHandle() const { return glfwGetWin32Window(mWindowHandle); }
+#endif
 
 		bool ShouldClose() const { return glfwWindowShouldClose(mWindowHandle); }
 		bool GetWindowed() const { return mWindowed; }

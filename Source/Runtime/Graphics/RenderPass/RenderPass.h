@@ -20,6 +20,9 @@ namespace Hollow
 		bool IsSwapchainTarget() const { return mIsSwapchainTarget; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::RenderPass; }
+
+		virtual void OnShutdown() noexcept override = 0;
+
 	private:
 		Vector2u mFramebufferSize;
 		Array<RenderPassAttachmentDesc> mColorAttachments;

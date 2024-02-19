@@ -2,18 +2,20 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Texture/TextureFormat.h>
+#include <Runtime/Graphics/Swapchain/PresentMode.h>
 
 namespace Hollow
 {
-	class GraphicsInstance;
+	class GraphicsQueue;
 	struct RUNTIME_API SwapchainDesc
 	{
+		Vector2u ImageSize;
 		TextureFormat SwapchainFormat;
-		bool VSync;
-		bool Windowed;
+		PresentMode VSync;
 		byte BufferCount;
 		byte SampleCount;
-		SharedPtr<GraphicsInstance> pInstance;
+		GraphicsQueue* pQueue;
+		
 	};
 }
        

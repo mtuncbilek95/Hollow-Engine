@@ -22,6 +22,8 @@ namespace Hollow
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Shader; }
 
+		virtual void OnShutdown() noexcept override = 0;
+
 	private:
 		String mShaderName;
 		String mSource;
