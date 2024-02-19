@@ -177,8 +177,7 @@ namespace Hollow
 		// Create debug messenger
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 		debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-		debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
-			VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+		debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 		debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
 			VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 		debugCreateInfo.pfnUserCallback = DebugCallback;
@@ -195,16 +194,18 @@ namespace Hollow
 			CORE_LOG(HE_INFO, "VulkanInstance", "Selected extension: %s", extension);
 #endif
 
-		// Get physical devices
+		// Count physical devices
 		uint32 physicalDeviceCount = 0;
 		DEV_ASSERT(vkEnumeratePhysicalDevices(mVkInstance, &physicalDeviceCount, nullptr) == VK_SUCCESS, "VulkanInstance",
 			"Failed to get physical device count");
 		DEV_ASSERT(physicalDeviceCount > 0, "VulkanInstance", "No physical devices found");
 
+		// Get physical devices
 		Array<VkPhysicalDevice> physicalDevices(physicalDeviceCount);
 		DEV_ASSERT(vkEnumeratePhysicalDevices(mVkInstance, &physicalDeviceCount, physicalDevices.data()) == VK_SUCCESS, "VulkanInstance",
 			"Failed to get physical devices");
 
+		// Create adapters for each physical device
 		for (const VkPhysicalDevice& device : physicalDevices)
 		{
 			VkPhysicalDeviceMemoryProperties memoryProperties = {};
@@ -221,6 +222,7 @@ namespace Hollow
 			adapterDesc.pInstance = this;
 			VkDeviceSize totalVRam = 0;
 
+			// Get total VRam
 			for (uint32 i = 0; i < memoryProperties.memoryHeapCount; i++)
 			{
 				if (memoryProperties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT)

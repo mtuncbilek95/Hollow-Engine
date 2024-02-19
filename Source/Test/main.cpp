@@ -71,13 +71,17 @@ namespace Hollow
 
 		auto mDevice = mAdapter->GetDevice();
 
+		// Create Queue
+		GraphicsQueueDesc queueDesc;
+		queueDesc.Type = GraphicsQueueType::Graphics;
+		auto mQueue = mDevice->BorrowGraphicsQueue(queueDesc);
+
 		// Create Swapchain
 		SwapchainDesc swapchainDesc;
 		swapchainDesc.BufferCount = 2;
 		swapchainDesc.SwapchainFormat = TextureFormat::RGBA8_UNorm;
-		swapchainDesc.SampleCount = 1;
 		swapchainDesc.VSync = PresentMode::VSyncQueued;
-		swapchainDesc.pQueue = nullptr;
+		swapchainDesc.pQueue = mQueue.get();
 
 		auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
 

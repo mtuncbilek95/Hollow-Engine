@@ -16,13 +16,13 @@ namespace Hollow
 			{
 			}
 
-			VkQueue GetWorkingQueue()
+			VkQueue GetAvailableQueue()
 			{
 				if (FreeQueues.size() > 0)
 				{
-					VkQueue q = FreeQueues[0];
+					VkQueue pQ = FreeQueues[0];
 					FreeQueues.erase(FreeQueues.begin());
-					return q;
+					return pQ;
 				}
 
 				return VK_NULL_HANDLE;
@@ -53,11 +53,8 @@ namespace Hollow
 		const VkDevice& GetVkLogicalDevice() const noexcept { return mVkLogicalDevice; }
 		const VkPhysicalDevice& GetVkPhysicalDevice() const noexcept { return mVkPhysicalDevice; }
 
-		int32 GetQueueFamilyIndex(const VkSurfaceKHR surface = VK_NULL_HANDLE);
-		VkQueue GetPresentQueue(const VkSurfaceKHR surface = VK_NULL_HANDLE);
-		uint32 GetGraphicsQueueFamilyIndex() const { return mGraphicsQueueFamily.FamilyIndex; }
-		uint32 GetComputeQueueFamilyIndex() const { return mComputeQueueFamily.FamilyIndex; }
-		uint32 GetTransferQueueFamilyIndex() const { return mTransferQueueFamily.FamilyIndex; }
+		int32 CatchQueueFamilyIndex(const GraphicsQueueType type);
+		VkQueue CatchGraphicsQueue(const GraphicsQueueType type);
 
 		virtual void OnShutdown() override;
 	public:
@@ -81,7 +78,7 @@ namespace Hollow
 		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolCore(const DescriptorPoolDesc& desc) override;
 		virtual SharedPtr<DescriptorLayout> CreateDescriptorLayoutCore(const DescriptorLayoutDesc& desc) override;
 		//virtual SharedPtr<Fence> CreateFenceCore(const FenceDesc& desc) override;
-		//virtual SharedPtr<Queue> CreateQueueCore(const QueueDesc& desc) override;
+		virtual SharedPtr<GraphicsQueue> BorrowGraphicsQueueCore(const GraphicsQueueDesc& desc) override;
 
 		//virtual void WaitForFenceCore(Fence** ppFences, byte amount) override;
 		//virtual void WaitForIdleDeviceCore() override;

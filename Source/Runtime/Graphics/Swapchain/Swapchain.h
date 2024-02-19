@@ -3,7 +3,7 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Device/GraphicsDeviceObject.h>
 #include <Runtime/Graphics/Swapchain/SwapchainDesc.h>
-
+#include <Runtime/Graphics/Queue/GraphicsQueue.h>
 
 namespace Hollow
 {
@@ -20,7 +20,6 @@ namespace Hollow
 		TextureFormat GetSwapchainFormat() const { return mSwapchainFormat; }
 		PresentMode GetPresentMode() const { return mPresentMode; }
 		const byte& GetBufferCount() const { return mBufferCount; }
-		const byte& GetSampleCount() const { return mSampleCount; }
 		GraphicsQueue* GetQueue() const { return mGraphicsQueue; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept final { return GraphicsDeviceObjectType::Swapchain; }
@@ -36,7 +35,6 @@ namespace Hollow
 		TextureFormat mSwapchainFormat;
 		PresentMode mPresentMode;
 		byte mBufferCount;
-		byte mSampleCount;
 		GraphicsQueue* mGraphicsQueue;
 	};
 }

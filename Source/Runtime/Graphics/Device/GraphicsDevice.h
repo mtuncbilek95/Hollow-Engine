@@ -31,8 +31,8 @@
 #include <Runtime/Graphics/RenderPass/RenderPassDesc.h>
 
 //#include <Runtime/Graphics/Fence/FenceDesc.h>
-//#include <Runtime/Graphics/Queue/QueueDesc.h>
-//#include <Runtime/Graphics/Queue/GraphicsQueueType.h>
+#include <Runtime/Graphics/Queue/GraphicsQueueDesc.h>
+#include <Runtime/Graphics/Queue/GraphicsQueueType.h>
 
 namespace Hollow
 {
@@ -85,7 +85,7 @@ namespace Hollow
 		SharedPtr<DescriptorPool> CreateDescriptorPool(const DescriptorPoolDesc& desc);
 		SharedPtr<DescriptorLayout> CreateDescriptorLayout(const DescriptorLayoutDesc& desc);
 		//SharedPtr<GraphicsFence> CreateFence(const GraphicsFenceDesc& desc);
-		//SharedPtr<GraphicsQueue> CreateQueue(const GraphicsQueueDesc& desc);
+		SharedPtr<GraphicsQueue> BorrowGraphicsQueue(const GraphicsQueueDesc& desc);
 
 		//void WaitForFence(Fence** ppFences, byte amount);
 		//void WaitForIdleDevice();
@@ -118,7 +118,7 @@ namespace Hollow
 		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolCore(const DescriptorPoolDesc& desc) = 0;
 		virtual SharedPtr<DescriptorLayout> CreateDescriptorLayoutCore(const DescriptorLayoutDesc& desc) = 0;
 		//virtual SharedPtr<GraphicsFence> CreateFenceCore(const GraphicsFenceDesc& desc) = 0;
-		//virtual SharedPtr<GraphicsQueue> CreateQueueCore(const GraphicsQueueDesc& desc) = 0;
+		virtual SharedPtr<GraphicsQueue> BorrowGraphicsQueueCore(const GraphicsQueueDesc& desc) = 0;
 
 		//virtual void WaitForFenceCore(Fence** ppFences, byte amount) = 0;
 		//virtual void WaitForIdleDeviceCore() = 0;

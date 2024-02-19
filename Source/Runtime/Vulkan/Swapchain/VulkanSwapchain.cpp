@@ -7,6 +7,8 @@
 #include <vulkan_win32.h>
 #endif
 
+#include <Runtime/Vulkan/Queue/VulkanQueue.h>
+
 #include <Runtime/Vulkan/Texture/VulkanTextureUtils.h>
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchainUtils.h>
 
@@ -141,13 +143,13 @@ namespace Hollow
 		uint32 imageCount = GetBufferCount() > surfaceCapabilities.maxImageCount ? surfaceCapabilities.maxImageCount : GetBufferCount();
 
 		//Get present family index
-		VulkanQueue* pQueue; // TODO: Get the queue from the device
-		uint32 presentFamilyIndex; // TODO: Get the present family index from the queue
+		VulkanQueue* vkQ = static_cast<VulkanQueue*>(GetQueue());
+		uint32 presentFamilyIndex = vkQ->GetQueueFamilyIndex();
 		VkBool32 presentSupport = false;
 
-		//vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, presentFamilyIndex, mVkSurface, &presentSupport);
-
-		//DEV_ASSERT(presentSupport, "VulkanSwapchain", "Present support is not available.");
+		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, presentFamilyIndex, mVkSurface, &presentSupport) == VK_SUCCESS, 
+			"VulkanSwapchain", "Failed to get present support.");
+		DEV_ASSERT(presentSupport, "VulkanSwapchain", "Present support is not available.");
 
 		// Create the swapchain
 		VkSwapchainCreateInfoKHR swapchainCreateInfo = {};
@@ -169,8 +171,8 @@ namespace Hollow
 		swapchainCreateInfo.clipped = VK_TRUE;
 		swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
 
-		//swapchainCreateInfo.pQueueFamilyIndices = &presentFamilyIndex;
-		//swapchainCreateInfo.queueFamilyIndexCount = 1;
+		swapchainCreateInfo.pQueueFamilyIndices = &presentFamilyIndex;
+		swapchainCreateInfo.queueFamilyIndexCount = 1;
 
 		swapchainCreateInfo.flags = VkSwapchainCreateFlagsKHR();
 		swapchainCreateInfo.pNext = nullptr;

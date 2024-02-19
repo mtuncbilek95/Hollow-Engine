@@ -2,8 +2,8 @@
 
 namespace Hollow
 {
-	Swapchain::Swapchain(const SwapchainDesc& desc) : mSwapchainFormat(desc.SwapchainFormat), mPresentMode(desc.VSync), 
-		mBufferCount(desc.BufferCount), mSampleCount(desc.SampleCount), mImageSize(desc.ImageSize), 
+	Swapchain::Swapchain(const SwapchainDesc& desc) : mSwapchainFormat(desc.SwapchainFormat), 
+		mPresentMode(desc.VSync), mBufferCount(desc.BufferCount), mImageSize(desc.ImageSize), 
 		mGraphicsQueue(desc.pQueue)
 	{
 	}

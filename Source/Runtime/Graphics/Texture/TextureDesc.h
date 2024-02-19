@@ -8,6 +8,7 @@
 
 namespace Hollow
 {
+	class GraphicsMemory;
 	struct RUNTIME_API TextureDesc
 	{
 		Vector2u ImageSize;
@@ -17,6 +18,7 @@ namespace Hollow
 		TextureUsage Usage;
 		BufferCPUAccess CPUAccess;
 		TextureType Type;
-		uint64 Data;
+		
+		SharedPtr<GraphicsMemory> pMemory;
 	};
 }

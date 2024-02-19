@@ -105,4 +105,12 @@ namespace Hollow
 		mDeviceObjects.push_back(renderPass);
 		return renderPass;
 	}
+
+	SharedPtr<GraphicsQueue> GraphicsDevice::BorrowGraphicsQueue(const GraphicsQueueDesc& desc)
+	{
+		SharedPtr<GraphicsQueue> queue = BorrowGraphicsQueueCore(desc);
+		queue->_SetOwnerDevice(this);
+		mDeviceObjects.push_back(queue);
+		return queue;
+	}
 }

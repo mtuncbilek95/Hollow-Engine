@@ -11,7 +11,7 @@ namespace Hollow
 	public:
 		Texture(const TextureDesc& desc) : mImageSize(desc.ImageSize), mArraySize(desc.ArraySize), 
 			mMipLevels(desc.MipLevels), mFormat(desc.Format), mUsage(desc.Usage), mType(desc.Type), 
-			mData(desc.Data), mCPUAccess(desc.CPUAccess)
+			mMemory(desc.pMemory), mCPUAccess(desc.CPUAccess)
 		{}
 		virtual ~Texture() override = default;
 
@@ -22,7 +22,7 @@ namespace Hollow
 		TextureUsage GetUsage() const { return mUsage; }
 		BufferCPUAccess GetCPUAccess() const { return mCPUAccess; }
 		TextureType GetType() const { return mType; }
-		const uint64& GetData() const { return mData; }
+		const SharedPtr<GraphicsMemory>& GetMemory() const { return mMemory; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Texture; }
 
@@ -36,6 +36,7 @@ namespace Hollow
 		TextureUsage mUsage;
 		BufferCPUAccess mCPUAccess;
 		TextureType mType;
-		uint64 mData;
+		
+		SharedPtr<GraphicsMemory> mMemory;
 	};
 }

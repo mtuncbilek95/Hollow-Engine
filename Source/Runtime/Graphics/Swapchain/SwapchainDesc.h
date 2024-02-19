@@ -13,7 +13,6 @@ namespace Hollow
 		TextureFormat SwapchainFormat;
 		PresentMode VSync;
 		byte BufferCount;
-		byte SampleCount;
 		GraphicsQueue* pQueue;
 		
 	};

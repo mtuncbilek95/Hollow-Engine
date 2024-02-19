@@ -2,6 +2,7 @@
 
 #include <Runtime/Vulkan/Adapter/VulkanAdapter.h>
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchain.h>
+#include <Runtime/Vulkan/Queue/VulkanQueue.h>
 
 namespace Hollow
 {
@@ -156,56 +157,34 @@ namespace Hollow
 		CORE_LOG(HE_VERBOSE, "VulkanDevice", "Reserved Queues.");
 	}
 
-	int32 VulkanDevice::GetQueueFamilyIndex(const VkSurfaceKHR surface)
+	int32 VulkanDevice::CatchQueueFamilyIndex(const GraphicsQueueType type)
 	{
-		VkBool32 bCanSupportGraphics = false;
-		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mGraphicsQueueFamily.FamilyIndex,
-			surface, &bCanSupportGraphics) == VK_SUCCESS, "VulkanDevice",
-			"Failed to get Physical Device Surface Support.");
-		if (bCanSupportGraphics)
+		switch (type)
+		{
+		case GraphicsQueueType::Graphics:
 			return mGraphicsQueueFamily.FamilyIndex;
-
-		VkBool32 bCanSupportCompute = false;
-		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mComputeQueueFamily.FamilyIndex,
-			surface, &bCanSupportCompute) == VK_SUCCESS, "VulkanDevice",
-			"Failed to get Failed to get Physical Device Surface Support.");
-		if (bCanSupportCompute)
+		case GraphicsQueueType::Compute:
 			return mComputeQueueFamily.FamilyIndex;
-
-		VkBool32 bCanSupportTransfer = false;
-		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mTransferQueueFamily.FamilyIndex,
-			surface, &bCanSupportTransfer) == VK_SUCCESS, "VulkanDevice",
-			"Failed to get Physical Device Surface Support.");
-		if (bCanSupportTransfer)
+		case GraphicsQueueType::Transfer:
 			return mTransferQueueFamily.FamilyIndex;
-
-		return -1;
+		default:
+			return -1;
+		}
 	}
 
-	VkQueue VulkanDevice::GetPresentQueue(const VkSurfaceKHR surface)
+	VkQueue VulkanDevice::CatchGraphicsQueue(const GraphicsQueueType type)
 	{
-		VkBool32 bCanSupportGraphics = false;
-		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mGraphicsQueueFamily.FamilyIndex,
-			surface, &bCanSupportGraphics) == VK_SUCCESS, "VulkanDevice",
-			"Failed to get Physical Device Surface Support.");
-		if (bCanSupportGraphics)
-			return mGraphicsQueueFamily.GetWorkingQueue();
-
-		VkBool32 bCanSupportCompute = false;
-		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mComputeQueueFamily.FamilyIndex,
-			surface, &bCanSupportCompute) == VK_SUCCESS, "VulkanDevice",
-			"Failed to get Failed to get Physical Device Surface Support.");
-		if (bCanSupportCompute)
-			return mComputeQueueFamily.GetWorkingQueue();
-
-		VkBool32 bCanSupportTransfer = false;
-		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, mTransferQueueFamily.FamilyIndex,
-			surface, &bCanSupportTransfer) == VK_SUCCESS, "VulkanDevice",
-			"Failed to get Physical Device Surface Support.");
-		if (bCanSupportTransfer)
-			return mTransferQueueFamily.GetWorkingQueue();
-
-		return VK_NULL_HANDLE;
+		switch (type)
+		{
+		case GraphicsQueueType::Graphics:
+			return mGraphicsQueueFamily.GetAvailableQueue();
+		case GraphicsQueueType::Compute:
+			return mComputeQueueFamily.GetAvailableQueue();
+		case GraphicsQueueType::Transfer:
+			return mTransferQueueFamily.GetAvailableQueue();
+		default:
+			return VK_NULL_HANDLE;
+		}
 	}
 
 	void VulkanDevice::OnShutdown()
@@ -287,6 +266,11 @@ namespace Hollow
 	SharedPtr<DescriptorLayout> VulkanDevice::CreateDescriptorLayoutCore(const DescriptorLayoutDesc& desc)
 	{
 		return  nullptr;
+	}
+
+	SharedPtr<GraphicsQueue> VulkanDevice::BorrowGraphicsQueueCore(const GraphicsQueueDesc& desc)
+	{
+		return std::make_shared<VulkanQueue>(desc, this);
 	}
 
 	void VulkanDevice::UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc)

@@ -19,6 +19,8 @@ namespace Hollow
 		DescriptorPool,
 		DescriptorLayout,
 		CommandBuffer,
-		CommandPool
+		CommandPool,
+		Fence,
+		Queue
 	};
 }

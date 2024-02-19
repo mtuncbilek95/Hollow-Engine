@@ -8,7 +8,7 @@ namespace Hollow
 {
 	struct RUNTIME_API GraphicsDeviceDesc
 	{
-		GraphicsAPI API;
+		GraphicsAPI API = GraphicsAPI::Vulkan;
 		SharedPtr<GraphicsAdapter> Adapter;
 		byte GraphicsQueueCount;
 		byte ComputeQueueCount;

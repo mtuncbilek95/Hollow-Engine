@@ -8,7 +8,7 @@ namespace Hollow
 {
 	struct RUNTIME_API GraphicsInstanceDesc
 	{
-		GraphicsAPI API;
+		GraphicsAPI API = GraphicsAPI::Vulkan;
 		Array<String> EnabledExtensions;
 	};
 }
