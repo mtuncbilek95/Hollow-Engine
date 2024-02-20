@@ -6,7 +6,12 @@ namespace Hollow
     {
         Unknown,
         ShaderResource,
-        RenderTarget,
-        DepthStencil
+        ColorAttachment,
+        DepthStencil,
+        Storage,
+        TransferSrc,
+        TransferDst,
+        TransientAttachment,
+        InputAttachment
     };
 }

@@ -10,18 +10,20 @@ namespace Hollow
 	{
 	public:
 		Texture(const TextureDesc& desc) : mImageSize(desc.ImageSize), mArraySize(desc.ArraySize), 
-			mMipLevels(desc.MipLevels), mFormat(desc.Format), mUsage(desc.Usage), mType(desc.Type), 
-			mMemory(desc.pMemory), mCPUAccess(desc.CPUAccess)
+			mMipLevels(desc.MipLevels), mFormat(desc.Format), mUsages(desc.Usages), mType(desc.Type), 
+			mMemory(desc.pMemory), mCPUAccess(desc.CPUAccess), mSampleCount(desc.SampleCount)
 		{}
 		virtual ~Texture() override = default;
 
-		const Vector2u& GetImageSize() const { return mImageSize; }
+		const Vector3u& GetImageSize() const { return mImageSize; }
 		const byte& GetArraySize() const { return mArraySize; }
 		const byte& GetMipLevels() const { return mMipLevels; }
 		TextureFormat GetFormat() const { return mFormat; }
-		TextureUsage GetUsage() const { return mUsage; }
+		const Array<TextureUsage>& GetUsage() const { return mUsages; }
 		BufferCPUAccess GetCPUAccess() const { return mCPUAccess; }
 		TextureType GetType() const { return mType; }
+		TextureSample GetSampleCount() const { return mSampleCount; }
+
 		const SharedPtr<GraphicsMemory>& GetMemory() const { return mMemory; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Texture; }
@@ -29,12 +31,13 @@ namespace Hollow
 		virtual void OnShutdown() noexcept override = 0;
 
 	private:
-		Vector2u mImageSize;
+		Vector3u mImageSize;
 		byte mArraySize;
 		byte mMipLevels;
 		TextureFormat mFormat;
-		TextureUsage mUsage;
+		Array<TextureUsage> mUsages;
 		BufferCPUAccess mCPUAccess;
+		TextureSample mSampleCount;
 		TextureType mType;
 		
 		SharedPtr<GraphicsMemory> mMemory;

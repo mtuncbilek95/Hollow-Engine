@@ -1,7 +1,7 @@
 import subprocess
 import sys
 
-print("\033[32m WELCOME TO PORTAKAL ENGINE\n-----------------------------\n\033[00m")
+print("\033[32m WELCOME TO HOLLOW ENGINE\n-----------------------------\n\033[00m")
 
 def install(package):
 	subprocess.check_call([sys.executable, "-m", "pip", "install", package])
@@ -55,7 +55,7 @@ time.sleep(sleepTime)
 print(Fore.CYAN + "[INFO] -- " + Style.RESET_ALL + "Checking if VulkanSDK is up to date...")
 time.sleep(sleepTime*2)
 
-ourVersion = "1.3.268.0"
+ourVersion = "1.3.275.0"
 
 sdkPath = "C:/VulkanSDK/"
 # Get a initList of all files and directories in the directory
@@ -200,7 +200,7 @@ with open(externalPath + "/External/Shaderc/Include/shaderc.h", "w") as file:
 with open(externalPath + "/External/Vulkan/Include/vulkan_core.h", "r") as file:
   lines = file.readlines()
 
-for i in [8373, 8374, 8375, 9589, 9590, 9591]:
+for i in [8287, 8288, 8486, 8487, 8711, 9926]:
   lines[i] = lines[i].replace('vk_video/', '../../Vulkan-Video/Include/')
 
 with open(externalPath + "/External/Vulkan/Include/vulkan_core.h", "w") as file:
@@ -208,13 +208,5 @@ with open(externalPath + "/External/Vulkan/Include/vulkan_core.h", "w") as file:
 
 print(Fore.GREEN + "[SUCCESS] -- " + Style.RESET_ALL + "Needed files has been edited.")
 
-# Build ReflectionParserTool 
-print(Fore.CYAN + "[INFO] -- " + Style.RESET_ALL + "Building ReflectionParserTool at " + externalPath + "Tools/ReflectionParser/ReflectionParser.csproj")
-
-subprocess.run(["dotnet", "build", externalPath + "/Tools/ReflectionParser/ReflectionParser.csproj"])
-
-print(Fore.GREEN + "[SUCCESS] -- " + Style.RESET_ALL + "ReflectionParserTool has been built.")
-
-print(Fore.YELLOW + "[WARNING] -- " + Style.RESET_ALL + "If you still get compiler error during the build, please check the Portakal/wiki/Home from github.com")
 time.sleep(sleepTime)
 exit()

@@ -3,6 +3,7 @@
 #include <Runtime/Vulkan/Adapter/VulkanAdapter.h>
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchain.h>
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
+#include <Runtime/Vulkan/Texture/VulkanTexture.h>
 
 namespace Hollow
 {
@@ -210,7 +211,7 @@ namespace Hollow
 
 	SharedPtr<Texture> VulkanDevice::CreateTextureCore(const TextureDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanTexture>(desc, this);
 	}
 
 	SharedPtr<TextureView> VulkanDevice::CreateTextureViewCore(const TextureViewDesc& desc)

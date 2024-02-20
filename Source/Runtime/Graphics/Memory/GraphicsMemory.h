@@ -8,6 +8,12 @@ namespace Hollow
 {
 	class RUNTIME_API GraphicsMemory : public GraphicsDeviceObject
 	{
+		struct SubAllocation
+		{
+			uint64 Offset;
+			uint64 Size;
+		};
+
 	public:
 		GraphicsMemory(const GraphicsMemoryDesc& desc) : mType(desc.Type), mSizeInBytes(desc.SizeInBytes) 
 		{}

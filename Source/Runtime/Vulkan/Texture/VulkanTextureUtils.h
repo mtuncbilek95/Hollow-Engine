@@ -3,6 +3,8 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Texture/TextureFormat.h>
 #include <Runtime/Graphics/Texture/TextureType.h>
+#include <Runtime/Graphics/Texture/TextureUsage.h>
+#include <Runtime/Graphics/Texture/TextureSample.h>
 
 #include <vulkan.h>
 
@@ -84,6 +86,46 @@ namespace Hollow
 			default: return VK_IMAGE_TYPE_2D;
 			}
 		}
+
+		static VkImageUsageFlags GetVkImageUsageFlags(Array<TextureUsage> usages)
+		{
+			VkImageUsageFlags flags = 0;
+
+			for (auto usage : usages)
+			{
+				switch (usage)
+				{
+				case TextureUsage::Unknown: break;
+				case TextureUsage::ShaderResource: flags |= VK_IMAGE_USAGE_SAMPLED_BIT; break;
+				case TextureUsage::Storage: flags |= VK_IMAGE_USAGE_STORAGE_BIT; break;
+				case TextureUsage::ColorAttachment: flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; break;
+				case TextureUsage::DepthStencil: flags |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT; break;
+				case TextureUsage::TransferSrc: flags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT; break;
+				case TextureUsage::TransferDst: flags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT; break;
+				case TextureUsage::TransientAttachment: flags |= VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT; break;
+				case TextureUsage::InputAttachment: flags |= VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT; break;
+				default: break;
+				}
+			}
+
+			return flags;
+		}
+
+		static VkSampleCountFlagBits GetVkSampleCount(TextureSample sample)
+		{
+			switch (sample)
+			{
+			case TextureSample::Sample1: return VK_SAMPLE_COUNT_1_BIT;
+			case TextureSample::Sample2: return VK_SAMPLE_COUNT_2_BIT;
+			case TextureSample::Sample4: return VK_SAMPLE_COUNT_4_BIT;
+			case TextureSample::Sample8: return VK_SAMPLE_COUNT_8_BIT;
+			case TextureSample::Sample16: return VK_SAMPLE_COUNT_16_BIT;
+			case TextureSample::Sample32: return VK_SAMPLE_COUNT_32_BIT;
+			case TextureSample::Sample64: return VK_SAMPLE_COUNT_64_BIT;
+			default: return VK_SAMPLE_COUNT_1_BIT;
+			}
+		}
+
 	private:
 		VulkanTextureUtils() = delete;
 		~VulkanTextureUtils() = delete;

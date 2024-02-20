@@ -21,7 +21,6 @@ namespace Hollow
 			case TextureFormat::RGBA32_UInt:			return 16;
 			case TextureFormat::RGBA32_Int:				return 16;
 
-			case TextureFormat::RGB32_Typeless:			return 12;
 			case TextureFormat::RGB32_Float:			return 12;
 			case TextureFormat::RGB32_UInt:				return 12;
 			case TextureFormat::RGB32_Int:				return 12;
