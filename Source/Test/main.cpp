@@ -12,7 +12,7 @@
 namespace Hollow
 {
 	void RenderPassTest();
-	void TriangleTest();
+	void VertexTriangleTest();
 	void PostProcessTest();
 
 	struct TestVertex
@@ -30,7 +30,7 @@ namespace Hollow
 
 	Array<TestVertex> TestTriangleVtx;
 	Array<uint16> TestTriangleIdx;
-	Array<TestConstantBuffer> TestTriangleCB;
+	Array<TestConstantBuffer> TestTriangleMVP;
 }
 
 int main()
@@ -90,7 +90,7 @@ namespace Hollow
 		}
 	}
 
-	void TriangleTest()
+	void VertexTriangleTest()
 	{
 	}
 
