@@ -9,9 +9,10 @@ namespace Hollow
 	class RUNTIME_API Texture : public GraphicsDeviceObject
 	{
 	public:
-		Texture(const TextureDesc& desc) : mImageSize(desc.ImageSize), mArraySize(desc.ArraySize), 
+		Texture(const TextureDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
+			mImageSize(desc.ImageSize), mArraySize(desc.ArraySize), 
 			mMipLevels(desc.MipLevels), mFormat(desc.Format), mUsages(desc.Usages), mType(desc.Type), 
-			mMemory(desc.pMemory), mCPUAccess(desc.CPUAccess), mSampleCount(desc.SampleCount)
+			mMemory(desc.pMemory), mSampleCount(desc.SampleCount)
 		{}
 		virtual ~Texture() override = default;
 
@@ -20,7 +21,6 @@ namespace Hollow
 		const byte& GetMipLevels() const { return mMipLevels; }
 		TextureFormat GetFormat() const { return mFormat; }
 		const Array<TextureUsage>& GetUsage() const { return mUsages; }
-		BufferCPUAccess GetCPUAccess() const { return mCPUAccess; }
 		TextureType GetType() const { return mType; }
 		TextureSample GetSampleCount() const { return mSampleCount; }
 
@@ -36,7 +36,6 @@ namespace Hollow
 		byte mMipLevels;
 		TextureFormat mFormat;
 		Array<TextureUsage> mUsages;
-		BufferCPUAccess mCPUAccess;
 		TextureSample mSampleCount;
 		TextureType mType;
 		

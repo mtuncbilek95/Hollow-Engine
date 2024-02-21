@@ -5,6 +5,7 @@
 #include <Runtime/Graphics/Texture/TextureType.h>
 #include <Runtime/Graphics/Texture/TextureUsage.h>
 #include <Runtime/Graphics/Texture/TextureSample.h>
+#include <Runtime/Graphics/Texture/TextureAspect.h>
 
 #include <vulkan.h>
 
@@ -115,15 +116,44 @@ namespace Hollow
 		{
 			switch (sample)
 			{
-			case TextureSample::Sample1: return VK_SAMPLE_COUNT_1_BIT;
-			case TextureSample::Sample2: return VK_SAMPLE_COUNT_2_BIT;
-			case TextureSample::Sample4: return VK_SAMPLE_COUNT_4_BIT;
-			case TextureSample::Sample8: return VK_SAMPLE_COUNT_8_BIT;
-			case TextureSample::Sample16: return VK_SAMPLE_COUNT_16_BIT;
-			case TextureSample::Sample32: return VK_SAMPLE_COUNT_32_BIT;
-			case TextureSample::Sample64: return VK_SAMPLE_COUNT_64_BIT;
-			default: return VK_SAMPLE_COUNT_1_BIT;
+			case TextureSample::Sample1:	return VK_SAMPLE_COUNT_1_BIT;
+			case TextureSample::Sample2:	return VK_SAMPLE_COUNT_2_BIT;
+			case TextureSample::Sample4:	return VK_SAMPLE_COUNT_4_BIT;
+			case TextureSample::Sample8:	return VK_SAMPLE_COUNT_8_BIT;
+			case TextureSample::Sample16:	return VK_SAMPLE_COUNT_16_BIT;
+			case TextureSample::Sample32:	return VK_SAMPLE_COUNT_32_BIT;
+			case TextureSample::Sample64:	return VK_SAMPLE_COUNT_64_BIT;
+			default:						return VK_SAMPLE_COUNT_1_BIT;
 			}
+		}
+
+		static VkImageViewType GetVkImageViewType(TextureType type)
+		{
+			switch (type)
+			{
+			case TextureType::Texture1D:	return VK_IMAGE_VIEW_TYPE_1D;
+			case TextureType::Texture2D:	return VK_IMAGE_VIEW_TYPE_2D;
+			case TextureType::Texture3D:	return VK_IMAGE_VIEW_TYPE_3D;
+			default:						return VK_IMAGE_VIEW_TYPE_2D;
+			}
+		}
+
+		static VkImageAspectFlags GetVkTextureAspects(Array<TextureAspect> aspects)
+		{
+			VkImageAspectFlags flags = 0;
+
+			for (auto aspect : aspects)
+			{
+				switch (aspect)
+				{
+				case TextureAspect::TextureColor: flags |= VK_IMAGE_ASPECT_COLOR_BIT; break;
+				case TextureAspect::TextureDepth: flags |= VK_IMAGE_ASPECT_DEPTH_BIT; break;
+				case TextureAspect::TextureStencil: flags |= VK_IMAGE_ASPECT_STENCIL_BIT; break;
+				default: break;
+				}
+			}
+
+			return flags;
 		}
 
 	private:

@@ -9,7 +9,8 @@ namespace Hollow
 	class RUNTIME_API Sampler : public GraphicsDeviceObject
 	{
 	public:
-		Sampler(const SamplerDesc& desc) : mFilter(desc.Filter), mAddressU(desc.AddressU),
+		Sampler(const SamplerDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice), 
+			mFilter(desc.Filter), mAddressU(desc.AddressU),
 			mAddressV(desc.AddressV), mAddressW(desc.AddressW), mMipLODBias(desc.MipLODBias),
 			mMaxAnisotropy(desc.MaxAnisotropy), mSamplerComparison(desc.SamplerComparison),
 			mMinLOD(desc.MinLOD), mMaxLOD(desc.MaxLOD)

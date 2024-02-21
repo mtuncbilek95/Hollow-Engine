@@ -16,7 +16,8 @@ namespace Hollow
 	class RUNTIME_API TextureView : public GraphicsDeviceObject
 	{
 	public:
-		TextureView(const TextureViewDesc& desc) : mArraySize(desc.ArraySize), mMipLevels(desc.MipLevels), mTexture(desc.pTexture) 
+		TextureView(const TextureViewDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
+			mArraySize(desc.ArraySize), mMipLevels(desc.MipLevels), mTexture(desc.pTexture) 
 		{}
 		virtual ~TextureView() override = default;
 

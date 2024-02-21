@@ -2,7 +2,7 @@
 
 namespace Hollow
 {
-	VulkanQueue::VulkanQueue(const GraphicsQueueDesc& desc, VulkanDevice* pDevice) : GraphicsQueue(desc)
+	VulkanQueue::VulkanQueue(const GraphicsQueueDesc& desc, VulkanDevice* pDevice) : GraphicsQueue(desc, pDevice)
 	{
 		mVkQueue = pDevice->CatchGraphicsQueue(desc.Type);
 		mQueueFamilyIndex = pDevice->CatchQueueFamilyIndex(desc.Type);

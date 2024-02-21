@@ -12,13 +12,15 @@ namespace Hollow
 	class RUNTIME_API Pipeline : public GraphicsDeviceObject
 	{
 	public:
-		Pipeline(const GraphicsPipelineDesc& desc) : mBindPoint(PipelineBindPoint::Graphics), 
+		Pipeline(const GraphicsPipelineDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
+			mBindPoint(PipelineBindPoint::Graphics), 
 			mGraphicsShaders(desc.Shaders), mInputLayout(desc.InputLayout),
 			mRasterizer(desc.Rasterizer), mDepthStencil(desc.DepthStencil), mBlend(desc.Blend), 
 			mPrimitiveMode(desc.PrimitiveMode) 
 		{}
 
-		Pipeline(const ComputePipelineDesc& desc) : mBindPoint(PipelineBindPoint::Compute), 
+		Pipeline(const ComputePipelineDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
+			mBindPoint(PipelineBindPoint::Compute),
 			mComputeShader(desc.ComputeShader), mResourceLayouts(desc.ResourceLayouts)
 		{}
 		virtual ~Pipeline() override = default;

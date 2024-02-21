@@ -10,14 +10,16 @@ namespace Hollow
 	{
 		struct SubAllocation
 		{
-			uint64 Offset;
+			bool bOwnedByMemory;
 			uint64 Size;
 		};
 
 	public:
-		GraphicsMemory(const GraphicsMemoryDesc& desc) : mType(desc.Type), mSizeInBytes(desc.SizeInBytes) 
-		{}
+		GraphicsMemory(const GraphicsMemoryDesc& desc, GraphicsDevice* pDevice);
 		virtual ~GraphicsMemory() override = default;
+
+		uint64 Allocate(uint64 sizeInBytes);
+		void Free(uint64 offset);
 
 		FORCEINLINE GraphicsMemoryType GetMemoryType() const noexcept { return mType; }
 		FORCEINLINE uint64 GetSizeInBytes() const noexcept { return mSizeInBytes; }
@@ -29,5 +31,7 @@ namespace Hollow
 	private:
 		GraphicsMemoryType mType;
 		uint64 mSizeInBytes;
+		uint64 mUsedSizeInBytes;
+		Array<SubAllocation> mSubAllocations;
 	};
 }

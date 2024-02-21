@@ -9,7 +9,8 @@ namespace Hollow
 	class RUNTIME_API GraphicsBuffer : public GraphicsDeviceObject
 	{
 	public:
-		GraphicsBuffer(const GraphicsBufferDesc& desc) : mUsage(desc.Usage), mCPUAccess(desc.CPUAccess), 
+		GraphicsBuffer(const GraphicsBufferDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
+			mUsage(desc.Usage), mCPUAccess(desc.CPUAccess), 
 			mUsageType(desc.UsageType), mMiscFlags(desc.MiscFlags), mSizeInBytes(desc.SizeInBytes), 
 			mStructureByteStride(desc.StructureByteStride), mInitialData(desc.pInitialData) 
 		{}

@@ -82,22 +82,7 @@ namespace Hollow
 		swapchainDesc.SwapchainFormat = TextureFormat::RGBA8_UNorm;
 		swapchainDesc.VSync = PresentMode::VSyncQueued;
 		swapchainDesc.pQueue = mQueue.get();
-
 		auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
-
-		// Test Texture
-		TextureDesc textureDesc;
-		textureDesc.ArraySize = 1;
-		textureDesc.Format = TextureFormat::RGBA8_UNorm;
-		textureDesc.ImageSize = { 800, 600, 1 };
-		textureDesc.MipLevels = 1;
-		textureDesc.SampleCount = TextureSample::Sample1;
-		textureDesc.Usages = { TextureUsage::ColorAttachment };
-		textureDesc.CPUAccess = BufferCPUAccess::Write;
-		textureDesc.Type = TextureType::Texture2D;
-
-		auto mTexture = mDevice->CreateTexture(textureDesc);
-
 
 		while (!mGameWindow->ShouldClose())
 		{

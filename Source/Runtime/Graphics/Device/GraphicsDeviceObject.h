@@ -16,7 +16,7 @@ namespace Hollow
 	{
 		friend class GraphicsDevice;
 	public:
-		GraphicsDeviceObject() = default;
+		GraphicsDeviceObject(GraphicsDevice* pDevice) : mOwnerDevice(pDevice) {}
 		virtual ~GraphicsDeviceObject() = default;
 
 		FORCEINLINE GraphicsDevice* GetOwnerDevice() const noexcept { return mOwnerDevice; }

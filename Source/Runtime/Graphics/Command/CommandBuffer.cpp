@@ -2,7 +2,7 @@
 
 namespace Hollow
 {
-	CommandBuffer::CommandBuffer(const CommandBufferDesc& desc)
+	CommandBuffer::CommandBuffer(const CommandBufferDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice)
 	{
 	}
 

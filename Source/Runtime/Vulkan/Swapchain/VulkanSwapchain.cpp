@@ -8,6 +8,7 @@
 #endif
 
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
+#include <Runtime/Vulkan/Texture/VulkanTexture.h>
 
 #include <Runtime/Vulkan/Texture/VulkanTextureUtils.h>
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchainUtils.h>
@@ -16,7 +17,7 @@
 
 namespace Hollow
 {
-	VulkanSwapchain::VulkanSwapchain(const SwapchainDesc& desc, VulkanDevice* pDevice) : Swapchain(desc)
+	VulkanSwapchain::VulkanSwapchain(const SwapchainDesc& desc, VulkanDevice* pDevice) : Swapchain(desc, pDevice)
 	{
 		mVkSurface = VK_NULL_HANDLE;
 		mVkSwapchain = VK_NULL_HANDLE;
@@ -58,7 +59,6 @@ namespace Hollow
 
 #ifdef HOLLOW_PLATFORM_WINDOWS
 		// Create surface for Win32
-
 		VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
 		surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 		surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
@@ -182,7 +182,38 @@ namespace Hollow
 
 		CORE_LOG(HE_VERBOSE, "VulkanSwapchain", "Swapchain created.");
 
-		// Get the swapchain images
+		// Get the swapchain image count
+		uint32 swapchainImageCount;
+		DEV_ASSERT(vkGetSwapchainImagesKHR(mVkLogicalDevice, mVkSwapchain, &swapchainImageCount, nullptr) == VK_SUCCESS, "VulkanSwapchain",
+			"Failed to get swapchain image count.");
 
+		Array<SharedPtr<Texture>> swapchainImages(swapchainImageCount);
+		Array<VkImage> vkSwapchainImages(swapchainImageCount);
+
+		// Get the swapchain images
+		DEV_ASSERT(vkGetSwapchainImagesKHR(mVkLogicalDevice, mVkSwapchain, &swapchainImageCount, vkSwapchainImages.data()) == VK_SUCCESS, "VulkanSwapchain",
+			"Failed to get swapchain images.");
+
+		// Create the swapchain texture objects
+		for (uint32 i = 0; i < swapchainImageCount; i++)
+		{
+			TextureDesc desc;
+			desc.ArraySize = 1;
+			desc.Type = TextureType::Texture2D;
+			desc.Format = GetSwapchainFormat();
+			desc.Usages = { TextureUsage::ColorAttachment };
+			desc.ImageSize = { swapExtent.width, swapExtent.height, 1 };
+			desc.MipLevels = 1;
+			desc.SampleCount = TextureSample::Sample1;
+			desc.pMemory = nullptr;
+
+			swapchainImages[i] = reinterpret_cast<VulkanDevice*>(GetOwnerDevice())->CreateVkTextureForSwapchain(desc, vkSwapchainImages[i]);
+		}
+
+		// Create the depth stencil image
+		// TODO: Implement depth stencil image creation
+		
+		// Create the color image views
+		CreateColorImageViews(swapchainImages);
 	}
 }

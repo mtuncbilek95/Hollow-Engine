@@ -4,6 +4,7 @@
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchain.h>
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
 #include <Runtime/Vulkan/Texture/VulkanTexture.h>
+#include <Runtime/Vulkan/Texture/VulkanTextureView.h>
 
 namespace Hollow
 {
@@ -188,6 +189,16 @@ namespace Hollow
 		}
 	}
 
+	SharedPtr<VulkanTexture> VulkanDevice::CreateVkTextureForSwapchain(const TextureDesc& desc, VkImage image)
+	{
+		return std::make_shared<VulkanTexture>(desc, image, this);
+	}
+
+	SharedPtr<VulkanTextureView> VulkanDevice::CreateVkTextureViewForSwapchain(const TextureViewDesc& desc, VkImageView imageView)
+	{
+		return std::make_shared<VulkanTextureView>(desc, imageView, this);
+	}
+
 	void VulkanDevice::OnShutdown()
 	{
 		vkDestroyDevice(mVkLogicalDevice, nullptr);
@@ -216,7 +227,7 @@ namespace Hollow
 
 	SharedPtr<TextureView> VulkanDevice::CreateTextureViewCore(const TextureViewDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanTextureView>(desc, this);
 	}
 
 	SharedPtr<Sampler> VulkanDevice::CreateSamplerCore(const SamplerDesc& desc)

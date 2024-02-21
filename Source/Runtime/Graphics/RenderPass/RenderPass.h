@@ -8,7 +8,8 @@ namespace Hollow
 	class RUNTIME_API RenderPass : public GraphicsDeviceObject
 	{
 	public:
-		RenderPass(const RenderPassDesc& desc) : mFramebufferSize(desc.FramebufferSize), 
+		RenderPass(const RenderPassDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice), 
+			mFramebufferSize(desc.FramebufferSize), 
 			mColorAttachments(desc.ColorAttachments), mDepthStencilAttachment(desc.DepthStencilAttachment), 
 			mIsSwapchainTarget(desc.IsSwapchainTarget) 
 		{}

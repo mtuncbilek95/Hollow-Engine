@@ -2,6 +2,7 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Texture/Texture.h>
+#include <Runtime/Graphics/Texture/TextureAspect.h>
 
 namespace Hollow
 {
@@ -9,6 +10,7 @@ namespace Hollow
 	{
 		byte ArraySize;
 		byte MipLevels;
+		Array<TextureAspect> Aspects;
 		SharedPtr<Texture> pTexture;
 	};
 }

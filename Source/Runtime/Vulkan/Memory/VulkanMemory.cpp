@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	VulkanMemory::VulkanMemory(const GraphicsMemoryDesc& desc, VulkanDevice* pDevice) : GraphicsMemory(desc)
+	VulkanMemory::VulkanMemory(const GraphicsMemoryDesc& desc, VulkanDevice* pDevice) : GraphicsMemory(desc, pDevice)
 	{
 		mVkLogicalDevice = pDevice->GetVkLogicalDevice();
 

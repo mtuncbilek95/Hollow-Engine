@@ -7,10 +7,14 @@
 
 namespace Hollow
 {
+	class Texture;
+	class TextureView;
+	class Fence;
+
 	class RUNTIME_API Swapchain : public GraphicsDeviceObject
 	{
 	public:
-		Swapchain(const SwapchainDesc& desc);
+		Swapchain(const SwapchainDesc& desc, GraphicsDevice* pDevice);
 		virtual ~Swapchain() override = default;
 
 		void Present();
@@ -30,11 +34,16 @@ namespace Hollow
 		virtual void PresentCore() = 0;
 		virtual void ResizeCore(Vector2u newSize) = 0;
 
+		void CreateColorImageViews(Array<SharedPtr<Texture>> textures);
+
 	private:
 		Vector2u mImageSize;
 		TextureFormat mSwapchainFormat;
 		PresentMode mPresentMode;
 		byte mBufferCount;
 		GraphicsQueue* mGraphicsQueue;
+		Array<SharedPtr<Texture>> mColorImages;
+		Array<SharedPtr<TextureView>> mColorImageViews;
+		Array <SharedPtr<Fence>> mFences;
 	};
 }

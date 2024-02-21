@@ -1,13 +1,23 @@
 #include "VulkanTexture.h"
 
 #include <Runtime/Vulkan/Texture/VulkanTextureUtils.h>
+#include <Runtime/Vulkan/Memory/VulkanMemory.h>
+
 namespace Hollow
 {
-	VulkanTexture::VulkanTexture(const TextureDesc& desc, VulkanDevice* pDevice) : Texture(desc)
+	VulkanTexture::VulkanTexture(const TextureDesc& desc, VkImage image, VulkanDevice* pDevice) : Texture(desc, pDevice), mVkImage(image),
+		mSwapChainImage(true), mVkAlignedSize(0), mVkOffset(0)
+	{
+	}
+
+	VulkanTexture::VulkanTexture(const TextureDesc& desc, VulkanDevice* pDevice) : Texture(desc, pDevice), mSwapChainImage(false),
+		mVkAlignedSize(0), mVkOffset(0)
 	{
 		mVkLogicalDevice = pDevice->GetVkLogicalDevice();
 
 		VkImageCreateInfo imageInfo = {};
+
+		VulkanMemory* pMemory = reinterpret_cast<VulkanMemory*>(desc.pMemory.get());
 
 		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		imageInfo.imageType = VulkanTextureUtils::GetVkImageType(desc.Type);
@@ -29,9 +39,14 @@ namespace Hollow
 		VkMemoryRequirements memRequirements;
 		vkGetImageMemoryRequirements(mVkLogicalDevice, mVkImage, &memRequirements);
 
-		DEV_LOG(HE_WARNING, "MemorySize: %zu", memRequirements.size);
-		DEV_LOG(HE_WARNING, "MemoryAlignment: %zu", memRequirements.alignment);
-		DEV_LOG(HE_WARNING, "MemoryTypeBits: %d", memRequirements.memoryTypeBits);
+		uint64 memoryOffset = pMemory->Allocate(memRequirements.size + memRequirements.alignment);
+		uint64 memoryAlignedOffset = memoryOffset + (memoryOffset == 0 ? 0 : (memRequirements.alignment - (memoryOffset % memRequirements.alignment)));
+
+		DEV_ASSERT(vkBindImageMemory(mVkLogicalDevice, mVkImage, pMemory->GetVkDeviceMemory(), memoryAlignedOffset) == VK_SUCCESS, "VulkanTexture",
+			"Failed to bind image memory!");
+
+		mVkAlignedSize = memoryAlignedOffset;
+		mVkOffset = memoryOffset;
 	}
 
 	void VulkanTexture::OnShutdown() noexcept

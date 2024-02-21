@@ -9,7 +9,8 @@ namespace Hollow
 	class RUNTIME_API Shader : public GraphicsDeviceObject
 	{
 	public:
-		Shader(const ShaderDesc& desc) : mSource(desc.Source), mType(desc.Type), 
+		Shader(const ShaderDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
+			mSource(desc.Source), mType(desc.Type), 
 			mEntryPoint(desc.EntryPoint), mShaderModel(desc.ShaderModel), mShaderName(desc.ShaderName)
 		{}
 		virtual ~Shader() override = default;

@@ -24,7 +24,7 @@ namespace Hollow
 	class RUNTIME_API CommandBuffer : public GraphicsDeviceObject
 	{
 	public:
-		CommandBuffer(const CommandBufferDesc& desc);
+		CommandBuffer(const CommandBufferDesc& desc, GraphicsDevice* pDevice);
 		virtual ~CommandBuffer() override = default;
 
 		const SharedPtr<GraphicsBuffer>& GetBoundVertexBuffer() const { return mBoundVertexBuffer; }

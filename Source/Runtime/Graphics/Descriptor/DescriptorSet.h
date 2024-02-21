@@ -9,7 +9,7 @@ namespace Hollow
 	class RUNTIME_API DescriptorSet : public GraphicsDeviceObject
 	{
 	public:
-		DescriptorSet(const DescriptorSetDesc& desc);
+		DescriptorSet(const DescriptorSetDesc& desc, GraphicsDevice* pDevice);
 		virtual ~DescriptorSet() override = default;
 
 	private:

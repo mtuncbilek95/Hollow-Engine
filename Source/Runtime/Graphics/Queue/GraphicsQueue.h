@@ -9,7 +9,8 @@ namespace Hollow
 	class RUNTIME_API GraphicsQueue : public GraphicsDeviceObject
 	{
 	public:
-		GraphicsQueue(const GraphicsQueueDesc& desc) : mQueueType(desc.Type) 
+		GraphicsQueue(const GraphicsQueueDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
+			mQueueType(desc.Type) 
 		{}
 		virtual ~GraphicsQueue() override = default;
 

@@ -8,6 +8,9 @@
 
 namespace Hollow
 {
+	class VulkanTexture;
+	class VulkanTextureView;
+
 	class RUNTIME_API VulkanDevice : public GraphicsDevice
 	{
 		struct QueueFamily
@@ -55,6 +58,9 @@ namespace Hollow
 
 		int32 CatchQueueFamilyIndex(const GraphicsQueueType type);
 		VkQueue CatchGraphicsQueue(const GraphicsQueueType type);
+
+		SharedPtr<VulkanTexture> CreateVkTextureForSwapchain(const TextureDesc& desc, VkImage image);
+		SharedPtr<VulkanTextureView> CreateVkTextureViewForSwapchain(const TextureViewDesc& desc, VkImageView imageView);
 
 		virtual void OnShutdown() override;
 	public:
