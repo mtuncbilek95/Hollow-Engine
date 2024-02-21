@@ -25,9 +25,6 @@ namespace Hollow
 		virtual void OnShutdown() noexcept = 0;
 
 	private:
-		void _SetOwnerDevice(GraphicsDevice* ownerDevice) noexcept { mOwnerDevice = ownerDevice; }
-
-	private:
 		GraphicsDevice* mOwnerDevice;
 	};
 }

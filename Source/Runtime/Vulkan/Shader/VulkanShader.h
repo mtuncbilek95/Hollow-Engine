@@ -10,6 +10,7 @@ namespace Hollow
 {
 	class RUNTIME_API VulkanShader : public Shader
 	{
+	public:
 		VulkanShader(const ShaderDesc& desc, VulkanDevice* pDevice);
 		~VulkanShader() override = default;
 

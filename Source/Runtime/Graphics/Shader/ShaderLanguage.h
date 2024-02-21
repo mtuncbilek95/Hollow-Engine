@@ -4,7 +4,9 @@
 
 namespace Hollow
 {
-	struct RUNTIME_API BufferBufferCopyDesc
+	enum class RUNTIME_API ShaderLanguage : byte
 	{
+		GLSL,
+		HLSL
 	};
 }

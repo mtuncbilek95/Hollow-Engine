@@ -9,8 +9,8 @@ namespace Hollow
 		Vertex,
 		Pixel,
 		Geometry,
-		Hull,
-		Domain,
+		TessellationControl,
+		TessellationEvaluation,
 		Compute
 	};
 }

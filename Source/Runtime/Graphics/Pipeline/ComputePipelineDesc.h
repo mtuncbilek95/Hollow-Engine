@@ -1,15 +1,14 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
+#include <Runtime/Graphics/Pipeline/PipelineLayout/PipelineLayoutDesc.h>
 #include <Runtime/Graphics/Shader/Shader.h>
 
 namespace Hollow
 {
-	class ResourceLayout;
-
 	struct RUNTIME_API ComputePipelineDesc
 	{
-		Array<SharedPtr<ResourceLayout>> ResourceLayouts;
+		Array<SharedPtr<PipelineLayoutDesc>> DescriptorLayout;
 		SharedPtr<Shader> ComputeShader;
 	};
 }
