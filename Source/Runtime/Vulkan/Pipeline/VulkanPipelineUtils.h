@@ -3,10 +3,17 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Shader/ShaderType.h>
 #include <Runtime/Graphics/Shader/ShaderStage.h>
-#include <Runtime/Graphics/Pipeline/InputLayout/PrimitiveMode.h>
-#include <Runtime/Graphics/Pipeline/Rasterizer/FillMode.h>
-#include <Runtime/Graphics/Pipeline/Rasterizer/CullMode.h>
-#include <Runtime/Graphics/Pipeline/Rasterizer/FaceOrdering.h>
+#include <Runtime/Graphics/Pipeline/InputLayout/MeshTopology.h>
+#include <Runtime/Graphics/Pipeline/RasterizerState/FaceCullMode.h>
+#include <Runtime/Graphics/Pipeline/RasterizerState/PolygonMode.h>
+#include <Runtime/Graphics/Pipeline/RasterizerState/FaceDirection.h>
+#include <Runtime/Graphics/Pipeline/BlendState/CompareOperation.h>
+#include <Runtime/Graphics/Pipeline/DepthStencilState/StencilOperation.h>
+#include <Runtime/Graphics/Pipeline/BlendState/BlendColorWriteMask.h>
+#include <Runtime/Graphics/Pipeline/BlendState/BlendOperation.h>
+#include <Runtime/Graphics/Pipeline/BlendState/BlendFactor.h>
+#include <Runtime/Graphics/Pipeline/InputLayout/InputBindingStepRate.h>
+#include <Runtime/Graphics/Pipeline/DepthStencilState/StencilFaceDesc.h>
 
 #include <vulkan.h>
 
@@ -36,63 +43,267 @@ namespace Hollow
 			}
 		}
 
-		static VkPrimitiveTopology GetVkPrimitiveMode(PrimitiveMode topology)
+		static VkPrimitiveTopology GetVkPrimitiveMode(MeshTopology topology)
 		{
 			switch (topology)
 			{
-			case PrimitiveMode::TriangleList:
+			case MeshTopology::TriangleList:
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-			case PrimitiveMode::TriangleStrip:
+			case MeshTopology::TriangleStrip:
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-			case PrimitiveMode::LineList:
+			case MeshTopology::LineList:
 				return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-			case PrimitiveMode::LineStrip:
+			case MeshTopology::LineStrip:
 				return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
-			case PrimitiveMode::PointList:
+			case MeshTopology::PointList:
 				return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 			default:
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 			}
 		}
 
-		static VkPolygonMode GetVkPolygonMode(FillMode mode)
+		static VkPolygonMode GetVkPolygonMode(PolygonMode mode)
 		{
 			switch (mode)
 			{
-			case FillMode::Solid:
+			case PolygonMode::Fill:
 				return VK_POLYGON_MODE_FILL;
-			case FillMode::Wireframe:
+			case PolygonMode::Line:
 				return VK_POLYGON_MODE_LINE;
+			case PolygonMode::Point:
+				return VK_POLYGON_MODE_POINT;
 			default:
 				return VK_POLYGON_MODE_FILL;
 			}
 		}
 
-		static VkCullModeFlagBits GetVkCullMode(CullMode mode)
+		static VkCullModeFlagBits GetVkCullMode(FaceCullMode mode)
 		{
 			switch (mode)
 			{
-			case CullMode::None:
+			case FaceCullMode::None:
 				return VK_CULL_MODE_NONE;
-			case CullMode::Front:
+			case FaceCullMode::Front:
 				return VK_CULL_MODE_FRONT_BIT;
-			case CullMode::Back:
+			case FaceCullMode::Back:
 				return VK_CULL_MODE_BACK_BIT;
 			default:
 				return VK_CULL_MODE_BACK_BIT;
 			}
 		}
 
-		static VkFrontFace GetVkFrontFace(FaceOrdering ordering)
+		static VkFrontFace GetVkFrontFace(FaceDirection ordering)
 		{
 			switch (ordering)
 			{
-			case FaceOrdering::Clockwise:
+			case FaceDirection::Clockwise:
 				return VK_FRONT_FACE_CLOCKWISE;
-			case FaceOrdering::CounterClockwise:
+			case FaceDirection::CounterClockwise:
 				return VK_FRONT_FACE_COUNTER_CLOCKWISE;
 			default:
 				return VK_FRONT_FACE_COUNTER_CLOCKWISE;
+			}
+		}
+
+		static VkCompareOp GetVkCompareOp(CompareOperation compare)
+		{
+			switch (compare)
+			{
+			case CompareOperation::Never:
+				return VK_COMPARE_OP_NEVER;
+			case CompareOperation::Less:
+				return VK_COMPARE_OP_LESS;
+			case CompareOperation::LessEqual:
+				return VK_COMPARE_OP_LESS_OR_EQUAL;
+			case CompareOperation::Equal:
+				return VK_COMPARE_OP_EQUAL;
+			case CompareOperation::NotEqual:
+				return VK_COMPARE_OP_NOT_EQUAL;
+			case CompareOperation::Greater:
+				return VK_COMPARE_OP_GREATER;
+			case CompareOperation::GreaterEqual:
+				return VK_COMPARE_OP_GREATER_OR_EQUAL;
+			case CompareOperation::Always:
+				return VK_COMPARE_OP_ALWAYS;
+			default:
+				return VK_COMPARE_OP_ALWAYS;
+			}
+		}
+
+		static VkStencilOp GetVkStencilOp(StencilOperation operation)
+		{
+			switch (operation)
+			{
+			case StencilOperation::Keep:
+				return VK_STENCIL_OP_KEEP;
+			case StencilOperation::Zero:
+				return VK_STENCIL_OP_ZERO;
+			case StencilOperation::Replace:
+				return VK_STENCIL_OP_REPLACE;
+			case StencilOperation::IncrementAndClamp:
+				return VK_STENCIL_OP_INCREMENT_AND_CLAMP;
+			case StencilOperation::DecrementAndClamp:
+				return VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+			case StencilOperation::Invert:
+				return VK_STENCIL_OP_INVERT;
+			case StencilOperation::IncrementAndWrap:
+				return VK_STENCIL_OP_INCREMENT_AND_WRAP;
+			case StencilOperation::DecrementAndWrap:
+				return VK_STENCIL_OP_DECREMENT_AND_WRAP;
+			default:
+				return VK_STENCIL_OP_MAX_ENUM;
+			}
+		}
+
+		static VkColorComponentFlags GetVkBlendMask(BlendColorWriteMask mask)
+		{
+			switch (mask)
+			{
+			case BlendColorWriteMask::R:
+				return VK_COLOR_COMPONENT_R_BIT;
+			case BlendColorWriteMask::G:
+				return VK_COLOR_COMPONENT_G_BIT;
+			case BlendColorWriteMask::B:
+				return VK_COLOR_COMPONENT_B_BIT;
+			case BlendColorWriteMask::A:
+				return VK_COLOR_COMPONENT_A_BIT;
+			case BlendColorWriteMask::All:
+				return VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+			default:
+				return VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM;
+			}
+		}
+
+		static VkBlendOp GetVkBlendOperation(BlendOperation operation) noexcept
+		{
+			switch (operation)
+			{
+			case BlendOperation::Add:
+				return VK_BLEND_OP_ADD;
+			case BlendOperation::Subtract:
+				return VK_BLEND_OP_SUBTRACT;
+			case BlendOperation::ReverseSubtract:
+				return VK_BLEND_OP_REVERSE_SUBTRACT;
+			case BlendOperation::Min:
+				return VK_BLEND_OP_MIN;
+			case BlendOperation::Max:
+				return VK_BLEND_OP_MAX;
+			default:
+				return VK_BLEND_OP_MAX_ENUM;
+			}
+		}
+
+		static VkVertexInputRate GetVkInputRate(InputBindingStepRate stepRate) noexcept
+		{
+			switch (stepRate)
+			{
+			case InputBindingStepRate::Vertex:
+				return VK_VERTEX_INPUT_RATE_VERTEX;
+			case InputBindingStepRate::Instance:
+				return VK_VERTEX_INPUT_RATE_INSTANCE;
+			default:
+				return VK_VERTEX_INPUT_RATE_MAX_ENUM;
+			}
+		}
+
+		static VkBlendFactor GetVkBlendFactor(const BlendFactor factor) noexcept
+		{
+			switch (factor)
+			{
+			case BlendFactor::Zero:
+				return VK_BLEND_FACTOR_ZERO;
+			case BlendFactor::One:
+				return VK_BLEND_FACTOR_ONE;
+			case BlendFactor::SrcColor:
+				return VK_BLEND_FACTOR_SRC_COLOR;
+			case BlendFactor::OneMinusSrcColor:
+				return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+			case BlendFactor::DstColor:
+				return VK_BLEND_FACTOR_DST_COLOR;
+			case BlendFactor::OneMinusDstColor:
+				return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+			case BlendFactor::SrcAlpha:
+				return VK_BLEND_FACTOR_SRC_ALPHA;
+			case BlendFactor::OneMinusSrcAlpha:
+				return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			case BlendFactor::DstAlpha:
+				return VK_BLEND_FACTOR_DST_ALPHA;
+			case BlendFactor::OneMinusDstAlpha:
+				return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+			case BlendFactor::ConstantColor:
+				return VK_BLEND_FACTOR_CONSTANT_COLOR;
+			case BlendFactor::OneMinusConstantColor:
+				return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
+			case BlendFactor::ConstantAlpha:
+				return VK_BLEND_FACTOR_CONSTANT_ALPHA;
+			case BlendFactor::OneMinusConstantAlpha:
+				return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
+			case BlendFactor::SrcAlphaSat:
+				return VK_BLEND_FACTOR_SRC_ALPHA_SATURATE;
+			case BlendFactor::Src1Color:
+				return VK_BLEND_FACTOR_SRC1_COLOR;
+			case BlendFactor::OneMinusSrc1Color:
+				return VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR;
+			case BlendFactor::Src1Alpha:
+				return VK_BLEND_FACTOR_SRC1_ALPHA;
+			case BlendFactor::OneMinusSrc1Alpha:
+				return VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA;
+			default:
+				return VK_BLEND_FACTOR_MAX_ENUM;
+			}
+		}
+
+		static VkStencilOpState GetVkStencilOpState(StencilFaceDesc state)
+		{
+			VkStencilOpState vkState;
+			vkState.failOp = GetVkStencilOp(state.FailOperation);
+			vkState.passOp = GetVkStencilOp(state.PassOperation);
+			vkState.depthFailOp = GetVkStencilOp(state.DepthFailOperation);
+			vkState.compareOp = GetVkCompareOp(state.CompareOperation);
+			vkState.compareMask = state.CompareMask;
+			vkState.writeMask = state.WriteMask;
+			vkState.reference = state.Reference;
+			return vkState;
+		}
+
+		static VkLogicOp GetVkLogicOp(LogicOperation operation)
+		{
+			switch (operation)
+			{
+			case LogicOperation::Clear:
+				return VK_LOGIC_OP_CLEAR;
+			case LogicOperation::And:
+				return VK_LOGIC_OP_AND;
+			case LogicOperation::AndReverse:
+				return VK_LOGIC_OP_AND_REVERSE;
+			case LogicOperation::Copy:
+				return VK_LOGIC_OP_COPY;
+			case LogicOperation::AndInverted:
+				return VK_LOGIC_OP_AND_INVERTED;
+			case LogicOperation::NoOp:
+				return VK_LOGIC_OP_NO_OP;
+			case LogicOperation::Xor:
+				return VK_LOGIC_OP_XOR;
+			case LogicOperation::Or:
+				return VK_LOGIC_OP_OR;
+			case LogicOperation::Nor:
+				return VK_LOGIC_OP_NOR;
+			case LogicOperation::Equal:
+				return VK_LOGIC_OP_EQUIVALENT;
+			case LogicOperation::Invert:
+				return VK_LOGIC_OP_INVERT;
+			case LogicOperation::OrReverse:
+				return VK_LOGIC_OP_OR_REVERSE;
+			case LogicOperation::CopyInverted:
+				return VK_LOGIC_OP_COPY_INVERTED;
+			case LogicOperation::OrInverted:
+				return VK_LOGIC_OP_OR_INVERTED;
+			case LogicOperation::NotAnd:
+				return VK_LOGIC_OP_NAND;
+			case LogicOperation::Set:
+				return VK_LOGIC_OP_SET;
+			default:
+				return VK_LOGIC_OP_MAX_ENUM;
 			}
 		}
 

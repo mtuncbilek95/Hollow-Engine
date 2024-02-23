@@ -4,12 +4,14 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API PrimitiveMode : byte
+	enum class RUNTIME_API MeshTopology : byte
 	{
 		PointList,
 		LineList,
 		LineStrip,
 		TriangleList,
-		TriangleStrip
+		PatchList,
+		TriangleStrip,
+		TriangleFan
 	};
 }

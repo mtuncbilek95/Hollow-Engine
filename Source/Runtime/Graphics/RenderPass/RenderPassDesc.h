@@ -10,6 +10,7 @@ namespace Hollow
 	{
 		Vector2u FramebufferSize;
 		Array<RenderPassAttachmentDesc> ColorAttachments;
+		bool HasDepthStencilAttachment;
 		RenderPassAttachmentDesc DepthStencilAttachment;
 		bool IsSwapchainTarget;
 	};

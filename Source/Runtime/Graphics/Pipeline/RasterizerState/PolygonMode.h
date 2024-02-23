@@ -1,12 +1,12 @@
 #pragma once
-
 #include <Runtime/Core/Core.h>
 
 namespace Hollow
 {
-	enum class RUNTIME_API DepthMask : byte
+	enum class RUNTIME_API PolygonMode : byte
 	{
-		Zero,
-		All
+		Fill,
+		Line,
+		Point
 	};
 }

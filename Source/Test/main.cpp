@@ -71,7 +71,7 @@ namespace Hollow
 
 		auto mDevice = mAdapter->GetDevice();
 
-		// Create Queue
+		// Create Swapchain Queue
 		GraphicsQueueDesc queueDesc;
 		queueDesc.Type = GraphicsQueueType::Graphics;
 		auto mQueue = mDevice->BorrowGraphicsQueue(queueDesc);

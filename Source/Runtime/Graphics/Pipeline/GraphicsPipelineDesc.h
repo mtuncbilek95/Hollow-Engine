@@ -2,8 +2,8 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Pipeline/InputLayout/InputLayoutDesc.h>
-#include <Runtime/Graphics/Pipeline/DepthStencil/DepthStencilDesc.h>
-#include <Runtime/Graphics/Pipeline/Rasterizer/RasterizerDesc.h>
+#include <Runtime/Graphics/Pipeline/DepthStencilState/DepthStencilStateDesc.h>
+#include <Runtime/Graphics/Pipeline/RasterizerState/RasterizerStateDesc.h>
 #include <Runtime/Graphics/Pipeline/BlendState/BlendStateDesc.h>
 #include <Runtime/Graphics/Pipeline/Multisample/MultisampleDesc.h>
 #include <Runtime/Graphics/Pipeline/PipelineLayout/PipelineLayoutDesc.h>
@@ -19,10 +19,9 @@ namespace Hollow
 	{
 		Array<SharedPtr<Shader>> Shaders;
 		InputLayoutDesc InputLayout;
-		RasterizerDesc Rasterizer;
-		DepthStencilDesc DepthStencil;
+		RasterizerStateDesc Rasterizer;
+		DepthStencilStateDesc DepthStencil;
 		BlendStateDesc Blend;
-		PrimitiveMode PrimitiveMode;
 		MultisampleDesc Multisample;
 		PipelineLayoutDesc DescriptorLayout;
 		SharedPtr<RenderPass> pRenderPass;

@@ -16,7 +16,7 @@ namespace Hollow
 			mBindPoint(PipelineBindPoint::Graphics), 
 			mGraphicsShaders(desc.Shaders), mInputLayout(desc.InputLayout),
 			mRasterizer(desc.Rasterizer), mDepthStencil(desc.DepthStencil), mBlend(desc.Blend), 
-			mPrimitiveMode(desc.PrimitiveMode), mMultisample(desc.Multisample), mDescriptorLayout(desc.DescriptorLayout),
+			mMultisample(desc.Multisample), mDescriptorLayout(desc.DescriptorLayout),
 			mRenderPass(desc.pRenderPass), mViewport(desc.Viewport), mScissor(desc.Scissor), mSubpass(desc.Subpass)
 		{}
 
@@ -32,12 +32,11 @@ namespace Hollow
 		const MultisampleDesc& GetMultisample() const { return mMultisample; }
 		const PipelineLayoutDesc& GetResourceLayout() const { return mDescriptorLayout; }
 		const SharedPtr<RenderPass>& GetRenderPass() const { return mRenderPass; }
-		const RasterizerDesc& GetRasterizer() const { return mRasterizer; }
-		const DepthStencilDesc& GetDepthStencil() const { return mDepthStencil; }
+		const RasterizerStateDesc& GetRasterizer() const { return mRasterizer; }
+		const DepthStencilStateDesc& GetDepthStencil() const { return mDepthStencil; }
 		const BlendStateDesc& GetBlend() const { return mBlend; }
 		const ViewportDesc& GetViewport() const { return mViewport; }
 		const ScissorDesc& GetScissor() const { return mScissor; }
-		PrimitiveMode GetPrimitiveMode() const { return mPrimitiveMode; }
 		uint32 GetSubpass() const { return mSubpass; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Pipeline; }
@@ -48,10 +47,9 @@ namespace Hollow
 		PipelineBindPoint mBindPoint;
 		Array<SharedPtr<Shader>> mGraphicsShaders;
 		InputLayoutDesc mInputLayout;
-		RasterizerDesc mRasterizer;
-		DepthStencilDesc mDepthStencil;
+		RasterizerStateDesc mRasterizer;
+		DepthStencilStateDesc mDepthStencil;
 		BlendStateDesc mBlend;
-		PrimitiveMode mPrimitiveMode;
 		MultisampleDesc mMultisample;
 		PipelineLayoutDesc mDescriptorLayout;
 		SharedPtr<RenderPass> mRenderPass;

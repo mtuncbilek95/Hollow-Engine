@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API ComparisonFunc : byte
+	enum class RUNTIME_API CompareOperation : byte
 	{
 		Never,
 		Less,
@@ -16,3 +16,4 @@ namespace Hollow
 		Always
 	};
 }
+
