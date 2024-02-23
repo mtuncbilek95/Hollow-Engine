@@ -6,7 +6,8 @@ namespace Hollow
 {
 	struct RUNTIME_API GraphicsBufferUpdateDesc
 	{
-		void* pData;
-		uint32 SizeInBytes;
+		byte* pData;
+		uint64 SizeInBytes;
+		uint64 OffsetInBytes;
 	};
 }

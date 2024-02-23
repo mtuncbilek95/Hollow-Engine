@@ -280,12 +280,42 @@ namespace Hollow
 		return  nullptr;
 	}
 
+	SharedPtr<Fence> VulkanDevice::CreateFenceCore(const FenceDesc& desc)
+	{
+		return nullptr;
+	}
+
+	SharedPtr<Semaphore> VulkanDevice::CreateSyncSemaphoreCore(const SemaphoreDesc& desc)
+	{
+		return nullptr;
+	}
+
 	SharedPtr<GraphicsQueue> VulkanDevice::BorrowGraphicsQueueCore(const GraphicsQueueDesc& desc)
 	{
 		return std::make_shared<VulkanQueue>(desc, this);
 	}
 
+	void VulkanDevice::WaitForFenceCore(Fence** ppFences, byte amount)
+	{
+	}
+
+	void VulkanDevice::WaitForIdleDeviceCore()
+	{
+	}
+
+	void VulkanDevice::WaitQueueDefaultCore(const GraphicsQueueType type)
+	{
+	}
+
 	void VulkanDevice::UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc)
+	{
+	}
+
+	void VulkanDevice::UpdateDescriptorSetCore(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc)
+	{
+	}
+
+	void VulkanDevice::SubmitCommandBuffersCore(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence)
 	{
 	}
 }

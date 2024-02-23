@@ -26,11 +26,12 @@
 #include <Runtime/Graphics/Descriptor/DescriptorSetDesc.h>
 #include <Runtime/Graphics/Descriptor/DescriptorPoolDesc.h>
 #include <Runtime/Graphics/Descriptor/DescriptorLayoutDesc.h>
-//#include <Runtime/Graphics/Descriptor/DescriptorSetUpdateDesc.h>
+#include <Runtime/Graphics/Descriptor/DescriptorSetUpdateDesc.h>
 
 #include <Runtime/Graphics/RenderPass/RenderPassDesc.h>
 
-//#include <Runtime/Graphics/Fence/FenceDesc.h>
+#include <Runtime/Graphics/Fence/FenceDesc.h>
+#include <Runtime/Graphics/Semaphore/SemaphoreDesc.h>
 #include <Runtime/Graphics/Queue/GraphicsQueueDesc.h>
 #include <Runtime/Graphics/Queue/GraphicsQueueType.h>
 
@@ -52,7 +53,8 @@ namespace Hollow
 	class CommandBuffer;
 	class CommandPool;
 	class RenderPass;
-	class GraphicsFence;
+	class Fence;
+	class Semaphore;
 	class GraphicsQueue;
 
 	/**
@@ -84,15 +86,16 @@ namespace Hollow
 		SharedPtr<DescriptorSet> CreateDescriptorSet(const DescriptorSetDesc& desc);
 		SharedPtr<DescriptorPool> CreateDescriptorPool(const DescriptorPoolDesc& desc);
 		SharedPtr<DescriptorLayout> CreateDescriptorLayout(const DescriptorLayoutDesc& desc);
-		//SharedPtr<GraphicsFence> CreateFence(const GraphicsFenceDesc& desc);
+		SharedPtr<Fence> CreateFence(const FenceDesc& desc);
+		SharedPtr<Semaphore> CreateSyncSemaphore(const SemaphoreDesc& desc);
 		SharedPtr<GraphicsQueue> BorrowGraphicsQueue(const GraphicsQueueDesc& desc);
 
-		//void WaitForFence(Fence** ppFences, byte amount);
-		//void WaitForIdleDevice();
-		//void WaitQueueDefault(const GraphicsQueueType type);
+		void WaitForFence(Fence** ppFences, byte amount);
+		void WaitForIdleDevice();
+		void WaitQueueDefault(const GraphicsQueueType type);
 		void UpdateCPUBuffer(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc);
-		//void UpdateDescriptorSet(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc);
-		//void SubmitCommandBuffers(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence);
+		void UpdateDescriptorSet(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc);
+		void SubmitCommandBuffers(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence);
 
 		const SharedPtr<Swapchain>& GetSwapchain() const { return mSwapchain; }
 		const SharedPtr<GraphicsAdapter>& GetGraphicsAdapter() const { return mGraphicsAdapter; }
@@ -117,15 +120,16 @@ namespace Hollow
 		virtual SharedPtr<DescriptorSet> CreateDescriptorSetCore(const DescriptorSetDesc& desc) = 0;
 		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolCore(const DescriptorPoolDesc& desc) = 0;
 		virtual SharedPtr<DescriptorLayout> CreateDescriptorLayoutCore(const DescriptorLayoutDesc& desc) = 0;
-		//virtual SharedPtr<GraphicsFence> CreateFenceCore(const GraphicsFenceDesc& desc) = 0;
+		virtual SharedPtr<Fence> CreateFenceCore(const FenceDesc& desc) = 0;
+		virtual SharedPtr<Semaphore> CreateSyncSemaphoreCore(const SemaphoreDesc& desc) = 0;
 		virtual SharedPtr<GraphicsQueue> BorrowGraphicsQueueCore(const GraphicsQueueDesc& desc) = 0;
 
-		//virtual void WaitForFenceCore(Fence** ppFences, byte amount) = 0;
-		//virtual void WaitForIdleDeviceCore() = 0;
-		//virtual void WaitQueueDefaultCore(const GraphicsQueueType type) = 0;
+		virtual void WaitForFenceCore(Fence** ppFences, byte amount) = 0;
+		virtual void WaitForIdleDeviceCore() = 0;
+		virtual void WaitQueueDefaultCore(const GraphicsQueueType type) = 0;
 		virtual void UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc) = 0;
-		//virtual void UpdateDescriptorSetCore(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc) = 0;
-		//virtual void SubmitCommandBuffersCore(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence) = 0;
+		virtual void UpdateDescriptorSetCore(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc) = 0;
+		virtual void SubmitCommandBuffersCore(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence) = 0;
 
 	protected:
 		Array<SharedPtr<GraphicsDeviceObject>> mDeviceObjects;

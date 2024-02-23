@@ -11,9 +11,7 @@
 
 namespace Hollow
 {
-	void RenderPassTest();
 	void VertexTriangleTest();
-	void PostProcessTest();
 
 	struct TestVertex
 	{
@@ -35,13 +33,13 @@ namespace Hollow
 
 int main()
 {
-	Hollow::RenderPassTest();
+	Hollow::VertexTriangleTest();
 	return 0;
 }
 
 namespace Hollow
 {
-	void RenderPassTest()
+	void VertexTriangleTest()
 	{
 		// Create Window
 		WindowDesc windowDesc;
@@ -88,13 +86,5 @@ namespace Hollow
 		{
 			mGameWindow->PollMessages();
 		}
-	}
-
-	void VertexTriangleTest()
-	{
-	}
-
-	void PostProcessTest()
-	{
 	}
 }

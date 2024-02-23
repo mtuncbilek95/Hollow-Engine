@@ -83,15 +83,16 @@ namespace Hollow
 		virtual SharedPtr<DescriptorSet> CreateDescriptorSetCore(const DescriptorSetDesc& desc) override;
 		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolCore(const DescriptorPoolDesc& desc) override;
 		virtual SharedPtr<DescriptorLayout> CreateDescriptorLayoutCore(const DescriptorLayoutDesc& desc) override;
-		//virtual SharedPtr<Fence> CreateFenceCore(const FenceDesc& desc) override;
+		virtual SharedPtr<Fence> CreateFenceCore(const FenceDesc& desc) override;
+		virtual SharedPtr<Semaphore> CreateSyncSemaphoreCore(const SemaphoreDesc& desc) override;
 		virtual SharedPtr<GraphicsQueue> BorrowGraphicsQueueCore(const GraphicsQueueDesc& desc) override;
 
-		//virtual void WaitForFenceCore(Fence** ppFences, byte amount) override;
-		//virtual void WaitForIdleDeviceCore() override;
-		//virtual void WaitQueueDefaultCore(const GraphicsQueueType type) override;
+		virtual void WaitForFenceCore(Fence** ppFences, byte amount) override;
+		virtual void WaitForIdleDeviceCore() override;
+		virtual void WaitQueueDefaultCore(const GraphicsQueueType type) override;
 		virtual void UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc) override;
-		//virtual void UpdateDescriptorSetCore(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc) override;
-		//virtual void SubmitCommandBuffersCore(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence) override;
+		virtual void UpdateDescriptorSetCore(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc) override;
+		virtual void SubmitCommandBuffersCore(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence) override;
 
 	private:
 		QueueFamily mGraphicsQueueFamily;

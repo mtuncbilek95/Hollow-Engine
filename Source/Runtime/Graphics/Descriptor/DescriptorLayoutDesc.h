@@ -2,14 +2,12 @@
 
 #include <Runtime/Core/Core.h>
 
-#include <Runtime/Graphics/Descriptor/DescriptorPool.h>
-#include <Runtime/Graphics/Descriptor/DescriptorLayout.h>
+#include <Runtime/Graphics/Descriptor/DescriptorLayoutEntry.h>
 
 namespace Hollow
 {
 	struct RUNTIME_API DescriptorLayoutDesc
 	{
-		SharedPtr<DescriptorLayout> pLayout;
-		SharedPtr<DescriptorPool> pPool;
+		Array<DescriptorLayoutEntry> Entries;
 	};
 }

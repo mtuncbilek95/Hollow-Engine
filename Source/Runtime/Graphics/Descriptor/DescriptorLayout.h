@@ -9,10 +9,16 @@ namespace Hollow
 	class RUNTIME_API DescriptorLayout : public GraphicsDeviceObject
 	{
 	public:
-		DescriptorLayout(const DescriptorLayoutDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice) {}
+		DescriptorLayout(const DescriptorLayoutDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice) , mEntries(desc.Entries) {}
 		virtual ~DescriptorLayout() override = default;
 
-	private:
+		const Array<DescriptorLayoutEntry>& GetEntries() const { return mEntries; }
 
+		FORCEINLINE virtual GraphicsDeviceObjectType GetDeviceObjectType() const noexcept { return GraphicsDeviceObjectType::DescriptorLayout; }
+
+		virtual void OnShutdown() noexcept override = 0;
+
+	private:
+		Array<DescriptorLayoutEntry> mEntries;
 	};
 }
