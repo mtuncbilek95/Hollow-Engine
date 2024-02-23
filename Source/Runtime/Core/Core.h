@@ -17,6 +17,10 @@ typedef signed long long int64;
 #define NODISCARD [[nodiscard]]
 #endif
 
+#define GENERATE_ENUM_FLAG(EnumType, primitiveType) \
+FORCEINLINE static EnumType operator | (EnumType a, EnumType b) { return static_cast<EnumType>(static_cast<primitiveType>(a) | static_cast<primitiveType>(b)); } \
+FORCEINLINE static bool operator & (EnumType a, EnumType b) { return (static_cast<primitiveType>(a) & static_cast<primitiveType>(b)) != 0; } \
+
 namespace Hollow
 {
 	enum class LogLevel

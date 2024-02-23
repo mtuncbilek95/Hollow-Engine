@@ -5,6 +5,10 @@
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
 #include <Runtime/Vulkan/Texture/VulkanTexture.h>
 #include <Runtime/Vulkan/Texture/VulkanTextureView.h>
+#include <Runtime/Vulkan/Shader/VulkanShader.h>
+#include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
+#include <Runtime/Vulkan/Memory/VulkanMemory.h>
+#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
 
 namespace Hollow
 {
@@ -212,7 +216,7 @@ namespace Hollow
 
 	SharedPtr<Shader> VulkanDevice::CreateShaderCore(const ShaderDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanShader>(desc, this);
 	}
 
 	SharedPtr<GraphicsBuffer> VulkanDevice::CreateGraphicsBufferCore(const GraphicsBufferDesc& desc)
@@ -237,22 +241,22 @@ namespace Hollow
 
 	SharedPtr<Pipeline> VulkanDevice::CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanPipeline>(desc, this);
 	}
 
 	SharedPtr<Pipeline> VulkanDevice::CreateComputePipelineCore(const ComputePipelineDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanPipeline>(desc, this);
 	}
 
 	SharedPtr<GraphicsMemory> VulkanDevice::CreateGraphicsMemoryCore(const GraphicsMemoryDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanMemory>(desc, this);
 	}
 
 	SharedPtr<RenderPass> VulkanDevice::CreateRenderPassCore(const RenderPassDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanRenderPass>(desc, this);
 	}
 
 	SharedPtr<CommandBuffer> VulkanDevice::CreateCommandBufferCore(const CommandBufferDesc& desc)

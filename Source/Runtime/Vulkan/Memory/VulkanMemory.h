@@ -16,6 +16,8 @@ namespace Hollow
 
 		const VkDeviceMemory& GetVkDeviceMemory() const noexcept { return mVkDeviceMemory; }
 
+		void OnShutdown() noexcept override;
+
 	private:
 		VkDeviceMemory mVkDeviceMemory;
 		VkDevice mVkLogicalDevice;

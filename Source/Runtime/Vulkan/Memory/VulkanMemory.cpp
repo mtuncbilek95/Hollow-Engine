@@ -17,4 +17,13 @@ namespace Hollow
 		DEV_ASSERT(vkAllocateMemory(mVkLogicalDevice, &allocInfo, nullptr, &mVkDeviceMemory) == VK_SUCCESS, 
 			"VulkanMemory", "Failed to allocate memory.");
 	}
+
+	void VulkanMemory::OnShutdown() noexcept
+	{
+		if(mVkDeviceMemory != VK_NULL_HANDLE)
+		{
+			vkFreeMemory(mVkLogicalDevice, mVkDeviceMemory, nullptr);
+			mVkDeviceMemory = VK_NULL_HANDLE;
+		}
+	}
 }

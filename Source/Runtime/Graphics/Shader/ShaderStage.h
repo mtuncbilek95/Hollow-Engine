@@ -8,9 +8,11 @@ namespace Hollow
 	{
 		Vertex,
 		Pixel,
+		TesellationEval,
+		TesellationControl,
 		Geometry,
-		Hull,
-		Domain,
 		Compute
 	};
+
+	GENERATE_ENUM_FLAG(ShaderStage, byte);
 }

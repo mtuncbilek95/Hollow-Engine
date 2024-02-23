@@ -14,7 +14,7 @@ namespace Hollow
 		VulkanDescriptorLayout(const DescriptorLayoutDesc& desc, VulkanDevice* device);
 		~VulkanDescriptorLayout() override = default;
 
-		VkDescriptorSetLayout GetVkDescriptorLayout() const { return mVkDescriptorLayout; }
+		const VkDescriptorSetLayout& GetVkDescriptorLayout() const { return mVkDescriptorLayout; }
 
 		void OnShutdown() noexcept override;
 

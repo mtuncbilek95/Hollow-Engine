@@ -20,6 +20,7 @@ namespace Hollow
 
 	private:
 		VkDescriptorSet mVkDescriptorSet;
+		VkDescriptorPool mVkDescriptorPool;
 		VkDevice mVkLogicalDevice;
 	};
 }
