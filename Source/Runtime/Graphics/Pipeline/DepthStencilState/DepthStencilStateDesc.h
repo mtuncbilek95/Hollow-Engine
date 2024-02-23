@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Runtime/Graphics/Pipeline/BlendState/CompareOperation.h>
+#include <Runtime/Graphics/Common/CompareOperation.h>
 #include <Runtime/Graphics/Pipeline/DepthStencilState/StencilFaceDesc.h>
 
 namespace Hollow

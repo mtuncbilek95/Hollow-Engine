@@ -40,7 +40,7 @@ namespace Hollow
 		mBoundVertexBuffer = vertexBuffer;
 	}
 
-	void CommandBuffer::BindIndexBuffer(const SharedPtr<GraphicsBuffer>& indexBuffer, const IndexType type)
+	void CommandBuffer::BindIndexBuffer(const SharedPtr<GraphicsBuffer>& indexBuffer, const IndexSizeType type)
 	{
 		BindIndexBufferCore(indexBuffer, type);
 		mBoundIndexBuffer = indexBuffer;

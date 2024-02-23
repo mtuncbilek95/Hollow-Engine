@@ -4,9 +4,9 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API IndexType : byte
+	enum class RUNTIME_API DescriptorMemoryType : byte
 	{
-		Index16,
-		Index32
+		CPU,
+		GPU
 	};
 }

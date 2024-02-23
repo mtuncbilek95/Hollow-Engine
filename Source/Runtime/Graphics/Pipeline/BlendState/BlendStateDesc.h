@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
-#include <Runtime/Graphics/Pipeline/BlendState/LogicOperation.h>
+#include <Runtime/Graphics/Common/LogicOperation.h>
 #include <Runtime/Graphics/Pipeline/BlendState/BlendStateAttachment.h>
 
 

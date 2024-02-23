@@ -4,10 +4,9 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API BufferCPUAccess : byte
+	enum class RUNTIME_API IndexSizeType : byte
 	{
-		None,
-		Read,
-		Write
+		Index16,
+		Index32
 	};
 }

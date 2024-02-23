@@ -31,7 +31,7 @@ namespace Hollow
 			viewDesc.ArraySize = 0;
 			viewDesc.MipLevels = 0;
 			viewDesc.pTexture = image;
-			viewDesc.Aspects = { TextureAspect::TextureColor };
+			viewDesc.Aspects = { TextureAspectFlags::ColorAspect };
 
 			mColorImageViews.push_back(GetOwnerDevice()->CreateTextureView(viewDesc));
 		}

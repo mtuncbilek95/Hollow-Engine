@@ -3,7 +3,7 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/RenderPass/RenderPassLoadOperation.h>
 #include <Runtime/Graphics/RenderPass/RenderPassStoreOperation.h>
-#include <Runtime/Graphics/Texture/TextureMemoryLayout.h>
+#include <Runtime/Graphics/Texture/TextureLayout.h>
 
 #include <vulkan.h>
 
@@ -12,7 +12,7 @@ namespace Hollow
 	class RUNTIME_API VulkanRenderPassUtils
 	{
 	public:
-		static VkAttachmentLoadOp GetVkLoadOp(RenderPassLoadOperation operation)
+		static VkAttachmentLoadOp GetVkLoadOperation(RenderPassLoadOperation operation)
 		{
 			switch (operation)
 			{
@@ -29,7 +29,7 @@ namespace Hollow
 			}
 		}
 
-		static VkAttachmentStoreOp GetVkStoreOp(RenderPassStoreOperation operation)
+		static VkAttachmentStoreOp GetVkStoreOperation(RenderPassStoreOperation operation)
 		{
 			switch (operation)
 			{
@@ -44,27 +44,27 @@ namespace Hollow
 			}
 		}
 
-		static VkImageLayout GetVkTextureLayout(const TextureMemoryLayout memoryLayout) noexcept
+		static VkImageLayout GetVkTextureLayout(const TextureLayout memoryLayout) noexcept
 		{
 			switch (memoryLayout)
 			{
-			case TextureMemoryLayout::Unknown:
+			case TextureLayout::Unknown:
 				return VK_IMAGE_LAYOUT_UNDEFINED;
-			case TextureMemoryLayout::General:
+			case TextureLayout::General:
 				return VK_IMAGE_LAYOUT_GENERAL;
-			case TextureMemoryLayout::ColorAttachment:
+			case TextureLayout::ColorAttachment:
 				return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			case TextureMemoryLayout::DepthStencilAttachment:
+			case TextureLayout::DepthStencilAttachment:
 				return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
-			case TextureMemoryLayout::ShaderReadOnly:
+			case TextureLayout::ShaderReadOnly:
 				return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			case TextureMemoryLayout::TransferSource:
+			case TextureLayout::TransferSource:
 				return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-			case TextureMemoryLayout::TransferDestination:
+			case TextureLayout::TransferDestination:
 				return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-			case TextureMemoryLayout::DepthAttachment:
+			case TextureLayout::DepthAttachment:
 				return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-			case TextureMemoryLayout::Present:
+			case TextureLayout::Present:
 				return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 			default:
 				return VK_IMAGE_LAYOUT_UNDEFINED;

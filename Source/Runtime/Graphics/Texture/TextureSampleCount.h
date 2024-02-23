@@ -1,8 +1,10 @@
 #pragma once
 
+#include <Runtime/Core/Core.h>
+
 namespace Hollow
 {
-	enum class RUNTIME_API TextureSample : byte
+	enum class RUNTIME_API TextureSampleCount
 	{
 		Sample1,
 		Sample2,

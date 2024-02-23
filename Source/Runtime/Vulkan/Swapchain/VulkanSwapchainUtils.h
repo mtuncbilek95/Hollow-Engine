@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
-#include <Runtime/Graphics/Swapchain/PresentMode.h>
+#include <Runtime/Graphics/Common/PresentMode.h>
 
 #include <vulkan.h>
 

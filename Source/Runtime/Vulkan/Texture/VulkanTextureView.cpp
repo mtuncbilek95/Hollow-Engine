@@ -21,8 +21,8 @@ namespace Hollow
 		VkImageViewCreateInfo imageViewCreateInfo = {};
 		imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		imageViewCreateInfo.image = attachTexture->GetVkImage();
-		imageViewCreateInfo.viewType = VulkanTextureUtils::GetVkImageViewType(desc.pTexture->GetType());
-		imageViewCreateInfo.format = VulkanTextureUtils::GetVkFormat(desc.pTexture->GetFormat());
+		imageViewCreateInfo.viewType = VulkanTextureUtils::GetTextureViewType(desc.pTexture->GetType());
+		imageViewCreateInfo.format = VulkanTextureUtils::GetVkTextureFormat(desc.pTexture->GetFormat());
 		imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
 		imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
 		imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;

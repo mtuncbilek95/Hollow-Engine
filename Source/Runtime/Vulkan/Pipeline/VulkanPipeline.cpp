@@ -5,6 +5,7 @@
 #include <Runtime/Graphics/Texture/TextureUtils.h>
 #include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
 #include <Runtime/Vulkan/Texture/VulkanTextureUtils.h>
+#include <Runtime/Vulkan/Common/VulkanCommonUtils.h>
 
 namespace Hollow
 {
@@ -21,7 +22,7 @@ namespace Hollow
 		{
 			VkVertexInputBindingDescription bindingDesc = {};
 			bindingDesc.binding = bindIndex;
-			bindingDesc.inputRate = VulkanPipelineUtils::GetVkInputRate(desc.InputLayout.Bindings[bindIndex].StepRate);
+			bindingDesc.inputRate = VulkanPipelineUtils::GetVkInputBindingStepRate(desc.InputLayout.Bindings[bindIndex].StepRate);
 
 			uint32 inputOffset = 0;
 
@@ -29,7 +30,7 @@ namespace Hollow
 			{
 				VkVertexInputAttributeDescription attributeDesc = {};
 				attributeDesc.binding = bindIndex;
-				attributeDesc.format = VulkanTextureUtils::GetVkFormat(desc.InputLayout.Bindings[bindIndex].Elements[attribIndex].Format);
+				attributeDesc.format = VulkanTextureUtils::GetVkTextureFormat(desc.InputLayout.Bindings[bindIndex].Elements[attribIndex].Format);
 				attributeDesc.location = attribIndex;
 				attributeDesc.offset = inputOffset;
 
@@ -69,7 +70,7 @@ namespace Hollow
 		// Input assembly state
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = {};
 		inputAssemblyState.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		inputAssemblyState.topology = VulkanPipelineUtils::GetVkPrimitiveMode(desc.InputLayout.Topology);
+		inputAssemblyState.topology = VulkanPipelineUtils::GetVkMeshTopology(desc.InputLayout.Topology);
 		inputAssemblyState.primitiveRestartEnable = VK_FALSE;
 		inputAssemblyState.pNext = nullptr;
 
@@ -109,7 +110,7 @@ namespace Hollow
 		rasterizationState.rasterizerDiscardEnable = VK_FALSE;
 		rasterizationState.polygonMode = VulkanPipelineUtils::GetVkPolygonMode(desc.Rasterizer.FillMode);
 		rasterizationState.lineWidth = 1.0f;
-		rasterizationState.cullMode = VulkanPipelineUtils::GetVkCullMode(desc.Rasterizer.CullFlags);
+		rasterizationState.cullMode = VulkanPipelineUtils::GetVkFaceCullMode(desc.Rasterizer.CullFlags);
 		rasterizationState.frontFace = desc.Rasterizer.bFrontCounterClockwise ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE;
 		rasterizationState.depthBiasEnable = desc.Rasterizer.bDepthBiasEnabled ? VK_TRUE : VK_FALSE;
 		rasterizationState.depthBiasConstantFactor = desc.Rasterizer.DepthBiasFactor;
@@ -131,11 +132,11 @@ namespace Hollow
 		depthStencilState.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 		depthStencilState.depthTestEnable = desc.DepthStencil.bDepthTestEnabled ? VK_TRUE : VK_FALSE;
 		depthStencilState.depthWriteEnable = desc.DepthStencil.bDepthWriteEnabled ? VK_TRUE : VK_FALSE;
-		depthStencilState.depthCompareOp = VulkanPipelineUtils::GetVkCompareOp(desc.DepthStencil.DepthTestOperation);
+		depthStencilState.depthCompareOp = VulkanCommonUtils::GetVkCompareOperation(desc.DepthStencil.DepthTestOperation);
 		depthStencilState.depthBoundsTestEnable = VK_FALSE;
 		depthStencilState.stencilTestEnable = desc.DepthStencil.bStencilTestEnabled ? VK_TRUE : VK_FALSE;
-		depthStencilState.front = VulkanPipelineUtils::GetVkStencilOpState(desc.DepthStencil.StencilFrontFace);
-		depthStencilState.back = VulkanPipelineUtils::GetVkStencilOpState(desc.DepthStencil.StencilBackFace);
+		depthStencilState.front = VulkanPipelineUtils::GetVkStencilFaceDesc(desc.DepthStencil.StencilFrontFace);
+		depthStencilState.back = VulkanPipelineUtils::GetVkStencilFaceDesc(desc.DepthStencil.StencilBackFace);
 		depthStencilState.maxDepthBounds = 1.0f;
 		depthStencilState.minDepthBounds = 0.0f;
 		depthStencilState.pNext = nullptr;
@@ -145,7 +146,7 @@ namespace Hollow
 		for (auto& state : desc.Blend.Attachments)
 		{
 			VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-			colorBlendAttachment.colorWriteMask = VulkanPipelineUtils::GetVkBlendMask(state.WriteMask);
+			colorBlendAttachment.colorWriteMask = VulkanPipelineUtils::GetVkBlendColorWriteMask(state.WriteMask);
 			colorBlendAttachment.blendEnable = state.bEnabled ? VK_TRUE : VK_FALSE;
 			colorBlendAttachment.srcColorBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(state.SourceColorFactor);
 			colorBlendAttachment.dstColorBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(state.DestinationColorFactor);
@@ -161,7 +162,7 @@ namespace Hollow
 		VkPipelineColorBlendStateCreateInfo colorBlendState = {};
 		colorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		colorBlendState.logicOpEnable = desc.Blend.bLogicOperationEnabled ? VK_TRUE : VK_FALSE;
-		colorBlendState.logicOp = VulkanPipelineUtils::GetVkLogicOp(desc.Blend.LogicOperation);
+		colorBlendState.logicOp = VulkanCommonUtils::GetVkLogicOperation(desc.Blend.LogicOperation);
 		colorBlendState.attachmentCount = static_cast<uint32>(colorBlendAttachments.size());
 		colorBlendState.pAttachments = colorBlendAttachments.data();
 		colorBlendState.blendConstants[0] = 0.0f;

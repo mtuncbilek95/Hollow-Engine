@@ -16,12 +16,12 @@ namespace Hollow
 		for (uint32 attachmentIndex = 0; attachmentIndex < desc.ColorAttachments.size(); attachmentIndex++)
 		{
 			VkAttachmentDescription colorAttachment = {};
-			colorAttachment.format = VulkanTextureUtils::GetVkFormat(desc.ColorAttachments[attachmentIndex].Format);
+			colorAttachment.format = VulkanTextureUtils::GetVkTextureFormat(desc.ColorAttachments[attachmentIndex].Format);
 			colorAttachment.samples = VulkanTextureUtils::GetVkSampleCount(desc.ColorAttachments[attachmentIndex].SampleCount);
-			colorAttachment.loadOp = VulkanRenderPassUtils::GetVkLoadOp(desc.ColorAttachments[attachmentIndex].ColorLoadOp);
-			colorAttachment.storeOp = VulkanRenderPassUtils::GetVkStoreOp(desc.ColorAttachments[attachmentIndex].ColorStoreOp);
-			colorAttachment.stencilLoadOp = VulkanRenderPassUtils::GetVkLoadOp(desc.ColorAttachments[attachmentIndex].DepthLoadOp);
-			colorAttachment.stencilStoreOp = VulkanRenderPassUtils::GetVkStoreOp(desc.ColorAttachments[attachmentIndex].DepthStoreOp);
+			colorAttachment.loadOp = VulkanRenderPassUtils::GetVkLoadOperation(desc.ColorAttachments[attachmentIndex].ColorLoadOp);
+			colorAttachment.storeOp = VulkanRenderPassUtils::GetVkStoreOperation(desc.ColorAttachments[attachmentIndex].ColorStoreOp);
+			colorAttachment.stencilLoadOp = VulkanRenderPassUtils::GetVkLoadOperation(desc.ColorAttachments[attachmentIndex].DepthLoadOp);
+			colorAttachment.stencilStoreOp = VulkanRenderPassUtils::GetVkStoreOperation(desc.ColorAttachments[attachmentIndex].DepthStoreOp);
 			colorAttachment.initialLayout = VulkanRenderPassUtils::GetVkTextureLayout(desc.ColorAttachments[attachmentIndex].InputLayout);
 			colorAttachment.finalLayout = VulkanRenderPassUtils::GetVkTextureLayout(desc.ColorAttachments[attachmentIndex].OutputLayout);
 			colorAttachment.flags = VkAttachmentDescriptionFlags();
@@ -33,12 +33,12 @@ namespace Hollow
 		if (desc.HasDepthStencilAttachment)
 		{
 			VkAttachmentDescription depthAttachment = {};
-			depthAttachment.format = VulkanTextureUtils::GetVkFormat(desc.DepthStencilAttachment.Format);
+			depthAttachment.format = VulkanTextureUtils::GetVkTextureFormat(desc.DepthStencilAttachment.Format);
 			depthAttachment.samples = VulkanTextureUtils::GetVkSampleCount(desc.DepthStencilAttachment.SampleCount);
-			depthAttachment.loadOp = VulkanRenderPassUtils::GetVkLoadOp(desc.DepthStencilAttachment.DepthLoadOp);
-			depthAttachment.storeOp = VulkanRenderPassUtils::GetVkStoreOp(desc.DepthStencilAttachment.DepthStoreOp);
-			depthAttachment.stencilLoadOp = VulkanRenderPassUtils::GetVkLoadOp(desc.DepthStencilAttachment.DepthLoadOp);
-			depthAttachment.stencilStoreOp = VulkanRenderPassUtils::GetVkStoreOp(desc.DepthStencilAttachment.DepthStoreOp);
+			depthAttachment.loadOp = VulkanRenderPassUtils::GetVkLoadOperation(desc.DepthStencilAttachment.DepthLoadOp);
+			depthAttachment.storeOp = VulkanRenderPassUtils::GetVkStoreOperation(desc.DepthStencilAttachment.DepthStoreOp);
+			depthAttachment.stencilLoadOp = VulkanRenderPassUtils::GetVkLoadOperation(desc.DepthStencilAttachment.DepthLoadOp);
+			depthAttachment.stencilStoreOp = VulkanRenderPassUtils::GetVkStoreOperation(desc.DepthStencilAttachment.DepthStoreOp);
 			depthAttachment.initialLayout = VulkanRenderPassUtils::GetVkTextureLayout(desc.DepthStencilAttachment.InputLayout);
 			depthAttachment.finalLayout = VulkanRenderPassUtils::GetVkTextureLayout(desc.DepthStencilAttachment.OutputLayout);
 			depthAttachment.flags = VkAttachmentDescriptionFlags();

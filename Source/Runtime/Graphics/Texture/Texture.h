@@ -22,7 +22,7 @@ namespace Hollow
 		TextureFormat GetFormat() const { return mFormat; }
 		const Array<TextureUsage>& GetUsage() const { return mUsages; }
 		TextureType GetType() const { return mType; }
-		TextureSample GetSampleCount() const { return mSampleCount; }
+		TextureSampleCount GetSampleCount() const { return mSampleCount; }
 
 		const SharedPtr<GraphicsMemory>& GetMemory() const { return mMemory; }
 
@@ -36,7 +36,7 @@ namespace Hollow
 		byte mMipLevels;
 		TextureFormat mFormat;
 		Array<TextureUsage> mUsages;
-		TextureSample mSampleCount;
+		TextureSampleCount mSampleCount;
 		TextureType mType;
 		
 		SharedPtr<GraphicsMemory> mMemory;

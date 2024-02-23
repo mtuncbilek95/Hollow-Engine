@@ -10,15 +10,13 @@ namespace Hollow
 	public:
 		RenderPass(const RenderPassDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice), 
 			mFramebufferSize(desc.FramebufferSize), 
-			mColorAttachments(desc.ColorAttachments), mDepthStencilAttachment(desc.DepthStencilAttachment), 
-			mIsSwapchainTarget(desc.IsSwapchainTarget) 
+			mColorAttachments(desc.ColorAttachments), mDepthStencilAttachment(desc.DepthStencilAttachment)
 		{}
 		virtual ~RenderPass() override = default;
 
 		const Vector2u& GetFramebufferSize() const { return mFramebufferSize; }
 		const Array<RenderPassAttachmentDesc>& GetColorAttachments() const { return mColorAttachments; }
 		const RenderPassAttachmentDesc& GetDepthStencilAttachment() const { return mDepthStencilAttachment; }
-		bool IsSwapchainTarget() const { return mIsSwapchainTarget; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::RenderPass; }
 
@@ -28,6 +26,5 @@ namespace Hollow
 		Vector2u mFramebufferSize;
 		Array<RenderPassAttachmentDesc> mColorAttachments;
 		RenderPassAttachmentDesc mDepthStencilAttachment;
-		bool mIsSwapchainTarget;
 	};
 }

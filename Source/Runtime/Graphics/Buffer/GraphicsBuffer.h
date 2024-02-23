@@ -10,30 +10,25 @@ namespace Hollow
 	{
 	public:
 		GraphicsBuffer(const GraphicsBufferDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
-			mUsage(desc.Usage), mCPUAccess(desc.CPUAccess), 
-			mUsageType(desc.UsageType), mMiscFlags(desc.MiscFlags), mSizeInBytes(desc.SizeInBytes), 
-			mStructureByteStride(desc.StructureByteStride), mInitialData(desc.pInitialData) 
+			mUsage(desc.Usage), mMiscFlags(desc.MiscFlags), mSizeInBytes(desc.SizeInBytes), 
+			mStructureByteStride(desc.StructureByteStride), mMemory(desc.pMemory)
 		{}
 		virtual ~GraphicsBuffer() override = default;
 
-		BufferUsage GetUsage() const noexcept { return mUsage; }
-		BufferCPUAccess GetCPUAccess() const noexcept { return mCPUAccess; }
-		ResourceUsageType GetResourceUsage() const noexcept { return mUsageType; }
+		GraphicsBufferUsage GetUsage() const noexcept { return mUsage; }
 		uint8 GetMiscFlags() const noexcept { return mMiscFlags; }
 		uint32 GetSizeInBytes() const noexcept { return mSizeInBytes; }
 		uint64 GetStructureByteStride() const noexcept { return mStructureByteStride; }
-		void* GetInitialData() const noexcept { return mInitialData; }
+		SharedPtr<GraphicsMemory> GetInitialData() const noexcept { return mMemory; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override { return GraphicsDeviceObjectType::GraphicsBuffer; }
 
 	private:
-		BufferUsage mUsage;
-		BufferCPUAccess mCPUAccess;
-		ResourceUsageType mUsageType;
+		GraphicsBufferUsage mUsage;
 		uint8 mMiscFlags;
 		uint32 mSizeInBytes;
 		uint64 mStructureByteStride;
 
-		void* mInitialData;
+		SharedPtr<GraphicsMemory> mMemory;
 	};
 }

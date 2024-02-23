@@ -1,15 +1,15 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
+#include <Runtime/Graphics/Buffer/GraphicsBufferUpdateDesc.h>
+#include <Runtime/Graphics/Common/IndexSizeType.h>
 #include <Runtime/Graphics/Device/GraphicsDeviceObject.h>
 #include <Runtime/Graphics/Command/CommandBufferDesc.h>
 #include <Runtime/Graphics/Command/ViewportDesc.h>
 #include <Runtime/Graphics/Command/ScissorDesc.h>
-#include <Runtime/Graphics/Command/IndexType.h>
 #include <Runtime/Graphics/Command/BufferBufferCopyDesc.h>
 #include <Runtime/Graphics/Command/BufferTextureCopyDesc.h>
 #include <Runtime/Graphics/Command/TextureTextureCopyDesc.h>
-#include <Runtime/Graphics/Buffer/GraphicsBufferUpdateDesc.h>
 
 namespace Hollow
 {
@@ -39,7 +39,7 @@ namespace Hollow
 		void BeginRenderPass(SharedPtr<RenderPass>& renderPass, const Vector4f& clearColor);
 		void EndRenderPass();
 		void BindVertexBuffer(const SharedPtr<GraphicsBuffer>& vertexBuffer);
-		void BindIndexBuffer(const SharedPtr<GraphicsBuffer>& indexBuffer, const IndexType type);
+		void BindIndexBuffer(const SharedPtr<GraphicsBuffer>& indexBuffer, const IndexSizeType type);
 		void BindGraphicsPipeline(const SharedPtr<Pipeline>& pipeline);
 		void BindComputePipeline(const SharedPtr<Pipeline>& pipeline);
 		void SetViewport(const Array<ViewportDesc> viewports, const byte amount);
@@ -56,7 +56,7 @@ namespace Hollow
 		virtual void BeginRenderPassCore(SharedPtr<RenderPass>& renderPass, const Vector4f& clearColor) = 0;
 		virtual void EndRenderPassCore() = 0;
 		virtual void BindVertexBufferCore(const SharedPtr<GraphicsBuffer>& vertexBuffer) = 0;
-		virtual void BindIndexBufferCore(const SharedPtr<GraphicsBuffer>& indexBuffer, const IndexType type) = 0;
+		virtual void BindIndexBufferCore(const SharedPtr<GraphicsBuffer>& indexBuffer, const IndexSizeType type) = 0;
 		virtual void BindGraphicsPipelineCore(const SharedPtr<Pipeline>& pipeline) = 0;
 		virtual void BindComputePipelineCore(const SharedPtr<Pipeline>& pipeline) = 0;
 		virtual void SetViewportCore(const Array<ViewportDesc> viewports, const byte amount) = 0;

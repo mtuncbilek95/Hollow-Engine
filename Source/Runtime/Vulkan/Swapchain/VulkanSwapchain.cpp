@@ -117,7 +117,7 @@ namespace Hollow
 		// Select the best surface format
 		VkSurfaceFormatKHR surfaceFormat = surfaceFormats[0];
 
-		VkFormat requestedFormat = VulkanTextureUtils::GetVkFormat(GetSwapchainFormat());
+		VkFormat requestedFormat = VulkanTextureUtils::GetVkTextureFormat(GetSwapchainFormat());
 
 		bool bRequiredFormatSupported = false;
 		for (const auto& format : surfaceFormats)
@@ -204,7 +204,7 @@ namespace Hollow
 			desc.Usages = { TextureUsage::ColorAttachment };
 			desc.ImageSize = { swapExtent.width, swapExtent.height, 1 };
 			desc.MipLevels = 1;
-			desc.SampleCount = TextureSample::Sample1;
+			desc.SampleCount = TextureSampleCount::Sample1;
 			desc.pMemory = nullptr;
 
 			swapchainImages[i] = reinterpret_cast<VulkanDevice*>(GetOwnerDevice())->CreateVkTextureForSwapchain(desc, vkSwapchainImages[i]);

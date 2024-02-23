@@ -1,6 +1,6 @@
 #include "ShaderCompiler.h"
 
-#include <Runtime/Compiler/ShaderCompilerUtils.h>
+#include <Runtime/ShaderCompiler/ShaderCompilerUtils.h>
 
 #include <SPIRV-Cross/Include/spirv_hlsl.hpp>
 #include <SPIRV-Cross/Include/spirv_glsl.hpp>

@@ -4,7 +4,7 @@
 #include <Runtime/Graphics/Texture/TextureFormat.h>
 #include <Runtime/Graphics/Texture/TextureUsage.h>
 #include <Runtime/Graphics/Texture/TextureType.h>
-#include <Runtime/Graphics/Texture/TextureSample.h>
+#include <Runtime/Graphics/Texture/TextureSampleCount.h>
 
 namespace Hollow
 {
@@ -16,7 +16,7 @@ namespace Hollow
 		byte MipLevels;
 		TextureFormat Format;
 		Array<TextureUsage> Usages;
-		TextureSample SampleCount;
+		TextureSampleCount SampleCount;
 		TextureType Type;
 		
 		SharedPtr<GraphicsMemory> pMemory;

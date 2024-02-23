@@ -12,6 +12,5 @@ namespace Hollow
 		Array<RenderPassAttachmentDesc> ColorAttachments;
 		bool HasDepthStencilAttachment;
 		RenderPassAttachmentDesc DepthStencilAttachment;
-		bool IsSwapchainTarget;
 	};
 }

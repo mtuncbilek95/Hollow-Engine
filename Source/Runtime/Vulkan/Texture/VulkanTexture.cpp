@@ -20,16 +20,16 @@ namespace Hollow
 		VulkanMemory* pMemory = reinterpret_cast<VulkanMemory*>(desc.pMemory.get());
 
 		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-		imageInfo.imageType = VulkanTextureUtils::GetVkImageType(desc.Type);
+		imageInfo.imageType = VulkanTextureUtils::GetVkTextureType(desc.Type);
 		imageInfo.extent.width = desc.ImageSize.x;
 		imageInfo.extent.height = desc.ImageSize.y;
 		imageInfo.extent.depth = desc.ImageSize.z;
 		imageInfo.mipLevels = desc.MipLevels;
 		imageInfo.arrayLayers = desc.ArraySize;
-		imageInfo.format = VulkanTextureUtils::GetVkFormat(desc.Format);
+		imageInfo.format = VulkanTextureUtils::GetVkTextureFormat(desc.Format);
 		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 		imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		imageInfo.usage = VulkanTextureUtils::GetVkImageUsageFlags(desc.Usages);
+		imageInfo.usage = VulkanTextureUtils::GetVkTextureUsageFlags(desc.Usages);
 		imageInfo.samples = VulkanTextureUtils::GetVkSampleCount(desc.SampleCount);
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 

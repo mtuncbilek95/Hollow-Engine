@@ -10,44 +10,46 @@ namespace Hollow
 	{
 	public:
 		Sampler(const SamplerDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice), 
-			mFilter(desc.Filter), mAddressU(desc.AddressU),
-			mAddressV(desc.AddressV), mAddressW(desc.AddressW), mMipLODBias(desc.MipLODBias),
-			mMaxAnisotropy(desc.MaxAnisotropy), mSamplerComparison(desc.SamplerComparison),
-			mMinLOD(desc.MinLOD), mMaxLOD(desc.MaxLOD)
+			mMinFilter(desc.MinFilter), mMagFilter(desc.MagFilter), mMipmapMode(desc.MipmapMode),
+			mAddressModeU(desc.AddressModeU), mAddressModeV(desc.AddressModeV), mAddressModeW(desc.AddressModeW),
+			mMipLodBias(desc.MipLodBias), mMaxAnisotropy(desc.MaxAnisotropy), mComparisonEnabled(desc.bComparisonEnabled),
+			mCompareOperation(desc.CompareOperation), mMinLod(desc.MinLod), mMaxLod(desc.MaxLod), mBorderColor(desc.BorderColor)
 		{
-			mBorderColor[0] = desc.BorderColor[0];
-			mBorderColor[1] = desc.BorderColor[1];
-			mBorderColor[2] = desc.BorderColor[2];
-			mBorderColor[3] = desc.BorderColor[3];
 		}
 
 		virtual ~Sampler() override = default;
 
-		SamplerFilter GetFilter() const { return mFilter; }
-		AddressMode GetAddressU() const { return mAddressU; }
-		AddressMode GetAddressV() const { return mAddressV; }
-		AddressMode GetAddressW() const { return mAddressW; }
-		const float& GetMipLODBias() const { return mMipLODBias; }
-		const uint32& GetMaxAnisotropy() const { return mMaxAnisotropy; }
-		SamplerComparison GetSamplerComparison() const { return mSamplerComparison; }
-		const float* GetBorderColor() const { return mBorderColor; }
-		const float& GetMinLOD() const { return mMinLOD; }
-		const float& GetMaxLOD() const { return mMaxLOD; }
+		SamplerFiltering GetMinFilter() const noexcept { return mMinFilter; }
+		SamplerFiltering GetMagFilter() const noexcept { return mMagFilter; }
+		SamplerMapMode GetMipmapMode() const noexcept { return mMipmapMode; }
+		SamplerAddressMode GetAddressModeU() const noexcept { return mAddressModeU; }
+		SamplerAddressMode GetAddressModeV() const noexcept { return mAddressModeV; }
+		SamplerAddressMode GetAddressModeW() const noexcept { return mAddressModeW; }
+		float GetMipLodBias() const noexcept { return mMipLodBias; }
+		float GetMaxAnisotropy() const noexcept { return mMaxAnisotropy; }
+		bool IsComparisonEnabled() const noexcept { return mComparisonEnabled; }
+		CompareOperation GetCompareOperation() const noexcept { return mCompareOperation; }
+		float GetMinLod() const noexcept { return mMinLod; }
+		float GetMaxLod() const noexcept { return mMaxLod; }
+		SamplerBorderColor GetBorderColor() const noexcept { return mBorderColor; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Sampler; }
 
 		virtual void OnShutdown() noexcept override = 0;
 
 	private:
-		SamplerFilter mFilter;
-		AddressMode mAddressU;
-		AddressMode mAddressV;
-		AddressMode mAddressW;
-		float mMipLODBias;
-		uint32 mMaxAnisotropy;
-		SamplerComparison mSamplerComparison;
-		float mBorderColor[4];
-		float mMinLOD;
-		float mMaxLOD;
+		SamplerFiltering mMinFilter;
+		SamplerFiltering mMagFilter;
+		SamplerMapMode mMipmapMode;
+		SamplerAddressMode mAddressModeU;
+		SamplerAddressMode mAddressModeV;
+		SamplerAddressMode mAddressModeW;
+		float mMipLodBias;
+		float mMaxAnisotropy;
+		bool mComparisonEnabled;
+		CompareOperation mCompareOperation;
+		float mMinLod;
+		float mMaxLod;
+		SamplerBorderColor mBorderColor;
 	};
 }

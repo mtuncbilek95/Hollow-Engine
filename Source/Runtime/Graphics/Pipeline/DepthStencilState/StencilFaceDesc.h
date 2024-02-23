@@ -2,7 +2,7 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Pipeline/DepthStencilState/StencilOperation.h>
-#include <Runtime/Graphics/Pipeline/BlendState/CompareOperation.h>
+#include <Runtime/Graphics/Common/CompareOperation.h>
 
 namespace Hollow
 {

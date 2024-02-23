@@ -3,10 +3,10 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Texture/TextureView.h>
 #include <Runtime/Graphics/Texture/TextureFormat.h>
-#include <Runtime/Graphics/Texture/TextureSample.h>
+#include <Runtime/Graphics/Texture/TextureSampleCount.h>
 #include <Runtime/Graphics/RenderPass/RenderPassLoadOperation.h>
 #include <Runtime/Graphics/RenderPass/RenderPassStoreOperation.h>
-#include <Runtime/Graphics/Texture/TextureMemoryLayout.h>
+#include <Runtime/Graphics/Texture/TextureLayout.h>
 
 namespace Hollow
 {
@@ -14,13 +14,13 @@ namespace Hollow
 	{
 		SharedPtr<TextureView> pTextureView;
 		TextureFormat Format;
-		TextureSample SampleCount;
+		TextureSampleCount SampleCount;
 		RenderPassLoadOperation ColorLoadOp;
 		RenderPassStoreOperation ColorStoreOp;
 		RenderPassLoadOperation DepthLoadOp;
 		RenderPassStoreOperation DepthStoreOp;
-		TextureMemoryLayout InputLayout;
-		TextureMemoryLayout OutputLayout;
+		TextureLayout InputLayout;
+		TextureLayout OutputLayout;
 		byte MipLevel;
 		byte ArrayLevel;
 	};

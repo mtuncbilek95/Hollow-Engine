@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API TextureMemoryLayout : byte
+	enum class RUNTIME_API TextureLayout : byte
 	{
 		Unknown,
 		General,

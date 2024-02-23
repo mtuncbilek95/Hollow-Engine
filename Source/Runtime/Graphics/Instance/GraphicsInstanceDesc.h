@@ -2,7 +2,7 @@
 
 #include <Runtime/Core/Core.h>
 
-#include <Runtime/Graphics/Device/GraphicsAPI.h>
+#include <Runtime/Graphics/Common/GraphicsAPI.h>
 
 namespace Hollow
 {

@@ -1,19 +1,25 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
+
 #include <Runtime/Graphics/Shader/ShaderType.h>
 #include <Runtime/Graphics/Shader/ShaderStage.h>
-#include <Runtime/Graphics/Pipeline/InputLayout/MeshTopology.h>
+
 #include <Runtime/Graphics/Pipeline/RasterizerState/FaceCullMode.h>
 #include <Runtime/Graphics/Pipeline/RasterizerState/PolygonMode.h>
 #include <Runtime/Graphics/Pipeline/RasterizerState/FaceDirection.h>
-#include <Runtime/Graphics/Pipeline/BlendState/CompareOperation.h>
+
 #include <Runtime/Graphics/Pipeline/DepthStencilState/StencilOperation.h>
+#include <Runtime/Graphics/Pipeline/DepthStencilState/StencilFaceDesc.h>
+
 #include <Runtime/Graphics/Pipeline/BlendState/BlendColorWriteMask.h>
 #include <Runtime/Graphics/Pipeline/BlendState/BlendOperation.h>
 #include <Runtime/Graphics/Pipeline/BlendState/BlendFactor.h>
+
 #include <Runtime/Graphics/Pipeline/InputLayout/InputBindingStepRate.h>
-#include <Runtime/Graphics/Pipeline/DepthStencilState/StencilFaceDesc.h>
+#include <Runtime/Graphics/Pipeline/InputLayout/MeshTopology.h>
+
+#include <Runtime/Vulkan/Common/VulkanCommonUtils.h>
 
 #include <vulkan.h>
 
@@ -43,7 +49,7 @@ namespace Hollow
 			}
 		}
 
-		static VkPrimitiveTopology GetVkPrimitiveMode(MeshTopology topology)
+		static VkPrimitiveTopology GetVkMeshTopology(MeshTopology topology)
 		{
 			switch (topology)
 			{
@@ -77,7 +83,7 @@ namespace Hollow
 			}
 		}
 
-		static VkCullModeFlagBits GetVkCullMode(FaceCullMode mode)
+		static VkCullModeFlagBits GetVkFaceCullMode(FaceCullMode mode)
 		{
 			switch (mode)
 			{
@@ -92,7 +98,7 @@ namespace Hollow
 			}
 		}
 
-		static VkFrontFace GetVkFrontFace(FaceDirection ordering)
+		static VkFrontFace GetVkFaceDirection(FaceDirection ordering)
 		{
 			switch (ordering)
 			{
@@ -105,32 +111,7 @@ namespace Hollow
 			}
 		}
 
-		static VkCompareOp GetVkCompareOp(CompareOperation compare)
-		{
-			switch (compare)
-			{
-			case CompareOperation::Never:
-				return VK_COMPARE_OP_NEVER;
-			case CompareOperation::Less:
-				return VK_COMPARE_OP_LESS;
-			case CompareOperation::LessEqual:
-				return VK_COMPARE_OP_LESS_OR_EQUAL;
-			case CompareOperation::Equal:
-				return VK_COMPARE_OP_EQUAL;
-			case CompareOperation::NotEqual:
-				return VK_COMPARE_OP_NOT_EQUAL;
-			case CompareOperation::Greater:
-				return VK_COMPARE_OP_GREATER;
-			case CompareOperation::GreaterEqual:
-				return VK_COMPARE_OP_GREATER_OR_EQUAL;
-			case CompareOperation::Always:
-				return VK_COMPARE_OP_ALWAYS;
-			default:
-				return VK_COMPARE_OP_ALWAYS;
-			}
-		}
-
-		static VkStencilOp GetVkStencilOp(StencilOperation operation)
+		static VkStencilOp GetVkStencilOperation(StencilOperation operation)
 		{
 			switch (operation)
 			{
@@ -155,7 +136,7 @@ namespace Hollow
 			}
 		}
 
-		static VkColorComponentFlags GetVkBlendMask(BlendColorWriteMask mask)
+		static VkColorComponentFlags GetVkBlendColorWriteMask(BlendColorWriteMask mask)
 		{
 			switch (mask)
 			{
@@ -193,7 +174,7 @@ namespace Hollow
 			}
 		}
 
-		static VkVertexInputRate GetVkInputRate(InputBindingStepRate stepRate) noexcept
+		static VkVertexInputRate GetVkInputBindingStepRate(InputBindingStepRate stepRate) noexcept
 		{
 			switch (stepRate)
 			{
@@ -253,58 +234,17 @@ namespace Hollow
 			}
 		}
 
-		static VkStencilOpState GetVkStencilOpState(StencilFaceDesc state)
+		static VkStencilOpState GetVkStencilFaceDesc(StencilFaceDesc state)
 		{
 			VkStencilOpState vkState;
-			vkState.failOp = GetVkStencilOp(state.FailOperation);
-			vkState.passOp = GetVkStencilOp(state.PassOperation);
-			vkState.depthFailOp = GetVkStencilOp(state.DepthFailOperation);
-			vkState.compareOp = GetVkCompareOp(state.CompareOperation);
+			vkState.failOp = GetVkStencilOperation(state.FailOperation);
+			vkState.passOp = GetVkStencilOperation(state.PassOperation);
+			vkState.depthFailOp = GetVkStencilOperation(state.DepthFailOperation);
+			vkState.compareOp = VulkanCommonUtils::GetVkCompareOperation(state.CompareOperation);
 			vkState.compareMask = state.CompareMask;
 			vkState.writeMask = state.WriteMask;
 			vkState.reference = state.Reference;
 			return vkState;
-		}
-
-		static VkLogicOp GetVkLogicOp(LogicOperation operation)
-		{
-			switch (operation)
-			{
-			case LogicOperation::Clear:
-				return VK_LOGIC_OP_CLEAR;
-			case LogicOperation::And:
-				return VK_LOGIC_OP_AND;
-			case LogicOperation::AndReverse:
-				return VK_LOGIC_OP_AND_REVERSE;
-			case LogicOperation::Copy:
-				return VK_LOGIC_OP_COPY;
-			case LogicOperation::AndInverted:
-				return VK_LOGIC_OP_AND_INVERTED;
-			case LogicOperation::NoOp:
-				return VK_LOGIC_OP_NO_OP;
-			case LogicOperation::Xor:
-				return VK_LOGIC_OP_XOR;
-			case LogicOperation::Or:
-				return VK_LOGIC_OP_OR;
-			case LogicOperation::Nor:
-				return VK_LOGIC_OP_NOR;
-			case LogicOperation::Equal:
-				return VK_LOGIC_OP_EQUIVALENT;
-			case LogicOperation::Invert:
-				return VK_LOGIC_OP_INVERT;
-			case LogicOperation::OrReverse:
-				return VK_LOGIC_OP_OR_REVERSE;
-			case LogicOperation::CopyInverted:
-				return VK_LOGIC_OP_COPY_INVERTED;
-			case LogicOperation::OrInverted:
-				return VK_LOGIC_OP_OR_INVERTED;
-			case LogicOperation::NotAnd:
-				return VK_LOGIC_OP_NAND;
-			case LogicOperation::Set:
-				return VK_LOGIC_OP_SET;
-			default:
-				return VK_LOGIC_OP_MAX_ENUM;
-			}
 		}
 
 	public:
