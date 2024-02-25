@@ -12,12 +12,12 @@ namespace Hollow
 		uint64 OffsetInBytes;
 		uint64 SizeInBytes;
 
-		Array<PipelineStageFlags> SourceStageFlags;
-		Array<GraphicsMemoryAccessFlags> SourceAccessFlags;
+		PipelineStageFlags SourceStageFlags;
+		GraphicsMemoryAccessFlags SourceAccessFlags;
 		GraphicsQueueType SourceQueue;
 
-		Array<PipelineStageFlags> DestinationStageFlags;
-		Array<GraphicsMemoryAccessFlags> DestinationAccessFlags;
+		PipelineStageFlags DestinationStageFlags;
+		GraphicsMemoryAccessFlags DestinationAccessFlags;
 		GraphicsQueueType DestinationQueue;
 	};
 }

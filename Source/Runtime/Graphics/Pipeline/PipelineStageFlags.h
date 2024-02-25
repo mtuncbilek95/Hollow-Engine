@@ -20,4 +20,6 @@ namespace Hollow
         Transfer = 2048,
         BottomOfPipe = 4096
 	};
+
+    GENERATE_ENUM_FLAG(PipelineStageFlags, uint16);
 }

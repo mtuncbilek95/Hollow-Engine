@@ -14,4 +14,6 @@ namespace Hollow
 		TransferDestination,
 		IndirectBuffer
 	};
+
+	GENERATE_ENUM_FLAG(GraphicsBufferUsage, byte);
 }

@@ -9,6 +9,13 @@
 #include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
 #include <Runtime/Vulkan/Memory/VulkanMemory.h>
 #include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
+#include <Runtime/Vulkan/Sampler/VulkanSampler.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorSet.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorPool.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorLayout.h>
+#include <Runtime/Vulkan/Fence/VulkanFence.h>
+#include <Runtime/Vulkan/Semaphore/VulkanSemaphore.h>
+#include <Runtime/Vulkan/Buffer/VulkanGraphicsBuffer.h>
 
 namespace Hollow
 {
@@ -221,7 +228,7 @@ namespace Hollow
 
 	SharedPtr<GraphicsBuffer> VulkanDevice::CreateGraphicsBufferCore(const GraphicsBufferDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanGraphicsBuffer>(desc, this);
 	}
 
 	SharedPtr<Texture> VulkanDevice::CreateTextureCore(const TextureDesc& desc)
@@ -236,7 +243,7 @@ namespace Hollow
 
 	SharedPtr<Sampler> VulkanDevice::CreateSamplerCore(const SamplerDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanSampler>(desc, this);
 	}
 
 	SharedPtr<Pipeline> VulkanDevice::CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc)
@@ -271,27 +278,27 @@ namespace Hollow
 
 	SharedPtr<DescriptorSet> VulkanDevice::CreateDescriptorSetCore(const DescriptorSetDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanDescriptorSet>(desc, this);
 	}
 
 	SharedPtr<DescriptorPool> VulkanDevice::CreateDescriptorPoolCore(const DescriptorPoolDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanDescriptorPool>(desc, this);
 	}
 
 	SharedPtr<DescriptorLayout> VulkanDevice::CreateDescriptorLayoutCore(const DescriptorLayoutDesc& desc)
 	{
-		return  nullptr;
+		return std::make_shared<VulkanDescriptorLayout>(desc, this);
 	}
 
 	SharedPtr<Fence> VulkanDevice::CreateFenceCore(const FenceDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanFence>(desc, this);
 	}
 
 	SharedPtr<Semaphore> VulkanDevice::CreateSyncSemaphoreCore(const SemaphoreDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanSemaphore>(desc, this);
 	}
 
 	SharedPtr<GraphicsQueue> VulkanDevice::BorrowGraphicsQueueCore(const GraphicsQueueDesc& desc)
@@ -299,16 +306,39 @@ namespace Hollow
 		return std::make_shared<VulkanQueue>(desc, this);
 	}
 
-	void VulkanDevice::WaitForFenceCore(Fence** ppFences, byte amount)
+	void VulkanDevice::ResetFencesCore(Fence** ppFences, byte amount)
 	{
+		VkFence* fences = new VkFence[amount];
+
+		for (byte i = 0; i < amount; i++)
+		{
+			fences[i] = ((VulkanFence*)ppFences[i])->GetVkFence();
+		}
+
+		vkResetFences(mVkLogicalDevice, amount, fences);
+	}
+
+	void VulkanDevice::WaitForFencesCore(Fence** ppFences, byte amount)
+	{
+		VkFence* fences = new VkFence[amount];
+
+		for (byte i = 0; i < amount; i++)
+		{
+			fences[i] = ((VulkanFence*)ppFences[i])->GetVkFence();
+		}
+
+		vkWaitForFences(mVkLogicalDevice, amount, fences, VK_TRUE, UINT64_MAX);
 	}
 
 	void VulkanDevice::WaitForIdleDeviceCore()
 	{
+		DEV_ASSERT(vkDeviceWaitIdle(mVkLogicalDevice) == VK_SUCCESS, "VulkanDevice", "Failed to wait for device to be idle.");
 	}
 
 	void VulkanDevice::WaitQueueDefaultCore(const GraphicsQueueType type)
 	{
+		VkQueue queue = CatchGraphicsQueue(type);
+		DEV_ASSERT(vkQueueWaitIdle(queue) == VK_SUCCESS, "VulkanDevice", "Failed to wait for queue to be idle.");
 	}
 
 	void VulkanDevice::UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc)

@@ -11,18 +11,18 @@ namespace Hollow
 {
 	struct RUNTIME_API TextureMemoryBarrierDesc
 	{
-		Array<TextureAspectFlags> AspectFlags;
+		TextureAspectFlags AspectFlags;
 		byte ArrayIndex;
 		byte MipIndex;
 
 		TextureLayout SourceLayout;
-		Array<GraphicsMemoryAccessFlags> SourceAccessFlags;
-		Array<PipelineStageFlags> SourceStageFlags;
+		GraphicsMemoryAccessFlags SourceAccessFlags;
+		PipelineStageFlags SourceStageFlags;
 		GraphicsQueueType SourceQueue;
 
 		TextureLayout DestinationLayout;
-		Array<GraphicsMemoryAccessFlags> DestinationAccessFlags;
-		Array<PipelineStageFlags> DestinationStageFlags;
+		GraphicsMemoryAccessFlags DestinationAccessFlags;
+		PipelineStageFlags DestinationStageFlags;
 		GraphicsQueueType DestinationQueue;
 	};
 }

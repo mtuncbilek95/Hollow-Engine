@@ -90,7 +90,8 @@ namespace Hollow
 		SharedPtr<Semaphore> CreateSyncSemaphore(const SemaphoreDesc& desc);
 		SharedPtr<GraphicsQueue> BorrowGraphicsQueue(const GraphicsQueueDesc& desc);
 
-		void WaitForFence(Fence** ppFences, byte amount);
+		void ResetFences(Fence** ppFences, byte amount);
+		void WaitForFences(Fence** ppFences, byte amount);
 		void WaitForIdleDevice();
 		void WaitQueueDefault(const GraphicsQueueType type);
 		void UpdateCPUBuffer(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc);
@@ -124,7 +125,8 @@ namespace Hollow
 		virtual SharedPtr<Semaphore> CreateSyncSemaphoreCore(const SemaphoreDesc& desc) = 0;
 		virtual SharedPtr<GraphicsQueue> BorrowGraphicsQueueCore(const GraphicsQueueDesc& desc) = 0;
 
-		virtual void WaitForFenceCore(Fence** ppFences, byte amount) = 0;
+		virtual void ResetFencesCore(Fence** ppFences, byte amount) = 0;
+		virtual void WaitForFencesCore(Fence** ppFences, byte amount) = 0;
 		virtual void WaitForIdleDeviceCore() = 0;
 		virtual void WaitQueueDefaultCore(const GraphicsQueueType type) = 0;
 		virtual void UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc) = 0;

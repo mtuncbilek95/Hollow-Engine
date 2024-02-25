@@ -21,6 +21,7 @@ namespace Hollow
 		CommandBuffer,
 		CommandPool,
 		Fence,
+		Semaphore,
 		Queue
 	};
 }

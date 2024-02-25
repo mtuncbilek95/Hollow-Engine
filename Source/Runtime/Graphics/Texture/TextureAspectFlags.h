@@ -11,4 +11,6 @@ namespace Hollow
 		DepthAspect,
 		StencilAspect
 	};
+
+	GENERATE_ENUM_FLAG(TextureAspectFlags, byte);
 }

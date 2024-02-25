@@ -249,59 +249,37 @@ namespace Hollow
 			return vkState;
 		}
 
-		static VkPipelineStageFlags GetVkPipelineStageFlags(Array<PipelineStageFlags> flags)
+		static VkPipelineStageFlags GetVkPipelineStageFlags(const PipelineStageFlags stages)
 		{
-			VkPipelineStageFlags vkFlags = 0;
+			VkPipelineStageFlags flags = 0;
+			if (stages & PipelineStageFlags::BottomOfPipe)
+				flags |= VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			if (stages & PipelineStageFlags::ColorAttachmentOutput)
+				flags |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			if (stages & PipelineStageFlags::ComputeShader)
+				flags |= VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+			if (stages & PipelineStageFlags::EarlyFragmentTests)
+				flags |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+			if (stages & PipelineStageFlags::FragmentShader)
+				flags |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			if (stages & PipelineStageFlags::GeometryShader)
+				flags |= VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT;
+			if (stages & PipelineStageFlags::LateFragmentTests)
+				flags |= VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+			if (stages & PipelineStageFlags::TessellationControlShader)
+				flags |= VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT;
+			if (stages & PipelineStageFlags::TessellationEvaluationShader)
+				flags |= VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT;
+			if (stages & PipelineStageFlags::TopOfPipe)
+				flags |= VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+			if (stages & PipelineStageFlags::Transfer)
+				flags |= VK_PIPELINE_STAGE_TRANSFER_BIT;
+			if (stages & PipelineStageFlags::VertexInput)
+				flags |= VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
+			if (stages & PipelineStageFlags::VertexShader)
+				flags |= VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
 
-			for (auto flag : flags)
-			{
-				switch (flag)
-				{
-				case PipelineStageFlags::TopOfPipe:
-					vkFlags |= VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-					break;
-				case PipelineStageFlags::VertexInput:
-					vkFlags |= VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
-					break;
-				case PipelineStageFlags::VertexShader:
-					vkFlags |= VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
-					break;
-				case PipelineStageFlags::TessellationControlShader:
-					vkFlags |= VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT;
-					break;
-				case PipelineStageFlags::TessellationEvaluationShader:
-					vkFlags |= VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT;
-					break;
-				case PipelineStageFlags::GeometryShader:
-					vkFlags |= VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT;
-					break;
-				case PipelineStageFlags::FragmentShader:
-					vkFlags |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-					break;
-				case PipelineStageFlags::EarlyFragmentTests:
-					vkFlags |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-					break;
-				case PipelineStageFlags::LateFragmentTests:
-					vkFlags |= VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-					break;
-				case PipelineStageFlags::ColorAttachmentOutput:
-					vkFlags |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-					break;
-				case PipelineStageFlags::ComputeShader:
-					vkFlags |= VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
-					break;
-				case PipelineStageFlags::Transfer:
-					vkFlags |= VK_PIPELINE_STAGE_TRANSFER_BIT;
-					break;
-				case PipelineStageFlags::BottomOfPipe:
-					vkFlags |= VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-					break;
-				default:
-					vkFlags |= VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-				}
-			}
-
-			return vkFlags;
+			return flags;
 		}
 
 	public:

@@ -87,7 +87,8 @@ namespace Hollow
 		virtual SharedPtr<Semaphore> CreateSyncSemaphoreCore(const SemaphoreDesc& desc) override;
 		virtual SharedPtr<GraphicsQueue> BorrowGraphicsQueueCore(const GraphicsQueueDesc& desc) override;
 
-		virtual void WaitForFenceCore(Fence** ppFences, byte amount) override;
+		virtual void ResetFencesCore(Fence** ppFences, byte amount) override;
+		virtual void WaitForFencesCore(Fence** ppFences, byte amount) override;
 		virtual void WaitForIdleDeviceCore() override;
 		virtual void WaitQueueDefaultCore(const GraphicsQueueType type) override;
 		virtual void UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc) override;
