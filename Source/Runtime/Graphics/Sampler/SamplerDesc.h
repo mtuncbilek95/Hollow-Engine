@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
+#include <Runtime/Graphics/Common/CompareOperation.h>
 #include <Runtime/Graphics/Sampler/SamplerFiltering.h>
 #include <Runtime/Graphics/Sampler/SamplerAddressMode.h>
 #include <Runtime/Graphics/Sampler/SamplerMapMode.h>

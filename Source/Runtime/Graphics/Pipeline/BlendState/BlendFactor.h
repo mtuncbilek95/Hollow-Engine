@@ -1,9 +1,10 @@
 #pragma once
+
 #include <Runtime/Core/Core.h>
 
 namespace Hollow
 {
-    enum class RUNTIME_API BlendFactor : unsigned char
+    enum class RUNTIME_API BlendFactor : byte
     {
         Zero,
         One,

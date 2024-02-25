@@ -20,7 +20,7 @@ namespace Hollow
 		const byte& GetArraySize() const { return mArraySize; }
 		const byte& GetMipLevels() const { return mMipLevels; }
 		TextureFormat GetFormat() const { return mFormat; }
-		const Array<TextureUsage>& GetUsage() const { return mUsages; }
+		TextureUsage GetUsage() const { return mUsages; }
 		TextureType GetType() const { return mType; }
 		TextureSampleCount GetSampleCount() const { return mSampleCount; }
 
@@ -35,7 +35,7 @@ namespace Hollow
 		byte mArraySize;
 		byte mMipLevels;
 		TextureFormat mFormat;
-		Array<TextureUsage> mUsages;
+		TextureUsage mUsages;
 		TextureSampleCount mSampleCount;
 		TextureType mType;
 		

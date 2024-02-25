@@ -3,7 +3,7 @@
 
 namespace Hollow
 {
-    enum class RUNTIME_API BlendOperation : unsigned char
+    enum class RUNTIME_API BlendOperation : byte
     {
         Add,
         Subtract,

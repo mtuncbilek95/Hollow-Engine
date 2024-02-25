@@ -89,25 +89,24 @@ namespace Hollow
 			}
 		}
 
-		static VkImageUsageFlags GetVkTextureUsageFlags(Array<TextureUsage> usages)
+		static VkImageUsageFlags GetVkTextureUsageFlags(TextureUsage usages)
 		{
-			VkImageUsageFlags flags = 0;
+			VkImageUsageFlags flags = VkImageUsageFlags();
 
-			for (auto usage : usages)
-			{
-				switch (usage)
-				{
-				case TextureUsage::Sampled:						flags |= VK_IMAGE_USAGE_SAMPLED_BIT; break;
-				case TextureUsage::Storage:						flags |= VK_IMAGE_USAGE_STORAGE_BIT; break;
-				case TextureUsage::ColorAttachment:				flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; break;
-				case TextureUsage::DepthStencilAttachment:		flags |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT; break;
-				case TextureUsage::TransferSource:				flags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT; break;
-				case TextureUsage::TransferDestination:			flags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT; break;
-				case TextureUsage::TransientAttachment:			flags |= VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT; break;
-				case TextureUsage::InputAttachment:				flags |= VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT; break;
-				default:										flags |= VK_IMAGE_USAGE_SAMPLED_BIT; break;
-				}
-			}
+			if (usages & TextureUsage::Sampled)
+				flags |= VK_IMAGE_USAGE_SAMPLED_BIT;
+
+			if (usages & TextureUsage::ColorAttachment)
+				flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+			else if (usages & TextureUsage::DepthStencilAttachment)
+				flags |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+			if (usages & TextureUsage::Storage)
+				flags |= VK_IMAGE_USAGE_STORAGE_BIT;
+			if (usages & TextureUsage::TransferDestination)
+				flags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+			else if (usages & TextureUsage::TransferSource)
+				flags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 
 			return flags;
 		}
@@ -138,20 +137,16 @@ namespace Hollow
 			}
 		}
 
-		static VkImageAspectFlags GetVkTextureAspects(Array<TextureAspectFlags> aspects)
+		static VkImageAspectFlags GetVkTextureAspects(TextureAspectFlags aspects)
 		{
-			VkImageAspectFlags flags = 0;
+			VkImageAspectFlags flags = VkImageAspectFlags();
 
-			for (auto aspect : aspects)
-			{
-				switch (aspect)
-				{
-				case TextureAspectFlags::ColorAspect: flags |= VK_IMAGE_ASPECT_COLOR_BIT; break;
-				case TextureAspectFlags::DepthAspect: flags |= VK_IMAGE_ASPECT_DEPTH_BIT; break;
-				case TextureAspectFlags::StencilAspect: flags |= VK_IMAGE_ASPECT_STENCIL_BIT; break;
-				default: break;
-				}
-			}
+			if (aspects & TextureAspectFlags::ColorAspect)
+				flags |= VK_IMAGE_ASPECT_COLOR_BIT;
+			if (aspects & TextureAspectFlags::DepthAspect)
+				flags |= VK_IMAGE_ASPECT_DEPTH_BIT;
+			if (aspects & TextureAspectFlags::StencilAspect)
+				flags |= VK_IMAGE_ASPECT_STENCIL_BIT;
 
 			return flags;
 		}

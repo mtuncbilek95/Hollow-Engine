@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API TextureUsage
+	enum class RUNTIME_API TextureUsage : byte
 	{
 		Sampled,
 		Storage,
@@ -15,4 +15,6 @@ namespace Hollow
 		TransferSource,
 		TransferDestination
 	};
+
+	GENERATE_ENUM_FLAG(TextureUsage, byte);
 }

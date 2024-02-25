@@ -15,7 +15,7 @@ namespace Hollow
 		byte ArraySize;
 		byte MipLevels;
 		TextureFormat Format;
-		Array<TextureUsage> Usages;
+		TextureUsage Usages;
 		TextureSampleCount SampleCount;
 		TextureType Type;
 		

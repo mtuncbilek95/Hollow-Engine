@@ -9,4 +9,6 @@ namespace Hollow
 		Front = 2,
 		Back = 4
 	};
+
+	GENERATE_ENUM_FLAG(FaceCullMode, byte);
 }
