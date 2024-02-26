@@ -46,6 +46,7 @@ namespace Hollow
 
 	void VulkanSwapchain::OnShutdown() noexcept
 	{
+		Free();
 	}
 
 	void VulkanSwapchain::PresentCore()
@@ -167,8 +168,7 @@ namespace Hollow
 		swapchainCreateInfo.presentMode = presentMode;
 
 		// It should be set to VK_TRUE, if application doesn't want to read from swap chain images 
-		// Found in here: https://shorturl.at/eEL58
-		swapchainCreateInfo.clipped = VK_TRUE;
+		swapchainCreateInfo.clipped = VK_FALSE;
 		swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
 
 		swapchainCreateInfo.pQueueFamilyIndices = &presentFamilyIndex;

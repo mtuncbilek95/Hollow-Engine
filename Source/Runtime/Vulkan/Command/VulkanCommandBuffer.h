@@ -23,10 +23,10 @@ namespace Hollow
 		virtual void BeginRecordingCore() override;
 		virtual void EndRecordingCore() override;
 		virtual void BindVertexBuffersCore(GraphicsBuffer** vertexBuffer, byte amount) override;
-		virtual void BindIndexBufferCore(const GraphicsBuffer* indexBuffer, const IndexSizeType type) override;
+		virtual void BindIndexBufferCore(GraphicsBuffer* indexBuffer, const IndexSizeType type) override;
 		virtual void DrawIndexedCore(const uint32 indexCount, const uint32 indexOffset, const uint32 vertexOffset) override;
 		virtual void DispatchComputeCore(const uint32 groupCountX, const uint32 groupCountY, const uint32 groupCountZ) override;
-		virtual void BindPipelineCore(const Pipeline* pipeline) override;
+		virtual void BindPipelineCore(Pipeline* pipeline) override;
 		virtual void BeginRenderPassCore(RenderPass* renderPass, const Vector4f& clearColor, const byte ColorValueCount, const double clearDepth, const double clearStencil) override;
 		virtual void EndRenderPassCore() override;
 		virtual void SetViewportsCore(ViewportDesc* viewports, const byte amount) override;

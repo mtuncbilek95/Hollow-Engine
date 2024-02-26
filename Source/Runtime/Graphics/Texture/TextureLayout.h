@@ -16,6 +16,4 @@ namespace Hollow
 		DepthAttachment,
 		Present
 	};
-
-	GENERATE_ENUM_FLAG(TextureLayout, byte);
 }

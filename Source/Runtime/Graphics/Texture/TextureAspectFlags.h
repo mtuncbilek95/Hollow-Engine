@@ -6,10 +6,9 @@ namespace Hollow
 {
 	enum class RUNTIME_API TextureAspectFlags : byte
 	{
-		None,
-		ColorAspect,
-		DepthAspect,
-		StencilAspect
+		ColorAspect = 1,
+		DepthAspect = 2,
+		StencilAspect = 4
 	};
 
 	GENERATE_ENUM_FLAG(TextureAspectFlags, byte);

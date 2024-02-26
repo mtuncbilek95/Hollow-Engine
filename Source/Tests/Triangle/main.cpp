@@ -16,7 +16,7 @@ namespace Hollow
 	struct TestVertex
 	{
 		Vector3f Position;
-		Vector2f TexCoord;
+		Vector4f Color;
 	};
 
 	struct TestConstantBuffer

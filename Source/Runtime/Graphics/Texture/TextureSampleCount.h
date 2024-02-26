@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API TextureSampleCount
+	enum class RUNTIME_API TextureSampleCount : byte
 	{
 		Sample1,
 		Sample2,

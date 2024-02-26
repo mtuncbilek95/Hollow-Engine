@@ -1,9 +1,11 @@
 #include "VulkanCommandBuffer.h"
 
+#include <Runtime/Vulkan/Texture/VulkanTextureUtils.h>
 #include <Runtime/Vulkan/Command/VulkanCommandPool.h>
 #include <Runtime/Vulkan/Buffer/VulkanGraphicsBuffer.h>
 #include <Runtime/Vulkan/Texture/VulkanTexture.h>
 #include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorSet.h>
 
 namespace Hollow
 {
@@ -145,14 +147,77 @@ namespace Hollow
 
 	void VulkanCommandBuffer::CopyBufferToBufferCore(const GraphicsBuffer* srcBuffer, const GraphicsBuffer* dstBuffer, const BufferBufferCopyDesc& desc)
 	{
+		VkBufferCopy copyRegion = {};
+		copyRegion.size = desc.SizeInBytes;
+		copyRegion.dstOffset = desc.DestinationOffsetInBytes;
+		copyRegion.srcOffset = desc.SourceOffsetInBytes;
+
+		const VulkanGraphicsBuffer* pSrcBuffer = static_cast<const VulkanGraphicsBuffer*>(srcBuffer);
+		const VulkanGraphicsBuffer* pDstBuffer = static_cast<const VulkanGraphicsBuffer*>(dstBuffer);
+
+		vkCmdCopyBuffer(mVkCommandBuffer, pSrcBuffer->GetVkBuffer(), pDstBuffer->GetVkBuffer(), 1, &copyRegion);
 	}
 
 	void VulkanCommandBuffer::CopyBufferToTextureCore(const GraphicsBuffer* srcBuffer, const Texture* dstTexture, const BufferTextureCopyDesc& desc)
 	{
+		VkBufferImageCopy copyBufferToImageInfo = {};
+		copyBufferToImageInfo.bufferOffset = desc.BufferOffsetInBytes;
+		copyBufferToImageInfo.bufferRowLength = 0;
+		copyBufferToImageInfo.bufferImageHeight = 0;
+
+		copyBufferToImageInfo.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		copyBufferToImageInfo.imageSubresource.mipLevel = desc.TargetMipIndex;
+		copyBufferToImageInfo.imageSubresource.baseArrayLayer = desc.TargetArrayIndex;
+		copyBufferToImageInfo.imageSubresource.layerCount = dstTexture->GetArraySize();
+
+		copyBufferToImageInfo.imageOffset = { static_cast<int32>(desc.TextureOffsetX), static_cast<int32>(desc.TextureOffsetY), static_cast<int32>(desc.TextureOffsetZ) };
+		copyBufferToImageInfo.imageExtent = { static_cast<uint32>(desc.Width), static_cast<uint32>(desc.Height), static_cast<uint32>(desc.Depth) };
+
+		const VulkanGraphicsBuffer* pSrcBuffer = static_cast<const VulkanGraphicsBuffer*>(srcBuffer);
+		const VulkanTexture* pDstTexture = static_cast<const VulkanTexture*>(dstTexture);
+
+		vkCmdCopyBufferToImage(mVkCommandBuffer, pSrcBuffer->GetVkBuffer(), pDstTexture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyBufferToImageInfo);
 	}
 
 	void VulkanCommandBuffer::CopyTextureToTextureCore(const Texture* srcTexture, const Texture* dstTexture, const TextureTextureCopyDesc& desc)
 	{
+		if (!desc.IsBlit)
+		{
+			VkImageCopy copyRegion = {};
+			copyRegion.srcSubresource.aspectMask = VulkanTextureUtils::GetVkTextureAspects(desc.SourceAspect);
+			copyRegion.srcSubresource.mipLevel = desc.SourceMipIndex;
+			copyRegion.srcSubresource.baseArrayLayer = desc.SourceArrayIndex;
+			copyRegion.srcSubresource.layerCount = srcTexture->GetArraySize();
+			copyRegion.srcOffset = { static_cast<int32>(desc.SourceOffsetX), static_cast<int32>(desc.SourceOffsetY), static_cast<int32>(desc.SourceOffsetZ) };
+			copyRegion.dstOffset = { static_cast<int32>(desc.DestinationOffsetX), static_cast<int32>(desc.DestinationOffsetY), static_cast<int32>(desc.DestinationOffsetZ) };
+			copyRegion.dstSubresource.aspectMask = VulkanTextureUtils::GetVkTextureAspects(desc.DestinationAspect);
+			copyRegion.dstSubresource.mipLevel = desc.DestinationMipIndex;
+			copyRegion.dstSubresource.baseArrayLayer = desc.DestinationArrayIndex;
+			copyRegion.dstSubresource.layerCount = dstTexture->GetArraySize();
+			copyRegion.extent = { srcTexture->GetImageSize().x, srcTexture->GetImageSize().y, srcTexture->GetImageSize().z };
+
+			const VulkanTexture* pSrcTexture = static_cast<const VulkanTexture*>(srcTexture);
+			const VulkanTexture* pDstTexture = static_cast<const VulkanTexture*>(dstTexture);
+
+			vkCmdCopyImage(mVkCommandBuffer, pSrcTexture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pDstTexture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
+		}
+		else
+		{
+			VkImageBlit blitInfo = {};
+			blitInfo.srcOffsets[0] = { (int)desc.SourceOffsetX,(int)desc.SourceOffsetY,(int)desc.SourceOffsetZ };
+			blitInfo.srcSubresource.aspectMask = VulkanTextureUtils::GetVkTextureAspects(desc.SourceAspect);
+			blitInfo.srcSubresource.baseArrayLayer = desc.SourceArrayIndex;
+			blitInfo.srcSubresource.layerCount = srcTexture->GetMipLevels();
+			blitInfo.srcSubresource.mipLevel = desc.SourceMipIndex;
+
+			blitInfo.dstOffsets[0] = { (int)desc.DestinationOffsetX,(int)desc.DestinationOffsetY,(int)desc.DestinationOffsetZ };
+			blitInfo.dstSubresource.aspectMask = VulkanTextureUtils::GetVkTextureAspects(desc.DestinationAspect);
+			blitInfo.dstSubresource.baseArrayLayer = desc.DestinationArrayIndex;
+			blitInfo.dstSubresource.layerCount = dstTexture->GetMipLevels();
+			blitInfo.dstSubresource.mipLevel = desc.DestinationMipIndex;
+
+			vkCmdBlitImage(mVkCommandBuffer, static_cast<const VulkanTexture*>(srcTexture)->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, static_cast<const VulkanTexture*>(dstTexture)->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blitInfo, VK_FILTER_LINEAR);
+		}
 	}
 
 	void VulkanCommandBuffer::SetTextureMemoryBarrierCore(const Texture* pTexture, const TextureMemoryBarrierDesc& desc)
@@ -165,5 +230,16 @@ namespace Hollow
 
 	void VulkanCommandBuffer::CommitResourceSetsCore(DescriptorSet** ppSets, const byte amount)
 	{
+		VkDescriptorSet* pSets = new VkDescriptorSet[amount];
+		VulkanPipeline* pPipeline = static_cast<VulkanPipeline*>(GetBoundPipeline());
+
+		for (byte i = 0; i < amount; i++)
+		{
+			pSets[i] = static_cast<VulkanDescriptorSet*>(ppSets[i])->GetVkDescriptorSet();
+		}
+
+		vkCmdBindDescriptorSets(mVkCommandBuffer, pPipeline->GetVkPipelineBindPoint(), pPipeline->GetVkPipelineLayout(), 0, amount, pSets, 0, nullptr);
+
+		delete[] pSets;
 	}
 }

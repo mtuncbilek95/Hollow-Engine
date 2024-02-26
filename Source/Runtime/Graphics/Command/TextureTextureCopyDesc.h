@@ -23,5 +23,6 @@ namespace Hollow
 		byte DestinationMipIndex;
 
 		SamplerFiltering Filtering;
+		bool IsBlit;
 	};
 }

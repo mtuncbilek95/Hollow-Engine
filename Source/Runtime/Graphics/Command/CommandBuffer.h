@@ -28,9 +28,9 @@ namespace Hollow
 		CommandBuffer(const CommandBufferDesc& desc, GraphicsDevice* pDevice);
 		virtual ~CommandBuffer() override = default;
 
-		const CommandPool* GetOwnerPool() const { return mOwnerPool; }
-		const GraphicsBuffer* GetBoundIndexBuffer() const { return mBoundIndexBuffer; }
-		const Pipeline* GetBoundPipeline() const { return mBoundPipeline; }
+		CommandPool* GetOwnerPool() const { return mOwnerPool; }
+		GraphicsBuffer* GetBoundIndexBuffer() const { return mBoundIndexBuffer; }
+		Pipeline* GetBoundPipeline() const { return mBoundPipeline; }
 		bool IsRecording() const { return mIsRecording; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::CommandBuffer; }
@@ -62,7 +62,7 @@ namespace Hollow
 		virtual void BindIndexBufferCore(GraphicsBuffer* indexBuffer, const IndexSizeType type) = 0;
 		virtual void DrawIndexedCore(const uint32 indexCount, const uint32 indexOffset, const uint32 vertexOffset) = 0;
 		virtual void DispatchComputeCore(const uint32 groupCountX, const uint32 groupCountY, const uint32 groupCountZ) = 0;
-		virtual void BindPipelineCore(const Pipeline* pipeline) = 0;
+		virtual void BindPipelineCore(Pipeline* pipeline) = 0;
 		virtual void BeginRenderPassCore(RenderPass* renderPass, const Vector4f& clearColor, const byte ColorValueCount, const double clearDepth, const double clearStencil) = 0;
 		virtual void EndRenderPassCore() = 0;
 		virtual void SetViewportsCore(ViewportDesc* viewports, const byte amount) = 0;
