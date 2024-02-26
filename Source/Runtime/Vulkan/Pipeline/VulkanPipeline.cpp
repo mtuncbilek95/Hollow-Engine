@@ -1,6 +1,8 @@
 #include "VulkanPipeline.h"
 
 #include <Runtime/Vulkan/Shader/VulkanShader.h>
+#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorLayout.h>
 
 #include <Runtime/Graphics/Texture/TextureUtils.h>
 #include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
@@ -175,8 +177,8 @@ namespace Hollow
 		for (auto& layout : desc.DescriptorLayout.Layouts)
 		{
 			// TODO: Implement descriptor set layout
-			//const VulkanDescriptorLayout* pLayout = static_cast<const VulkanDescriptorLayout*>(layout.get());
-			//descriptorSetLayouts.push_back(pLayout->GetVkLayout());
+			const VulkanDescriptorLayout* pLayout = static_cast<const VulkanDescriptorLayout*>(layout.get());
+			descriptorSetLayouts.push_back(pLayout->GetVkDescriptorLayout());
 		}
 
 		// Pipeline layout
@@ -205,7 +207,7 @@ namespace Hollow
 		pipelineInfo.pColorBlendState = &colorBlendState;
 		pipelineInfo.pDynamicState = &dynamicState;
 		pipelineInfo.layout = mVkPipelineLayout;
-		//pipelineInfo.renderPass = std::dynamic_pointer_cast<VulkanRenderPass>(desc.RenderPass)->GetVkRenderPass();
+		pipelineInfo.renderPass = std::dynamic_pointer_cast<VulkanRenderPass>(desc.pRenderPass)->GetVkRenderPass();
 		pipelineInfo.subpass = desc.Subpass;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 		pipelineInfo.basePipelineIndex = -1;
@@ -220,6 +222,11 @@ namespace Hollow
 	VulkanPipeline::VulkanPipeline(const ComputePipelineDesc& desc, VulkanDevice* pDevice) : Pipeline(desc, pDevice)
 	{
 		mVkLogicalDevice = pDevice->GetVkLogicalDevice();
+	}
+
+	VkPipelineBindPoint VulkanPipeline::GetVkPipelineBindPoint()
+	{
+		return VulkanPipelineUtils::GetVkPipelineBindPoint(GetBindPoint());
 	}
 
 	void VulkanPipeline::OnShutdown() noexcept

@@ -10,15 +10,14 @@ namespace Hollow
 	{
 	public:
 		GraphicsBuffer(const GraphicsBufferDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
-			mUsage(desc.Usage), mMiscFlags(desc.MiscFlags), mSizeInBytes(desc.SizeInBytes), 
-			mStructureByteStride(desc.StructureByteStride), mMemory(desc.pMemory)
+			mUsage(desc.Usage), mMiscFlags(desc.MiscFlags), mSizeInBytes(desc.SubSizeInBytes * desc.SubCount),
+			mSubSizeInBytes(desc.SubSizeInBytes), mSubCount(desc.SubCount), mMemory(desc.pMemory)
 		{}
 		virtual ~GraphicsBuffer() override = default;
 
 		GraphicsBufferUsage GetUsage() const noexcept { return mUsage; }
 		uint8 GetMiscFlags() const noexcept { return mMiscFlags; }
 		uint32 GetSizeInBytes() const noexcept { return mSizeInBytes; }
-		uint64 GetStructureByteStride() const noexcept { return mStructureByteStride; }
 		SharedPtr<GraphicsMemory> GetInitialData() const noexcept { return mMemory; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override { return GraphicsDeviceObjectType::GraphicsBuffer; }
@@ -27,7 +26,8 @@ namespace Hollow
 		GraphicsBufferUsage mUsage;
 		uint8 mMiscFlags;
 		uint32 mSizeInBytes;
-		uint64 mStructureByteStride;
+		uint32 mSubSizeInBytes;
+		uint32 mSubCount;
 
 		SharedPtr<GraphicsMemory> mMemory;
 	};

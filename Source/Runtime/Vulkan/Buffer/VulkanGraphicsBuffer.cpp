@@ -12,9 +12,11 @@ namespace Hollow
 		// Create the buffer
 		VkBufferCreateInfo bufferInfo = {};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferInfo.size = desc.SizeInBytes;
+		bufferInfo.size = GetSizeInBytes();
 		bufferInfo.usage = VulkanBufferUtils::GetVkBufferUsageFlags(desc.Usage);
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		bufferInfo.flags = VkBufferCreateFlags();
+		bufferInfo.pNext = nullptr;
 
 		DEV_ASSERT(vkCreateBuffer(mVkLogicalDevice, &bufferInfo, nullptr, &mVkGraphicsBuffer) == VK_SUCCESS, 
 						"VulkanGraphicsBuffer", "Failed to create buffer.");

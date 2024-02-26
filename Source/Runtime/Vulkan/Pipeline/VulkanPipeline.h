@@ -15,6 +15,11 @@ namespace Hollow
 		VulkanPipeline(const ComputePipelineDesc& desc, VulkanDevice* pDevice);
 		~VulkanPipeline() override = default;
 
+		VkPipeline GetVkPipeline() const { return mVkPipeline; }
+		VkPipelineLayout GetVkPipelineLayout() const { return mVkPipelineLayout; }
+
+		VkPipelineBindPoint GetVkPipelineBindPoint();
+
 		void OnShutdown() noexcept override;
 	private:
 		VkPipeline mVkPipeline;

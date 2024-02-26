@@ -2,8 +2,10 @@
 
 namespace Hollow
 {
-	CommandBuffer::CommandBuffer(const CommandBufferDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice)
+	CommandBuffer::CommandBuffer(const CommandBufferDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice), 
+		mBoundIndexBuffer(nullptr), mBoundPipeline(nullptr), mBoundRenderPass(nullptr), mIsRecording(false)
 	{
+		mIsRecording = false;
 	}
 
 	void CommandBuffer::BeginRecording()
@@ -17,55 +19,21 @@ namespace Hollow
 		EndRecordingCore();
 		mIsRecording = false;
 
-		mBoundVertexBuffer.reset();
-		mBoundIndexBuffer.reset();
-		mBoundPipeline.reset();
+		mBoundIndexBuffer = nullptr;
+		mBoundPipeline = nullptr;
+		mBoundRenderPass = nullptr;
 	}
 
-	void CommandBuffer::BeginRenderPass(SharedPtr<RenderPass>& renderPass, const Vector4f& clearColor)
+	void CommandBuffer::BindVertexBuffers(GraphicsBuffer** vertexBuffer, byte amount)
 	{
-		BeginRenderPassCore(renderPass, clearColor);
-		mBoundRenderPass = renderPass;
+		BindVertexBuffersCore(vertexBuffer, amount);
 	}
 
-	void CommandBuffer::EndRenderPass()
-	{
-		EndRenderPassCore();
-		mBoundRenderPass.reset();
-	}
-
-	void CommandBuffer::BindVertexBuffer(const SharedPtr<GraphicsBuffer>& vertexBuffer)
-	{
-		BindVertexBufferCore(vertexBuffer);
-		mBoundVertexBuffer = vertexBuffer;
-	}
-
-	void CommandBuffer::BindIndexBuffer(const SharedPtr<GraphicsBuffer>& indexBuffer, const IndexSizeType type)
+	void CommandBuffer::BindIndexBuffer(GraphicsBuffer* indexBuffer, const IndexSizeType type)
 	{
 		BindIndexBufferCore(indexBuffer, type);
+
 		mBoundIndexBuffer = indexBuffer;
-	}
-
-	void CommandBuffer::BindGraphicsPipeline(const SharedPtr<Pipeline>& pipeline)
-	{
-		BindGraphicsPipelineCore(pipeline);
-		mBoundPipeline = pipeline;
-	}
-
-	void CommandBuffer::BindComputePipeline(const SharedPtr<Pipeline>& pipeline)
-	{
-		BindComputePipelineCore(pipeline);
-		mBoundPipeline = pipeline;
-	}
-
-	void CommandBuffer::SetViewport(const Array<ViewportDesc> viewports, const byte amount)
-	{
-		SetViewportCore(viewports, amount);
-	}
-
-	void CommandBuffer::SetScissor(const Array<ScissorDesc> scissors, const byte amount)
-	{
-		SetScissorCore(scissors, amount);
 	}
 
 	void CommandBuffer::DrawIndexed(const uint32 indexCount, const uint32 indexOffset, const uint32 vertexOffset)
@@ -73,23 +41,76 @@ namespace Hollow
 		DrawIndexedCore(indexCount, indexOffset, vertexOffset);
 	}
 
-	void CommandBuffer::CopyBufferToBuffer(const SharedPtr<GraphicsBuffer>& srcBuffer, const SharedPtr<GraphicsBuffer>& dstBuffer, const BufferBufferCopyDesc& desc)
+	void CommandBuffer::DispatchCompute(const uint32 groupCountX, const uint32 groupCountY, const uint32 groupCountZ)
+	{
+		DispatchComputeCore(groupCountX, groupCountY, groupCountZ);
+	}
+
+	void CommandBuffer::BindPipeline(Pipeline* pipeline)
+	{
+		BindPipelineCore(pipeline);
+
+		mBoundPipeline = pipeline;
+	}
+
+	void CommandBuffer::BeginRenderPass(RenderPass* renderPass, const Vector4f& clearColor, const byte ColorValueCount, const double clearDepth, const double clearStencil)
+	{
+		BeginRenderPassCore(renderPass, clearColor, ColorValueCount, clearDepth, clearStencil);
+
+		mBoundRenderPass = renderPass;
+	}
+
+	void CommandBuffer::EndRenderPass()
+	{
+		EndRenderPassCore();
+
+		mBoundRenderPass = nullptr;
+	}
+
+	void CommandBuffer::SetViewports(ViewportDesc* viewports, const byte amount)
+	{
+		SetViewportsCore(viewports, amount);
+	}
+
+	void CommandBuffer::SetScissors(ScissorDesc* scissors, const byte amount)
+	{
+		SetScissorsCore(scissors, amount);
+	}
+
+	void CommandBuffer::ClearBounds()
+	{
+		mBoundIndexBuffer = nullptr;
+		mBoundPipeline = nullptr;
+		mBoundRenderPass = nullptr;
+	}
+
+	void CommandBuffer::CopyBufferToBuffer(const GraphicsBuffer* srcBuffer, const GraphicsBuffer* dstBuffer, const BufferBufferCopyDesc& desc)
 	{
 		CopyBufferToBufferCore(srcBuffer, dstBuffer, desc);
 	}
 
-	void CommandBuffer::CopyBufferToTexture(const SharedPtr<GraphicsBuffer>& srcBuffer, const SharedPtr<Texture>& dstTexture, const BufferTextureCopyDesc& desc)
+	void CommandBuffer::CopyBufferToTexture(const GraphicsBuffer* srcBuffer, const Texture* dstTexture, const BufferTextureCopyDesc& desc)
 	{
 		CopyBufferToTextureCore(srcBuffer, dstTexture, desc);
 	}
 
-	void CommandBuffer::CopyTextureToTexture(const SharedPtr<Texture>& srcTexture, const SharedPtr<Texture>& dstTexture, const TextureTextureCopyDesc& desc)
+	void CommandBuffer::CopyTextureToTexture(const Texture* srcTexture, const Texture* dstTexture, const TextureTextureCopyDesc& desc)
 	{
 		CopyTextureToTextureCore(srcTexture, dstTexture, desc);
 	}
 
-	void CommandBuffer::ClearTexture(const SharedPtr<Texture>& textureView, const Vector4f& clearColor)
+	void CommandBuffer::SetTextureMemoryBarrier(const Texture* pTexture, const TextureMemoryBarrierDesc& desc)
 	{
-		ClearTextureCore(textureView, clearColor);
+		SetTextureMemoryBarrierCore(pTexture, desc);
+	}
+
+	void CommandBuffer::SetBufferMemoryBarrier(const GraphicsBuffer* pBuffer, const BufferMemoryBarrierDesc& desc)
+	{
+		SetBufferMemoryBarrierCore(pBuffer, desc);
+	}
+
+	void CommandBuffer::CommitResourceSets(DescriptorSet** ppSets, const byte amount)
+	{
+		CommitResourceSetsCore(ppSets, amount);
 	}
 }

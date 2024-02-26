@@ -16,6 +16,8 @@
 #include <Runtime/Vulkan/Fence/VulkanFence.h>
 #include <Runtime/Vulkan/Semaphore/VulkanSemaphore.h>
 #include <Runtime/Vulkan/Buffer/VulkanGraphicsBuffer.h>
+#include <Runtime/Vulkan/Command/VulkanCommandBuffer.h>
+#include <Runtime/Vulkan/Command/VulkanCommandPool.h>
 
 namespace Hollow
 {
@@ -268,12 +270,12 @@ namespace Hollow
 
 	SharedPtr<CommandBuffer> VulkanDevice::CreateCommandBufferCore(const CommandBufferDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanCommandBuffer>(desc, this);
 	}
 
 	SharedPtr<CommandPool> VulkanDevice::CreateCommandPoolCore(const CommandPoolDesc& desc)
 	{
-		return nullptr;
+		return std::make_shared<VulkanCommandPool>(desc, this);
 	}
 
 	SharedPtr<DescriptorSet> VulkanDevice::CreateDescriptorSetCore(const DescriptorSetDesc& desc)

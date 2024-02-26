@@ -12,8 +12,8 @@ namespace Hollow
 	{
 		GraphicsBufferUsage Usage;
 		uint8 MiscFlags;
-		uint32 SizeInBytes;
-		uint64 StructureByteStride;
+		uint32 SubSizeInBytes;
+		uint32 SubCount;
 
 		SharedPtr<GraphicsMemory> pMemory;
 	};

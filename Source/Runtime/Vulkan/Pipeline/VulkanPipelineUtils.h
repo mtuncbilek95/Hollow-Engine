@@ -282,6 +282,18 @@ namespace Hollow
 			return flags;
 		}
 
+		static VkPipelineBindPoint GetVkPipelineBindPoint(PipelineBindPoint bindPoint)
+		{
+			switch (bindPoint)
+			{
+			case PipelineBindPoint::Graphics:
+				return VK_PIPELINE_BIND_POINT_GRAPHICS;
+			case PipelineBindPoint::Compute:
+				return VK_PIPELINE_BIND_POINT_COMPUTE;
+			default:
+				return VK_PIPELINE_BIND_POINT_GRAPHICS;
+			}
+		}
 	public:
 		VulkanPipelineUtils() = delete;
 		~VulkanPipelineUtils() = delete;

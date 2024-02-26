@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API GraphicsQueueType : byte
+	enum class RUNTIME_API CommandPoolType : byte
 	{
 		Graphics = 1,
 		Compute = 2,

@@ -4,8 +4,9 @@
 
 namespace Hollow
 {
+	class CommandPool;
 	struct RUNTIME_API CommandBufferDesc
 	{
-
+		CommandPool* pCommandPool;
 	};
 }

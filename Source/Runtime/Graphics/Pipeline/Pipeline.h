@@ -26,6 +26,7 @@ namespace Hollow
 		{}
 		virtual ~Pipeline() override = default;
 
+		PipelineBindPoint GetBindPoint() const { return mBindPoint; }
 		const Array<SharedPtr<Shader>>& GetShaders() const { return mGraphicsShaders; }
 		const SharedPtr<Shader>& GetComputeShader() const { return mComputeShader; }
 		const InputLayoutDesc& GetInputLayout() const { return mInputLayout; }
