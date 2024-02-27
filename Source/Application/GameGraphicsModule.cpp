@@ -16,7 +16,6 @@ namespace Hollow
 
 	void GameGraphicsModule::Update()
 	{
-		mSwapchain->Present();
 	}
 
 	void GameGraphicsModule::Stop()

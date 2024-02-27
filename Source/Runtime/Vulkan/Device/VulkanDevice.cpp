@@ -19,6 +19,11 @@
 #include <Runtime/Vulkan/Command/VulkanCommandBuffer.h>
 #include <Runtime/Vulkan/Command/VulkanCommandPool.h>
 
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorUtils.h>
+#include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
+
+#include <stdio.h>
+
 namespace Hollow
 {
 	PFN_vkCmdBeginRenderingKHR VulkanDevice::vkCmdBeginRenderingKHR = NULL;
@@ -343,15 +348,203 @@ namespace Hollow
 		DEV_ASSERT(vkQueueWaitIdle(queue) == VK_SUCCESS, "VulkanDevice", "Failed to wait for queue to be idle.");
 	}
 
-	void VulkanDevice::UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc)
+	void VulkanDevice::UpdateCPUBufferCore(GraphicsBuffer* buffer, const GraphicsBufferUpdateDesc& desc)
 	{
+		const VulkanMemory* pMemory = static_cast<VulkanMemory*>(buffer->GetInitialData().get());
+		const VulkanGraphicsBuffer* pBuffer = static_cast<VulkanGraphicsBuffer*>(buffer);
+
+		// Map the memory
+		byte* pData = nullptr;
+		DEV_ASSERT(vkMapMemory(mVkLogicalDevice, pMemory->GetVkDeviceMemory(), pBuffer->GetVkMemoryOffset() + desc.OffsetInBytes, desc.SizeInBytes, 0, (void**)&pData) == VK_SUCCESS, 
+			"VulkanDevice", "Failed to map memory.");
+		// Copy the data
+		memcpy(pData, desc.pData, desc.SizeInBytes);
+
+		// Unmap the memory
+		vkUnmapMemory(mVkLogicalDevice, pMemory->GetVkDeviceMemory());
 	}
 
-	void VulkanDevice::UpdateDescriptorSetCore(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc)
+	void VulkanDevice::UpdateDescriptorSetCore(DescriptorSet* descriptorSet, const DescriptorSetUpdateDesc& desc)
 	{
+		VulkanDescriptorSet* pSet = static_cast<VulkanDescriptorSet*>(descriptorSet);
+
+		// Create arrays for image, buffer and write info.
+		VkWriteDescriptorSet writeInfo[32];
+		VkDescriptorImageInfo imageInfo[32];
+		VkDescriptorBufferInfo bufferInfo[32];
+
+		uint32 bufferIndex = 0;
+		uint32 imageIndex = 0;
+
+		// Fill the write descriptor set
+		for (byte i = 0; i < desc.Entries.size(); i++)
+		{
+			const DescriptorSetUpdateEntry& entry = desc.Entries[i];
+
+			VkWriteDescriptorSet writeSet = {};
+			writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeSet.descriptorType = VulkanDescriptorUtils::GetVkDescriptorType(entry.Type);
+			writeSet.descriptorCount = entry.Count;
+			writeSet.dstArrayElement = entry.ArrayElement;
+			writeSet.dstBinding = entry.Binding;
+			writeSet.dstSet = pSet->GetVkDescriptorSet();
+			writeSet.pNext = nullptr;
+			writeSet.pBufferInfo = nullptr;
+			writeSet.pImageInfo = nullptr;
+
+			switch (entry.Type)
+			{
+			case DescriptorResourceType::Sampler:
+			{
+				VulkanSampler* pSampler = static_cast<VulkanSampler*>(entry.pResource.get());
+
+				VkDescriptorImageInfo samplerInfo = {};
+				samplerInfo.imageView = VK_NULL_HANDLE;
+				samplerInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				samplerInfo.sampler = pSampler->GetVkSampler();
+				imageInfo[imageIndex] = samplerInfo;
+				writeSet.pImageInfo = &imageInfo[imageIndex];
+				writeSet.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+				imageIndex++;
+				break;
+			}
+			case DescriptorResourceType::SampledTexture:
+			{
+				VulkanTextureView* pTextureView = static_cast<VulkanTextureView*>(entry.pResource.get());
+
+				VkDescriptorImageInfo textureInfo = {};
+				textureInfo.imageView = pTextureView->GetVkTextureView();
+				textureInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				textureInfo.sampler = VK_NULL_HANDLE;
+				imageInfo[imageIndex] = textureInfo;
+				writeSet.pImageInfo = &imageInfo[imageIndex];
+				writeSet.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+				imageIndex++;
+				break;
+			}
+			case DescriptorResourceType::StorageTexture:
+			{
+				VulkanTextureView* pTextureView = static_cast<VulkanTextureView*>(entry.pResource.get());
+
+				VkDescriptorImageInfo textureInfo = {};
+				textureInfo.imageView = pTextureView->GetVkTextureView();
+				textureInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+				textureInfo.sampler = VK_NULL_HANDLE;
+				imageInfo[imageIndex] = textureInfo;
+				writeSet.pImageInfo = &imageInfo[imageIndex];
+				writeSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+				imageIndex++;
+				break;
+			}
+			case DescriptorResourceType::ConstantBuffer:
+			{
+				VulkanGraphicsBuffer* pBuffer = static_cast<VulkanGraphicsBuffer*>(entry.pResource.get());
+
+				VkDescriptorBufferInfo bufferInfo = {};
+				bufferInfo.buffer = pBuffer->GetVkBuffer();
+				bufferInfo.offset = entry.BufferOffsetInBytes;
+				bufferInfo.range = pBuffer->GetSizeInBytes();
+				writeInfo[bufferIndex].pBufferInfo = &bufferInfo;
+				writeSet.pBufferInfo = &bufferInfo;
+				writeSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				bufferIndex++;
+				break;
+			}
+			case DescriptorResourceType::StorageBuffer:
+			{
+				VulkanGraphicsBuffer* pBuffer = static_cast<VulkanGraphicsBuffer*>(entry.pResource.get());
+
+				VkDescriptorBufferInfo bufferInfo = {};
+				bufferInfo.buffer = pBuffer->GetVkBuffer();
+				bufferInfo.offset = entry.BufferOffsetInBytes;
+				bufferInfo.range = pBuffer->GetSizeInBytes();
+				writeInfo[bufferIndex].pBufferInfo = &bufferInfo;
+				writeSet.pBufferInfo = &bufferInfo;
+				writeSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+				bufferIndex++;
+				break;
+			}
+			default:
+				break;
+			}
+
+			writeInfo[i] = writeSet;
+		}
+
+		vkUpdateDescriptorSets(mVkLogicalDevice, desc.Entries.size(), writeInfo, 0, nullptr);
 	}
 
-	void VulkanDevice::SubmitCommandBuffersCore(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence)
+	void VulkanDevice::CopyDescriptorSetCore(DescriptorSet* pSrcDescriptorSet, DescriptorSet* pDstDescriptorSet, const DescriptorSetCopyDesc& desc)
 	{
+		VulkanDescriptorSet* pSrcSet = static_cast<VulkanDescriptorSet*>(pSrcDescriptorSet);
+		VulkanDescriptorSet* pDstSet = static_cast<VulkanDescriptorSet*>(pDstDescriptorSet);
+
+		VkCopyDescriptorSet copyInfos[32];
+
+		for (byte i = 0; i < desc.Entries.size(); i++)
+		{
+			const DescriptorSetCopyEntry& entry = desc.Entries[i];
+
+			VkCopyDescriptorSet copyInfo = {};
+			copyInfo.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
+			copyInfo.srcSet = pSrcSet->GetVkDescriptorSet();
+			copyInfo.srcBinding = entry.SourceBinding;
+			copyInfo.srcArrayElement = entry.SourceArrayElement;
+
+			copyInfo.dstSet = pDstSet->GetVkDescriptorSet();
+			copyInfo.dstBinding = entry.DestinationBinding;
+			copyInfo.dstArrayElement = entry.DestinationArrayElement;
+
+			copyInfo.descriptorCount = entry.DescriptorCount;
+
+			copyInfos[i] = copyInfo;
+		}
+	
+		vkUpdateDescriptorSets(mVkLogicalDevice, 0, nullptr, desc.Entries.size(), copyInfos);
+	}
+
+	void VulkanDevice::SubmitCommandBuffersCore(CommandBuffer** ppCmdLists, const byte cmdListCount, const GraphicsQueue* pTargetQueue, 
+		Semaphore** ppSignalSemaphores, const uint32 signalSemaphoreCount, Semaphore** ppWaitSemaphores, const PipelineStageFlags* pWaitStageFlags, 
+		const uint32 waitSemaphoreCount, const Fence* pSignalFence)
+	{
+		VkSemaphore signalSemaphores[32];
+		VkSemaphore waitSemaphores[32];
+		VkPipelineStageFlags waitStages[32];
+		VkCommandBuffer commandBuffers[32];
+		VkQueue targetQueue = ((VulkanQueue*)pTargetQueue)->GetVkQueue();
+		VkFence signalFence = ((VulkanFence*)pSignalFence)->GetVkFence();
+
+		for (byte i = 0; i < cmdListCount; i++)
+		{
+			commandBuffers[i] = ((VulkanCommandBuffer*)ppCmdLists[i])->GetVkCommandBuffer();
+		}
+
+		for (byte i = 0; i < signalSemaphoreCount; i++)
+		{
+			signalSemaphores[i] = ((VulkanSemaphore*)ppSignalSemaphores[i])->GetVkSemaphore();
+		}
+
+		for (byte i = 0; i < waitSemaphoreCount; i++)
+		{
+			waitSemaphores[i] = ((VulkanSemaphore*)ppWaitSemaphores[i])->GetVkSemaphore();
+		}
+
+		for (byte i = 0; i < waitSemaphoreCount; i++)
+		{
+			waitStages[i] = VulkanPipelineUtils::GetVkPipelineStageFlags(pWaitStageFlags[i]);
+		}
+
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = cmdListCount;
+		submitInfo.pCommandBuffers = commandBuffers;
+		submitInfo.signalSemaphoreCount = signalSemaphoreCount;
+		submitInfo.pSignalSemaphores = signalSemaphores;
+		submitInfo.waitSemaphoreCount = waitSemaphoreCount;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		submitInfo.pWaitDstStageMask = waitStages;
+		submitInfo.pNext = nullptr;
+
+		DEV_ASSERT(vkQueueSubmit(targetQueue, cmdListCount, &submitInfo, signalFence) == VK_SUCCESS, "VulkanDevice", "Failed to submit command buffers.");
 	}
 }

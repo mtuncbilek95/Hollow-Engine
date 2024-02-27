@@ -24,7 +24,7 @@ namespace Hollow
 		void OnShutdown() noexcept override;
 
 	protected:
-		void PresentCore() override;
+		void PresentCore(Semaphore** ppSemaphores, uint32 waitSemaphoreCount) override;
 		void ResizeCore(Vector2u newSize) override;
 	private:
 		VkSurfaceKHR mVkSurface;

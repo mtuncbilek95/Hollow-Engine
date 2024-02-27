@@ -70,7 +70,7 @@ namespace Hollow
 	protected:
 		virtual SharedPtr<Swapchain> CreateSwapchainCore(const SwapchainDesc& desc) override;
 		virtual SharedPtr<Shader> CreateShaderCore(const ShaderDesc& desc) override;
-		virtual SharedPtr<GraphicsBuffer>CreateGraphicsBufferCore(const GraphicsBufferDesc& desc) override;
+		virtual SharedPtr<GraphicsBuffer> CreateGraphicsBufferCore(const GraphicsBufferDesc& desc) override;
 		virtual SharedPtr<Texture> CreateTextureCore(const TextureDesc& desc) override;
 		virtual SharedPtr<TextureView> CreateTextureViewCore(const TextureViewDesc& desc) override;
 		virtual SharedPtr<Sampler> CreateSamplerCore(const SamplerDesc& desc) override;
@@ -91,9 +91,12 @@ namespace Hollow
 		virtual void WaitForFencesCore(Fence** ppFences, byte amount) override;
 		virtual void WaitForIdleDeviceCore() override;
 		virtual void WaitQueueDefaultCore(const GraphicsQueueType type) override;
-		virtual void UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc) override;
-		virtual void UpdateDescriptorSetCore(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc) override;
-		virtual void SubmitCommandBuffersCore(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence) override;
+		virtual void UpdateCPUBufferCore(GraphicsBuffer* buffer, const GraphicsBufferUpdateDesc& desc) override;
+		virtual void UpdateDescriptorSetCore(DescriptorSet* descriptorSet, const DescriptorSetUpdateDesc& desc) override;
+		virtual void CopyDescriptorSetCore(DescriptorSet* pSrcDescriptorSet, DescriptorSet* pDstDescriptorSet, const DescriptorSetCopyDesc& desc) override;
+		virtual void SubmitCommandBuffersCore(CommandBuffer** ppCmdLists, const byte cmdListCount, const GraphicsQueue* pTargetQueue,
+			Semaphore** ppSignalSemaphores, const uint32 signalSemaphoreCount, Semaphore** ppWaitSemaphores, const PipelineStageFlags* pWaitStageFlags,
+			const uint32 waitSemaphoreCount, const Fence* pSignalFence) override;
 
 	private:
 		QueueFamily mGraphicsQueueFamily;
@@ -103,3 +106,5 @@ namespace Hollow
 		VkPhysicalDevice mVkPhysicalDevice;
 	};
 }
+
+

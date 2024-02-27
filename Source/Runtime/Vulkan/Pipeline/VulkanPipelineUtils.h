@@ -20,6 +20,7 @@
 #include <Runtime/Graphics/Pipeline/InputLayout/MeshTopology.h>
 
 #include <Runtime/Graphics/Pipeline/PipelineStageFlags.h>
+#include <Runtime/Graphics/Pipeline/PipelineBindPoint.h>
 
 #include <Runtime/Vulkan/Common/VulkanCommonUtils.h>
 

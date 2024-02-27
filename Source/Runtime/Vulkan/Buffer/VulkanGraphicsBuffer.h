@@ -16,6 +16,8 @@ namespace Hollow
 		~VulkanGraphicsBuffer() override = default;
 
 		VkBuffer GetVkBuffer() const noexcept { return mVkGraphicsBuffer; }
+		uint64 GetVkMemoryOffset() const noexcept { return mVkMemoryOffset; }
+		uint64 GetVkMemorySize() const noexcept { return mVkMemorySize; }
 
 		void OnShutdown() noexcept override;
 	

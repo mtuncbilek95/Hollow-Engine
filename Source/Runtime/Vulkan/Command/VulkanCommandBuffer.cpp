@@ -1,11 +1,15 @@
 #include "VulkanCommandBuffer.h"
 
 #include <Runtime/Vulkan/Texture/VulkanTextureUtils.h>
+#include <Runtime/Vulkan/Memory/VulkanMemoryUtils.h>
+#include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
+
 #include <Runtime/Vulkan/Command/VulkanCommandPool.h>
 #include <Runtime/Vulkan/Buffer/VulkanGraphicsBuffer.h>
 #include <Runtime/Vulkan/Texture/VulkanTexture.h>
 #include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
 #include <Runtime/Vulkan/Descriptor/VulkanDescriptorSet.h>
+#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
 
 namespace Hollow
 {
@@ -54,14 +58,16 @@ namespace Hollow
 
 	void VulkanCommandBuffer::EndRecordingCore()
 	{
+		// End recording
 		DEV_ASSERT(vkEndCommandBuffer(mVkCommandBuffer) == VK_SUCCESS, "VulkanCommandBuffer", "Failed to end recording command buffer");
 	}
 
 	void VulkanCommandBuffer::BindVertexBuffersCore(GraphicsBuffer** vertexBuffer, byte amount)
 	{
-		VkBuffer* pBuffers = new VkBuffer[amount];
-		VkDeviceSize* pOffsets = new VkDeviceSize[amount];
+		VkBuffer pBuffers[32];
+		VkDeviceSize pOffsets[32];
 
+		// Calculate offsets
 		uint64 offset = 0;
 		for (byte i = 0; i < amount; i++)
 		{
@@ -72,9 +78,6 @@ namespace Hollow
 		}
 
 		vkCmdBindVertexBuffers(mVkCommandBuffer, 0, amount, pBuffers, pOffsets);
-
-		delete[] pBuffers;
-		delete[] pOffsets;
 	}
 
 	void VulkanCommandBuffer::BindIndexBufferCore(GraphicsBuffer* indexBuffer, const IndexSizeType type)
@@ -103,7 +106,36 @@ namespace Hollow
 
 	void VulkanCommandBuffer::BeginRenderPassCore(RenderPass* renderPass, const Vector4f& clearColor, const byte ColorValueCount, const double clearDepth, const double clearStencil)
 	{
+		// Create render pass begin info
+		VkRenderPassBeginInfo renderPassInfo = {};
+		renderPassInfo.framebuffer = static_cast<VulkanRenderPass*>(renderPass)->GetVkFramebuffer();
+		renderPassInfo.renderPass = static_cast<VulkanRenderPass*>(renderPass)->GetVkRenderPass();
+		renderPassInfo.renderArea.offset = { 0, 0 };
+		renderPassInfo.renderArea.extent = { renderPass->GetFramebufferSize().x, renderPass->GetFramebufferSize().y };
 
+		// Add clear values
+		VkClearValue clearValues[32];
+		uint32 clearValueCount = static_cast<uint32>(ColorValueCount);
+		for (byte i = 0; i < ColorValueCount; i++)
+		{
+			VkClearValue clearValue = {};
+			clearValue.color = { clearColor.x, clearColor.y, clearColor.z, clearColor.w };
+			clearValues[i] = clearValue;
+		}
+
+		// If depth or stencil is set, add it to clear values
+		if (clearDepth != -1.0 || clearStencil != -1.0)
+		{
+			VkClearValue depthStencilValue = {};
+			depthStencilValue.depthStencil = { static_cast<float>(clearDepth), static_cast<uint32>(clearStencil) };
+			clearValues[clearValueCount] = depthStencilValue;
+			clearValueCount++;
+		}
+
+		renderPassInfo.clearValueCount = clearValueCount;
+		renderPassInfo.pClearValues = clearValues;
+
+		vkCmdBeginRenderPass(mVkCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	}
 
 	void VulkanCommandBuffer::EndRenderPassCore()
@@ -113,7 +145,7 @@ namespace Hollow
 
 	void VulkanCommandBuffer::SetViewportsCore(ViewportDesc* viewports, const byte amount)
 	{
-		VkViewport* pVkViewports = new VkViewport[amount];
+		VkViewport pVkViewports[32];
 
 		for (byte i = 0; i < amount; i++)
 		{
@@ -126,13 +158,11 @@ namespace Hollow
 		}
 
 		vkCmdSetViewport(mVkCommandBuffer, 0, amount, pVkViewports);
-
-		delete[] pVkViewports;
 	}
 
 	void VulkanCommandBuffer::SetScissorsCore(ScissorDesc* scissors, const byte amount)
 	{
-		VkRect2D* pVkScissors = new VkRect2D[amount];
+		VkRect2D pVkScissors[32];
 
 		for (byte i = 0; i < amount; i++)
 		{
@@ -141,8 +171,6 @@ namespace Hollow
 		}
 
 		vkCmdSetScissor(mVkCommandBuffer, 0, amount, pVkScissors);
-
-		delete[] pVkScissors;
 	}
 
 	void VulkanCommandBuffer::CopyBufferToBufferCore(const GraphicsBuffer* srcBuffer, const GraphicsBuffer* dstBuffer, const BufferBufferCopyDesc& desc)
@@ -222,15 +250,52 @@ namespace Hollow
 
 	void VulkanCommandBuffer::SetTextureMemoryBarrierCore(const Texture* pTexture, const TextureMemoryBarrierDesc& desc)
 	{
+
+		VulkanDevice* pDevice = static_cast<VulkanDevice*>(GetOwnerDevice());
+
+		VkImageMemoryBarrier barrier = {};
+		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		barrier.image = static_cast<const VulkanTexture*>(pTexture)->GetVkImage();
+		barrier.oldLayout = VulkanTextureUtils::GetVkTextureLayout(desc.SourceLayout);
+		barrier.newLayout = VulkanTextureUtils::GetVkTextureLayout(desc.DestinationLayout);
+		barrier.srcQueueFamilyIndex = pDevice->CatchQueueFamilyIndex(desc.SourceQueue);
+		barrier.dstQueueFamilyIndex = pDevice->CatchQueueFamilyIndex(desc.DestinationQueue);
+		barrier.image = static_cast<const VulkanTexture*>(pTexture)->GetVkImage();
+		barrier.subresourceRange.aspectMask = VulkanTextureUtils::GetVkTextureAspects(desc.AspectFlags);
+		barrier.subresourceRange.baseMipLevel = desc.MipIndex;
+		barrier.subresourceRange.levelCount = pTexture->GetMipLevels();
+		barrier.subresourceRange.baseArrayLayer = desc.ArrayIndex;
+		barrier.subresourceRange.layerCount = pTexture->GetArraySize();
+		barrier.srcAccessMask = VulkanMemoryUtils::GetVkAccessFlags(desc.SourceAccessFlags);
+		barrier.dstAccessMask = VulkanMemoryUtils::GetVkAccessFlags(desc.DestinationAccessFlags);
+		barrier.pNext = nullptr;
+
+		vkCmdPipelineBarrier(mVkCommandBuffer, VulkanPipelineUtils::GetVkPipelineStageFlags(desc.SourceStageFlags), VulkanPipelineUtils::GetVkPipelineStageFlags(desc.DestinationStageFlags), 
+			0, 0, nullptr, 0, nullptr, 1, &barrier);
 	}
 
 	void VulkanCommandBuffer::SetBufferMemoryBarrierCore(const GraphicsBuffer* pBuffer, const BufferMemoryBarrierDesc& desc)
 	{
+		VulkanDevice* pDevice = static_cast<VulkanDevice*>(GetOwnerDevice());
+
+		VkBufferMemoryBarrier barrier = {};
+		barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+		barrier.buffer = static_cast<const VulkanGraphicsBuffer*>(pBuffer)->GetVkBuffer();
+		barrier.offset = desc.OffsetInBytes;
+		barrier.size = desc.SizeInBytes;
+		barrier.srcQueueFamilyIndex = pDevice->CatchQueueFamilyIndex(desc.SourceQueue);
+		barrier.dstQueueFamilyIndex = pDevice->CatchQueueFamilyIndex(desc.DestinationQueue);
+		barrier.srcAccessMask = VulkanMemoryUtils::GetVkAccessFlags(desc.SourceAccessFlags);
+		barrier.dstAccessMask = VulkanMemoryUtils::GetVkAccessFlags(desc.DestinationAccessFlags);
+		barrier.pNext = nullptr;
+
+		vkCmdPipelineBarrier(mVkCommandBuffer, VulkanPipelineUtils::GetVkPipelineStageFlags(desc.SourceStageFlags), VulkanPipelineUtils::GetVkPipelineStageFlags(desc.DestinationStageFlags),
+						0, 0, nullptr, 1, &barrier, 0, nullptr);
 	}
 
 	void VulkanCommandBuffer::CommitResourceSetsCore(DescriptorSet** ppSets, const byte amount)
 	{
-		VkDescriptorSet* pSets = new VkDescriptorSet[amount];
+		VkDescriptorSet pSets[32];
 		VulkanPipeline* pPipeline = static_cast<VulkanPipeline*>(GetBoundPipeline());
 
 		for (byte i = 0; i < amount; i++)
@@ -239,7 +304,5 @@ namespace Hollow
 		}
 
 		vkCmdBindDescriptorSets(mVkCommandBuffer, pPipeline->GetVkPipelineBindPoint(), pPipeline->GetVkPipelineLayout(), 0, amount, pSets, 0, nullptr);
-
-		delete[] pSets;
 	}
 }

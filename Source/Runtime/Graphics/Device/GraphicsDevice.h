@@ -15,6 +15,7 @@
 
 #include <Runtime/Graphics/Pipeline/GraphicsPipelineDesc.h>
 #include <Runtime/Graphics/Pipeline/ComputePipelineDesc.h>
+#include <Runtime/Graphics/Pipeline/PipelineStageFlags.h>
 
 #include <Runtime/Graphics/Texture/TextureDesc.h>
 #include <Runtime/Graphics/Texture/TextureViewDesc.h>
@@ -27,6 +28,7 @@
 #include <Runtime/Graphics/Descriptor/DescriptorPoolDesc.h>
 #include <Runtime/Graphics/Descriptor/DescriptorLayoutDesc.h>
 #include <Runtime/Graphics/Descriptor/DescriptorSetUpdateDesc.h>
+#include <Runtime/Graphics/Descriptor/DescriptorSetCopyDesc.h>
 
 #include <Runtime/Graphics/RenderPass/RenderPassDesc.h>
 
@@ -94,9 +96,12 @@ namespace Hollow
 		void WaitForFences(Fence** ppFences, byte amount);
 		void WaitForIdleDevice();
 		void WaitQueueDefault(const GraphicsQueueType type);
-		void UpdateCPUBuffer(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc);
-		void UpdateDescriptorSet(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc);
-		void SubmitCommandBuffers(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence);
+		void UpdateCPUBuffer(GraphicsBuffer* buffer, const GraphicsBufferUpdateDesc& desc);
+		void UpdateDescriptorSet(DescriptorSet* descriptorSet, const DescriptorSetUpdateDesc& desc);
+		void CopyDescriptorSet(DescriptorSet* pSrcDescriptorSet, DescriptorSet* pDstDescriptorSet, const DescriptorSetCopyDesc& desc);
+		void SubmitCommandBuffers(CommandBuffer** ppCmdLists, const byte cmdListCount, const GraphicsQueue* pTargetQueue,
+			Semaphore** ppSignalSemaphores, const uint32 signalSemaphoreCount, Semaphore** ppWaitSemaphores, const PipelineStageFlags* pWaitStageFlags,
+			const uint32 waitSemaphoreCount, const Fence* pSignalFence);
 
 		const SharedPtr<Swapchain>& GetSwapchain() const { return mSwapchain; }
 		const SharedPtr<GraphicsAdapter>& GetGraphicsAdapter() const { return mGraphicsAdapter; }
@@ -108,7 +113,7 @@ namespace Hollow
 	protected:
 		virtual SharedPtr<Swapchain> CreateSwapchainCore(const SwapchainDesc& desc) = 0;
 		virtual SharedPtr<Shader> CreateShaderCore(const ShaderDesc& desc) = 0;
-		virtual SharedPtr<GraphicsBuffer>CreateGraphicsBufferCore(const GraphicsBufferDesc& desc) = 0;
+		virtual SharedPtr<GraphicsBuffer> CreateGraphicsBufferCore(const GraphicsBufferDesc& desc) = 0;
 		virtual SharedPtr<Texture> CreateTextureCore(const TextureDesc& desc) = 0;
 		virtual SharedPtr<TextureView> CreateTextureViewCore(const TextureViewDesc& desc) = 0;
 		virtual SharedPtr<Sampler> CreateSamplerCore(const SamplerDesc& desc) = 0;
@@ -129,9 +134,12 @@ namespace Hollow
 		virtual void WaitForFencesCore(Fence** ppFences, byte amount) = 0;
 		virtual void WaitForIdleDeviceCore() = 0;
 		virtual void WaitQueueDefaultCore(const GraphicsQueueType type) = 0;
-		virtual void UpdateCPUBufferCore(GraphicsBuffer** buffer, const GraphicsBufferUpdateDesc& desc) = 0;
-		virtual void UpdateDescriptorSetCore(DescriptorSet** descriptorSet, const DescriptorSetUpdateDesc& desc) = 0;
-		virtual void SubmitCommandBuffersCore(CommandBuffer** commandBuffers, const byte amount, const GraphicsQueueType type, const Fence* pFence) = 0;
+		virtual void UpdateCPUBufferCore(GraphicsBuffer* buffer, const GraphicsBufferUpdateDesc& desc) = 0;
+		virtual void UpdateDescriptorSetCore(DescriptorSet* descriptorSet, const DescriptorSetUpdateDesc& desc) = 0;
+		virtual void CopyDescriptorSetCore(DescriptorSet* pSrcDescriptorSet, DescriptorSet* pDstDescriptorSet, const DescriptorSetCopyDesc& desc) = 0;
+		virtual void SubmitCommandBuffersCore(CommandBuffer** ppCmdLists, const byte cmdListCount, const GraphicsQueue* pTargetQueue,
+			Semaphore** ppSignalSemaphores, const uint32 signalSemaphoreCount, Semaphore** ppWaitSemaphores, const PipelineStageFlags* pWaitStageFlags,
+			const uint32 waitSemaphoreCount, const Fence* pSignalFence) = 0;
 
 	protected:
 		Array<SharedPtr<GraphicsDeviceObject>> mDeviceObjects;

@@ -9,9 +9,12 @@
 
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
 #include <Runtime/Vulkan/Texture/VulkanTexture.h>
+#include <Runtime/Vulkan/Fence/VulkanFence.h>
+#include <Runtime/Vulkan/Semaphore/VulkanSemaphore.h>
 
 #include <Runtime/Vulkan/Texture/VulkanTextureUtils.h>
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchainUtils.h>
+
 
 #include <algorithm>
 
@@ -49,8 +52,35 @@ namespace Hollow
 		Free();
 	}
 
-	void VulkanSwapchain::PresentCore()
+	void VulkanSwapchain::PresentCore(Semaphore** ppSemaphores, uint32 waitSemaphoreCount)
 	{
+		VkFence fence = static_cast<VulkanFence*>(GetFence(GetCurrentFrameIndex()).get())->GetVkFence();
+
+		// Acquire the next image
+		uint32 imageIndex = 0;
+		DEV_ASSERT(vkAcquireNextImageKHR(mVkLogicalDevice, mVkSwapchain, UINT64_MAX, VK_NULL_HANDLE, fence, &imageIndex) == VK_SUCCESS, "VulkanSwapchain", "Failed to acquire next image.");
+
+		// Wait for the fence
+		VkSemaphore pSemaphores[32];
+		for (uint32 i = 0; i < waitSemaphoreCount; i++)
+		{
+			pSemaphores[i] = static_cast<VulkanSemaphore*>(ppSemaphores[i])->GetVkSemaphore();
+		}
+
+		// Create PresentInfo
+		VkPresentInfoKHR presentInfo = {};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.waitSemaphoreCount = waitSemaphoreCount;
+		presentInfo.pWaitSemaphores = pSemaphores;
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = &mVkSwapchain;
+		presentInfo.pImageIndices = &imageIndex;
+		presentInfo.pResults = nullptr;
+		presentInfo.pNext = nullptr;
+
+		// Present the image
+		VulkanQueue* vkQ = static_cast<VulkanQueue*>(GetQueue());
+		DEV_ASSERT(vkQueuePresentKHR(vkQ->GetVkQueue(), &presentInfo) == VK_SUCCESS, "VulkanSwapchain", "Failed to present image.");
 	}
 
 	void VulkanSwapchain::ResizeCore(Vector2u newSize)
@@ -162,6 +192,7 @@ namespace Hollow
 		swapchainCreateInfo.imageExtent = swapExtent;
 		swapchainCreateInfo.imageArrayLayers = 1;
 		swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+		swapchainCreateInfo.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 		swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		swapchainCreateInfo.preTransform = surfaceCapabilities.currentTransform;
 		swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;

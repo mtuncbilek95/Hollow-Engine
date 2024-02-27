@@ -82,9 +82,14 @@ namespace Hollow
 		swapchainDesc.pQueue = mQueue.get();
 		auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
 
+		byte presentIndex = 0;
 		while (!mGameWindow->ShouldClose())
 		{
 			mGameWindow->PollMessages();
+
+			mSwapchain->Present(nullptr, 0);
+			mSwapchain->WaitForPresent(presentIndex);
+			presentIndex = (presentIndex + 1) % swapchainDesc.BufferCount;
 		}
 	}
 }
