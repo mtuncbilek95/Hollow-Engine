@@ -7,7 +7,11 @@
 #include <Runtime/Graphics/Swapchain/Swapchain.h>
 #include <Runtime/Graphics/RenderPass/RenderPass.h>
 #include <Runtime/Vulkan/Device/VulkanDeviceDesc.h>
-
+#include <Runtime/Graphics/Queue/GraphicsQueue.h>
+#include <Runtime/Graphics/Command/CommandPool.h>
+#include <Runtime/Graphics/Command/CommandBuffer.h>
+#include <Runtime/Graphics/Fence/Fence.h>
+#include <Runtime/Graphics/Texture/Texture.h>
 
 namespace Hollow
 {
@@ -81,6 +85,26 @@ namespace Hollow
 		swapchainDesc.VSync = PresentMode::VSyncQueued;
 		swapchainDesc.pQueue = mQueue.get();
 		auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
+
+		// Create CommandPool
+		CommandPoolDesc poolDesc;
+		poolDesc.Type = CommandPoolType::Graphics;
+		auto mCommandPool = mDevice->CreateCommandPool(poolDesc);
+
+		// Create CommandBuffer
+		CommandBufferDesc cmdDesc = {};
+		cmdDesc.pCommandPool = mCommandPool.get();
+		auto mCommandBuffer = mDevice->CreateCommandBuffer(cmdDesc);
+
+		// Create Fence
+		FenceDesc fenceDesc;
+		fenceDesc.bSignalled = false;
+		auto mFence = mDevice->CreateFence(fenceDesc);
+
+		mSwapchain->GetColorImages();
+
+		Array<SharedPtr<Texture>> mSwapchainTextures = mSwapchain->GetColorImages();
+		mCommandBuffer->
 
 		byte presentIndex = 0;
 		while (!mGameWindow->ShouldClose())
