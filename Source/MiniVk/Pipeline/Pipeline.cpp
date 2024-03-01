@@ -5,7 +5,7 @@
 
 namespace MiniVk
 {
-	Pipeline::Pipeline(const GraphicsPipelineDesc& desc, Renderer* pRenderer) : mShaders(desc.Shaders), mPipeline(VK_NULL_HANDLE), 
+	Pipeline::Pipeline(const GraphicsPipelineDesc& desc, Renderer* pRenderer) : mShaders(desc.Shaders), mPipeline(VK_NULL_HANDLE),
 		mPipelineLayout(VK_NULL_HANDLE), mRenderPass(desc.pRenderPass)
 	{
 		mDevice = pRenderer->GetVkLogicalDevice();
@@ -13,33 +13,33 @@ namespace MiniVk
 		// Create the shader stages
 		Array<VkPipelineShaderStageCreateInfo> shaderStages(desc.Shaders.size());
 
-		for(uint32 i = 0; i < desc.Shaders.size(); i++)
+		for (uint32 i = 0; i < desc.Shaders.size(); i++)
 		{
 			shaderStages[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-			
-			switch(desc.Shaders[i]->GetStage())
+
+			switch (desc.Shaders[i]->GetStage())
 			{
-				case ShaderStage::Vertex:
-					shaderStages[i].stage = VK_SHADER_STAGE_VERTEX_BIT;
-					break;
-				case ShaderStage::Fragment:
-					shaderStages[i].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-					break;
-				case ShaderStage::Geometry:
-					shaderStages[i].stage = VK_SHADER_STAGE_GEOMETRY_BIT;
-					break;
-				case ShaderStage::TessellationControl:
-					shaderStages[i].stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-					break;
-				case ShaderStage::TessellationEvaluation:
-					shaderStages[i].stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-					break;
-				case ShaderStage::Compute:
-					shaderStages[i].stage = VK_SHADER_STAGE_COMPUTE_BIT;
-					break;
-				default:
-					DEV_LOG(HE_ERROR, "Unknown shader stage!");
-					break;
+			case ShaderStage::Vertex:
+				shaderStages[i].stage = VK_SHADER_STAGE_VERTEX_BIT;
+				break;
+			case ShaderStage::Fragment:
+				shaderStages[i].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+				break;
+			case ShaderStage::Geometry:
+				shaderStages[i].stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+				break;
+			case ShaderStage::TessellationControl:
+				shaderStages[i].stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+				break;
+			case ShaderStage::TessellationEvaluation:
+				shaderStages[i].stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+				break;
+			case ShaderStage::Compute:
+				shaderStages[i].stage = VK_SHADER_STAGE_COMPUTE_BIT;
+				break;
+			default:
+				DEV_LOG(HE_ERROR, "Unknown shader stage!");
+				break;
 			}
 
 			shaderStages[i].module = desc.Shaders[i]->GetShaderModule();
@@ -63,7 +63,7 @@ namespace MiniVk
 		attributes[1].location = 1;
 		attributes[1].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attributes[1].offset = 12;
-	
+
 		// Create InputAssembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -80,10 +80,10 @@ namespace MiniVk
 		// Create VertexInputState
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 1;
-		vertexInputInfo.pVertexBindingDescriptions = &binding; // Optional
-		vertexInputInfo.vertexAttributeDescriptionCount = attributes.size();
-		vertexInputInfo.pVertexAttributeDescriptions = attributes.data(); // Optional
+		vertexInputInfo.vertexBindingDescriptionCount = 0;
+		vertexInputInfo.pVertexBindingDescriptions = nullptr; //&binding; // Optional
+		vertexInputInfo.vertexAttributeDescriptionCount = 0; //attributes.size();
+		vertexInputInfo.pVertexAttributeDescriptions = nullptr;//attributes.data(); // Optional
 
 		// Create Viewport
 		VkViewport viewport{};

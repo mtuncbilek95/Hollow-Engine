@@ -19,8 +19,8 @@ int main()
 	// Create a window
 	MiniVk::WindowDesc winDesc = {};
 	winDesc.Windowed = true;
-	winDesc.WindowPosition = { (2560 - 1920) / 2, (1440 - 1080) / 2 };
-	winDesc.WindowSize = { 1920, 1080 };
+	winDesc.WindowPosition = { (1920 - 1280) / 2, (1080 - 720) / 2 };
+	winDesc.WindowSize = { 1280, 720 };
 	winDesc.WindowTitle = "MiniVk";
 	MiniVk::Window* pWindow = new MiniVk::Window(winDesc);
 
@@ -37,7 +37,7 @@ int main()
 	vShaderDesc.EntryPoint = "main";
 	vShaderDesc.Language = MiniVk::ShaderLanguage::GLSL;
 	vShaderDesc.ShaderName = "testVertex";
-	vShaderDesc.SourceString = MiniVk::ShaderCompiler::ReadFile(R"(D:\Projects\MiniVulkan\Source\Shaders\testVertex.vert)");
+	vShaderDesc.SourceString = MiniVk::ShaderCompiler::ReadFile(R"(D:\Projects\Hollow-Engine\Source\Shaders\testVertex.vert)");
 	vShaderDesc.Stage = MiniVk::ShaderStage::Vertex;
 	MiniVk::Shader* pVertexShader = pRenderer->CreateShader(vShaderDesc);
 
@@ -46,7 +46,7 @@ int main()
 	fShaderDesc.EntryPoint = "main";
 	fShaderDesc.Language = MiniVk::ShaderLanguage::GLSL;
 	fShaderDesc.ShaderName = "testFragment";
-	fShaderDesc.SourceString = MiniVk::ShaderCompiler::ReadFile(R"(D:\Projects\MiniVulkan\Source\Shaders\testFrag.frag)");
+	fShaderDesc.SourceString = MiniVk::ShaderCompiler::ReadFile(R"(D:\Projects\Hollow-Engine\Source\Shaders\testFrag.frag)");
 	fShaderDesc.Stage = MiniVk::ShaderStage::Fragment;
 	MiniVk::Shader* pFragmentShader = pRenderer->CreateShader(fShaderDesc);
 
