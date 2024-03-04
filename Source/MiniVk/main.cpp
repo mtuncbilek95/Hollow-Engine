@@ -5,6 +5,7 @@
 
 #include <RenderPass/RenderPass.h>
 #include <Pipeline/Pipeline.h>
+#include <Buffer/Buffer.h>
 
 
 struct Vertex
@@ -13,6 +14,11 @@ struct Vertex
 	Vector3f color;
 };
 
+const Array<Vertex> vertices = {
+	{{0.0f, 0.5f}, {1.0f, 1.0f, 1.0f}},
+	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{-0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}}
+};
 
 int main()
 {
@@ -58,7 +64,21 @@ int main()
 	MiniVk::GraphicsPipelineDesc pipelineDesc = {};
 	pipelineDesc.pRenderPass = pMainPass;
 	pipelineDesc.Shaders = { pVertexShader, pFragmentShader };
+	pipelineDesc.InputStride = sizeof(Vertex);
+	pipelineDesc.InputOffsets[0] = 0;
+	pipelineDesc.InputOffsets[1] = 8;
+
 	MiniVk::Pipeline* pPipeline = pRenderer->CreatePipeline(pipelineDesc);
+
+	// Create a vertex buffer
+	MiniVk::BufferDesc vertexBufferDesc = {};
+	vertexBufferDesc.SizeInBytes = sizeof(vertices[0]) * vertices.size();
+	vertexBufferDesc.Usage = MiniVk::BufferUsage::Vertex;
+
+	MiniVk::Buffer* pVertexBuffer = pRenderer->CreateBuffer(vertexBufferDesc);
+
+	// Bind the vertex buffer
+	pRenderer->BindBuffer(pVertexBuffer, (void*)vertices.data());
 
 	uint32 imageIndex = 0;
 	while (!pWindow->ShouldClose())
@@ -67,7 +87,7 @@ int main()
 
 		pRenderer->BeginRecording(&imageIndex);
 		pRenderer->BindRenderPass(pPipeline, imageIndex);
-		pRenderer->Draw(imageIndex);
+		pRenderer->Draw(pVertexBuffer, vertices.size(), imageIndex);
 		pRenderer->EndRecording(imageIndex);
 		pRenderer->Present(imageIndex);
 

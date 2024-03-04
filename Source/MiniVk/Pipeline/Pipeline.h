@@ -11,7 +11,8 @@ namespace MiniVk
 	{
 		Array<Shader*> Shaders;
 		RenderPass* pRenderPass;
-
+		uint32 InputStride;
+		uint32 InputOffsets[8];
 	};
 
 	class Pipeline

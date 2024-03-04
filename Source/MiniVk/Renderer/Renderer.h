@@ -20,10 +20,12 @@ namespace MiniVk
 	class Shader;
 	class Pipeline;
 	class RenderPass;
+	class Buffer;
 
 	struct ShaderDesc;
 	struct GraphicsPipelineDesc;
 	struct RenderPassDesc;
+	struct BufferDesc;
 
 	struct RendererDesc
 	{
@@ -78,12 +80,15 @@ namespace MiniVk
 		Shader* CreateShader(const ShaderDesc& desc);
 		Pipeline* CreatePipeline(const GraphicsPipelineDesc& desc);
 		RenderPass* CreateRenderPass(const RenderPassDesc& desc);
+		Buffer* CreateBuffer(const BufferDesc& desc);
 
 		Vector2u GetWindowSize() const { return mWindowSize; }
 
+		void BindBuffer(Buffer* buffer, void* inData);
+
 		void BeginRecording(uint32* imageIndex);
 		void BindRenderPass(Pipeline* pipeline, uint32 imageIndex);
-		void Draw(uint32 imageIndex);
+		void Draw(Buffer* pBuffer, uint32 vertexSize, uint32 imageIndex);
 		void EndRecording(uint32 imageIndex);
 		void Present(uint32 imageIndex);
 	protected:

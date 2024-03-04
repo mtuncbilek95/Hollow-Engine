@@ -49,7 +49,7 @@ namespace MiniVk
 		// Create InputLayout
 		VkVertexInputBindingDescription binding = {};
 		binding.binding = 0;
-		binding.stride = 20;
+		binding.stride = desc.InputStride;
 		binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
 		Array<VkVertexInputAttributeDescription> attributes(2);
@@ -57,12 +57,12 @@ namespace MiniVk
 		attributes[0].binding = 0;
 		attributes[0].location = 0;
 		attributes[0].format = VK_FORMAT_R32G32_SFLOAT;
-		attributes[0].offset = 8;
+		attributes[0].offset = desc.InputOffsets[0];
 
 		attributes[1].binding = 0;
 		attributes[1].location = 1;
 		attributes[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributes[1].offset = 12;
+		attributes[1].offset = desc.InputOffsets[1];
 
 		// Create InputAssembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
@@ -80,10 +80,10 @@ namespace MiniVk
 		// Create VertexInputState
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 0;
-		vertexInputInfo.pVertexBindingDescriptions = nullptr; //&binding; // Optional
-		vertexInputInfo.vertexAttributeDescriptionCount = 0; //attributes.size();
-		vertexInputInfo.pVertexAttributeDescriptions = nullptr;//attributes.data(); // Optional
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.pVertexBindingDescriptions = &binding; // Optional
+		vertexInputInfo.vertexAttributeDescriptionCount = attributes.size(); // Optional
+		vertexInputInfo.pVertexAttributeDescriptions = attributes.data(); // Optional
 
 		// Create Viewport
 		VkViewport viewport{};

@@ -3,6 +3,7 @@
 #include <Shader/Shader.h>
 #include <Pipeline/Pipeline.h>
 #include <RenderPass/RenderPass.h>
+#include <Buffer/Buffer.h>
 
 namespace MiniVk
 {
@@ -84,6 +85,14 @@ namespace MiniVk
 		vkDestroyInstance(mInstance, nullptr);
 	}
 
+	void Renderer::BindBuffer(Buffer* buffer, void* inData)
+	{
+		void* outData;
+		vkMapMemory(mDevice, buffer->GetBufferMemory(), 0, buffer->GetSizeInBytes(), 0, &outData);
+		memcpy(outData, inData, buffer->GetSizeInBytes());
+		vkUnmapMemory(mDevice, buffer->GetBufferMemory());
+	}
+
 	void Renderer::BeginRecording(uint32* imageIndex)
 	{
 		// wait for fences first
@@ -139,9 +148,13 @@ namespace MiniVk
 		vkCmdSetScissor(mCommandBuffers[imageIndex], 0, 1, &scissor);
 	}
 
-	void Renderer::Draw(uint32 imageIndex)
+	void Renderer::Draw(Buffer* pBuffer, uint32 vertexSize, uint32 imageIndex)
 	{
-		vkCmdDraw(mCommandBuffers[imageIndex], 6, 1, 0, 0);
+		VkBuffer vertexbuffers[] = { pBuffer->GetBuffer() };
+		VkDeviceSize offsets[] = { 0 };
+		vkCmdBindVertexBuffers(mCommandBuffers[imageIndex], 0, 1, vertexbuffers, offsets);
+
+		vkCmdDraw(mCommandBuffers[imageIndex], vertexSize, 1, 0, 0);
 	}
 
 	void Renderer::EndRecording(uint32 imageIndex)
@@ -604,6 +617,11 @@ namespace MiniVk
 	RenderPass* Renderer::CreateRenderPass(const RenderPassDesc& desc)
 	{
 		return new RenderPass(desc, this);
+	}
+
+	Buffer* Renderer::CreateBuffer(const BufferDesc& desc)
+	{
+		return new Buffer(desc, this);
 	}
 
 	void Renderer::FindQueueFamilies()
