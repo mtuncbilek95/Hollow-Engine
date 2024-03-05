@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.26)
 
 # ------------------ PROJECT NAME ------------------
-project("MINIVK-Rendering")
+project("MiniVk-Rendering")
 # --------------------------------------------------
 
 # ------------------ CXX FLAGS ---------------------

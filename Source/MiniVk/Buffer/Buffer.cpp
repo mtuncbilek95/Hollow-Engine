@@ -11,30 +11,18 @@ namespace MiniVk
 		VkBufferCreateInfo bufferInfo = {};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = desc.SizeInBytes;
-		switch (desc.Usage)
-		{
-		case BufferUsage::Vertex:
-			bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-			break;
-		case BufferUsage::Index:
-			bufferInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-			break;
-		case BufferUsage::Uniform:
-			bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-			break;
-		case BufferUsage::Storage:
-			bufferInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-			break;
-		case BufferUsage::TransferSrc:
-			bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-			break;
-		case BufferUsage::TransferDst:
-			bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-			break;
-		default:
-			DEV_LOG(HE_ERROR, "Unknown buffer usage!");
-			break;
-		}
+		if ((desc.Usage & BufferUsage::Vertex))
+			bufferInfo.usage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+		else if ((desc.Usage & BufferUsage::Index))
+			bufferInfo.usage |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+		else if ((desc.Usage & BufferUsage::Uniform))
+			bufferInfo.usage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+		else if ((desc.Usage & BufferUsage::Storage))
+			bufferInfo.usage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+		if ((desc.Usage & BufferUsage::TransferSrc))
+			bufferInfo.usage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+		else if ((desc.Usage & BufferUsage::TransferDst))
+			bufferInfo.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 

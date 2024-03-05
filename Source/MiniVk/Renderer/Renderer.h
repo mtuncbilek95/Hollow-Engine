@@ -21,11 +21,13 @@ namespace MiniVk
 	class Pipeline;
 	class RenderPass;
 	class Buffer;
+	class Queue;
 
 	struct ShaderDesc;
 	struct GraphicsPipelineDesc;
 	struct RenderPassDesc;
 	struct BufferDesc;
+	struct QueueDesc;
 
 	struct RendererDesc
 	{
@@ -67,6 +69,8 @@ namespace MiniVk
 		void Shutdown();
 
 		VkQueue GetFreeGraphicsQueue() { return mGraphicsQueueFamily.GetFreeQueue(); }
+		VkQueue GetFreeComputeQueue() { return mComputeQueueFamily.GetFreeQueue(); }
+		VkQueue GetFreeTransferQueue() { return mTransferQueueFamily.GetFreeQueue(); }
 
 		VkInstance GetVkInstance() const { return mInstance; }
 		VkPhysicalDevice GetVkPhysicalDevice() const { return mPhysicalDevice; }
@@ -81,14 +85,17 @@ namespace MiniVk
 		Pipeline* CreatePipeline(const GraphicsPipelineDesc& desc);
 		RenderPass* CreateRenderPass(const RenderPassDesc& desc);
 		Buffer* CreateBuffer(const BufferDesc& desc);
+		Queue* CreateQueue(const QueueDesc& desc);
 
 		Vector2u GetWindowSize() const { return mWindowSize; }
 
 		void BindBuffer(Buffer* buffer, void* inData);
+		void CopyBuffer(Buffer* srcBuffer, Buffer* dstBuffer, uint32 sizeInBytes);
 
 		void BeginRecording(uint32* imageIndex);
 		void BindRenderPass(Pipeline* pipeline, uint32 imageIndex);
 		void Draw(Buffer* pBuffer, uint32 vertexSize, uint32 imageIndex);
+		void DrawIndexed(Buffer* pVertex, Buffer* pIndex, uint32 vertexSize, uint32 indexSize, uint32 imageIndex);
 		void EndRecording(uint32 imageIndex);
 		void Present(uint32 imageIndex);
 	protected:
@@ -124,7 +131,12 @@ namespace MiniVk
 		VkDebugUtilsMessengerEXT mDebugMessenger;
 #endif
 		QueueFamily mGraphicsQueueFamily;
-		VkQueue mGraphicsQueue;
+		QueueFamily mComputeQueueFamily;
+		QueueFamily mTransferQueueFamily;
+
+		Queue* mGraphicsQueue;
+		Queue* mComputeQueue;
+		Queue* mTransferQueue;
 
 	private:
 		Array<VkImage> mSwapchainImages;

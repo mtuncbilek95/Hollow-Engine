@@ -7,15 +7,17 @@
 
 namespace MiniVk
 {
-	enum class BufferUsage
+	enum class BufferUsage : byte
 	{
-		Vertex,
-		Index,
-		Uniform,
-		Storage,
-		TransferSrc,
-		TransferDst
+		Vertex = 1,
+		Index = 2,
+		Uniform = 4,
+		Storage = 8,
+		TransferSrc = 16,
+		TransferDst = 32
 	};
+
+	GENERATE_ENUM_FLAG(BufferUsage, byte);
 
 	struct BufferDesc
 	{

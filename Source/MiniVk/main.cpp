@@ -15,9 +15,17 @@ struct Vertex
 };
 
 const Array<Vertex> vertices = {
-	{{0.0f, 0.5f}, {1.0f, 1.0f, 1.0f}},
-	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-	{{-0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}}
+	{{-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+	{{-0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{ 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}},
+	{{ 0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}}
+
+};
+
+const Array<uint32> indices =
+{
+	0, 1, 3,
+	1, 2, 3
 };
 
 int main()
@@ -70,15 +78,47 @@ int main()
 
 	MiniVk::Pipeline* pPipeline = pRenderer->CreatePipeline(pipelineDesc);
 
+	// Create a vertex staging buffer
+	MiniVk::BufferDesc stagingBufferDesc = {};
+	stagingBufferDesc.SizeInBytes = sizeof(vertices[0]) * vertices.size();
+	stagingBufferDesc.Usage = MiniVk::BufferUsage::TransferSrc;
+
+	MiniVk::Buffer* pVertexStagingBuffer = pRenderer->CreateBuffer(stagingBufferDesc);
+
+	// Bind the vertex staging buffer
+	pRenderer->BindBuffer(pVertexStagingBuffer, (void*)vertices.data());
+
 	// Create a vertex buffer
 	MiniVk::BufferDesc vertexBufferDesc = {};
 	vertexBufferDesc.SizeInBytes = sizeof(vertices[0]) * vertices.size();
-	vertexBufferDesc.Usage = MiniVk::BufferUsage::Vertex;
+	vertexBufferDesc.Usage = MiniVk::BufferUsage::TransferDst | MiniVk::BufferUsage::Vertex;
 
 	MiniVk::Buffer* pVertexBuffer = pRenderer->CreateBuffer(vertexBufferDesc);
 
-	// Bind the vertex buffer
-	pRenderer->BindBuffer(pVertexBuffer, (void*)vertices.data());
+	pRenderer->CopyBuffer(pVertexStagingBuffer, pVertexBuffer, vertexBufferDesc.SizeInBytes);
+
+	delete pVertexStagingBuffer;
+
+	// Create an index staging buffer
+	MiniVk::BufferDesc indexStagingBufferDesc = {};
+	indexStagingBufferDesc.SizeInBytes = sizeof(uint32) * indices.size();
+	indexStagingBufferDesc.Usage = MiniVk::BufferUsage::TransferSrc;
+
+	MiniVk::Buffer* pIndexStagingBuffer = pRenderer->CreateBuffer(indexStagingBufferDesc);
+
+	// Bind the index staging buffer
+	pRenderer->BindBuffer(pIndexStagingBuffer, (void*)indices.data());
+
+	// Create an index buffer
+	MiniVk::BufferDesc indexBufferDesc = {};
+	indexBufferDesc.SizeInBytes = sizeof(uint32) * indices.size();
+	indexBufferDesc.Usage = MiniVk::BufferUsage::TransferDst | MiniVk::BufferUsage::Index;
+
+	MiniVk::Buffer* pIndexBuffer = pRenderer->CreateBuffer(indexBufferDesc);
+
+	pRenderer->CopyBuffer(pIndexStagingBuffer, pIndexBuffer, indexBufferDesc.SizeInBytes);
+
+	delete pIndexStagingBuffer;
 
 	uint32 imageIndex = 0;
 	while (!pWindow->ShouldClose())
@@ -87,7 +127,7 @@ int main()
 
 		pRenderer->BeginRecording(&imageIndex);
 		pRenderer->BindRenderPass(pPipeline, imageIndex);
-		pRenderer->Draw(pVertexBuffer, vertices.size(), imageIndex);
+		pRenderer->DrawIndexed(pVertexBuffer, pIndexBuffer, vertices.size(), indices.size(), imageIndex);
 		pRenderer->EndRecording(imageIndex);
 		pRenderer->Present(imageIndex);
 

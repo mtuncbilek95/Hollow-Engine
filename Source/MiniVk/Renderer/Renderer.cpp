@@ -4,6 +4,7 @@
 #include <Pipeline/Pipeline.h>
 #include <RenderPass/RenderPass.h>
 #include <Buffer/Buffer.h>
+#include <Queue/Queue.h>
 
 namespace MiniVk
 {
@@ -93,6 +94,40 @@ namespace MiniVk
 		vkUnmapMemory(mDevice, buffer->GetBufferMemory());
 	}
 
+	void Renderer::CopyBuffer(Buffer* srcBuffer, Buffer* dstBuffer, uint32 sizeInBytes)
+	{
+		VkCommandBufferAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandPool = mCommandPool;
+		allocInfo.commandBufferCount = 1;
+
+		VkCommandBuffer commandBuffer;
+		vkAllocateCommandBuffers(mDevice, &allocInfo, &commandBuffer);
+
+		VkCommandBufferBeginInfo beginInfo = {};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+		DEV_ASSERT(vkBeginCommandBuffer(commandBuffer, &beginInfo) == VK_SUCCESS, "CopyBuffer", "Failed to begin recording command buffer");
+
+		VkBufferCopy copyRegion = {};
+		copyRegion.size = sizeInBytes;
+		vkCmdCopyBuffer(commandBuffer, srcBuffer->GetBuffer(), dstBuffer->GetBuffer(), 1, &copyRegion);
+
+		DEV_ASSERT(vkEndCommandBuffer(commandBuffer) == VK_SUCCESS, "CopyBuffer", "Failed to end recording command buffer");
+
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &commandBuffer;
+
+		DEV_ASSERT(vkQueueSubmit(mGraphicsQueue->GetQueue(), 1, &submitInfo, VK_NULL_HANDLE) == VK_SUCCESS, "CopyBuffer", "Failed to submit queue");
+		vkQueueWaitIdle(mGraphicsQueue->GetQueue());
+
+		vkFreeCommandBuffers(mDevice, mCommandPool, 1, &commandBuffer);
+	}
+
 	void Renderer::BeginRecording(uint32* imageIndex)
 	{
 		// wait for fences first
@@ -157,6 +192,16 @@ namespace MiniVk
 		vkCmdDraw(mCommandBuffers[imageIndex], vertexSize, 1, 0, 0);
 	}
 
+	void Renderer::DrawIndexed(Buffer* pVertex, Buffer* pIndex, uint32 vertexSize, uint32 indexSize, uint32 imageIndex)
+	{
+		VkBuffer vertexbuffers[] = { pVertex->GetBuffer() };
+		VkDeviceSize offsets[] = { 0 };
+		vkCmdBindVertexBuffers(mCommandBuffers[imageIndex], 0, 1, vertexbuffers, offsets);
+		vkCmdBindIndexBuffer(mCommandBuffers[imageIndex], pIndex->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+		vkCmdDrawIndexed(mCommandBuffers[imageIndex], indexSize, 1, 0, 0, 0);
+	}
+
 	void Renderer::EndRecording(uint32 imageIndex)
 	{
 		vkCmdEndRenderPass(mCommandBuffers[imageIndex]);
@@ -182,7 +227,7 @@ namespace MiniVk
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = signalSemaphores;
 
-		DEV_ASSERT(vkQueueSubmit(mGraphicsQueue, 1, &submitInfo, mFences[imageIndex]) == VK_SUCCESS, "Present", "Failed to submit queue");
+		DEV_ASSERT(vkQueueSubmit(mGraphicsQueue->GetQueue(), 1, &submitInfo, mFences[imageIndex]) == VK_SUCCESS, "Present", "Failed to submit queue");
 
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -195,7 +240,7 @@ namespace MiniVk
 		presentInfo.pSwapchains = swapchains;
 		presentInfo.pImageIndices = &imageIndex;
 
-		DEV_ASSERT(vkQueuePresentKHR(mGraphicsQueue, &presentInfo) == VK_SUCCESS, "Present", "Failed to present queue");
+		DEV_ASSERT(vkQueuePresentKHR(mGraphicsQueue->GetQueue(), &presentInfo) == VK_SUCCESS, "Present", "Failed to present queue");
 	}
 
 	void Renderer::CreateInstance()
@@ -487,7 +532,10 @@ namespace MiniVk
 
 		// Check if the surface is supported by the physical device
 		uint32 presentFamilyIndex = mGraphicsQueueFamily.FamilyIndex;
-		mGraphicsQueue = GetFreeGraphicsQueue();
+		QueueDesc queueDesc = {};
+		queueDesc.QueueFamilyIndex = presentFamilyIndex;
+		queueDesc.Type = QueueType::Present;
+		mGraphicsQueue = CreateQueue(queueDesc);
 		VkBool32 presentSupport = false;
 
 		DEV_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mPhysicalDevice, presentFamilyIndex, mSurface, &presentSupport) == VK_SUCCESS,
@@ -624,6 +672,11 @@ namespace MiniVk
 		return new Buffer(desc, this);
 	}
 
+	Queue* Renderer::CreateQueue(const QueueDesc& desc)
+	{
+		return new Queue(desc, this);
+	}
+
 	void Renderer::FindQueueFamilies()
 	{
 		uint32 queueFamilyCount = 0;
@@ -638,21 +691,26 @@ namespace MiniVk
 		{
 			DEV_LOG(HE_WARNING, "Queue Family Index: %d", index);
 
-			if (prop.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			if (prop.queueFlags & VK_QUEUE_GRAPHICS_BIT && mGraphicsQueueFamily.FamilyIndex == 255)
 			{
 				DEV_LOG(HE_INFO, "Queue Graphics Found. Count: %d", prop.queueCount);
 				mGraphicsQueueFamily.FamilyIndex = index;
 				mGraphicsQueueFamily.QueueCapacity = prop.queueCount;
-				mGraphicsQueueFamily.RequestedCount = prop.queueCount;
+				mGraphicsQueueFamily.RequestedCount = 1;
 			}
-			if (prop.queueFlags & VK_QUEUE_COMPUTE_BIT)
+			else if (prop.queueFlags & VK_QUEUE_COMPUTE_BIT && mComputeQueueFamily.FamilyIndex == 255)
 			{
 				DEV_LOG(HE_INFO, "Queue Compute Found. Count: %d", prop.queueCount);
-
+				mComputeQueueFamily.FamilyIndex = index;
+				mComputeQueueFamily.QueueCapacity = prop.queueCount;
+				mComputeQueueFamily.RequestedCount = 1;
 			}
-			if (prop.queueFlags & VK_QUEUE_TRANSFER_BIT)
+			else if (prop.queueFlags & VK_QUEUE_TRANSFER_BIT && mTransferQueueFamily.FamilyIndex == 255)
 			{
 				DEV_LOG(HE_INFO, "Queue Transfer Found. Count: %d", prop.queueCount);
+				mTransferQueueFamily.FamilyIndex = index;
+				mTransferQueueFamily.QueueCapacity = prop.queueCount;
+				mTransferQueueFamily.RequestedCount = 1;
 			}
 			index++;
 		}
