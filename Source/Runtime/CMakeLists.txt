@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(assimp)
 # ---------------------- FILE ADDITION -----------------------
 file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Source/Runtime/*.cpp" "${CMAKE_SOURCE_DIR}/Source/Runtime/*.h")
 source_group(TREE "${CMAKE_SOURCE_DIR}/Source/Runtime" FILES ${SUBDIRECTORIES})
-add_library(Runtime STATIC main.cpp ${SUBDIRECTORIES})
+add_executable(Runtime main.cpp ${SUBDIRECTORIES})
 # ------------------------------------------------------------
 
 # ------------------- INCLUDE DIRECTORIES --------------------

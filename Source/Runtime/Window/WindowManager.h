@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
+#include <Runtime/Object/Manager.h>
 
 #include <Runtime/Window/Window.h>
-#include <Runtime/Object/Manager.h>
 
 namespace Hollow
 {
@@ -15,8 +15,11 @@ namespace Hollow
 
 		SharedPtr<Window> CreateAppWindow(const WindowDesc& desc)
 		{
-			if(mWindow == nullptr)
+			if (mWindow == nullptr)
+			{
+				CORE_LOG(HE_WARNING, "WindowManager", "System window is not created yet. Creating new window...");
 				mWindow = SharedPtr<Window>(new Window(desc));
+			}
 			return mWindow;
 		}
 

@@ -19,8 +19,6 @@ namespace Hollow
 
 		DEV_ASSERT(mWindowHandle != nullptr, "Window", "Failed to create window");
 
-		CORE_LOG(HE_VERBOSE, "PlatformWindow", "Operation is successful.");
-
 		glfwSetWindowUserPointer(mWindowHandle, this);
 
 		glfwSetWindowSizeCallback(mWindowHandle, [](GLFWwindow* window, int width, int height)
@@ -34,12 +32,6 @@ namespace Hollow
 				Window* win = (Window*)glfwGetWindowUserPointer(window);
 				win->mWindowPosition = { x, y };
 			});
-
-		//TextureResult result = TextureLoader::LoadTexture(R"(D:\Projects\Hollow-Engine\Resources\HollowIcon.png)");
-		//GLFWimage image = { result.Size.x, result.Size.y, result.Data };
-		//glfwSetWindowIcon(mWindowHandle, 1, &image);
-
-		//delete result.Data;
 	}
 
 	Window::~Window()

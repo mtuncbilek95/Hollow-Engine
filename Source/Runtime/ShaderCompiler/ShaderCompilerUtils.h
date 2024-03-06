@@ -15,7 +15,7 @@ namespace Hollow
 			switch (stage)
 			{
 			case ShaderStage::Vertex:			return shaderc_vertex_shader;
-			case ShaderStage::Pixel:			return shaderc_fragment_shader;
+			case ShaderStage::Fragment:			return shaderc_fragment_shader;
 			case ShaderStage::Compute:			return shaderc_compute_shader;
 			case ShaderStage::Geometry:			return shaderc_geometry_shader;
 			default:							return shaderc_glsl_infer_from_source;
