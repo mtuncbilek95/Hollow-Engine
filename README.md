@@ -17,3 +17,5 @@ pip install time
 ```
 
 I dont exactly remember which packages are built-in so I wrote all the packages I used. After installing everything, you can use the batch file called __InstallExternal.bat__ to install External libraries to the Engine. Then you are good to go.
+
+Currently writing the descriptors. So no constant buffer system.
