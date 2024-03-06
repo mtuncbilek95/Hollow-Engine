@@ -7,6 +7,12 @@
 #include <Pipeline/Pipeline.h>
 #include <Buffer/Buffer.h>
 
+struct ConstantBufferObject
+{
+	Matrix4f model;
+	Matrix4f view;
+	Matrix4f proj;
+};
 
 struct Vertex
 {
