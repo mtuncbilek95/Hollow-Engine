@@ -6,6 +6,10 @@
 #include <RenderPass/RenderPass.h>
 #include <Pipeline/Pipeline.h>
 #include <Buffer/Buffer.h>
+#include <Descriptor/DescriptorSet.h>
+#include <Descriptor/DescriptorPool.h>
+#include <Descriptor/DescriptorLayout.h>
+
 
 struct ConstantBufferObject
 {
@@ -74,6 +78,40 @@ int main()
 	MiniVk::RenderPassDesc mainPassDesc = {};
 	MiniVk::RenderPass* pMainPass = pRenderer->CreateRenderPass(mainPassDesc);
 
+	// Create a descriptor layout
+	MiniVk::DescriptorLayoutDesc layoutDesc = {};
+	layoutDesc.LayoutEntries = {
+		{MiniVk::DescriptorType::UniformBuffer, MiniVk::ShaderStage::Vertex, 0},
+		{MiniVk::DescriptorType::UniformBuffer, MiniVk::ShaderStage::Vertex, 1},
+		{MiniVk::DescriptorType::UniformBuffer, MiniVk::ShaderStage::Vertex, 2}
+	};
+
+	MiniVk::DescriptorLayout* pDescriptorLayout = pRenderer->CreateDescriptorLayout(layoutDesc);
+
+	// Create a descriptor pool
+	MiniVk::DescriptorPoolDesc poolDesc = {};
+	poolDesc.MaxSets = 2;
+	poolDesc.DescriptorEntries = {
+		{MiniVk::DescriptorType::UniformBuffer, 3},
+		{MiniVk::DescriptorType::UniformBuffer, 3}
+	};
+
+	MiniVk::DescriptorPool* pDescriptorPool = pRenderer->CreateDescriptorPool(poolDesc);
+
+	// Create a descriptor set 1
+	MiniVk::DescriptorSetDesc setDesc = {};
+	setDesc.pLayout = pDescriptorLayout;
+	setDesc.pPool = pDescriptorPool;
+
+	MiniVk::DescriptorSet* pDescriptorSet1 = pRenderer->CreateDescriptorSet(setDesc);
+
+	// Create a descriptor set 2
+	MiniVk::DescriptorSetDesc setDesc2 = {};
+	setDesc2.pLayout = pDescriptorLayout;
+	setDesc2.pPool = pDescriptorPool;
+
+	MiniVk::DescriptorSet* pDescriptorSet2 = pRenderer->CreateDescriptorSet(setDesc2);
+
 	// Create a pipeline
 	MiniVk::GraphicsPipelineDesc pipelineDesc = {};
 	pipelineDesc.pRenderPass = pMainPass;
@@ -81,6 +119,7 @@ int main()
 	pipelineDesc.InputStride = sizeof(Vertex);
 	pipelineDesc.InputOffsets[0] = 0;
 	pipelineDesc.InputOffsets[1] = 8;
+	pipelineDesc.DescriptorLayouts = {pDescriptorLayout};
 
 	MiniVk::Pipeline* pPipeline = pRenderer->CreatePipeline(pipelineDesc);
 
@@ -125,6 +164,32 @@ int main()
 	pRenderer->CopyBuffer(pIndexStagingBuffer, pIndexBuffer, indexBufferDesc.SizeInBytes);
 
 	delete pIndexStagingBuffer;
+
+	// Create a uniform staging buffer
+	MiniVk::BufferDesc uniformStagingBufferDesc = {};
+	uniformStagingBufferDesc.SizeInBytes = sizeof(ConstantBufferObject);
+	uniformStagingBufferDesc.Usage = MiniVk::BufferUsage::TransferSrc;
+
+	MiniVk::Buffer* pUniformStagingBuffer = pRenderer->CreateBuffer(uniformStagingBufferDesc);
+
+	// Bind the uniform staging buffer
+	ConstantBufferObject ubo = {};
+	ubo.model = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 0.0f) * XMMatrixRotationZ(0.0f) * XMMatrixScaling(1.0f, 1.0f, 1.0f));
+	ubo.view = XMMatrixTranspose(XMMatrixLookAtLH({ 0.0f, 0.0f, -2.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }));
+	ubo.proj = XMMatrixTranspose(XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), winDesc.WindowSize.x / winDesc.WindowSize.y, 0.1f, 100.0f));
+
+	pRenderer->BindBuffer(pUniformStagingBuffer, &ubo);
+
+	// Create a uniform buffer
+	MiniVk::BufferDesc uniformBufferDesc = {};
+	uniformBufferDesc.SizeInBytes = sizeof(ConstantBufferObject);
+	uniformBufferDesc.Usage = MiniVk::BufferUsage::Uniform | MiniVk::BufferUsage::TransferDst;
+
+	MiniVk::Buffer* pUniformBuffer = pRenderer->CreateBuffer(uniformBufferDesc);
+
+	pRenderer->CopyBuffer(pUniformStagingBuffer, pUniformBuffer, uniformBufferDesc.SizeInBytes);
+
+	delete pUniformStagingBuffer;
 
 	uint32 imageIndex = 0;
 	while (!pWindow->ShouldClose())

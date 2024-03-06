@@ -91,6 +91,7 @@ namespace MiniVk
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		layoutInfo.bindingCount = desc.LayoutEntries.size();
 		layoutInfo.pBindings = bindings;
+		layoutInfo.flags = 0;
 
 		DEV_ASSERT(vkCreateDescriptorSetLayout(mDevice, &layoutInfo, nullptr, &mLayout) == VK_SUCCESS, "DescriptorLayout", "Failed to create descriptor set layout!");
 

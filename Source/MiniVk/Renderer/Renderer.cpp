@@ -5,6 +5,9 @@
 #include <RenderPass/RenderPass.h>
 #include <Buffer/Buffer.h>
 #include <Queue/Queue.h>
+#include <Descriptor/DescriptorSet.h>
+#include <Descriptor/DescriptorPool.h>
+#include <Descriptor/DescriptorLayout.h>
 
 namespace MiniVk
 {
@@ -126,6 +129,41 @@ namespace MiniVk
 		vkQueueWaitIdle(mGraphicsQueue->GetQueue());
 
 		vkFreeCommandBuffers(mDevice, mCommandPool, 1, &commandBuffer);
+	}
+
+	void Renderer::BindDescriptorSet(Pipeline* pipeline, DescriptorSet** pDescriptorSet, uint32 amount, uint32 imageIndex)
+	{
+		VkDescriptorSet descriptorSets[16];
+		for (uint32 i = 0; i < amount; i++)
+		{
+			descriptorSets[i] = (*pDescriptorSet)->GetDescriptorSet();
+		}
+
+		vkCmdBindDescriptorSets(mCommandBuffers[imageIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->GetPipelineLayout(), 0, amount, descriptorSets, 0, nullptr);
+	}
+
+	void Renderer::UpdateDescriptorSet(Buffer** pBuffers, DescriptorSet** pDescriptorSet, uint32 setCount, uint32 imageIndex, uint32 range)
+	{
+		for (int i = 0; i < setCount; i++)
+		{
+			VkDescriptorBufferInfo bufferInfo = {};
+			bufferInfo.buffer = pBuffers[0]->GetBuffer();;
+			bufferInfo.offset = 0;
+			bufferInfo.range = range;
+
+			VkWriteDescriptorSet descriptorWrite = {};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = (*pDescriptorSet)->GetDescriptorSet();
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = 0;
+
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+
+			descriptorWrite.pBufferInfo = &bufferInfo;
+
+			vkUpdateDescriptorSets(mDevice, 1, &descriptorWrite, 0, nullptr);
+		}
 	}
 
 	void Renderer::BeginRecording(uint32* imageIndex)
@@ -675,6 +713,21 @@ namespace MiniVk
 	Queue* Renderer::CreateQueue(const QueueDesc& desc)
 	{
 		return new Queue(desc, this);
+	}
+
+	DescriptorSet* Renderer::CreateDescriptorSet(const DescriptorSetDesc& desc)
+	{
+		return new DescriptorSet(desc, this);
+	}
+
+	DescriptorPool* Renderer::CreateDescriptorPool(const DescriptorPoolDesc& desc)
+	{
+		return new DescriptorPool(desc, this);
+	}
+
+	DescriptorLayout* Renderer::CreateDescriptorLayout(const DescriptorLayoutDesc& desc)
+	{
+		return new DescriptorLayout(desc, this);
 	}
 
 	void Renderer::FindQueueFamilies()

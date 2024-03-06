@@ -13,13 +13,20 @@ namespace MiniVk
 		mOwnerPool = desc.pPool->GetPool();
 		mTargetLayout = desc.pLayout->GetLayout();
 
-		VkDescriptorSetAllocateInfo allocInfo = {};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = mOwnerPool;
-		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = &mTargetLayout;
+		VkDescriptorSetAllocateInfo allocInfos[2];
 
-		vkAllocateDescriptorSets(mDevice, &allocInfo, &mDescriptorSet);
+		for (uint32 i = 0; i < 2; i++)
+		{
+			VkDescriptorSetAllocateInfo allocInfo = {};
+			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			allocInfo.descriptorPool = mOwnerPool;
+			allocInfo.descriptorSetCount = 1;
+			allocInfo.pSetLayouts = &mTargetLayout;
+
+			allocInfos[i] = allocInfo;
+		}
+
+		vkAllocateDescriptorSets(mDevice, allocInfos, &mDescriptorSet);
 	}
 
 	DescriptorSet::~DescriptorSet()
