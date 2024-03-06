@@ -12,5 +12,13 @@ namespace Hollow
 		}
 
 		mGraphicsAdapter = tempAdapter;
+		CORE_LOG(HE_VERBOSE, "GraphicsDevice", "Chosen Adapter: %s", mGraphicsAdapter.ProductName.c_str());
+	}
+
+	SharedPtr<Swapchain> GraphicsDevice::CreateSwapchain(const SwapchainDesc& desc)
+	{
+		if (mSwapchain == nullptr)
+			mSwapchain = CreateSwapchainImpl(desc);
+		return mSwapchain;
 	}
 }

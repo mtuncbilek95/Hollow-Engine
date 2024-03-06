@@ -22,6 +22,8 @@ int main()
 	auto mGraphicsInstance = GraphicsInstance::CreateInstance(instanceDesc);
 	mGraphicsInstance->EnumerateAdapters();
 
+	auto mDevice = mGraphicsInstance->CreateDevice();
+
 	while (!mWindow->ShouldClose())
 	{
 		mWindow->PollMessages();

@@ -3,6 +3,8 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Device/GraphicsDeviceDesc.h>
 
+#include <Runtime/Graphics/Swapchain/SwapchainDesc.h>
+
 namespace Hollow
 {
 	class GraphicsDeviceObject;
@@ -38,16 +40,23 @@ namespace Hollow
 		GraphicsDevice(const GraphicsDeviceDesc& desc);
 		virtual ~GraphicsDevice() = default;
 
-		//SharedPtr<Swapchain> CreateSwapchain(const SwapchainDesc& desc);
+		SharedPtr<Swapchain> CreateSwapchain(const SwapchainDesc& desc);
 
-		GraphicsAPI GetGraphicsAPI() const { return mGraphicsAPI; }
+		FORCEINLINE GraphicsAPI GetGraphicsAPI() const { return mGraphicsAPI; }
 
 		virtual void OnShutdown() = 0;
+
+		Swapchain* GetSwapchain() const { return mSwapchain.get(); }
+		GraphicsInstance* GetGraphicsInstance() const { return mGraphicsInstance; }
+		const GraphicsAdapter& GetGraphicsAdapter() const { return mGraphicsAdapter; }
+
+	protected:
+		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc) = 0;
 
 	protected:
 		Array<SharedPtr<GraphicsDeviceObject>> mDeviceObjects;
 
-		Swapchain* mSwapchain;
+		SharedPtr<Swapchain> mSwapchain;
 		GraphicsAPI mGraphicsAPI;
 
 		GraphicsInstance* mGraphicsInstance;

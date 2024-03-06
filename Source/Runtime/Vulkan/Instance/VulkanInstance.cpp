@@ -11,8 +11,7 @@
 #define VK_USE_PLATFORM_WIN32_KHR
 #endif
 
-#include <Runtime/Graphics/Device/GraphicsDeviceDesc.h>
-#include <Runtime/Vulkan/Instance/VulkanAdapter.h>
+#include <Runtime/Vulkan/Device/VulkanDevice.h>
 
 namespace Hollow
 {
@@ -231,12 +230,11 @@ namespace Hollow
 			vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilyProperties.data());
 
 			// Fill the adapter
-			VulkanAdapter adapterDesc = {};
+			GraphicsAdapter adapterDesc = {};
 			adapterDesc.ProductName = deviceProperties.deviceName;
 			adapterDesc.DeviceId = deviceProperties.deviceID;
 			adapterDesc.AdapterScore = deviceProperties.limits.maxImageDimension1D + deviceProperties.limits.maxImageDimension2D + deviceProperties.limits.maxImageDimension3D;
 			adapterDesc.VRam = deviceMemoryProperties.memoryHeaps[0].size;
-			adapterDesc.PhysicalDevice = device;
 
 			CORE_LOG(HE_WARNING, "GraphicsInstance", "Adapter Device Name: %s", adapterDesc.ProductName.c_str());
 
@@ -262,6 +260,8 @@ namespace Hollow
 			{
 				adapterDesc.AdapterScore += 100;
 			}
+
+			AddAdapter(adapterDesc);
 		}
 	}
 
@@ -274,6 +274,6 @@ namespace Hollow
 		desc.ComputeQueueCount = 1;
 		desc.TransferQueueCount = 1;
 
-		return nullptr; //std::make_shared<VulkanDevice>(desc);
+		return std::make_shared<VulkanDevice>(desc);
 	}
 }
