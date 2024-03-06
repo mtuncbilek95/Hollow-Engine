@@ -7,12 +7,15 @@ namespace MiniVk
 {
 	class Shader;
 	class RenderPass;
+	class DescriptorLayout;
+
 	struct GraphicsPipelineDesc
 	{
 		Array<Shader*> Shaders;
 		RenderPass* pRenderPass;
 		uint32 InputStride;
 		uint32 InputOffsets[8];
+		Array<DescriptorLayout*> DescriptorLayouts;
 	};
 
 	class Pipeline

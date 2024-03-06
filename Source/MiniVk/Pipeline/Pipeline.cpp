@@ -2,6 +2,7 @@
 
 #include <Shader/Shader.h>
 #include <RenderPass/RenderPass.h>
+#include <Descriptor/DescriptorLayout.h>
 
 namespace MiniVk
 {
@@ -154,13 +155,21 @@ namespace MiniVk
 		colorBlending.blendConstants[2] = 0.0f; // Optional
 		colorBlending.blendConstants[3] = 0.0f; // Optional
 
+		// Descriptor Set Layouts
+		Array<VkDescriptorSetLayout> layouts(desc.DescriptorLayouts.size());
+		for (uint32 i = 0; i < desc.DescriptorLayouts.size(); i++)
+		{
+			layouts[i] = desc.DescriptorLayouts[i]->GetLayout();
+		}
+
 		// Pipeline Layout Info
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 0; // Optional
-		pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+		pipelineLayoutInfo.setLayoutCount = layouts.size(); // Optional
+		pipelineLayoutInfo.pSetLayouts = layouts.data(); // Optional
 		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 
 		DEV_ASSERT(vkCreatePipelineLayout(mDevice, &pipelineLayoutInfo, nullptr, &mPipelineLayout) == VK_SUCCESS, "PipelineLayout", "Failed to create pipeline layout!");
 
