@@ -16,7 +16,7 @@ namespace Hollow
 	{
 	public:
 		Window(const WindowDesc& desc);
-		~Window();
+		~Window() = default;
 
 		const String& GetTitle() const { return mWindowName; }
 		const Vector2u& GetWindowSize() const { return mWindowSize; }
@@ -33,6 +33,8 @@ namespace Hollow
 		bool GetWindowed() const { return mWindowed; }
 
 		void PollMessages();
+
+		void OnShutdown() noexcept;
 
 	private:
 		GLFWwindow* mWindowHandle;

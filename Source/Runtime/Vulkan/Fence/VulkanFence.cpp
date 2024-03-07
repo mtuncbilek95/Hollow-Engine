@@ -23,5 +23,7 @@ namespace Hollow
 
 		mVkFence = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
+
+		CORE_LOG(HE_INFO, "VulkanFence", "Fence has been destroyed");
 	}
 }

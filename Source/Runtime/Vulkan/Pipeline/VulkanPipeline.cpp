@@ -120,23 +120,30 @@ namespace Hollow
 		multisampling.alphaToOneEnable = VK_FALSE; // Optional
 
 		// Create ColorBlendAttachment
-		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-		colorBlendAttachment.colorWriteMask = VulkanPipelineUtils::GetVkColorWriteMask(desc.BlendState.Attachments[0].WriteMask);
-		colorBlendAttachment.blendEnable = desc.BlendState.Attachments[0].bEnabled;
-		colorBlendAttachment.srcColorBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[0].SourceColorFactor); // Optional
-		colorBlendAttachment.dstColorBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[0].DestinationColorFactor); // Optional
-		colorBlendAttachment.colorBlendOp = VulkanPipelineUtils::GetVkBlendOperation(desc.BlendState.Attachments[0].ColorOperation); // Optional
-		colorBlendAttachment.srcAlphaBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[0].SourceAlphaFactor); // Optional
-		colorBlendAttachment.dstAlphaBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[0].DestinationAlphaFactor); // Optional
-		colorBlendAttachment.alphaBlendOp = VulkanPipelineUtils::GetVkBlendOperation(desc.BlendState.Attachments[0].AlphaOperation); // Optional
+		Array<VkPipelineColorBlendAttachmentState> colorAttachments;
+
+		for (byte i = 0; i < desc.BlendState.Attachments.size(); i++)
+		{
+			VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+			colorBlendAttachment.colorWriteMask = VulkanPipelineUtils::GetVkColorWriteMask(desc.BlendState.Attachments[i].WriteMask);
+			colorBlendAttachment.blendEnable = desc.BlendState.Attachments[i].bEnabled;
+			colorBlendAttachment.srcColorBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[i].SourceColorFactor); // Optional
+			colorBlendAttachment.dstColorBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[i].DestinationColorFactor); // Optional
+			colorBlendAttachment.colorBlendOp = VulkanPipelineUtils::GetVkBlendOperation(desc.BlendState.Attachments[i].ColorOperation); // Optional
+			colorBlendAttachment.srcAlphaBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[i].SourceAlphaFactor); // Optional
+			colorBlendAttachment.dstAlphaBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[i].DestinationAlphaFactor); // Optional
+			colorBlendAttachment.alphaBlendOp = VulkanPipelineUtils::GetVkBlendOperation(desc.BlendState.Attachments[i].AlphaOperation); // Optional
+
+			colorAttachments.push_back(colorBlendAttachment);
+		}
 
 		// Create ColorBlendState
 		VkPipelineColorBlendStateCreateInfo colorBlending{};
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		colorBlending.logicOpEnable = desc.BlendState.bLogicOperationEnabled;
 		colorBlending.logicOp = VulkanCommonUtils::GetVkLogicOperation(desc.BlendState.LogicOperation); // Optional
-		colorBlending.attachmentCount = 1;
-		colorBlending.pAttachments = &colorBlendAttachment;
+		colorBlending.attachmentCount = colorAttachments.size();
+		colorBlending.pAttachments = colorAttachments.data();
 		colorBlending.blendConstants[0] = 0.0f; // Optional
 		colorBlending.blendConstants[1] = 0.0f; // Optional
 		colorBlending.blendConstants[2] = 0.0f; // Optional
@@ -193,5 +200,7 @@ namespace Hollow
 		mVkPipeline = VK_NULL_HANDLE;
 		mVkPipelineLayout = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
+
+		CORE_LOG(HE_VERBOSE, "VulkanPipeline", "Pipeline destroyed successfully!");
 	}
 }

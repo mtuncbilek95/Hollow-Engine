@@ -187,12 +187,30 @@ namespace Hollow
 
 	void VulkanDevice::OnShutdown()
 	{
+		for(int i = static_cast<int>(mDeviceObjects.size()) - 1; i >= 0; --i)
+		{
+			mDeviceObjects[i]->OnShutdown();
+			mDeviceObjects[i].reset(); // Release the shared pointer
+		}
+
+		if(mSwapchain != nullptr)
+		{
+			mSwapchain->OnShutdown();
+			mSwapchain.reset();
+		}
+
 		if (mVkDevice != VK_NULL_HANDLE)
 			vkDestroyDevice(mVkDevice, nullptr);
 
 		mVkDevice = VK_NULL_HANDLE;
 		mVkInstance = VK_NULL_HANDLE;
 		mVkPhysicalDevice = VK_NULL_HANDLE;
+
+		mGraphicsQueueFamily.FamilyIndex = 255;
+		mComputeQueueFamily.FamilyIndex = 255;
+		mTransferQueueFamily.FamilyIndex = 255;
+
+		CORE_LOG(HE_INFO, "VulkanDevice", "Device shutdown");
 	}
 
 	SharedPtr<Swapchain> VulkanDevice::CreateSwapchainImpl(const SwapchainDesc& desc)

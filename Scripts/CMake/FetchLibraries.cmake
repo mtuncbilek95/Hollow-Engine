@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.26)
 
 include(FetchContent)
 
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+
 # GLFW Library
 FetchContent_Declare(
         glfw
@@ -9,17 +11,23 @@ FetchContent_Declare(
         GIT_TAG 3.3.9
 )
 
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+
 # STBI Library
 FetchContent_Declare(
         stbi
         GIT_REPOSITORY https://github.com/nothings/stb.git
 )
 
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+
 # JSON Library
 FetchContent_Declare(
         json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
 )
+
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
 
 # ASSIMP Library
 FetchContent_Declare(

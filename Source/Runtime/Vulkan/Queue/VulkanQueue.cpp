@@ -11,5 +11,7 @@ namespace Hollow
 	void VulkanQueue::OnShutdown() noexcept
 	{
 		mVkQueue = VK_NULL_HANDLE;
+
+		CORE_LOG(HE_INFO, "VulkanQueue", "Queue shutdown successfully");
 	}
 }

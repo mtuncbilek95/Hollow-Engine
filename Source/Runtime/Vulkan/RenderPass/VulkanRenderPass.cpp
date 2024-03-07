@@ -8,91 +8,91 @@
 namespace Hollow
 {
 	VulkanRenderPass::VulkanRenderPass(const RenderPassDesc& desc, VulkanDevice* pDevice) : RenderPass(desc, pDevice), mVkDevice(pDevice->GetVkDevice()),
-		mVkRenderPass(VK_NULL_HANDLE), mVkFramebuffer(VK_NULL_HANDLE)
+		mVkRenderPass(VK_NULL_HANDLE)
 	{
-		//Create color attachment descs
-		Array<VkAttachmentDescription> attachments(desc.ColorAttachments.size());
-		for (unsigned char i = 0; i < desc.ColorAttachments.size(); i++)
-		{
-			const RenderPassAttachmentDesc& attachmentDesc = desc.ColorAttachments[i];
-			VkAttachmentDescription attachment = {};
-			attachment.format = VulkanTextureUtils::GetVkTextureFormat(attachmentDesc.Format);
-			attachment.samples = (VkSampleCountFlagBits)VulkanTextureUtils::GetVkSampleCount(attachmentDesc.SampleCount);
-			attachment.loadOp = VulkanRenderPassUtils::GetVkAttachmentLoadOp(attachmentDesc.ColorLoadOperation);
-			attachment.storeOp = VulkanRenderPassUtils::GetVkAttachmentStoreOp(attachmentDesc.ColorStoreOperation);
-			attachment.initialLayout = VulkanRenderPassUtils::GetVkTextureMemoryLayout(attachmentDesc.InputLayout);
-			attachment.finalLayout = VulkanRenderPassUtils::GetVkTextureMemoryLayout(attachmentDesc.OutputLayout);
-			attachment.stencilLoadOp = VulkanRenderPassUtils::GetVkAttachmentLoadOp(attachmentDesc.StencilLoadOperation);
-			attachment.stencilStoreOp = VulkanRenderPassUtils::GetVkAttachmentStoreOp(attachmentDesc.StencilStoreOperation);
+		// Create color attachment
+		VkAttachmentDescription colorAttachment{};
+		colorAttachment.format = VulkanTextureUtils::GetVkTextureFormat(desc.Format);
+		colorAttachment.samples = VulkanTextureUtils::GetVkSampleCount(desc.SampleCount);
+		colorAttachment.loadOp = VulkanRenderPassUtils::GetVkAttachmentLoadOp(desc.ColorLoadOperation);
+		colorAttachment.storeOp = VulkanRenderPassUtils::GetVkAttachmentStoreOp(desc.ColorStoreOperation);
+		colorAttachment.stencilLoadOp = VulkanRenderPassUtils::GetVkAttachmentLoadOp(desc.StencilLoadOperation);
+		colorAttachment.stencilStoreOp = VulkanRenderPassUtils::GetVkAttachmentStoreOp(desc.StencilStoreOperation);
+		colorAttachment.initialLayout = VulkanTextureUtils::GetVkTextureMemoryLayout(desc.InputLayout);
+		colorAttachment.finalLayout = VulkanTextureUtils::GetVkTextureMemoryLayout(desc.OutputLayout);
 
-			attachments[i] = attachment;
-		}
+		// Create color attachment reference
+		VkAttachmentReference colorAttachmentRef{};
+		colorAttachmentRef.attachment = 0;
+		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-		//Create attachment references
-		VkAttachmentReference attachmentReferences[16];
-		for (unsigned char i = 0; i < attachments.size(); i++)
-		{
-			const VkAttachmentDescription& attachment = attachments[i];
-
-			VkAttachmentReference reference = {};
-			reference.attachment = i;
-			reference.layout = attachment.initialLayout;
-			attachmentReferences[i] = reference;
-		}
-
+		// Create subpass
 		VkSubpassDescription subpass{};
 		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-		subpass.preserveAttachmentCount = 0;
-		subpass.pPreserveAttachments = nullptr;
+		subpass.colorAttachmentCount = 1;
+		subpass.pColorAttachments = &colorAttachmentRef;
 
-		subpass.colorAttachmentCount = desc.ColorAttachments.size();
-		subpass.pColorAttachments = attachmentReferences;
+		// Create subpass dependency
+		VkSubpassDependency dependency{};
+		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependency.dstSubpass = 0;
+		dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependency.srcAccessMask = 0;
+		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
-		subpass.inputAttachmentCount = 0;
-		subpass.pInputAttachments = nullptr;
+		// Create render pass
+		VkRenderPassCreateInfo renderPassInfo{};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassInfo.attachmentCount = 1;
+		renderPassInfo.pAttachments = &colorAttachment;
+		renderPassInfo.subpassCount = 1;
+		renderPassInfo.pSubpasses = &subpass;
+		renderPassInfo.dependencyCount = 1;
+		renderPassInfo.pDependencies = &dependency;
 
-		subpass.pDepthStencilAttachment = desc.pDepthStencilAttachment != nullptr ? &attachmentReferences[desc.ColorAttachments.size()] : nullptr;
+		DEV_ASSERT(vkCreateRenderPass(mVkDevice, &renderPassInfo, nullptr, &mVkRenderPass) == VK_SUCCESS, "VulkanRenderPass", "Failed to create render pass!");
 
-		subpass.pResolveAttachments = nullptr;
+		CORE_LOG(HE_VERBOSE, "VulkanRenderPass", "Render pass created successfully!");
 
-		VkRenderPassCreateInfo info = {};
-		info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		info.flags = VkRenderPassCreateFlags();
-		info.attachmentCount = attachments.size();
-		info.pAttachments = attachments.data();
-		info.subpassCount = 1;
-		info.pSubpasses = &subpass;
-		info.dependencyCount = 0;
-		info.pDependencies = nullptr;
-		info.pNext = nullptr;
+		mVkFramebuffers.resize(desc.Views.size());
 
-		DEV_ASSERT(vkCreateRenderPass(mVkDevice, &info, nullptr, &mVkRenderPass) == VK_SUCCESS, "RenderPass", "Failed to create render pass!");
-
-		CORE_LOG(HE_VERBOSE, "RenderPass", "Render pass created successfully!");
-
-		//Create framebuffer
-		VkImageView imageViews[8] = {};
-		for (unsigned char i = 0; i < desc.ColorAttachments.size(); i++)
+		for (uint32 i = 0; i < mVkFramebuffers.size(); i++)
 		{
-			const VulkanTextureView* pView = (const VulkanTextureView*)desc.ColorAttachments[i].pView;
-			imageViews[i] = pView->GetVkTextureView();
+			VkImageView attachments[] = {
+				static_cast<VulkanTextureView*>(desc.Views[i])->GetVkTextureView()
+			};
+
+			VkFramebufferCreateInfo framebufferInfo{};
+			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			framebufferInfo.renderPass = mVkRenderPass;
+			framebufferInfo.attachmentCount = 1;
+			framebufferInfo.pAttachments = attachments;
+			framebufferInfo.width = desc.TargetRenderSize.x;
+			framebufferInfo.height = desc.TargetRenderSize.y;
+			framebufferInfo.layers = 1;
+
+			DEV_ASSERT(vkCreateFramebuffer(mVkDevice, &framebufferInfo, nullptr, &mVkFramebuffers[i]) == VK_SUCCESS, "RenderPass", "Failed to create framebuffer!");
 		}
-
-		VkFramebufferCreateInfo framebufferInfo = {};
-		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.width = desc.TargetRenderSize.x;
-		framebufferInfo.height = desc.TargetRenderSize.y;
-		framebufferInfo.renderPass = mVkRenderPass;
-		framebufferInfo.layers = 1;
-		framebufferInfo.attachmentCount = attachments.size();
-		framebufferInfo.pAttachments = imageViews;
-		framebufferInfo.flags = VkFramebufferCreateFlags();
-		framebufferInfo.pNext = nullptr;
-
-		DEV_ASSERT(vkCreateFramebuffer(mVkDevice, &framebufferInfo, nullptr, &mVkFramebuffer) == VK_SUCCESS, "VulkanRenderPass", "Failed to create normal framebuffer!");
 	}
 
 	void VulkanRenderPass::OnShutdown() noexcept
 	{
+		// Remove from last to first
+		for (int i = mVkFramebuffers.size() - 1; i >= 0; i--)
+		{
+			if(mVkFramebuffers[i] != VK_NULL_HANDLE)
+				vkDestroyFramebuffer(mVkDevice, mVkFramebuffers[i], nullptr);
+		}
+
+		if(mVkRenderPass != VK_NULL_HANDLE)
+			vkDestroyRenderPass(mVkDevice, mVkRenderPass, nullptr);
+
+		mVkFramebuffers.clear();
+
+		mVkRenderPass = VK_NULL_HANDLE;
+		mVkDevice = VK_NULL_HANDLE;
+
+		CORE_LOG(HE_VERBOSE, "VulkanRenderPass", "Render pass destroyed successfully!");
 	}
 }

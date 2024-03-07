@@ -19,6 +19,8 @@ namespace Hollow
 
 		mVkSemaphore = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
+
+		CORE_LOG(HE_INFO, "VulkanSemaphore", "Semaphore shutdown successfully");
 	}
 
 }

@@ -199,6 +199,8 @@ namespace Hollow
 		mVkDevice = VK_NULL_HANDLE;
 		mVkPhysicalDevice = VK_NULL_HANDLE;
 		mVkInstance = VK_NULL_HANDLE;
+
+		CORE_LOG(HE_INFO, "VulkanSwapchain", "Swapchain shutdown successfully");
 	}
 
 	void VulkanSwapchain::ResizeImpl(const Vector2u& newSize)

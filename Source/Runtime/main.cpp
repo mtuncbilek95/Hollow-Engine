@@ -76,7 +76,7 @@ int main()
 	vsDesc.ShaderName = "Test Vertex Shader";
 	vsDesc.Source = ShaderCompiler::GetShaderCodeAsString(R"(D:\Projects\Another\Hollow-Engine\Shaders\testVertex.vert)");
 	vsDesc.Stage = ShaderStage::Vertex;
-	
+
 	auto mVertexShader = mDevice->CreateShader(vsDesc);
 
 	// Create fragment shader
@@ -91,37 +91,26 @@ int main()
 
 	// ----------------- CREATE RENDERPASS -----------------
 
-	// Get Attachment Descriptions
-	Array<RenderPassAttachmentDesc> attachments;
-	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
-	{
-		RenderPassAttachmentDesc colorAttachment = {};
-		colorAttachment.Format = TextureFormat::RGBA8_UNorm;
-		colorAttachment.SampleCount = TextureSampleCount::Sample1;
-		colorAttachment.ColorLoadOperation = RenderPassLoadOperation::Clear;
-		colorAttachment.ColorStoreOperation = RenderPassStoreOperation::Store;
-		colorAttachment.StencilLoadOperation = RenderPassLoadOperation::Ignore;
-		colorAttachment.StencilStoreOperation = RenderPassStoreOperation::Ignore;
-		colorAttachment.InputLayout = TextureMemoryLayout::ColorAttachment;
-		colorAttachment.OutputLayout = TextureMemoryLayout::Present;
-		colorAttachment.ArrayLevel = 1;
-		colorAttachment.MipLevel = 1;
-		colorAttachment.pView = mSwapchain->GetImageViews()[i].get();
-
-		attachments.push_back(colorAttachment);
-	}
-
-	// Create RenderPass
 	RenderPassDesc renderPassDesc = {};
 	renderPassDesc.TargetRenderSize = winDesc.WindowSize;
-	renderPassDesc.ColorAttachments = attachments;
-	renderPassDesc.pDepthStencilAttachment = nullptr;
+	renderPassDesc.Format = swapchainDesc.SwapchainImageFormat;
+	renderPassDesc.SampleCount = TextureSampleCount::Sample1;
+	renderPassDesc.ColorLoadOperation = RenderPassLoadOperation::Clear;
+	renderPassDesc.ColorStoreOperation = RenderPassStoreOperation::Store;
+	renderPassDesc.StencilLoadOperation = RenderPassLoadOperation::Clear;
+	renderPassDesc.StencilStoreOperation = RenderPassStoreOperation::Store;
+	renderPassDesc.InputLayout = TextureMemoryLayout::ColorAttachment;
+	renderPassDesc.OutputLayout = TextureMemoryLayout::Present;
+	renderPassDesc.ArrayLevel = 1;
+	renderPassDesc.MipLevel = 1;
+	for(auto& view : mSwapchain->GetImageViews())
+		renderPassDesc.Views.push_back(view.get());
 
 	auto mRenderPass = mDevice->CreateRenderPass(renderPassDesc);
 
 	// ----------------- CREATE PIPELINE -----------------
-	
-	// BlendStateAttachment	
+
+		// BlendStateAttachment	
 	BlendStateAttachment blendAttachment = {};
 	blendAttachment.bEnabled = false;
 	blendAttachment.ColorOperation = BlendOperation::Add;
@@ -131,6 +120,7 @@ int main()
 	blendAttachment.SourceAlphaFactor = BlendFactor::One;
 	blendAttachment.DestinationAlphaFactor = BlendFactor::Zero;
 	blendAttachment.WriteMask = BlendColorWriteMask::All;
+
 
 	// Create BlendState
 	BlendStateDesc blendState = {};
@@ -146,7 +136,7 @@ int main()
 	depthStencilState.DepthTestOperation = CompareOperation::Always;
 	depthStencilState.StencilBackFace = {};
 	depthStencilState.StencilFrontFace = {};
-	
+
 	// Position InputElement
 	InputElement inputElement1 = {};
 	inputElement1.Format = TextureFormat::RG32_Float;
@@ -154,9 +144,9 @@ int main()
 
 	// Color InputElement
 	InputElement inputElement2 = {};
-	inputElement1.Format = TextureFormat::RGBA32_Float;
-	inputElement1.Semantic = InputElementSemantic::Color;
-	
+	inputElement2.Format = TextureFormat::RGBA32_Float;
+	inputElement2.Semantic = InputElementSemantic::Color;
+
 	// InputBinding
 	InputBinding inputBinding = {};
 	inputBinding.StepRate = InputBindingStepRate::Vertex;
@@ -216,6 +206,10 @@ int main()
 		Semaphore* presentSemaphore = presentSemaphores[mSwapchain->GetCurrentFrameIndex()].get();
 		mWindow->PollMessages();
 	}
+
+	mDevice->OnShutdown();
+	mGraphicsInstance->OnShutdown();
+	mWindow->OnShutdown();
 
 	return 0;
 }

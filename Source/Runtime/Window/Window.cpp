@@ -34,14 +34,17 @@ namespace Hollow
 			});
 	}
 
-	Window::~Window()
-	{
-		glfwTerminate();
-	}
-
 	void Window::PollMessages()
 	{
 		glfwSwapBuffers(mWindowHandle);
 		glfwPollEvents();
+	}
+
+	void Window::OnShutdown() noexcept
+	{
+		glfwDestroyWindow(mWindowHandle);
+		glfwTerminate();
+
+		CORE_LOG(HE_VERBOSE, "Window", "Window destroyed");
 	}
 }

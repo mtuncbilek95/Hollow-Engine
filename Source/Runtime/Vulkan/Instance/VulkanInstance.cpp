@@ -183,16 +183,17 @@ namespace Hollow
 
 	void VulkanInstance::OnShutdown()
 	{
+#ifdef HOLLOW_DEBUG
+		debugMessengerDestroyProc(mVkInstance, mVkDebugMessenger, nullptr);
+		mVkDebugMessenger = VK_NULL_HANDLE;
+#endif
 		if (mVkInstance != VK_NULL_HANDLE)
 		{
 			vkDestroyInstance(mVkInstance, nullptr);
 			mVkInstance = VK_NULL_HANDLE;
 		}
 
-#ifdef HOLLOW_DEBUG
-		debugMessengerDestroyProc(mVkInstance, mVkDebugMessenger, nullptr);
-		mVkDebugMessenger = VK_NULL_HANDLE;
-#endif
+		CORE_LOG(HE_INFO, "VulkanInstance", "Instance destroyed");
 	}
 
 	void VulkanInstance::EnumerateAdaptersImpl()

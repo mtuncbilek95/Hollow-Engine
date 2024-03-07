@@ -6,6 +6,7 @@
 #include <Runtime/Graphics/Texture/TextureAspectFlags.h>
 #include <Runtime/Graphics/Texture/TextureUsage.h>
 #include <Runtime/Graphics/Texture/TextureSampleCount.h>
+#include <Runtime/Graphics/Texture/TextureMemoryLayout.h>
 
 #include <vulkan.h>
 
@@ -215,6 +216,33 @@ namespace Hollow
 			case TextureType::Texture2D:	return VK_IMAGE_VIEW_TYPE_2D;
 			case TextureType::Texture3D:	return VK_IMAGE_VIEW_TYPE_3D;
 			default:						return VK_IMAGE_VIEW_TYPE_2D;
+			}
+		}
+
+		static VkImageLayout GetVkTextureMemoryLayout(TextureMemoryLayout layout)
+		{
+			switch (layout)
+			{
+			case TextureMemoryLayout::Unknown:
+				return VK_IMAGE_LAYOUT_UNDEFINED;
+			case TextureMemoryLayout::General:
+				return VK_IMAGE_LAYOUT_GENERAL;
+			case TextureMemoryLayout::ColorAttachment:
+				return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			case TextureMemoryLayout::DepthStencilAttachment:
+				return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			case TextureMemoryLayout::DepthAttachment:
+				return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+			case TextureMemoryLayout::ShaderReadOnly:
+				return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			case TextureMemoryLayout::TransferSource:
+				return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+			case TextureMemoryLayout::TransferDestination:
+				return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+			case TextureMemoryLayout::Present:
+				return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			default:
+				return VK_IMAGE_LAYOUT_UNDEFINED;
 			}
 		}
 

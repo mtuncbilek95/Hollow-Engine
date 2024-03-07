@@ -41,6 +41,6 @@ namespace Hollow
 		mVkShaderModule = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
 
-		
+		CORE_LOG(HE_INFO, "VulkanShader", "Shader shutdown successfully");
 	}
 }
