@@ -6,6 +6,7 @@ namespace Hollow
 {
 	enum class RUNTIME_API TextureUsage : byte
 	{
+		None = 0,
 		Sampled = 1,
 		Storage = 2,
 		ColorAttachment = 4,

@@ -37,6 +37,12 @@ namespace Hollow
 		VulkanDevice(const GraphicsDeviceDesc& desc);
 		~VulkanDevice() override = default;
 
+		uint32 GetQueueFamilyIndex(GraphicsQueueType type) const;
+
+		VkDevice GetVkDevice() const { return mVkDevice; }
+		VkPhysicalDevice GetVkPhysicalDevice() const { return mVkPhysicalDevice; }
+		VkInstance GetVkInstance() const { return mVkInstance; }
+
 		virtual void OnShutdown() override;
 
 	public:
@@ -45,6 +51,7 @@ namespace Hollow
 
 	protected:
 		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc);
+		virtual SharedPtr<GraphicsQueue> CreateGraphicsQueueImpl(const GraphicsQueueDesc& desc);
 
 	private:
 		VkDevice mVkDevice;

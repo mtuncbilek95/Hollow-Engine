@@ -1,6 +1,8 @@
 #include "VulkanDevice.h"
 
 #include <Runtime/Vulkan/Instance/VulkanInstance.h>
+#include <Runtime/Vulkan/Swapchain/VulkanSwapchain.h>
+#include <Runtime/Vulkan/Queue/VulkanQueue.h>
 
 namespace Hollow
 {
@@ -9,7 +11,7 @@ namespace Hollow
 	{
 		// Get the instance from desc
 		mVkInstance = reinterpret_cast<VulkanInstance*>(desc.Instance)->GetVkInstance();
-		
+
 		// Get the physical device count
 		uint32 deviceCount = 0;
 		vkEnumeratePhysicalDevices(mVkInstance, &deviceCount, nullptr);
@@ -20,7 +22,7 @@ namespace Hollow
 		vkEnumeratePhysicalDevices(mVkInstance, &deviceCount, devices.data());
 
 		// Find the related physical device according to the chosen device
-		for(auto& device : devices)
+		for (auto& device : devices)
 		{
 			VkPhysicalDeviceProperties deviceProperties;
 			vkGetPhysicalDeviceProperties(device, &deviceProperties);
@@ -37,7 +39,7 @@ namespace Hollow
 		// Get the queue family count
 		uint32 queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(mVkPhysicalDevice, &queueFamilyCount, nullptr);
-		DEV_ASSERT(queueFamilyCount > 0, "FindQueueFamilies", "No queue families found");
+		DEV_ASSERT(queueFamilyCount > 0, "VulkanDevice", "No queue families found");
 
 		// Get the queue families
 		Array<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
@@ -48,25 +50,25 @@ namespace Hollow
 		for (auto& prop : queueFamilies)
 		{
 			if (mGraphicsQueueFamily.FamilyIndex == 255 || mComputeQueueFamily.FamilyIndex == 255 || mTransferQueueFamily.FamilyIndex == 255)
-				DEV_LOG(HE_WARNING, "Queue Family Index: %d", index);
+				CORE_LOG(HE_WARNING, "VulkanDevice", "Queue Family Index: %d", index);
 
 			if (prop.queueFlags & VK_QUEUE_GRAPHICS_BIT && mGraphicsQueueFamily.FamilyIndex == 255)
 			{
-				DEV_LOG(HE_INFO, "Queue Graphics Found. Count: %d", prop.queueCount);
+				CORE_LOG(HE_INFO, "VulkanDevice", "Queue Graphics Found. Count: %d", prop.queueCount);
 				mGraphicsQueueFamily.FamilyIndex = index;
 				mGraphicsQueueFamily.QueueCapacity = prop.queueCount;
 				mGraphicsQueueFamily.RequestedCount = desc.GraphicsQueueCount > prop.queueCount ? prop.queueCount : desc.GraphicsQueueCount;
 			}
 			else if (prop.queueFlags & VK_QUEUE_COMPUTE_BIT && mComputeQueueFamily.FamilyIndex == 255)
 			{
-				DEV_LOG(HE_INFO, "Queue Compute Found. Count: %d", prop.queueCount);
+				CORE_LOG(HE_INFO, "VulkanDevice", "Queue Compute Found. Count: %d", prop.queueCount);
 				mComputeQueueFamily.FamilyIndex = index;
 				mComputeQueueFamily.QueueCapacity = prop.queueCount;
 				mComputeQueueFamily.RequestedCount = desc.ComputeQueueCount > prop.queueCount ? prop.queueCount : desc.ComputeQueueCount;
 			}
 			else if (prop.queueFlags & VK_QUEUE_TRANSFER_BIT && mTransferQueueFamily.FamilyIndex == 255)
 			{
-				DEV_LOG(HE_INFO, "Queue Transfer Found. Count: %d", prop.queueCount);
+				CORE_LOG(HE_INFO, "VulkanDevice", "Queue Transfer Found. Count: %d", prop.queueCount);
 				mTransferQueueFamily.FamilyIndex = index;
 				mTransferQueueFamily.QueueCapacity = prop.queueCount;
 				mTransferQueueFamily.RequestedCount = desc.TransferQueueCount > prop.queueCount ? prop.queueCount : desc.TransferQueueCount;
@@ -124,7 +126,7 @@ namespace Hollow
 		deviceInfo.flags = VkDeviceCreateFlags();
 		deviceInfo.pNext = nullptr;
 
-		DEV_ASSERT(vkCreateDevice(mVkPhysicalDevice, &deviceInfo, nullptr, &mVkDevice) == VK_SUCCESS, "CreateLogicalDevice", "Failed to create logical device");
+		DEV_ASSERT(vkCreateDevice(mVkPhysicalDevice, &deviceInfo, nullptr, &mVkDevice) == VK_SUCCESS, "VulkanDevice", "Failed to create logical device");
 
 		// Reserve the queues for graphics, compute and transfer and store them in the related families.
 		mGraphicsQueueFamily.FreeQueues.reserve(mGraphicsQueueFamily.RequestedCount);
@@ -156,6 +158,21 @@ namespace Hollow
 		}
 	}
 
+	uint32 VulkanDevice::GetQueueFamilyIndex(GraphicsQueueType type) const
+	{
+		switch (type)
+		{
+		case GraphicsQueueType::Graphics:
+			return mGraphicsQueueFamily.FamilyIndex;
+		case GraphicsQueueType::Compute:
+			return mComputeQueueFamily.FamilyIndex;
+		case GraphicsQueueType::Transfer:
+			return mTransferQueueFamily.FamilyIndex;
+		default:
+			return 255;
+		}
+	}
+
 	void VulkanDevice::OnShutdown()
 	{
 		if (mVkDevice != VK_NULL_HANDLE)
@@ -168,6 +185,46 @@ namespace Hollow
 
 	SharedPtr<Swapchain> VulkanDevice::CreateSwapchainImpl(const SwapchainDesc& desc)
 	{
-		return SharedPtr<Swapchain>();
+		return std::make_shared<VulkanSwapchain>(desc, this);
+	}
+
+	SharedPtr<GraphicsQueue> VulkanDevice::CreateGraphicsQueueImpl(const GraphicsQueueDesc& desc)
+	{
+		switch (desc.QueueType)
+		{
+		case GraphicsQueueType::Graphics:
+		{
+			if (mGraphicsQueueFamily.HasFreeQueue())
+				return std::make_shared<VulkanQueue>(desc, mGraphicsQueueFamily.GetFreeQueue(), this);
+			else
+			{
+				CORE_LOG(HE_FATAL, "VulkanDevice", "No free graphics queue found");
+				return nullptr;
+			}
+		}
+		case GraphicsQueueType::Compute:
+		{
+			if (mComputeQueueFamily.HasFreeQueue())
+				return std::make_shared<VulkanQueue>(desc, mComputeQueueFamily.GetFreeQueue(), this);
+			else
+			{
+				CORE_LOG(HE_FATAL, "VulkanDevice", "No free compute queue found");
+				return nullptr;
+			}
+		}
+		case GraphicsQueueType::Transfer:
+		{
+			if (mTransferQueueFamily.HasFreeQueue())
+				return std::make_shared<VulkanQueue>(desc, mTransferQueueFamily.GetFreeQueue(), this);
+			else
+			{
+				CORE_LOG(HE_FATAL, "VulkanDevice", "No free transfer queue found");
+				return nullptr;
+			}
+		}
+		default:
+			CORE_LOG(HE_FATAL, "VulkanDevice", "Invalid queue type");
+			return nullptr;
+		}
 	}
 }

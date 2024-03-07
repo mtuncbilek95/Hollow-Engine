@@ -1,5 +1,8 @@
 #include "GraphicsDevice.h"
 
+#include <Runtime/Graphics/Swapchain/Swapchain.h>
+#include <Runtime/Graphics/Queue/GraphicsQueue.h>
+
 namespace Hollow
 {
 	GraphicsDevice::GraphicsDevice(const GraphicsDeviceDesc& desc) : mGraphicsAPI(desc.API), mGraphicsInstance(desc.Instance), mSwapchain(nullptr)
@@ -20,5 +23,12 @@ namespace Hollow
 		if (mSwapchain == nullptr)
 			mSwapchain = CreateSwapchainImpl(desc);
 		return mSwapchain;
+	}
+
+	SharedPtr<GraphicsQueue> GraphicsDevice::CreateGraphicsQueue(const GraphicsQueueDesc& desc)
+	{
+		auto queue = CreateGraphicsQueueImpl(desc);
+		mDeviceObjects.push_back(queue);
+		return queue;
 	}
 }

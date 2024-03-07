@@ -161,7 +161,7 @@ namespace Hollow
 		instanceInfo.pNext = nullptr;
 
 		// Create the instance
-		DEV_ASSERT(vkCreateInstance(&instanceInfo, nullptr, &mVkInstance) == VK_SUCCESS, "CreateInstance", "Failed to create instance");
+		DEV_ASSERT(vkCreateInstance(&instanceInfo, nullptr, &mVkInstance) == VK_SUCCESS, "VulkanInstance", "Failed to create instance");
 
 		// Handle debug messenger
 #ifdef HOLLOW_DEBUG
@@ -177,7 +177,7 @@ namespace Hollow
 		debugMessengerInfo.pfnUserCallback = DebugCallback;
 		debugMessengerInfo.pUserData = nullptr;
 
-		DEV_ASSERT(debugMessengerCreateProc(mVkInstance, &debugMessengerInfo, nullptr, &mVkDebugMessenger) == VK_SUCCESS, "CreateInstance", "Failed to create debug messenger");
+		DEV_ASSERT(debugMessengerCreateProc(mVkInstance, &debugMessengerInfo, nullptr, &mVkDebugMessenger) == VK_SUCCESS, "VulkanInstance", "Failed to create debug messenger");
 #endif
 	}
 
@@ -236,8 +236,6 @@ namespace Hollow
 			adapterDesc.AdapterScore = deviceProperties.limits.maxImageDimension1D + deviceProperties.limits.maxImageDimension2D + deviceProperties.limits.maxImageDimension3D;
 			adapterDesc.VRam = deviceMemoryProperties.memoryHeaps[0].size;
 
-			CORE_LOG(HE_WARNING, "GraphicsInstance", "Adapter Device Name: %s", adapterDesc.ProductName.c_str());
-
 			switch (deviceProperties.deviceType)
 			{
 			case VK_PHYSICAL_DEVICE_TYPE_OTHER:
@@ -252,7 +250,7 @@ namespace Hollow
 				adapterDesc.AdapterScore += 1000;
 				break;
 			default:
-				CORE_LOG(HE_FATAL, "GraphicsInstance", "Unknown adapter type");
+				CORE_LOG(HE_FATAL, "VulkanInstance", "Unknown adapter type");
 				break;
 			}
 
@@ -260,6 +258,15 @@ namespace Hollow
 			{
 				adapterDesc.AdapterScore += 100;
 			}
+
+			if (deviceFeatures.tessellationShader)
+			{
+				adapterDesc.AdapterScore += 100;
+			}
+
+			CORE_LOG(HE_WARNING, "Adapter Device Name", "%s", adapterDesc.ProductName.c_str());
+			CORE_LOG(HE_INFO, "Device ID", "%d ", adapterDesc.DeviceId);
+			CORE_LOG(HE_VERBOSE, "Total Score", "%d", adapterDesc.AdapterScore);
 
 			AddAdapter(adapterDesc);
 		}

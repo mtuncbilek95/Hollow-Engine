@@ -4,6 +4,7 @@
 #include <Runtime/Graphics/Device/GraphicsDeviceDesc.h>
 
 #include <Runtime/Graphics/Swapchain/SwapchainDesc.h>
+#include <Runtime/Graphics/Queue/GraphicsQueueDesc.h>
 
 namespace Hollow
 {
@@ -41,6 +42,7 @@ namespace Hollow
 		virtual ~GraphicsDevice() = default;
 
 		SharedPtr<Swapchain> CreateSwapchain(const SwapchainDesc& desc);
+		SharedPtr<GraphicsQueue> CreateGraphicsQueue(const GraphicsQueueDesc& desc);
 
 		FORCEINLINE GraphicsAPI GetGraphicsAPI() const { return mGraphicsAPI; }
 
@@ -52,6 +54,7 @@ namespace Hollow
 
 	protected:
 		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc) = 0;
+		virtual SharedPtr<GraphicsQueue> CreateGraphicsQueueImpl(const GraphicsQueueDesc& desc) = 0;
 
 	protected:
 		Array<SharedPtr<GraphicsDeviceObject>> mDeviceObjects;
