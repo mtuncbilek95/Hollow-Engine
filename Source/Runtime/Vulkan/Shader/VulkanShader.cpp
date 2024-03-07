@@ -10,9 +10,11 @@ namespace Hollow
 		uint32 byteSizeOut = 0;
 		String errorMessageOut;
 
+		// Compile the shader to SPIRV
 		DEV_ASSERT(ShaderCompiler::CompileShaderToSPIRV(desc.Source, desc.EntryPoint, desc.Stage, desc.Language, &mShaderSPIRV, byteSizeOut, errorMessageOut), "VulkanShader",
 			"Failed to compile shader: %s", errorMessageOut.c_str());
 
+		// Create the shader module
 		VkShaderModuleCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		createInfo.codeSize = byteSizeOut;

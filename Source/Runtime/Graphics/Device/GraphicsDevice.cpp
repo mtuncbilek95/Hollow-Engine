@@ -7,6 +7,8 @@
 #include <Runtime/Graphics/Semaphore/Semaphore.h>
 #include <Runtime/Graphics/Fence/Fence.h>
 #include <Runtime/Graphics/Shader/Shader.h>
+#include <Runtime/Graphics/RenderPass/RenderPass.h>
+#include <Runtime/Graphics/Pipeline/Pipeline.h>
 
 namespace Hollow
 {
@@ -70,6 +72,20 @@ namespace Hollow
 		auto shader = CreateShaderImpl(desc);
 		mDeviceObjects.push_back(shader);
 		return shader;
+	}
+
+	SharedPtr<RenderPass> GraphicsDevice::CreateRenderPass(const RenderPassDesc& desc)
+	{
+		auto renderPass = CreateRenderPassImpl(desc);
+		mDeviceObjects.push_back(renderPass);
+		return renderPass;
+	}
+
+	SharedPtr<Pipeline> GraphicsDevice::CreateGraphicsPipeline(const GraphicsPipelineDesc& desc)
+	{
+		auto pipeline = CreateGraphicsPipelineImpl(desc);
+		mDeviceObjects.push_back(pipeline);
+		return pipeline;
 	}
 
 	void GraphicsDevice::WaitForFence(Fence** ppFences, uint32 amount)

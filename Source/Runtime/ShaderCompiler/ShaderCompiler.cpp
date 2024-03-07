@@ -57,20 +57,26 @@ namespace Hollow
 
 	String ShaderCompiler::GetShaderCodeAsString(const String& filePath)
 	{
-		std::ifstream file(filePath, std::ios::ate | std::ios::binary);
+		std::ifstream file(filePath, std::ios::binary);
 
-		if (!file.is_open())
+		if (!file)
 		{
 			CORE_LOG(HE_WARNING, "ShaderCompiler", "Failed to read ShaderFile");
 			return "";
 		}
 
-		size_t fileSize = (size_t)file.tellg();
-		String buffer(fileSize, ' ');
-		file.seekg(0);
-		file.read(buffer.data(), fileSize);
-		file.close();
+		file.seekg(0, std::ios::end);
+		std::streamsize fileSize = file.tellg();
+		file.seekg(0, std::ios::beg);
+
+		String buffer(fileSize, '\0');
+		if (!file.read(buffer.data(), fileSize))
+		{
+			CORE_LOG(HE_WARNING, "ShaderCompiler", "Failed to read ShaderFile");
+			return "";
+		}
 
 		return buffer;
+
 	}
 }

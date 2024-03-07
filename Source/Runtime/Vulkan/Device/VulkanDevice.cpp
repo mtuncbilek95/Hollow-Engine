@@ -8,6 +8,8 @@
 #include <Runtime/Vulkan/Semaphore/VulkanSemaphore.h>
 #include <Runtime/Vulkan/Fence/VulkanFence.h>
 #include <Runtime/Vulkan/Shader/VulkanShader.h>
+#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
+#include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
 
 namespace Hollow
 {
@@ -139,7 +141,7 @@ namespace Hollow
 		mTransferQueueFamily.FreeQueues.reserve(mTransferQueueFamily.RequestedCount);
 
 		// Get the graphics queues
-		for (uint32 i = 0; i < mGraphicsQueueFamily.RequestedCount; i++)
+		for (byte i = 0; i < mGraphicsQueueFamily.RequestedCount; i++)
 		{
 			VkQueue queue;
 			vkGetDeviceQueue(mVkDevice, mGraphicsQueueFamily.FamilyIndex, i, &queue);
@@ -147,7 +149,7 @@ namespace Hollow
 		}
 
 		// Get the compute queues
-		for (uint32 i = 0; i < mComputeQueueFamily.RequestedCount; i++)
+		for (byte i = 0; i < mComputeQueueFamily.RequestedCount; i++)
 		{
 			VkQueue queue;
 			vkGetDeviceQueue(mVkDevice, mComputeQueueFamily.FamilyIndex, i, &queue);
@@ -155,7 +157,7 @@ namespace Hollow
 		}
 
 		// Get the transfer queues
-		for (uint32 i = 0; i < mTransferQueueFamily.RequestedCount; i++)
+		for (byte i = 0; i < mTransferQueueFamily.RequestedCount; i++)
 		{
 			VkQueue queue;
 			vkGetDeviceQueue(mVkDevice, mTransferQueueFamily.FamilyIndex, i, &queue);
@@ -263,10 +265,20 @@ namespace Hollow
 		return std::make_shared<VulkanShader>(desc, this);
 	}
 
+	SharedPtr<RenderPass> VulkanDevice::CreateRenderPassImpl(const RenderPassDesc& desc)
+	{
+		return std::make_shared<VulkanRenderPass>(desc, this);
+	}
+
+	SharedPtr<Pipeline> VulkanDevice::CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc)
+	{
+		return std::make_shared<VulkanPipeline>(desc, this);
+	}
+
 	void VulkanDevice::WaitForFenceImpl(Fence** ppFences, uint32 amount)
 	{
 		VkFence fences[32];
-		for (uint32 i = 0; i < amount; i++)
+		for (byte i = 0; i < amount; i++)
 			fences[i] = reinterpret_cast<VulkanFence*>(ppFences[i])->GetVkFence();
 
 		vkWaitForFences(mVkDevice, amount, fences, VK_TRUE, UINT64_MAX);
@@ -275,7 +287,7 @@ namespace Hollow
 	void VulkanDevice::ResetFencesImpl(Fence** ppFences, uint32 amount)
 	{
 		VkFence fences[32];
-		for (uint32 i = 0; i < amount; i++)
+		for (byte i = 0; i < amount; i++)
 			fences[i] = reinterpret_cast<VulkanFence*>(ppFences[i])->GetVkFence();
 
 		vkResetFences(mVkDevice, amount, fences);

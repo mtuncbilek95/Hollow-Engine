@@ -9,6 +9,8 @@
 #include <Runtime/Graphics/Texture/TextureViewDesc.h>
 #include <Runtime/Graphics/Fence/FenceDesc.h>
 #include <Runtime/Graphics/Shader/ShaderDesc.h>
+#include <Runtime/Graphics/RenderPass/RenderPassDesc.h>
+#include <Runtime/Graphics/Pipeline/GraphicsPipelineDesc.h>
 
 namespace Hollow
 {
@@ -52,6 +54,8 @@ namespace Hollow
 		SharedPtr<Semaphore> CreateSyncSemaphore();
 		SharedPtr<Fence> CreateFence(const FenceDesc& desc);
 		SharedPtr<Shader> CreateShader(const ShaderDesc& desc);
+		SharedPtr<RenderPass> CreateRenderPass(const RenderPassDesc& desc);
+		SharedPtr<Pipeline> CreateGraphicsPipeline(const GraphicsPipelineDesc& desc);
 
 		FORCEINLINE GraphicsAPI GetGraphicsAPI() const { return mGraphicsAPI; }
 
@@ -72,6 +76,8 @@ namespace Hollow
 		virtual SharedPtr<Semaphore> CreateSyncSemaphoreImpl() = 0;
 		virtual SharedPtr<Fence> CreateFenceImpl(const FenceDesc& desc) = 0;
 		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc) = 0;
+		virtual SharedPtr<RenderPass> CreateRenderPassImpl(const RenderPassDesc& desc) = 0;
+		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) = 0;
 
 		virtual void WaitForFenceImpl(Fence** ppFences, uint32 amount) = 0;
 		virtual void ResetFencesImpl(Fence** ppFences, uint32 amount) = 0;

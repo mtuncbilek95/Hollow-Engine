@@ -59,6 +59,8 @@ namespace Hollow
 		virtual SharedPtr<Semaphore> CreateSyncSemaphoreImpl();
 		virtual SharedPtr<Fence> CreateFenceImpl(const FenceDesc& desc);
 		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc);
+		virtual SharedPtr<RenderPass> CreateRenderPassImpl(const RenderPassDesc& desc);
+		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc);
 
 		virtual void WaitForFenceImpl(Fence** ppFences, uint32 amount) override;
 		virtual void ResetFencesImpl(Fence** ppFences, uint32 amount) override;

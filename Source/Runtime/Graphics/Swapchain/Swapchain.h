@@ -29,6 +29,9 @@ namespace Hollow
 		GraphicsQueue* GetPresentQueue() const { return mGraphicsQueue; }
 		const byte& GetCurrentFrameIndex() const { return mCurrentFrameIndex; }
 
+		const Array<SharedPtr<Texture>>& GetImages() const { return mImages; }
+		const Array<SharedPtr<TextureView>>& GetImageViews() const { return mImageViews; }
+
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept final { return GraphicsDeviceObjectType::Swapchain; }
 
 		virtual void OnShutdown() noexcept override = 0;

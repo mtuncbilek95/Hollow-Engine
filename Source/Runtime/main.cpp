@@ -6,6 +6,8 @@
 #include <Runtime/Graphics/Semaphore/Semaphore.h>
 #include <Runtime/Graphics/Shader/Shader.h>
 #include <Runtime/ShaderCompiler/ShaderCompiler.h>
+#include <Runtime/Graphics/RenderPass/RenderPass.h>
+#include <Runtime/Graphics/Pipeline/Pipeline.h>
 
 using namespace Hollow;
 
@@ -65,6 +67,8 @@ int main()
 		imageSemaphores[i] = mDevice->CreateSyncSemaphore();
 	}
 
+	// ----------------- CREATE SHADERS -----------------
+
 	// Create vertex shader
 	ShaderDesc vsDesc = {};
 	vsDesc.EntryPoint = "main";
@@ -80,17 +84,137 @@ int main()
 	fsDesc.EntryPoint = "main";
 	fsDesc.Language = ShaderLanguage::GLSL;
 	fsDesc.ShaderName = "Test Fragment Shader";
-	fsDesc.Source = ShaderCompiler::GetShaderCodeAsString(R"(D:\Projects\Another\Hollow-Engine\Shaders\testFragment.frag)");
+	fsDesc.Source = ShaderCompiler::GetShaderCodeAsString(R"(D:\Projects\Another\Hollow-Engine\Shaders\testFrag.frag)");
 	fsDesc.Stage = ShaderStage::Fragment;
 
 	auto mFragmentShader = mDevice->CreateShader(fsDesc);
 
+	// ----------------- CREATE RENDERPASS -----------------
+
+	// Get Attachment Descriptions
+	Array<RenderPassAttachmentDesc> attachments;
+	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
+	{
+		RenderPassAttachmentDesc colorAttachment = {};
+		colorAttachment.Format = TextureFormat::RGBA8_UNorm;
+		colorAttachment.SampleCount = TextureSampleCount::Sample1;
+		colorAttachment.ColorLoadOperation = RenderPassLoadOperation::Clear;
+		colorAttachment.ColorStoreOperation = RenderPassStoreOperation::Store;
+		colorAttachment.StencilLoadOperation = RenderPassLoadOperation::Ignore;
+		colorAttachment.StencilStoreOperation = RenderPassStoreOperation::Ignore;
+		colorAttachment.InputLayout = TextureMemoryLayout::ColorAttachment;
+		colorAttachment.OutputLayout = TextureMemoryLayout::Present;
+		colorAttachment.ArrayLevel = 1;
+		colorAttachment.MipLevel = 1;
+		colorAttachment.pView = mSwapchain->GetImageViews()[i].get();
+
+		attachments.push_back(colorAttachment);
+	}
+
+	// Create RenderPass
+	RenderPassDesc renderPassDesc = {};
+	renderPassDesc.TargetRenderSize = winDesc.WindowSize;
+	renderPassDesc.ColorAttachments = attachments;
+	renderPassDesc.pDepthStencilAttachment = nullptr;
+
+	auto mRenderPass = mDevice->CreateRenderPass(renderPassDesc);
+
+	// ----------------- CREATE PIPELINE -----------------
 	
+	// BlendStateAttachment	
+	BlendStateAttachment blendAttachment = {};
+	blendAttachment.bEnabled = false;
+	blendAttachment.ColorOperation = BlendOperation::Add;
+	blendAttachment.AlphaOperation = BlendOperation::Add;
+	blendAttachment.SourceColorFactor = BlendFactor::One;
+	blendAttachment.DestinationColorFactor = BlendFactor::Zero;
+	blendAttachment.SourceAlphaFactor = BlendFactor::One;
+	blendAttachment.DestinationAlphaFactor = BlendFactor::Zero;
+	blendAttachment.WriteMask = BlendColorWriteMask::All;
+
+	// Create BlendState
+	BlendStateDesc blendState = {};
+	blendState.bLogicOperationEnabled = false;
+	blendState.LogicOperation = LogicOperation::Copy;
+	blendState.Attachments = { blendAttachment };
+
+	// Create DepthStencilState
+	DepthStencilStateDesc depthStencilState = {};
+	depthStencilState.bDepthTestEnabled = false;
+	depthStencilState.bDepthWriteEnabled = false;
+	depthStencilState.bStencilTestEnabled = false;
+	depthStencilState.DepthTestOperation = CompareOperation::Always;
+	depthStencilState.StencilBackFace = {};
+	depthStencilState.StencilFrontFace = {};
+	
+	// Position InputElement
+	InputElement inputElement1 = {};
+	inputElement1.Format = TextureFormat::RG32_Float;
+	inputElement1.Semantic = InputElementSemantic::Position;
+
+	// Color InputElement
+	InputElement inputElement2 = {};
+	inputElement1.Format = TextureFormat::RGBA32_Float;
+	inputElement1.Semantic = InputElementSemantic::Color;
+	
+	// InputBinding
+	InputBinding inputBinding = {};
+	inputBinding.StepRate = InputBindingStepRate::Vertex;
+	inputBinding.Elements = { inputElement1, inputElement2 };
+
+	// Create InputLayout
+	InputLayoutDesc inputLayout = {};
+	inputLayout.Bindings = { inputBinding };
+	inputLayout.Topology = MeshTopology::TriangleList;
+
+	// Create MultisampleDesc
+	MultisampleDesc multisample = {};
+	multisample.bSampleShadingEnabled = false;
+	multisample.Samples = TextureSampleCount::Sample1;
+
+	// Create RasterizerState
+	RasterizerStateDesc rasterizerState = {};
+	rasterizerState.bDepthBiasEnabled = false;
+	rasterizerState.bFrontCounterClockwise = false;
+	rasterizerState.CullFlags = FaceCullMode::Back;
+	rasterizerState.FillMode = PolygonMode::Fill;
+	rasterizerState.DepthBiasClamp = 0.0f;
+	rasterizerState.DepthBiasFactor = 0.0f;
+	rasterizerState.DepthBiasSlope = 0.0f;
+
+	// Create Viewport
+	ViewportDesc viewport = {};
+	viewport.DepthRange = { 0.0f, 1.0f };
+	viewport.OffsetSize = { 0, 0 };
+	viewport.ViewportSize = winDesc.WindowSize;
+
+	// Create Scissor
+	ScissorDesc scissor = {};
+	scissor.OffsetSize = { 0, 0 };
+	scissor.ScissorSize = winDesc.WindowSize;
+
+	// Create Pipeline
+	GraphicsPipelineDesc pipelineDesc = {};
+	pipelineDesc.BlendState = blendState;
+	pipelineDesc.DepthStencilState = depthStencilState;
+	pipelineDesc.InputLayout = inputLayout;
+	pipelineDesc.Multisample = multisample;
+	pipelineDesc.RasterizerState = rasterizerState;
+	pipelineDesc.ResourceLayout = {};
+	pipelineDesc.GraphicsShaders = { mVertexShader.get(), mFragmentShader.get() };
+	pipelineDesc.pRenderPass = mRenderPass.get();
+	pipelineDesc.Viewport = viewport;
+	pipelineDesc.Scissor = scissor;
+	pipelineDesc.SubpassIndex = 0;
+
+	auto mPipeline = mDevice->CreateGraphicsPipeline(pipelineDesc);
+
+	// ----------------- RENDER LOOP -----------------
+
 	while (!mWindow->ShouldClose())
 	{
 		Semaphore* presentSemaphore = presentSemaphores[mSwapchain->GetCurrentFrameIndex()].get();
 		mWindow->PollMessages();
-		mSwapchain->Present(&presentSemaphore, 1);
 	}
 
 	return 0;

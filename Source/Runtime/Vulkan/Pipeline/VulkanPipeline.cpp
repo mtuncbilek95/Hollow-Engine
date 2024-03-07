@@ -1,0 +1,197 @@
+#include "VulkanPipeline.h"
+
+#include <Runtime/Vulkan/Shader/VulkanShader.h>
+#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
+#include <Runtime/Vulkan/Common/VulkanCommonUtils.h>
+#include <Runtime/Vulkan/Shader/VulkanShaderUtils.h>
+#include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
+#include <Runtime/Vulkan/Texture/VulkanTextureUtils.h>
+
+namespace Hollow
+{
+	VulkanPipeline::VulkanPipeline(const GraphicsPipelineDesc& desc, VulkanDevice* pDevice) : Pipeline(desc, pDevice), mVkPipeline(VK_NULL_HANDLE),
+		mVkPipelineLayout(VK_NULL_HANDLE), mVkDevice(pDevice->GetVkDevice())
+	{
+		Array<VkPipelineShaderStageCreateInfo> shaderStages;
+		for (const auto& shader : desc.GraphicsShaders)
+		{
+			VkPipelineShaderStageCreateInfo stageInfo = {};
+			stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			stageInfo.stage = VulkanShaderUtils::GetVkShaderStageBit(shader->GetStage());
+			stageInfo.module = reinterpret_cast<VulkanShader*>(shader)->GetVkShaderModule();
+			stageInfo.pName = shader->GetEntryPoint().c_str();
+
+			shaderStages.push_back(stageInfo);
+		}
+
+		// Create Attribute Bindings
+		Array<VkVertexInputBindingDescription> bindings;
+		Array<VkVertexInputAttributeDescription> attributes;
+		for (byte bindIndex = 0; bindIndex < desc.InputLayout.Bindings.size(); bindIndex++)
+		{
+			const auto& element = desc.InputLayout.Bindings[bindIndex];
+			VkVertexInputBindingDescription binding = {};
+			binding.binding = bindIndex;
+			binding.inputRate = VulkanPipelineUtils::GetVkVertexInputRate(element.StepRate);
+
+			uint32 offset = 0;
+			for (byte attIndex = 0; attIndex < element.Elements.size(); attIndex++)
+			{
+				const auto& attribute = element.Elements[attIndex];
+				VkVertexInputAttributeDescription attr = {};
+				attr.binding = bindIndex;
+				attr.location = attIndex;
+				attr.format = VulkanTextureUtils::GetVkTextureFormat(attribute.Format);
+				attr.offset = offset;
+				attributes.push_back(attr);
+
+				offset += VulkanTextureUtils::GetVkTextureSize(attribute.Format);
+			}
+
+			binding.stride = offset;
+			bindings.push_back(binding);
+		}
+
+		// Create InputAssembly
+		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		inputAssembly.topology = VulkanPipelineUtils::GetVkPrimitiveTopology(desc.InputLayout.Topology);
+		inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+		// Create VertexInputState
+		VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputInfo.vertexBindingDescriptionCount = bindings.size();
+		vertexInputInfo.pVertexBindingDescriptions = bindings.data(); // Optional
+		vertexInputInfo.vertexAttributeDescriptionCount = attributes.size(); // Optional
+		vertexInputInfo.pVertexAttributeDescriptions = attributes.data(); // Optional
+
+		// Create Dynamic State
+		Array<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+		VkPipelineDynamicStateCreateInfo dynamicState = {};
+		dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		dynamicState.dynamicStateCount = static_cast<uint32>(dynamicStates.size());
+		dynamicState.pDynamicStates = dynamicStates.data();
+
+		// Create Viewport
+		VkViewport viewport{};
+		viewport.x = static_cast<float>(desc.Viewport.OffsetSize.x);
+		viewport.y = static_cast<float>(desc.Viewport.OffsetSize.y);
+		viewport.width = static_cast<float>(desc.Viewport.ViewportSize.x);
+		viewport.height = static_cast<float>(desc.Viewport.ViewportSize.y);
+		viewport.minDepth = desc.Viewport.DepthRange.x;
+		viewport.maxDepth = desc.Viewport.DepthRange.y;
+
+		// Create Scissor
+		VkRect2D scissor{};
+		scissor.offset = { static_cast<int>(desc.Scissor.OffsetSize.x), static_cast<int>(desc.Scissor.OffsetSize.y) };
+		scissor.extent = { desc.Scissor.ScissorSize.x, desc.Scissor.ScissorSize.y };
+
+		// Create ViewportState
+		VkPipelineViewportStateCreateInfo viewportState{};
+		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewportState.viewportCount = 1;
+		viewportState.pViewports = &viewport;
+		viewportState.scissorCount = 1;
+		viewportState.pScissors = &scissor;
+
+		// Create RasterizationState
+		VkPipelineRasterizationStateCreateInfo rasterizer{};
+		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		rasterizer.depthClampEnable = VK_FALSE;
+		rasterizer.rasterizerDiscardEnable = VK_FALSE;
+		rasterizer.polygonMode = VulkanPipelineUtils::GetVkPolygonMode(desc.RasterizerState.FillMode);
+		rasterizer.lineWidth = 1.0f;
+		rasterizer.cullMode = VulkanPipelineUtils::GetVkCullMode(desc.RasterizerState.CullFlags);
+		rasterizer.frontFace = desc.RasterizerState.bFrontCounterClockwise ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE;
+		rasterizer.depthBiasEnable = desc.RasterizerState.bDepthBiasEnabled;
+		rasterizer.depthBiasConstantFactor = desc.RasterizerState.DepthBiasFactor;
+		rasterizer.depthBiasClamp = desc.RasterizerState.DepthBiasClamp;
+		rasterizer.depthBiasSlopeFactor = desc.RasterizerState.DepthBiasSlope;
+
+		// Create MultisampleState
+		VkPipelineMultisampleStateCreateInfo multisampling{};
+		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		multisampling.sampleShadingEnable = desc.Multisample.bSampleShadingEnabled;
+		multisampling.rasterizationSamples = VulkanTextureUtils::GetVkSampleCount(desc.Multisample.Samples);
+		multisampling.minSampleShading = 1.0f; // Optional
+		multisampling.pSampleMask = nullptr; // Optional
+		multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
+		multisampling.alphaToOneEnable = VK_FALSE; // Optional
+
+		// Create ColorBlendAttachment
+		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+		colorBlendAttachment.colorWriteMask = VulkanPipelineUtils::GetVkColorWriteMask(desc.BlendState.Attachments[0].WriteMask);
+		colorBlendAttachment.blendEnable = desc.BlendState.Attachments[0].bEnabled;
+		colorBlendAttachment.srcColorBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[0].SourceColorFactor); // Optional
+		colorBlendAttachment.dstColorBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[0].DestinationColorFactor); // Optional
+		colorBlendAttachment.colorBlendOp = VulkanPipelineUtils::GetVkBlendOperation(desc.BlendState.Attachments[0].ColorOperation); // Optional
+		colorBlendAttachment.srcAlphaBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[0].SourceAlphaFactor); // Optional
+		colorBlendAttachment.dstAlphaBlendFactor = VulkanPipelineUtils::GetVkBlendFactor(desc.BlendState.Attachments[0].DestinationAlphaFactor); // Optional
+		colorBlendAttachment.alphaBlendOp = VulkanPipelineUtils::GetVkBlendOperation(desc.BlendState.Attachments[0].AlphaOperation); // Optional
+
+		// Create ColorBlendState
+		VkPipelineColorBlendStateCreateInfo colorBlending{};
+		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		colorBlending.logicOpEnable = desc.BlendState.bLogicOperationEnabled;
+		colorBlending.logicOp = VulkanCommonUtils::GetVkLogicOperation(desc.BlendState.LogicOperation); // Optional
+		colorBlending.attachmentCount = 1;
+		colorBlending.pAttachments = &colorBlendAttachment;
+		colorBlending.blendConstants[0] = 0.0f; // Optional
+		colorBlending.blendConstants[1] = 0.0f; // Optional
+		colorBlending.blendConstants[2] = 0.0f; // Optional
+		colorBlending.blendConstants[3] = 0.0f; // Optional
+
+		// Create DepthStencilState
+		// TODO: Implement DepthStencilState
+
+		// Descriptor Set Layouts
+		Array<VkDescriptorSetLayout> layouts(desc.ResourceLayout.ResourceLayouts.size());
+
+		// Pipeline Layout Info
+		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		pipelineLayoutInfo.setLayoutCount = 0; // Optional
+		pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
+		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
+
+		DEV_ASSERT(vkCreatePipelineLayout(mVkDevice, &pipelineLayoutInfo, nullptr, &mVkPipelineLayout) == VK_SUCCESS, "PipelineLayout", "Failed to create pipeline layout!");
+
+		CORE_LOG(HE_VERBOSE, "Pipeline", "PipelineLayout created successfully!");
+
+		// Create Pipeline
+		VkGraphicsPipelineCreateInfo pipelineInfo{};
+		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineInfo.stageCount = static_cast<uint32>(shaderStages.size());
+		pipelineInfo.pStages = shaderStages.data();
+		pipelineInfo.pVertexInputState = &vertexInputInfo;
+		pipelineInfo.pInputAssemblyState = &inputAssembly;
+		pipelineInfo.pViewportState = &viewportState;
+		pipelineInfo.pRasterizationState = &rasterizer;
+		pipelineInfo.pMultisampleState = &multisampling;
+		pipelineInfo.pDepthStencilState = nullptr;
+		pipelineInfo.pColorBlendState = &colorBlending;
+		pipelineInfo.pDynamicState = &dynamicState;
+		pipelineInfo.layout = mVkPipelineLayout;
+		pipelineInfo.renderPass = reinterpret_cast<VulkanRenderPass*>(desc.pRenderPass)->GetVkRenderPass();
+		pipelineInfo.subpass = desc.SubpassIndex;
+
+		DEV_ASSERT(vkCreateGraphicsPipelines(mVkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &mVkPipeline) == VK_SUCCESS, "GraphicsPipeline", "Failed to create graphics pipeline!");
+
+		CORE_LOG(HE_VERBOSE, "Pipeline", "GraphicsPipeline created successfully!");
+	}
+
+	void VulkanPipeline::OnShutdown() noexcept
+	{
+		if (mVkPipeline != VK_NULL_HANDLE)
+			vkDestroyPipeline(mVkDevice, mVkPipeline, nullptr);
+		if (mVkPipelineLayout != VK_NULL_HANDLE)
+			vkDestroyPipelineLayout(mVkDevice, mVkPipelineLayout, nullptr);
+
+		mVkPipeline = VK_NULL_HANDLE;
+		mVkPipelineLayout = VK_NULL_HANDLE;
+		mVkDevice = VK_NULL_HANDLE;
+	}
+}

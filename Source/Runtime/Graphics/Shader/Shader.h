@@ -17,7 +17,7 @@ namespace Hollow
 
 		const String& GetShaderName() const { return mShaderName; }
 		const String& GetSource() const { return mSource; }
-		ShaderStage GetType() const { return mStage; }
+		ShaderStage GetStage() const { return mStage; }
 		ShaderLanguage GetShaderLanguage() const { return mShaderLanguage; }
 		const String& GetEntryPoint() const { return mEntryPoint; }
 

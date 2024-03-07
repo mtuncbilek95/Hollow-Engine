@@ -207,6 +207,8 @@ namespace Hollow
 
 	void VulkanSwapchain::PresentImpl(Semaphore** ppWaitSemaphores, uint32 amount)
 	{
+		DEV_ASSERT(amount < 16, "VulkanSwapchain", "Too many semaphores");
+
 		// Acquire the next image
 		uint32 imageIndex = GetCurrentFrameIndex();
 
@@ -217,7 +219,7 @@ namespace Hollow
 
 		// Get the signal semaphores
 		VkSemaphore signalSemaphores[16];
-		for(uint32 i = 0; i < amount; i++)
+		for(byte i = 0; i < amount; i++)
 		{
 			signalSemaphores[i] = reinterpret_cast<VulkanSemaphore*>(ppWaitSemaphores[i])->GetVkSemaphore();
 		}
