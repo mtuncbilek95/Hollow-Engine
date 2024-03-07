@@ -25,7 +25,7 @@ namespace Hollow
 
 	protected:
 		virtual void ResizeImpl(const Vector2u& newSize) override;
-		virtual void PresentImpl() override;
+		virtual void PresentImpl(Semaphore** ppWaitSemaphores, uint32 amount) override;
 
 	private:
 		VkSurfaceKHR mVkSurface;

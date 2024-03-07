@@ -35,7 +35,7 @@ namespace Hollow
 		void SetNewImageSize(const Vector2u& newSize) { mImageSize = newSize; }
 
 		virtual void ResizeImpl(const Vector2u& newSize) = 0;
-		virtual void PresentImpl() = 0;
+		virtual void PresentImpl(Semaphore** ppWaitSemaphores, uint32 amount) = 0;
 
 	private:
 		byte mBufferCount;
