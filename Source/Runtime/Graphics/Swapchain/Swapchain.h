@@ -7,6 +7,8 @@
 
 namespace Hollow
 {
+	class Texture;
+	class TextureView;
 	class Fence;
 	class Semaphore;
 
@@ -34,6 +36,10 @@ namespace Hollow
 	protected:
 		void SetNewImageSize(const Vector2u& newSize) { mImageSize = newSize; }
 
+		void AddTexture(SharedPtr<Texture> pTexture);
+		void AddTextureView(SharedPtr<TextureView> pTextureView);
+		SharedPtr<Fence> GetFence(uint32 index) const { return mFences[index]; }
+
 		virtual void ResizeImpl(const Vector2u& newSize) = 0;
 		virtual void PresentImpl(Semaphore** ppWaitSemaphores, uint32 amount) = 0;
 
@@ -46,7 +52,8 @@ namespace Hollow
 		PresentMode mPresentMode;
 		ShareMode mShareMode;
 		byte mCurrentFrameIndex;
-
-		Array<Fence*> mFences;
+		Array<SharedPtr<Texture>> mImages;
+		Array<SharedPtr<TextureView>> mImageViews;
+		Array<SharedPtr<Fence>> mFences;
 	};
 }

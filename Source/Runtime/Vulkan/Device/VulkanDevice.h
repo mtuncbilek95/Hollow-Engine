@@ -37,6 +37,8 @@ namespace Hollow
 		VulkanDevice(const GraphicsDeviceDesc& desc);
 		~VulkanDevice() override = default;
 
+		SharedPtr<Texture> CreateTextureForSwapchain(const TextureDesc& desc, VkImage image);
+
 		uint32 GetQueueFamilyIndex(GraphicsQueueType type) const;
 
 		VkDevice GetVkDevice() const { return mVkDevice; }
@@ -52,6 +54,14 @@ namespace Hollow
 	protected:
 		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc);
 		virtual SharedPtr<GraphicsQueue> CreateGraphicsQueueImpl(const GraphicsQueueDesc& desc);
+		virtual SharedPtr<Texture> CreateTextureImpl(const TextureDesc& desc);
+		virtual SharedPtr<TextureView> CreateTextureViewImpl(const TextureViewDesc& desc);
+		virtual SharedPtr<Semaphore> CreateSyncSemaphoreImpl();
+		virtual SharedPtr<Fence> CreateFenceImpl(const FenceDesc& desc);
+		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc);
+
+		virtual void WaitForFenceImpl(Fence** ppFences, uint32 amount) override;
+		virtual void ResetFencesImpl(Fence** ppFences, uint32 amount) override;
 
 	private:
 		VkDevice mVkDevice;

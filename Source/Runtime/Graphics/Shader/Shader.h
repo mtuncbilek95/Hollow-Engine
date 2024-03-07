@@ -10,16 +10,16 @@ namespace Hollow
 	{
 	public:
 		Shader(const ShaderDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
-			mSource(desc.Source), mType(desc.Type),
-			mEntryPoint(desc.EntryPoint), mShaderModel(desc.ShaderModel), mShaderName(desc.ShaderName)
+			mSource(desc.Source), mStage(desc.Stage),
+			mEntryPoint(desc.EntryPoint), mShaderLanguage(desc.Language), mShaderName(desc.ShaderName)
 		{}
 		virtual ~Shader() override = default;
 
 		const String& GetShaderName() const { return mShaderName; }
 		const String& GetSource() const { return mSource; }
-		ShaderType GetType() const { return mType; }
+		ShaderStage GetType() const { return mStage; }
+		ShaderLanguage GetShaderLanguage() const { return mShaderLanguage; }
 		const String& GetEntryPoint() const { return mEntryPoint; }
-		const String& GetShaderModel() const { return mShaderModel; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept override final { return GraphicsDeviceObjectType::Shader; }
 
@@ -28,7 +28,8 @@ namespace Hollow
 	private:
 		String mShaderName;
 		String mSource;
-		ShaderStage mType;
+		ShaderStage mStage;
+		ShaderLanguage mShaderLanguage;
 		String mEntryPoint;
-		String mShaderModel;
 	};
+}

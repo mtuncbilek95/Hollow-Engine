@@ -3,6 +3,7 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Texture/TextureFormat.h>
 #include <Runtime/Graphics/Texture/TextureType.h>
+#include <Runtime/Graphics/Texture/TextureAspectFlags.h>
 #include <Runtime/Graphics/Texture/TextureUsage.h>
 #include <Runtime/Graphics/Texture/TextureSampleCount.h>
 
@@ -85,6 +86,25 @@ namespace Hollow
 			case TextureType::Texture3D:	return VK_IMAGE_TYPE_3D;
 			default:						return VK_IMAGE_TYPE_2D;
 			}
+		}
+
+		static VkImageAspectFlags GetVkTextureAspectFlags(TextureAspectFlags flags)
+		{
+			VkImageAspectFlags aspectFlags = VkImageAspectFlags();
+
+			if (flags & TextureAspectFlags::None)
+				return 0;
+
+			if (flags & TextureAspectFlags::ColorAspect)
+				aspectFlags |= VK_IMAGE_ASPECT_COLOR_BIT;
+			else if (flags & TextureAspectFlags::DepthAspect)
+				aspectFlags |= VK_IMAGE_ASPECT_DEPTH_BIT;
+			else if (flags & TextureAspectFlags::StencilAspect)
+				aspectFlags |= VK_IMAGE_ASPECT_STENCIL_BIT;
+			else if(flags & TextureAspectFlags::MetaAspect)
+				aspectFlags |= VK_IMAGE_ASPECT_METADATA_BIT;
+
+			return aspectFlags;
 		}
 
 		static VkImageUsageFlags GetVkTextureUsageFlags(TextureUsage usages)

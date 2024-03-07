@@ -3,6 +3,11 @@
 #include <Runtime/Vulkan/Instance/VulkanInstance.h>
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchain.h>
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
+#include <Runtime/Vulkan/Texture/VulkanTexture.h>
+#include <Runtime/Vulkan/Texture/VulkanTextureView.h>
+#include <Runtime/Vulkan/Semaphore/VulkanSemaphore.h>
+#include <Runtime/Vulkan/Fence/VulkanFence.h>
+#include <Runtime/Vulkan/Shader/VulkanShader.h>
 
 namespace Hollow
 {
@@ -158,6 +163,11 @@ namespace Hollow
 		}
 	}
 
+	SharedPtr<Texture> VulkanDevice::CreateTextureForSwapchain(const TextureDesc& desc, VkImage image)
+	{
+		return std::make_shared<VulkanTexture>(desc, image, this);
+	}
+
 	uint32 VulkanDevice::GetQueueFamilyIndex(GraphicsQueueType type) const
 	{
 		switch (type)
@@ -226,5 +236,48 @@ namespace Hollow
 			CORE_LOG(HE_FATAL, "VulkanDevice", "Invalid queue type");
 			return nullptr;
 		}
+	}
+
+	SharedPtr<Texture> VulkanDevice::CreateTextureImpl(const TextureDesc& desc)
+	{
+		return std::make_shared<VulkanTexture>(desc, this);
+	}
+
+	SharedPtr<TextureView> VulkanDevice::CreateTextureViewImpl(const TextureViewDesc& desc)
+	{
+		return std::make_shared<VulkanTextureView>(desc, this);
+	}
+
+	SharedPtr<Semaphore> VulkanDevice::CreateSyncSemaphoreImpl()
+	{
+		return std::make_shared<VulkanSemaphore>(this);
+	}
+
+	SharedPtr<Fence> VulkanDevice::CreateFenceImpl(const FenceDesc& desc)
+	{
+		return std::make_shared<VulkanFence>(desc, this);
+	}
+
+	SharedPtr<Shader> VulkanDevice::CreateShaderImpl(const ShaderDesc& desc)
+	{
+		return std::make_shared<VulkanShader>(desc, this);
+	}
+
+	void VulkanDevice::WaitForFenceImpl(Fence** ppFences, uint32 amount)
+	{
+		VkFence fences[32];
+		for (uint32 i = 0; i < amount; i++)
+			fences[i] = reinterpret_cast<VulkanFence*>(ppFences[i])->GetVkFence();
+
+		vkWaitForFences(mVkDevice, amount, fences, VK_TRUE, UINT64_MAX);
+	}
+
+	void VulkanDevice::ResetFencesImpl(Fence** ppFences, uint32 amount)
+	{
+		VkFence fences[32];
+		for (uint32 i = 0; i < amount; i++)
+			fences[i] = reinterpret_cast<VulkanFence*>(ppFences[i])->GetVkFence();
+
+		vkResetFences(mVkDevice, amount, fences);
 	}
 }

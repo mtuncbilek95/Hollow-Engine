@@ -2,6 +2,11 @@
 
 #include <Runtime/Graphics/Swapchain/Swapchain.h>
 #include <Runtime/Graphics/Queue/GraphicsQueue.h>
+#include <Runtime/Graphics/Texture/Texture.h>
+#include <Runtime/Graphics/Texture/TextureView.h>
+#include <Runtime/Graphics/Semaphore/Semaphore.h>
+#include <Runtime/Graphics/Fence/Fence.h>
+#include <Runtime/Graphics/Shader/Shader.h>
 
 namespace Hollow
 {
@@ -30,5 +35,50 @@ namespace Hollow
 		auto queue = CreateGraphicsQueueImpl(desc);
 		mDeviceObjects.push_back(queue);
 		return queue;
+	}
+
+	SharedPtr<Texture> GraphicsDevice::CreateTexture(const TextureDesc& desc)
+	{
+		auto texture = CreateTextureImpl(desc);
+		mDeviceObjects.push_back(texture);
+		return texture;
+	}
+
+	SharedPtr<TextureView> GraphicsDevice::CreateTextureView(const TextureViewDesc& desc)
+	{
+		auto textureView = CreateTextureViewImpl(desc);
+		mDeviceObjects.push_back(textureView);
+		return textureView;
+	}
+
+	SharedPtr<Semaphore> GraphicsDevice::CreateSyncSemaphore()
+	{
+		auto semaphore = CreateSyncSemaphoreImpl();
+		mDeviceObjects.push_back(semaphore);
+		return semaphore;
+	}
+
+	SharedPtr<Fence> GraphicsDevice::CreateFence(const FenceDesc& desc)
+	{
+		auto fence = CreateFenceImpl(desc);
+		mDeviceObjects.push_back(fence);
+		return fence;
+	}
+
+	SharedPtr<Shader> GraphicsDevice::CreateShader(const ShaderDesc& desc)
+	{
+		auto shader = CreateShaderImpl(desc);
+		mDeviceObjects.push_back(shader);
+		return shader;
+	}
+
+	void GraphicsDevice::WaitForFence(Fence** ppFences, uint32 amount)
+	{
+		WaitForFenceImpl(ppFences, amount);
+	}
+
+	void GraphicsDevice::ResetFences(Fence** ppFences, uint32 amount)
+	{
+		ResetFencesImpl(ppFences, amount);
 	}
 }

@@ -6,9 +6,11 @@
 #include <SPIRV-Cross/Include/spirv_glsl.hpp>
 #include <Shaderc/Include/shaderc.hpp>
 
+#include <fstream>
+
 namespace Hollow
 {
-	bool ShaderCompiler::CompileShaderToSPIRV(const String& Source, const String& entryMethod, const ShaderStage stage, const ShaderLanguage language, byte** ppBytesOut, uint32& bytesSizeOut, String& errorMessageOut)
+	bool ShaderCompiler::CompileShaderToSPIRV(const String& Source, const String& entryMethod, const ShaderStage stage, const ShaderLanguage language, uint32** ppBytesOut, uint32& bytesSizeOut, String& errorMessageOut)
 	{
 		shaderc::Compiler vkCompiler;
 		shaderc::CompileOptions compileOptions;
@@ -45,11 +47,30 @@ namespace Hollow
 
 		// Copy the SPIRV data
 		const uint64 bufferSize = (byte*)spirvResult.cend() - (byte*)spirvResult.cbegin();
-		byte* pBuffer = new byte[bufferSize];
+		uint32* pBuffer = new uint32[bufferSize];
 		memcpy(pBuffer, spirvResult.cbegin(), bufferSize);
 		*ppBytesOut = pBuffer;
 		bytesSizeOut = bufferSize;
 
 		return true;
+	}
+
+	String ShaderCompiler::GetShaderCodeAsString(const String& filePath)
+	{
+		std::ifstream file(filePath, std::ios::ate | std::ios::binary);
+
+		if (!file.is_open())
+		{
+			CORE_LOG(HE_WARNING, "ShaderCompiler", "Failed to read ShaderFile");
+			return "";
+		}
+
+		size_t fileSize = (size_t)file.tellg();
+		String buffer(fileSize, ' ');
+		file.seekg(0);
+		file.read(buffer.data(), fileSize);
+		file.close();
+
+		return buffer;
 	}
 }

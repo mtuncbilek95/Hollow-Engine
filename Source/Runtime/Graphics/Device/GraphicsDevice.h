@@ -5,6 +5,10 @@
 
 #include <Runtime/Graphics/Swapchain/SwapchainDesc.h>
 #include <Runtime/Graphics/Queue/GraphicsQueueDesc.h>
+#include <Runtime/Graphics/Texture/TextureDesc.h>
+#include <Runtime/Graphics/Texture/TextureViewDesc.h>
+#include <Runtime/Graphics/Fence/FenceDesc.h>
+#include <Runtime/Graphics/Shader/ShaderDesc.h>
 
 namespace Hollow
 {
@@ -43,6 +47,11 @@ namespace Hollow
 
 		SharedPtr<Swapchain> CreateSwapchain(const SwapchainDesc& desc);
 		SharedPtr<GraphicsQueue> CreateGraphicsQueue(const GraphicsQueueDesc& desc);
+		SharedPtr<Texture> CreateTexture(const TextureDesc& desc);
+		SharedPtr<TextureView> CreateTextureView(const TextureViewDesc& desc);
+		SharedPtr<Semaphore> CreateSyncSemaphore();
+		SharedPtr<Fence> CreateFence(const FenceDesc& desc);
+		SharedPtr<Shader> CreateShader(const ShaderDesc& desc);
 
 		FORCEINLINE GraphicsAPI GetGraphicsAPI() const { return mGraphicsAPI; }
 
@@ -52,9 +61,20 @@ namespace Hollow
 		GraphicsInstance* GetGraphicsInstance() const { return mGraphicsInstance; }
 		const GraphicsAdapter& GetGraphicsAdapter() const { return mGraphicsAdapter; }
 
+		void WaitForFence(Fence** ppFences, uint32 amount);
+		void ResetFences(Fence** ppFences, uint32 amount);
+
 	protected:
 		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc) = 0;
 		virtual SharedPtr<GraphicsQueue> CreateGraphicsQueueImpl(const GraphicsQueueDesc& desc) = 0;
+		virtual SharedPtr<Texture> CreateTextureImpl(const TextureDesc& desc) = 0;
+		virtual SharedPtr<TextureView> CreateTextureViewImpl(const TextureViewDesc& desc) = 0;
+		virtual SharedPtr<Semaphore> CreateSyncSemaphoreImpl() = 0;
+		virtual SharedPtr<Fence> CreateFenceImpl(const FenceDesc& desc) = 0;
+		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc) = 0;
+
+		virtual void WaitForFenceImpl(Fence** ppFences, uint32 amount) = 0;
+		virtual void ResetFencesImpl(Fence** ppFences, uint32 amount) = 0;
 
 	protected:
 		Array<SharedPtr<GraphicsDeviceObject>> mDeviceObjects;

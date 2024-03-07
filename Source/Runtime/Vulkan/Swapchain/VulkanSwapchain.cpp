@@ -18,6 +18,10 @@
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchainUtils.h>
 
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
+#include <Runtime/Vulkan/Texture/VulkanTexture.h>
+#include <Runtime/Vulkan/Texture/VulkanTextureView.h>
+#include <Runtime/Vulkan/Semaphore/VulkanSemaphore.h>
+#include <Runtime/Vulkan/Fence/VulkanFence.h>
 
 namespace Hollow
 {
@@ -154,13 +158,27 @@ namespace Hollow
 		// Nevertheless, we need to fill the VulkanTexture data
 		for (uint32 i = 0; i < imageCount; i++)
 		{
+			TextureDesc textureDesc = {};
+			textureDesc.ArraySize = 1;
+			textureDesc.ImageFormat = desc.SwapchainImageFormat;
+			textureDesc.ImageSize = { desc.ImageSize.x, desc.ImageSize.y, 1 };
+			textureDesc.MipLevels = 1;
+			textureDesc.SampleCount = TextureSampleCount::Sample1;
+			textureDesc.Type = TextureType::Texture2D;
+			textureDesc.Usage = desc.SwapchainUsage;
 
-		}
+			auto pTexture = pDevice->CreateTextureForSwapchain(textureDesc, images[i]);
+			AddTexture(pTexture);
 
-		// After creating the VulkanTexture, we need to create the VulkanTextureView
-		for (uint32 i = 0; i < imageCount; i++)
-		{
-			
+			// After creating the VulkanTexture, we need to create the VulkanTextureView
+			TextureViewDesc viewDesc = {};
+			viewDesc.pTexture = pTexture.get();
+			viewDesc.ArrayLayer = 0;
+			viewDesc.MipLevel = 0;
+			viewDesc.AspectFlags = TextureAspectFlags::ColorAspect;
+
+			auto pTextureView = pDevice->CreateTextureView(viewDesc);
+			AddTextureView(pTextureView);
 		}
 	}
 
@@ -189,8 +207,32 @@ namespace Hollow
 
 	void VulkanSwapchain::PresentImpl(Semaphore** ppWaitSemaphores, uint32 amount)
 	{
-		// Get the signal semaphore for the present queue
-		// Get the current image index
+		// Acquire the next image
+		uint32 imageIndex = GetCurrentFrameIndex();
+
+		VulkanFence* pFence = reinterpret_cast<VulkanFence*>(GetFence(imageIndex).get());
+
+		DEV_ASSERT(vkAcquireNextImageKHR(mVkDevice, mVkSwapchain, UINT64_MAX, VK_NULL_HANDLE, pFence->GetVkFence(), &imageIndex) == VK_SUCCESS, "VulkanSwapchain",
+			"Failed to acquire next image");
+
+		// Get the signal semaphores
+		VkSemaphore signalSemaphores[16];
+		for(uint32 i = 0; i < amount; i++)
+		{
+			signalSemaphores[i] = reinterpret_cast<VulkanSemaphore*>(ppWaitSemaphores[i])->GetVkSemaphore();
+		}
+
 		// Present the image
+		VkPresentInfoKHR presentInfo = {};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.pNext = nullptr;
+		presentInfo.waitSemaphoreCount = amount;
+		presentInfo.pWaitSemaphores = signalSemaphores;
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = &mVkSwapchain;
+		presentInfo.pImageIndices = &imageIndex;
+
+		VulkanQueue* pQueue = reinterpret_cast<VulkanQueue*>(GetPresentQueue());
+		DEV_ASSERT(vkQueuePresentKHR(pQueue->GetVkQueue(), &presentInfo) == VK_SUCCESS, "VulkanSwapchain", "Failed to present image");
 	}
 }
