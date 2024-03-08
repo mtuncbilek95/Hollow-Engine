@@ -5,5 +5,19 @@
 namespace Hollow
 {
 	class RUNTIME_API CommandPool : public GraphicsDeviceObject
-	{};
+	{
+	public:
+		CommandPool(const CommandPoolDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice) {}
+		virtual ~CommandPool() override = default;
+
+		CommandPoolType GetPoolType() const noexcept { return mPoolType; }
+
+		// Inherited via GraphicsDeviceObject
+		FORCEINLINE virtual GraphicsDeviceObjectType GetDeviceObjectType() const noexcept final { return GraphicsDeviceObjectType::CommandPool; }
+
+		virtual void OnShutdown() noexcept override = 0;
+
+	private:
+		CommandPoolType mPoolType;
+	};
 }

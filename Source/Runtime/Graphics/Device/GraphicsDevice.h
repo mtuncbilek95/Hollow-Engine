@@ -11,6 +11,11 @@
 #include <Runtime/Graphics/Shader/ShaderDesc.h>
 #include <Runtime/Graphics/RenderPass/RenderPassDesc.h>
 #include <Runtime/Graphics/Pipeline/GraphicsPipelineDesc.h>
+#include <Runtime/Graphics/Command/BufferDataUpdateDesc.h>
+#include <Runtime/Graphics/Command/CommandBufferDesc.h>
+#include <Runtime/Graphics/Command/CommandPoolDesc.h>
+#include <Runtime/Graphics/Memory/GraphicsMemoryDesc.h>
+#include <Runtime/Graphics/Buffer/GraphicsBufferDesc.h>
 
 namespace Hollow
 {
@@ -23,9 +28,6 @@ namespace Hollow
 	class Sampler;
 	class Pipeline;
 	class GraphicsMemory;
-	class DescriptorSet;
-	class DescriptorPool;
-	class DescriptorLayout;
 	class CommandBuffer;
 	class CommandPool;
 	class RenderPass;
@@ -56,6 +58,10 @@ namespace Hollow
 		SharedPtr<Shader> CreateShader(const ShaderDesc& desc);
 		SharedPtr<RenderPass> CreateRenderPass(const RenderPassDesc& desc);
 		SharedPtr<Pipeline> CreateGraphicsPipeline(const GraphicsPipelineDesc& desc);
+		SharedPtr<CommandBuffer> CreateCommandBuffer(const CommandBufferDesc& desc);
+		SharedPtr<CommandPool> CreateCommandPool(const CommandPoolDesc& desc);
+		SharedPtr<GraphicsMemory> CreateGraphicsMemory(const GraphicsMemoryDesc& desc);
+		SharedPtr<GraphicsBuffer> CreateGraphicsBuffer(const GraphicsBufferDesc& desc);
 
 		FORCEINLINE GraphicsAPI GetGraphicsAPI() const { return mGraphicsAPI; }
 
@@ -67,6 +73,10 @@ namespace Hollow
 
 		void WaitForFence(Fence** ppFences, uint32 amount);
 		void ResetFences(Fence** ppFences, uint32 amount);
+		void UpdateBufferData(GraphicsBuffer* pBuffer, BufferDataUpdateDesc& desc);
+		void WaitForIdle();
+		void WaitQueueIdle(GraphicsQueue* pQueue);
+		void SubmitToQueue(GraphicsQueue* pQueue, CommandBuffer** ppCommandBuffers, uint32 amount, Semaphore** ppWaitSemaphores, uint32 waitSemaphoreCount, Semaphore** ppSignalSemaphores, uint32 signalSemaphoreCount, Fence* pFence);
 
 	protected:
 		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc) = 0;
@@ -78,9 +88,17 @@ namespace Hollow
 		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc) = 0;
 		virtual SharedPtr<RenderPass> CreateRenderPassImpl(const RenderPassDesc& desc) = 0;
 		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) = 0;
+		virtual SharedPtr<CommandBuffer> CreateCommandBufferImpl(const CommandBufferDesc& desc) = 0;
+		virtual SharedPtr<CommandPool> CreateCommandPoolImpl(const CommandPoolDesc& desc) = 0;
+		virtual SharedPtr<GraphicsMemory> CreateGraphicsMemoryImpl(const GraphicsMemoryDesc& desc) = 0;
+		virtual SharedPtr<GraphicsBuffer> CreateGraphicsBufferImpl(const GraphicsBufferDesc& desc) = 0;
 
 		virtual void WaitForFenceImpl(Fence** ppFences, uint32 amount) = 0;
 		virtual void ResetFencesImpl(Fence** ppFences, uint32 amount) = 0;
+		virtual void UpdateBufferDataImpl(GraphicsBuffer* pBuffer, BufferDataUpdateDesc& desc) = 0;
+		virtual void WaitForIdleImpl() = 0;
+		virtual void WaitQueueIdleImpl(GraphicsQueue* pQueue) = 0;
+		virtual void SubmitToQueueImpl(GraphicsQueue* pQueue, CommandBuffer** ppCommandBuffers, uint32 amount, Semaphore** ppWaitSemaphores, uint32 waitSemaphoreCount, Semaphore** ppSignalSemaphores, uint32 signalSemaphoreCount, Fence* pFence) = 0;
 
 	protected:
 		Array<SharedPtr<GraphicsDeviceObject>> mDeviceObjects;

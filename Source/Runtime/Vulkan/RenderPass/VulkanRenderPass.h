@@ -15,6 +15,7 @@ namespace Hollow
 		~VulkanRenderPass() override = default;
 
 		VkRenderPass GetVkRenderPass() const { return mVkRenderPass; }
+		VkFramebuffer GetVkFramebuffer(uint32 index) const { return mVkFramebuffers[index]; }
 		const Array<VkFramebuffer>& GetVkFramebuffers() const { return mVkFramebuffers; }
 
 		// Inherited via RenderPass

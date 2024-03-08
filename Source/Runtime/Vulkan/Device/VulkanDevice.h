@@ -47,23 +47,28 @@ namespace Hollow
 
 		virtual void OnShutdown() override;
 
-	public:
-		static PFN_vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR;
-		static PFN_vkCmdEndRenderingKHR vkCmdEndRenderingKHR;
-
 	protected:
-		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc);
-		virtual SharedPtr<GraphicsQueue> CreateGraphicsQueueImpl(const GraphicsQueueDesc& desc);
-		virtual SharedPtr<Texture> CreateTextureImpl(const TextureDesc& desc);
-		virtual SharedPtr<TextureView> CreateTextureViewImpl(const TextureViewDesc& desc);
-		virtual SharedPtr<Semaphore> CreateSyncSemaphoreImpl();
-		virtual SharedPtr<Fence> CreateFenceImpl(const FenceDesc& desc);
-		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc);
-		virtual SharedPtr<RenderPass> CreateRenderPassImpl(const RenderPassDesc& desc);
-		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc);
+		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc) override;
+		virtual SharedPtr<GraphicsQueue> CreateGraphicsQueueImpl(const GraphicsQueueDesc& desc)  override;
+		virtual SharedPtr<Texture> CreateTextureImpl(const TextureDesc& desc)  override;
+		virtual SharedPtr<TextureView> CreateTextureViewImpl(const TextureViewDesc& desc) override;
+		virtual SharedPtr<Semaphore> CreateSyncSemaphoreImpl() override;
+		virtual SharedPtr<Fence> CreateFenceImpl(const FenceDesc& desc) override;
+		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc) override;
+		virtual SharedPtr<RenderPass> CreateRenderPassImpl(const RenderPassDesc& desc) override;
+		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) override;
+		virtual SharedPtr<CommandBuffer> CreateCommandBufferImpl(const CommandBufferDesc& desc) override;
+		virtual SharedPtr<CommandPool> CreateCommandPoolImpl(const CommandPoolDesc& desc) override;
+		virtual SharedPtr<GraphicsMemory> CreateGraphicsMemoryImpl(const GraphicsMemoryDesc& desc) override;
+		virtual SharedPtr<GraphicsBuffer> CreateGraphicsBufferImpl(const GraphicsBufferDesc& desc) override;
 
 		virtual void WaitForFenceImpl(Fence** ppFences, uint32 amount) override;
 		virtual void ResetFencesImpl(Fence** ppFences, uint32 amount) override;
+		virtual void UpdateBufferDataImpl(GraphicsBuffer* pBuffer, BufferDataUpdateDesc& desc) override;
+		virtual void WaitForIdleImpl() override;
+		virtual void WaitQueueIdleImpl(GraphicsQueue* pQueue) override;
+		virtual void SubmitToQueueImpl(GraphicsQueue* pQueue, CommandBuffer** ppCommandBuffers, uint32 amount, Semaphore** ppWaitSemaphores, 
+			uint32 waitSemaphoreCount, Semaphore** ppSignalSemaphores, uint32 signalSemaphoreCount, Fence* pFence) override;
 
 	private:
 		VkDevice mVkDevice;

@@ -12,10 +12,7 @@ namespace Hollow
 		// Create the fences for the swapchain
 		for(uint32 i = 0; i < mBufferCount; i++)
 		{
-			FenceDesc fenceDesc = {};
-			fenceDesc.bSignaled = true;
-
-			mFences.push_back(pDevice->CreateFence(fenceDesc));
+			mSemaphores.push_back(pDevice->CreateSyncSemaphore());
 		}
 	}
 
@@ -27,12 +24,8 @@ namespace Hollow
 
 	void Swapchain::Present(Semaphore** ppWaitSemaphores, uint32 amount)
 	{
-		// Wait for the fence to be signaled
-		Fence* pFence = mFences[mCurrentFrameIndex].get();
-		GetOwnerDevice()->WaitForFence(&pFence, 1);
-		GetOwnerDevice()->ResetFences(&pFence, 1);
-
 		PresentImpl(ppWaitSemaphores, amount);
+
 		mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mBufferCount;
 	}
 

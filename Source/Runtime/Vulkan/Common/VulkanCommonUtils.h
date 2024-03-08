@@ -4,6 +4,7 @@
 #include <Runtime/Graphics/Common/ShareMode.h>
 #include <Runtime/Graphics/Common/LogicOperation.h>
 #include <Runtime/Graphics/Common/CompareOperation.h>
+#include <Runtime/Graphics/Common/GraphicsIndexType.h>
 
 #include <vulkan.h>
 
@@ -89,6 +90,20 @@ namespace Hollow
 			default:
 				return VK_COMPARE_OP_NEVER;
 			}
+		}
+
+		static VkIndexType GetVkIndexType(GraphicsIndexType type)
+		{
+			switch (type)
+			{
+			case GraphicsIndexType::Index16:
+				return VK_INDEX_TYPE_UINT16;
+			case GraphicsIndexType::Index32:
+				return VK_INDEX_TYPE_UINT32;
+			default:
+				return VK_INDEX_TYPE_UINT16;
+			}
+
 		}
 
 	public:

@@ -12,7 +12,8 @@ namespace Hollow
 		Pipeline(const GraphicsPipelineDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice), mBlendState(desc.BlendState), 
             mDepthStencilState(desc.DepthStencilState), mInputLayout(desc.InputLayout), mMultisample(desc.Multisample), 
             mRasterizerState(desc.RasterizerState), mResourceLayout(desc.ResourceLayout), mGraphicsShaders(desc.GraphicsShaders), 
-            mRenderPass(desc.pRenderPass), mViewport(desc.Viewport), mScissor(desc.Scissor), mSubpassIndex(desc.SubpassIndex) 
+            mRenderPass(desc.pRenderPass), mViewport(desc.Viewport), mScissor(desc.Scissor), mSubpassIndex(desc.SubpassIndex),
+            mBindPoint(PipelineBindPoint::Graphics)
         {}
 		virtual ~Pipeline() override = default;
 
@@ -27,6 +28,7 @@ namespace Hollow
         ViewportDesc GetViewport() const { return mViewport; }
         ScissorDesc GetScissor() const { return mScissor; }
         byte GetSubpassIndex() const { return mSubpassIndex; }
+        PipelineBindPoint GetBindPoint() const { return mBindPoint; }
 
         FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept final { return GraphicsDeviceObjectType::Pipeline; }
 
@@ -44,5 +46,7 @@ namespace Hollow
         ViewportDesc mViewport;
         ScissorDesc mScissor;
         byte mSubpassIndex;
+
+        PipelineBindPoint mBindPoint;
 	};
 }

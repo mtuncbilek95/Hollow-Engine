@@ -17,7 +17,7 @@ namespace Hollow
 	class RUNTIME_API CommandBuffer : public GraphicsDeviceObject
 	{
 	public:
-		CommandBuffer(const CommandBufferDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice) {}
+		CommandBuffer(const CommandBufferDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice) , mOwnerPool(desc.pOwnerPool) {}
 		virtual ~CommandBuffer() override = default;
 
 		void BeginRecording();
@@ -28,7 +28,6 @@ namespace Hollow
 		void BindVertexBuffers(GraphicsBuffer** ppBuffer, uint32 amount);
 		void BindIndexBuffer(GraphicsBuffer* pBuffer, GraphicsIndexType indexType);
 		void DrawIndexed(uint32 indexCount, uint32 indexOffset, uint32 vertexOffset, uint32 instanceOffset, uint32 instanceCount);
-		void BindPipeline(Pipeline* pPipeline);
 		void SetViewports(ViewportDesc* pViewports, byte count);
 		void SetScissors(ScissorDesc* pScissors, byte count);
 		void CopyBufferToBuffer(GraphicsBuffer* pSourceBuffer, GraphicsBuffer* pDestinationBuffer, BufferBufferCopyDesc& desc);

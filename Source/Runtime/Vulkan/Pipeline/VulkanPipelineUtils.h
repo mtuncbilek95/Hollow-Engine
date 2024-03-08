@@ -8,7 +8,7 @@
 #include <Runtime/Graphics/Pipeline/BlendState/BlendFactor.h>
 #include <Runtime/Graphics/Pipeline/BlendState/BlendOperation.h>
 #include <Runtime/Graphics/Pipeline/BlendState/BlendColorWriteMask.h>
-
+#include <Runtime/Graphics/Pipeline/PipelineBindPoint.h>
 
 #include <vulkan.h>
 
@@ -122,5 +122,19 @@ namespace Hollow
 			default: return VK_VERTEX_INPUT_RATE_VERTEX;
 			}
 		}
+
+		static VkPipelineBindPoint GetVkPipelineBindPoint(PipelineBindPoint point)
+		{
+			switch (point)
+			{
+			case PipelineBindPoint::Graphics: return VK_PIPELINE_BIND_POINT_GRAPHICS;
+			case PipelineBindPoint::Compute: return VK_PIPELINE_BIND_POINT_COMPUTE;
+			default: return VK_PIPELINE_BIND_POINT_GRAPHICS;
+			}
+		}
+
+	public:
+		VulkanPipelineUtils() = delete;
+		~VulkanPipelineUtils() = delete;
 	};
 }

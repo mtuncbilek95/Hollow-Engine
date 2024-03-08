@@ -10,6 +10,10 @@
 #include <Runtime/Vulkan/Shader/VulkanShader.h>
 #include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
 #include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
+#include <Runtime/Vulkan/Command/VulkanCommandBuffer.h>
+#include <Runtime/Vulkan/Command/VulkanCommandPool.h>
+#include <Runtime/Vulkan/Buffer/VulkanBuffer.h>
+#include <Runtime/Vulkan/Memory/VulkanMemory.h>
 
 namespace Hollow
 {
@@ -187,13 +191,13 @@ namespace Hollow
 
 	void VulkanDevice::OnShutdown()
 	{
-		for(int i = static_cast<int>(mDeviceObjects.size()) - 1; i >= 0; --i)
+		for (int i = static_cast<int>(mDeviceObjects.size()) - 1; i >= 0; --i)
 		{
 			mDeviceObjects[i]->OnShutdown();
 			mDeviceObjects[i].reset(); // Release the shared pointer
 		}
 
-		if(mSwapchain != nullptr)
+		if (mSwapchain != nullptr)
 		{
 			mSwapchain->OnShutdown();
 			mSwapchain.reset();
@@ -293,13 +297,33 @@ namespace Hollow
 		return std::make_shared<VulkanPipeline>(desc, this);
 	}
 
+	SharedPtr<CommandBuffer> VulkanDevice::CreateCommandBufferImpl(const CommandBufferDesc& desc)
+	{
+		return std::make_shared<VulkanCommandBuffer>(desc, this);
+	}
+
+	SharedPtr<CommandPool> VulkanDevice::CreateCommandPoolImpl(const CommandPoolDesc& desc)
+	{
+		return std::make_shared<VulkanCommandPool>(desc, this);
+	}
+
+	SharedPtr<GraphicsMemory> VulkanDevice::CreateGraphicsMemoryImpl(const GraphicsMemoryDesc& desc)
+	{
+		return std::make_shared<VulkanMemory>(desc, this);
+	}
+
+	SharedPtr<GraphicsBuffer> VulkanDevice::CreateGraphicsBufferImpl(const GraphicsBufferDesc& desc)
+	{
+		return std::make_shared<VulkanBuffer>(desc, this);
+	}
+
 	void VulkanDevice::WaitForFenceImpl(Fence** ppFences, uint32 amount)
 	{
 		VkFence fences[32];
 		for (byte i = 0; i < amount; i++)
 			fences[i] = reinterpret_cast<VulkanFence*>(ppFences[i])->GetVkFence();
 
-		vkWaitForFences(mVkDevice, amount, fences, VK_TRUE, UINT64_MAX);
+		DEV_ASSERT(vkWaitForFences(mVkDevice, amount, fences, VK_TRUE, UINT64_MAX) == VK_SUCCESS, "VulkanDevice", "Failed to wait for fences");
 	}
 
 	void VulkanDevice::ResetFencesImpl(Fence** ppFences, uint32 amount)
@@ -308,6 +332,61 @@ namespace Hollow
 		for (byte i = 0; i < amount; i++)
 			fences[i] = reinterpret_cast<VulkanFence*>(ppFences[i])->GetVkFence();
 
-		vkResetFences(mVkDevice, amount, fences);
+		DEV_ASSERT(vkResetFences(mVkDevice, amount, fences) == VK_SUCCESS, "VulkanDevice", "Failed to reset fences");
+	}
+
+	void VulkanDevice::UpdateBufferDataImpl(GraphicsBuffer* pBuffer, BufferDataUpdateDesc& desc)
+	{
+		void* pData;
+		VkDeviceMemory memory = reinterpret_cast<VulkanMemory*>(pBuffer->GetMemory())->GetVkDeviceMemory();
+		vkMapMemory(mVkDevice, memory, 0, desc.SizeInBytes, 0, &pData);
+		memcpy(pData, desc.pData, desc.SizeInBytes);
+		vkUnmapMemory(mVkDevice, memory);
+	}
+
+	void VulkanDevice::WaitForIdleImpl()
+	{
+		DEV_ASSERT(vkDeviceWaitIdle(mVkDevice) == VK_SUCCESS, "VulkanDevice", "Failed to wait for device idle");
+	}
+
+	void VulkanDevice::WaitQueueIdleImpl(GraphicsQueue* pQueue)
+	{
+		DEV_ASSERT(vkQueueWaitIdle(reinterpret_cast<VulkanQueue*>(pQueue)->GetVkQueue()) == VK_SUCCESS, "VulkanDevice", "Failed to wait for queue idle");
+	}
+
+	void VulkanDevice::SubmitToQueueImpl(GraphicsQueue* pQueue, CommandBuffer** ppCommandBuffers, uint32 amount, Semaphore** ppWaitSemaphores, 
+		uint32 waitSemaphoreCount, Semaphore** ppSignalSemaphores, uint32 signalSemaphoreCount, Fence* pFence)
+	{
+		VkCommandBuffer commandBuffers[32];
+		for (byte i = 0; i < amount; i++)
+			commandBuffers[i] = reinterpret_cast<VulkanCommandBuffer*>(ppCommandBuffers[i])->GetVkCommandBuffer();
+
+		VkSemaphore waitSemaphores[32];
+		for (byte i = 0; i < waitSemaphoreCount; i++)
+			waitSemaphores[i] = reinterpret_cast<VulkanSemaphore*>(ppWaitSemaphores[i])->GetVkSemaphore();
+
+		VkSemaphore signalSemaphores[32];
+		for (byte i = 0; i < signalSemaphoreCount; i++)
+			signalSemaphores[i] = reinterpret_cast<VulkanSemaphore*>(ppSignalSemaphores[i])->GetVkSemaphore();
+
+		VkPipelineStageFlags waitStages[32];
+		for (byte i = 0; i < waitSemaphoreCount; i++)
+			waitStages[i] = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = amount;
+		submitInfo.pCommandBuffers = commandBuffers;
+		submitInfo.waitSemaphoreCount = waitSemaphoreCount;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		submitInfo.pWaitDstStageMask = waitStages;
+		submitInfo.signalSemaphoreCount = signalSemaphoreCount;
+		submitInfo.pSignalSemaphores = signalSemaphores;
+
+		VkFence fence = VK_NULL_HANDLE;
+		if (pFence != nullptr)
+			fence = reinterpret_cast<VulkanFence*>(pFence)->GetVkFence();
+
+		DEV_ASSERT(vkQueueSubmit(reinterpret_cast<VulkanQueue*>(pQueue)->GetVkQueue(), 1, &submitInfo, fence) == VK_SUCCESS, "VulkanDevice", "Failed to submit to queue");
 	}
 }

@@ -41,7 +41,7 @@ namespace Hollow
 
 		void AddTexture(SharedPtr<Texture> pTexture);
 		void AddTextureView(SharedPtr<TextureView> pTextureView);
-		SharedPtr<Fence> GetFence(uint32 index) const { return mFences[index]; }
+		SharedPtr<Semaphore> GetImageSemaphore(uint32 index) const { return mSemaphores[index]; }
 
 		virtual void ResizeImpl(const Vector2u& newSize) = 0;
 		virtual void PresentImpl(Semaphore** ppWaitSemaphores, uint32 amount) = 0;
@@ -57,6 +57,6 @@ namespace Hollow
 		byte mCurrentFrameIndex;
 		Array<SharedPtr<Texture>> mImages;
 		Array<SharedPtr<TextureView>> mImageViews;
-		Array<SharedPtr<Fence>> mFences;
+		Array<SharedPtr<Semaphore>> mSemaphores;
 	};
 }

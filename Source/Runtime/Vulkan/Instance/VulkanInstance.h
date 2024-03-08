@@ -22,10 +22,6 @@ namespace Hollow
 		virtual SharedPtr<GraphicsDevice> CreateDeviceImpl() override;
 
 	private:
-		static PFN_vkCmdBeginRendering vkCmdBeginRendering;
-		static PFN_vkCmdEndRendering vkCmdEndRendering;
-
-	private:
 		VkInstance mVkInstance;
 		Array<const char*> mInstanceLayers;
 

@@ -3,13 +3,36 @@
 #include <Runtime/Graphics/Device/GraphicsDevice.h>
 #include <Runtime/Graphics/Queue/GraphicsQueue.h>
 #include <Runtime/Graphics/Swapchain/Swapchain.h>
+#include <Runtime/Graphics/Fence/Fence.h>
 #include <Runtime/Graphics/Semaphore/Semaphore.h>
 #include <Runtime/Graphics/Shader/Shader.h>
 #include <Runtime/ShaderCompiler/ShaderCompiler.h>
 #include <Runtime/Graphics/RenderPass/RenderPass.h>
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
+#include <Runtime/Graphics/Command/CommandPool.h>
+#include <Runtime/Graphics/Command/CommandBuffer.h>
 
 using namespace Hollow;
+
+struct Vertex
+{
+	Vector2f Position;
+	Vector3f Color;
+};
+
+const Array<Vertex> vertices = {
+	{{-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+	{{-0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{ 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}},
+	{{ 0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}}
+
+};
+
+const Array<uint32> indices =
+{
+	0, 1, 3,
+	1, 2, 3
+};
 
 int main()
 {
@@ -89,6 +112,13 @@ int main()
 
 	auto mFragmentShader = mDevice->CreateShader(fsDesc);
 
+	// ----------------- CREATE FENCE -----------------
+
+	FenceDesc fenceDesc = {};
+	fenceDesc.bSignaled = false;
+
+	auto mFence = mDevice->CreateFence(fenceDesc).get();
+
 	// ----------------- CREATE RENDERPASS -----------------
 
 	RenderPassDesc renderPassDesc = {};
@@ -97,9 +127,9 @@ int main()
 	renderPassDesc.SampleCount = TextureSampleCount::Sample1;
 	renderPassDesc.ColorLoadOperation = RenderPassLoadOperation::Clear;
 	renderPassDesc.ColorStoreOperation = RenderPassStoreOperation::Store;
-	renderPassDesc.StencilLoadOperation = RenderPassLoadOperation::Clear;
-	renderPassDesc.StencilStoreOperation = RenderPassStoreOperation::Store;
-	renderPassDesc.InputLayout = TextureMemoryLayout::ColorAttachment;
+	renderPassDesc.StencilLoadOperation = RenderPassLoadOperation::Ignore;
+	renderPassDesc.StencilStoreOperation = RenderPassStoreOperation::Ignore;
+	renderPassDesc.InputLayout = TextureMemoryLayout::Unknown;
 	renderPassDesc.OutputLayout = TextureMemoryLayout::Present;
 	renderPassDesc.ArrayLevel = 1;
 	renderPassDesc.MipLevel = 1;
@@ -144,7 +174,7 @@ int main()
 
 	// Color InputElement
 	InputElement inputElement2 = {};
-	inputElement2.Format = TextureFormat::RGBA32_Float;
+	inputElement2.Format = TextureFormat::RGB32_Float;
 	inputElement2.Semantic = InputElementSemantic::Color;
 
 	// InputBinding
@@ -199,13 +229,134 @@ int main()
 
 	auto mPipeline = mDevice->CreateGraphicsPipeline(pipelineDesc);
 
+	// ----------------- CREATE COMMAND POOL -----------------
+
+	CommandPoolDesc commandPoolDesc = {};
+	commandPoolDesc.PoolType = CommandPoolType::Graphics;
+
+	auto mCommandPool = mDevice->CreateCommandPool(commandPoolDesc);
+
+	// ----------------- CREATE COMMAND BUFFER -----------------
+
+	CommandBufferDesc commandBufferDesc = {};
+	commandBufferDesc.pOwnerPool = mCommandPool.get();
+
+	auto mCommandBuffer = mDevice->CreateCommandBuffer(commandBufferDesc).get();
+
+	// ----------------- CREATE VERTEX & INDEX BUFFERS -----------------
+
+	// Vertex Buffer
+	GraphicsBufferDesc vertexBufferDesc = {};
+	vertexBufferDesc.MemoryType = GraphicsMemoryType::Host;
+	vertexBufferDesc.ShareMode = ShareMode::Exclusive;
+	vertexBufferDesc.SizeInBytes = sizeof(Vertex) * vertices.size();
+	vertexBufferDesc.Usage = GraphicsBufferUsage::TransferDestination | GraphicsBufferUsage::Vertex;
+
+	GraphicsBuffer* mVertexBuffer = mDevice->CreateGraphicsBuffer(vertexBufferDesc).get();
+	mVertexBuffer->AllocateMemory();
+
+	// Index Buffer
+	GraphicsBufferDesc indexBufferDesc = {};
+	indexBufferDesc.MemoryType = GraphicsMemoryType::Host;
+	indexBufferDesc.ShareMode = ShareMode::Exclusive;
+	indexBufferDesc.SizeInBytes = sizeof(uint32) * indices.size();
+	indexBufferDesc.Usage = GraphicsBufferUsage::TransferDestination | GraphicsBufferUsage::Index;
+
+	GraphicsBuffer* mIndexBuffer = mDevice->CreateGraphicsBuffer(indexBufferDesc).get();
+	mIndexBuffer->AllocateMemory();
+
+	// ----------------- CREATE RELATED STAGING BUFFERS -----------------
+
+	// Vertex Staging Buffer
+	GraphicsBufferDesc vertexStagingBufferDesc = {};
+	vertexStagingBufferDesc.MemoryType = GraphicsMemoryType::Host;
+	vertexStagingBufferDesc.ShareMode = ShareMode::Exclusive;
+	vertexStagingBufferDesc.SizeInBytes = sizeof(Vertex) * vertices.size();
+	vertexStagingBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
+
+	auto mVertexStagingBuffer = mDevice->CreateGraphicsBuffer(vertexStagingBufferDesc);
+	mVertexStagingBuffer->AllocateMemory();
+
+	// Index Staging Buffer
+	GraphicsBufferDesc indexStagingBufferDesc = {};
+	indexStagingBufferDesc.MemoryType = GraphicsMemoryType::Host;
+	indexStagingBufferDesc.ShareMode = ShareMode::Exclusive;
+	indexStagingBufferDesc.SizeInBytes = sizeof(uint32) * indices.size();
+	indexStagingBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
+		
+	auto mIndexStagingBuffer = mDevice->CreateGraphicsBuffer(indexStagingBufferDesc);
+	mIndexStagingBuffer->AllocateMemory();
+
+	// ----------------- STAGING TO REAL -----------------
+	
+	// Copy vertex data to staging buffer
+	BufferDataUpdateDesc vertexDataUpdateDesc = {};
+	vertexDataUpdateDesc.pData = (void*)vertices.data();
+	vertexDataUpdateDesc.SizeInBytes = sizeof(Vertex) * vertices.size();
+
+	mDevice->UpdateBufferData(mVertexStagingBuffer.get(), vertexDataUpdateDesc);
+
+	// Copy index data to staging buffer
+	BufferDataUpdateDesc indexDataUpdateDesc = {};
+	indexDataUpdateDesc.pData = (void*)indices.data();
+	indexDataUpdateDesc.SizeInBytes = sizeof(uint32) * indices.size();
+
+	mDevice->UpdateBufferData(mIndexStagingBuffer.get(), indexDataUpdateDesc);
+
+	// Record command buffer
+	
+	mCommandBuffer->BeginRecording();
+
+	// Copy vertex data from staging buffer to vertex buffer
+	BufferBufferCopyDesc vertexCopyDesc = {};
+	vertexCopyDesc.DestinationOffset = 0;
+	vertexCopyDesc.Size = vertexDataUpdateDesc.SizeInBytes;
+	vertexCopyDesc.SourceOffset = 0;
+	mCommandBuffer->CopyBufferToBuffer(mVertexStagingBuffer.get(), mVertexBuffer, vertexCopyDesc);
+
+	// Copy index data from staging buffer to index buffer
+	BufferBufferCopyDesc indexCopyDesc = {};
+	indexCopyDesc.DestinationOffset = 0;
+	indexCopyDesc.Size = indexDataUpdateDesc.SizeInBytes;
+	indexCopyDesc.SourceOffset = 0;
+	mCommandBuffer->CopyBufferToBuffer(mIndexStagingBuffer.get(), mIndexBuffer, indexCopyDesc);
+
+	mCommandBuffer->EndRecording();
+	mDevice->SubmitToQueue(mPresentQueue.get(), &mCommandBuffer, 1, nullptr, 0, nullptr, 0, mFence);
+
+	mDevice->WaitForFence(&mFence, 1);
+	mDevice->ResetFences(&mFence, 1);
+
 	// ----------------- RENDER LOOP -----------------
+
+	CORE_LOG(HE_VERBOSE, "Test Application", "Rendering started!");
 
 	while (!mWindow->ShouldClose())
 	{
-		Semaphore* presentSemaphore = presentSemaphores[mSwapchain->GetCurrentFrameIndex()].get();
 		mWindow->PollMessages();
+
+		mCommandBuffer->BeginRecording();
+		mCommandBuffer->BeginRenderPass(mRenderPass.get());
+
+		mCommandBuffer->BindPipeline(mPipeline.get());
+		mCommandBuffer->SetViewports(&viewport, 1);
+		mCommandBuffer->SetScissors(&scissor, 1);
+		
+		mCommandBuffer->BindVertexBuffers(&mVertexBuffer, 1);
+		mCommandBuffer->BindIndexBuffer(mIndexBuffer, GraphicsIndexType::Index32);
+		mCommandBuffer->DrawIndexed(indices.size(), 0, 0, 0, 1);
+		
+		mCommandBuffer->EndRenderPass();
+		mCommandBuffer->EndRecording();
+		
+		mDevice->SubmitToQueue(mPresentQueue.get(), &mCommandBuffer, 1, nullptr, 0, nullptr, 0, mFence);
+		mDevice->WaitForFence(&mFence, 1);
+		mDevice->ResetFences(&mFence, 1);
+
+		mSwapchain->Present(nullptr, 0);
 	}
+
+	mDevice->WaitForIdle();
 
 	mDevice->OnShutdown();
 	mGraphicsInstance->OnShutdown();

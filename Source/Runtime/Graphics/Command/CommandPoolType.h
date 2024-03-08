@@ -6,8 +6,8 @@ namespace Hollow
 {
 	enum class RUNTIME_API CommandPoolType : byte
 	{
-		Graphics,
-		Compute,
-		Transfer
+		Graphics = 1,
+		Compute = 2,
+		Transfer = 4
 	};
 }

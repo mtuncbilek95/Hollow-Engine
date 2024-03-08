@@ -214,17 +214,19 @@ namespace Hollow
 		// Acquire the next image
 		uint32 imageIndex = GetCurrentFrameIndex();
 
-		VulkanFence* pFence = reinterpret_cast<VulkanFence*>(GetFence(imageIndex).get());
+		VulkanSemaphore* imageSemaphore = reinterpret_cast<VulkanSemaphore*>(GetImageSemaphore(imageIndex).get());
 
-		DEV_ASSERT(vkAcquireNextImageKHR(mVkDevice, mVkSwapchain, UINT64_MAX, VK_NULL_HANDLE, pFence->GetVkFence(), &imageIndex) == VK_SUCCESS, "VulkanSwapchain",
+		DEV_ASSERT(vkAcquireNextImageKHR(mVkDevice, mVkSwapchain, uint64_max, imageSemaphore->GetVkSemaphore(), VK_NULL_HANDLE, &imageIndex) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to acquire next image");
-
 		// Get the signal semaphores
 		VkSemaphore signalSemaphores[16];
 		for(byte i = 0; i < amount; i++)
 		{
 			signalSemaphores[i] = reinterpret_cast<VulkanSemaphore*>(ppWaitSemaphores[i])->GetVkSemaphore();
 		}
+
+		Semaphore* waitSemaphore = GetImageSemaphore(imageIndex).get();
+		GetOwnerDevice()->SubmitToQueue(GetPresentQueue(), nullptr, 0, &waitSemaphore, 1, ppWaitSemaphores, amount, nullptr);
 
 		// Present the image
 		VkPresentInfoKHR presentInfo = {};
