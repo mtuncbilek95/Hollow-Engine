@@ -4,9 +4,9 @@
 
 namespace Hollow
 {
-    class DescriptorSetLayout;
+    class DescriptorLayout;
     struct RUNTIME_API ResourceLayoutDesc
     {
-        Array<DescriptorSetLayout*> ResourceLayouts;
+        Array<DescriptorLayout*> ResourceLayouts;
     };
 }

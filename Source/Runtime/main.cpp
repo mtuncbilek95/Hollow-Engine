@@ -38,10 +38,10 @@ int main()
 {
 	// Create a window
 	WindowDesc winDesc = {};
-	winDesc.Windowed = true;
-	winDesc.WindowSize = { 1280, 720 };
+	winDesc.Windowed = false;
+	winDesc.WindowSize = { 1920, 1080 };
 	winDesc.WindowTitle = "Test Application";
-	winDesc.WindowPosition = { 100, 100 };
+	winDesc.WindowPosition = { (2560 - 1920) / 2, (1440 - 1080) / 2 };
 
 	auto mWindow = WindowManager::GetInstance().CreateAppWindow(winDesc);
 

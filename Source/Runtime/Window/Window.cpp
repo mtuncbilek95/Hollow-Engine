@@ -11,11 +11,16 @@ namespace Hollow
 		DEV_ASSERT(glfwInit(), "Window", "Failed to initialize glfw");
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+		glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
+		glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_FALSE);
 
 		mWindowHandle = glfwCreateWindow(mWindowSize.x, mWindowSize.y, mWindowName.c_str(), nullptr, nullptr);
 		glfwSetWindowPos(mWindowHandle, mWindowPosition.x, mWindowPosition.y);
 
 		glfwShowWindow(mWindowHandle);
+
+		glfwMakeContextCurrent(mWindowHandle);
 
 		DEV_ASSERT(mWindowHandle != nullptr, "Window", "Failed to create window");
 
