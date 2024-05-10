@@ -8,32 +8,32 @@ namespace Hollow
 {
 	class RUNTIME_API GraphicsMemory : public GraphicsDeviceObject
 	{
-		struct SubMemory
+		struct RUNTIME_API SubMemory
 		{
 			bool bOwned;
 			uint64 SizeInBytes;
 		};
 
 	public:
-		GraphicsMemory(const GraphicsMemoryDesc& desc, GraphicsDevice* pDevice);
+		GraphicsMemory(const GraphicsMemoryDesc& desc, const SharedPtr<GraphicsDevice> device);
 		virtual ~GraphicsMemory() override = default;
 
 		uint64 AllocateSubMemory(uint64 sizeInBytes);
 		void FreeSubMemory(uint64 offset);
 
-		uint64 GetSize() const { return mSizeInBytes; }
-		uint64 GetUsedSizeInBytes() const { return mUsedSizeInBytes; }
+		uint64 GetTotalSize() const { return mTotalSize; }
+		uint64 GetUsedSize() const { return mUsedSize; }
+		uint64 GetFreeSize() const { return mTotalSize - mUsedSize; }
 
-		// Inherited via GraphicsDeviceObject
-		FORCEINLINE virtual GraphicsDeviceObjectType GetDeviceObjectType() const noexcept final { return GraphicsDeviceObjectType::GraphicsMemory; }
+		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::GraphicsMemory; }
 
-		virtual void OnShutdown() noexcept override = 0;
+		virtual void OnShutdown() override = 0;
 
-		private:
-			GraphicsMemoryType mMemoryType;
-			uint64 mSizeInBytes;
-			uint64 mUsedSizeInBytes;
+	private:
+		GraphicsMemoryType mMemoryType;
+		uint64 mTotalSize;
+		uint64 mUsedSize;
 
-			arrayList<SubMemory> mSubMemories;
+		ArrayList<SubMemory> mSubMemoryBlocks;
 	};
 }

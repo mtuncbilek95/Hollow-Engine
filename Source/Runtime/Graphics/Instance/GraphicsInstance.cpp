@@ -1,22 +1,25 @@
 #include "GraphicsInstance.h"
 
-//#include <Runtime/Vulkan/Instance/VulkanInstance.h>
+#include <Runtime/Graphics/GraphicsManager.h>
 
 namespace Hollow
 {
-	sharedPtr<GraphicsInstance> GraphicsInstance::CreateInstance(const GraphicsInstanceDesc& desc)
+	SharedPtr<GraphicsInstance> GraphicsInstance::CreateInstance(const GraphicsInstanceDesc& desc)
 	{
 		switch (desc.API)
 		{
 		case GraphicsAPI::Vulkan:
-			return 0;//std::make_shared<VulkanInstance>(desc);
-		case GraphicsAPI::DX12:
-			CORE_LOG(HE_ERROR, "GraphicsInstance", "DX12 is not supported yet");
-			return nullptr;
+			return SharedPtr<GraphicsInstance>();
+		case GraphicsAPI::DirectX12:
+			return SharedPtr<GraphicsInstance>();
 		default:
-			CORE_LOG(HE_ERROR, "GraphicsInstance", "Invalid Graphics API");
-			return nullptr;
+			return SharedPtr<GraphicsInstance>();
 		}
+	}
+
+	GraphicsInstance::GraphicsInstance(const GraphicsInstanceDesc& desc) : Object(), mInstanceName(desc.InstanceName),
+		mApplicationName(desc.ApplicationName), mGraphicsAPI(desc.API), mInstanceExtensions(desc.EnabledExtensions)
+	{
 	}
 
 	void GraphicsInstance::EnumerateAdapters()
@@ -24,9 +27,13 @@ namespace Hollow
 		EnumerateAdaptersImpl();
 	}
 
-	sharedPtr<GraphicsDevice> GraphicsInstance::CreateDevice()
+	SharedPtr<GraphicsDevice> GraphicsInstance::CreateGraphicsDevice(const GraphicsDeviceDesc& desc)
 	{
-		mDevice = CreateDeviceImpl();
-		return mDevice;
+		SharedPtr<GraphicsDevice> device = CreateDeviceImpl(desc);
+
+		mOwnedDevice = device;
+		GraphicsManager::GetInstanceAPI().SetGraphicsDevice(mOwnedDevice);
+
+		return device;
 	}
 }

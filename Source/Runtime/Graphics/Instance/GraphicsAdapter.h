@@ -9,7 +9,7 @@ namespace Hollow
 	{
 		GraphicsAdapterType AdapterType;
 		uint32 AdapterScore;
-		string ProductName;
+		String ProductName;
 		uint32 VRam;
 		uint32 DeviceId;
 	};

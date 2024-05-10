@@ -51,7 +51,7 @@ namespace Hollow
 		SetWindowPos(mHandle, HWND_TOP, 0, 0, newSize.x, newSize.y, SWP_NOMOVE | SWP_SHOWWINDOW);
 #endif
 	}
-	void Win32Window::SetWindowTitleImpl(const string& newTitle)
+	void Win32Window::SetWindowTitleImpl(const String& newTitle)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		SetWindowText(mHandle, newTitle.c_str());
@@ -108,6 +108,10 @@ namespace Hollow
 			DispatchMessage(&msg);
 		}
 #endif
+	}
+
+	void Win32Window::OnShutdown()
+	{
 	}
 
 #if defined(HOLLOW_PLATFORM_WINDOWS)

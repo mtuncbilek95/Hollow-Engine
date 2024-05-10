@@ -8,7 +8,7 @@ namespace Hollow
 	class RUNTIME_API PlatformError final
 	{
 	public:
-		static string GetPlatformError();
+		static String GetPlatformError();
 
 	public:
 		PlatformError() = delete;

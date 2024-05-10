@@ -6,6 +6,6 @@ namespace Hollow
 {
 	struct RUNTIME_API FenceDesc
 	{
-		bool bSignaled;
+		bool bSignalled;
 	};
 }

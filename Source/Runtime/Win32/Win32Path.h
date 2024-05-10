@@ -10,10 +10,10 @@ namespace Hollow
 	class RUNTIME_API Win32Path final
 	{
 	public:
-		static string GetExecutableDir();
-		static string GetProgramFilesDir();
-		static string GetAppDataDir();
-		static string GetTempDir();
+		static String GetExecutableDir();
+		static String GetProgramFilesDir();
+		static String GetAppDataDir();
+		static String GetTempDir();
 
 	public:
 		Win32Path() = delete;

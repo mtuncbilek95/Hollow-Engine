@@ -10,7 +10,7 @@ namespace Hollow
 	{
 		Vector2u WindowSize;
 		Vector2i WindowPosition;
-		string WindowTitle;
+		String WindowTitle;
 		WindowMode WindowMode;
 	};
 }

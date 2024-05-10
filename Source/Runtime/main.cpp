@@ -19,5 +19,6 @@ int main()
 	{
 		window->PollEvents();
 	}
+
 	return 0;
 }

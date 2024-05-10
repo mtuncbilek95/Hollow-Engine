@@ -15,6 +15,16 @@ namespace Hollow
 		va_end(args);
 	}
 
+	void GlobalConsole::PrintError(const char* message, ...)
+	{
+		va_list args;
+		va_start(args, message);
+		printf("\033[31m[VulkanLayer]\033[39m -- ");
+		vprintf(message, args);
+		printf("\n");
+		va_end(args);
+	}
+
 	void GlobalConsole::Log(ConsoleType type, const char* title, const char* message, ...)
 	{
 		va_list args;

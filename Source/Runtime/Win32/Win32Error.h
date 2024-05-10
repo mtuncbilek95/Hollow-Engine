@@ -8,7 +8,7 @@ namespace Hollow
 	class RUNTIME_API Win32Error final
 	{
 	public:
-		static string GetPlatformError();
+		static String GetPlatformError();
 
 	public:
 		Win32Error() = delete;

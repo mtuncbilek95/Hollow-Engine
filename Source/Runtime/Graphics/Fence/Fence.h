@@ -9,17 +9,15 @@ namespace Hollow
 	class RUNTIME_API Fence : public GraphicsDeviceObject
 	{
 	public:
-		Fence(const FenceDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice), mSignaled(desc.bSignaled) 
-		{}
+		Fence(const FenceDesc& desc, SharedPtr<GraphicsDevice> device) : GraphicsDeviceObject(device), mSignalled(desc.bSignalled) {}
 		virtual ~Fence() override = default;
 
-		bool IsSignaled() const noexcept { return mSignaled; }
+		bool IsSignalled() const noexcept { return mSignalled; }
 
-		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept final { return GraphicsDeviceObjectType::Fence; }
-
-		virtual void OnShutdown() noexcept override = 0;
+		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Fence; }
+		virtual void OnShutdown() override = 0;
 
 	private:
-		bool mSignaled;
+		bool mSignalled;
 	};
 }

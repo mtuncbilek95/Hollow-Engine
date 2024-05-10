@@ -2,51 +2,52 @@
 
 namespace Hollow
 {
-	GraphicsMemory::GraphicsMemory(const GraphicsMemoryDesc& desc, GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
-		mMemoryType(desc.MemoryType), mSizeInBytes(desc.SizeInBytes), mUsedSizeInBytes(0)
+	GraphicsMemory::GraphicsMemory(const GraphicsMemoryDesc& desc, const SharedPtr<GraphicsDevice> device) : GraphicsDeviceObject(device), mTotalSize(desc.SizeInBytes),
+		mUsedSize(0), mMemoryType(desc.MemoryType)
 	{
-		// Allocate memory
-		SubMemory firstSubMemory = {};
-		firstSubMemory.bOwned = false;
-		firstSubMemory.SizeInBytes = desc.SizeInBytes;
-		mSubMemories.push_back(firstSubMemory);
+		SubMemory subMemory = { false, desc.SizeInBytes };
+		mSubMemoryBlocks.push_back(subMemory);
 	}
 
 	uint64 GraphicsMemory::AllocateSubMemory(uint64 sizeInBytes)
 	{
-		// Check if there is enough space in the memory
-		uint64 sizeLeft = mSizeInBytes - mUsedSizeInBytes;
+		uint64 sizeLeft = mTotalSize - mUsedSize;
 		if (sizeLeft < sizeInBytes)
-			return uint64_max;
-
-		// Look for an available space
-		uint64 offset = 0;
-		for (uint32 i = 0; i < mSubMemories.size(); i++)
 		{
-			// Skip the submemory if it is owned
-			if (mSubMemories[i].bOwned == true)
+			return uint64_max;
+		}
+
+		uint64 offset = 0;
+		for (uint32 i = 0; i < mSubMemoryBlocks.size(); ++i)
+		{
+			// Skip the block if it is already owned
+			if (mSubMemoryBlocks[i].bOwned)
 			{
-				offset += mSubMemories[i].SizeInBytes;
+				offset += mSubMemoryBlocks[i].SizeInBytes;
 				continue;
 			}
 
-			// If the submemory is too big, skip it
-			if (mSubMemories[i].SizeInBytes < sizeInBytes)
+			// If the memory block is too big, skip it
+			if (mSubMemoryBlocks[i].SizeInBytes > sizeInBytes)
 			{
-				offset += mSubMemories[i].SizeInBytes;
+				offset += mSubMemoryBlocks[i].SizeInBytes;
 				continue;
 			}
 
-			uint64 sizeLeft = mSubMemories[i].SizeInBytes - sizeInBytes;
-			SubMemory newSubMemory = {};
-			newSubMemory.SizeInBytes = sizeInBytes;
-			newSubMemory.bOwned = true;
-			mUsedSizeInBytes += sizeInBytes;
-			mSubMemories.insert(mSubMemories.begin() + i, newSubMemory);
+			// If the memory block is just right, use it
+			uint64 sizeLeftInBlock = mSubMemoryBlocks[i].SizeInBytes - sizeInBytes;
+			SubMemory newBlock = { true, sizeInBytes };
+			mUsedSize += sizeInBytes;
+			mSubMemoryBlocks.insert(mSubMemoryBlocks.begin() + i, newBlock);
 
 			return offset;
 		}
 
 		return uint64_max;
+	}
+
+	void GraphicsMemory::FreeSubMemory(uint64 offset)
+	{
+		return;
 	}
 }

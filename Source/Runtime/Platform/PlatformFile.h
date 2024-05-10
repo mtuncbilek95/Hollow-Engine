@@ -10,20 +10,20 @@ namespace Hollow
 	class RUNTIME_API PlatformFile final
 	{
 	public:
-		static bool Exists(const string& path);
-		static bool Create(const string& path);
-		static bool Delete(const string& path);
-		static bool Write(const string& path, const string& data, const uint64 offset = 0);
-		static bool Write(const string& path, const MemoryBuffer& buffer, const uint64 offset = 0);
-		static bool Read(const string& path, string& contentOut, const uint64 startByte = 0, const uint64 endByte = 0);
-		static bool Read(const string& path, MemoryBuffer& view, const uint64 startByte = 0, const uint64 endByte = 0);
-		static bool Copy(const string& source, const string& destination);
-		static bool Move(const string& source, const string& destination);
-		static bool Rename(const string& source, const string& destination);
-		static bool GetSize(const string& path, uint64& sizeOut);
-		static bool GetName(const string& path, string& nameOut);
-		static bool GetExtension(const string& path, string& extensionOut);
-		static bool GetDirectory(const string& path, string& directoryOut);
+		static bool Exists(const String& path);
+		static bool Create(const String& path);
+		static bool Delete(const String& path);
+		static bool Write(const String& path, const String& data, const uint64 offset = 0);
+		static bool Write(const String& path, const MemoryBuffer& buffer, const uint64 offset = 0);
+		static bool Read(const String& path, String& contentOut, const uint64 startByte = 0, const uint64 endByte = 0);
+		static bool Read(const String& path, MemoryBuffer& view, const uint64 startByte = 0, const uint64 endByte = 0);
+		static bool Copy(const String& source, const String& destination);
+		static bool Move(const String& source, const String& destination);
+		static bool Rename(const String& source, const String& destination);
+		static bool GetSize(const String& path, uint64& sizeOut);
+		static bool GetName(const String& path, String& nameOut);
+		static bool GetExtension(const String& path, String& extensionOut);
+		static bool GetDirectory(const String& path, String& directoryOut);
 
 	public:
 		PlatformFile() = delete;

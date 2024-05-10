@@ -1,35 +1,35 @@
 #pragma once
 
-#include <string>
-using string = std::string;
+#include <String>
+using String = std::string;
 
 #include <vector>
 template<typename T>
-using arrayList = std::vector<T>;
+using ArrayList = std::vector<T>;
 
 #include <map>
 template<typename K, typename V>
-using map = std::map<K, V>;
+using Map = std::map<K, V>;
 
 #include <set>
 template<typename T>
-using set = std::set<T>;
+using Set = std::set<T>;
 
 #include <unordered_map>
 template<typename K, typename V>
-using hashMap = std::unordered_map<K, V>;
+using HashMap = std::unordered_map<K, V>;
 
 #include <unordered_set>
 template<typename T>
-using hashSet = std::unordered_set<T>;
+using HashSet = std::unordered_set<T>;
 
 #include <memory>
 template<typename T>
-using sharedPtr = std::shared_ptr<T>;
+using SharedPtr = std::shared_ptr<T>;
 template<typename T>
-using uniquePtr = std::unique_ptr<T>;
+using UniquePtr = std::unique_ptr<T>;
 template<typename T>
-using weakPtr = std::weak_ptr<T>;
+using WeakPtr = std::weak_ptr<T>;
 
 #include <DirectXMath.h>
 using Vector2f = DirectX::XMFLOAT2;

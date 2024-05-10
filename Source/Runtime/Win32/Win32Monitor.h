@@ -10,8 +10,8 @@ namespace Hollow
 	class RUNTIME_API Win32Monitor final
 	{
 	public:
-		static sharedPtr<Monitor> GetPrimaryMonitor();
-		static arrayList<sharedPtr<Monitor>> GetAllMonitors();
+		static SharedPtr<Monitor> GetPrimaryMonitor();
+		static ArrayList<SharedPtr<Monitor>> GetAllMonitors();
 
 	public:
 		Win32Monitor() = delete;

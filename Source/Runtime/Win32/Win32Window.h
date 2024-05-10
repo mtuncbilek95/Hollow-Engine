@@ -23,13 +23,15 @@ namespace Hollow
 
 	protected:
 		virtual void SetWindowSizeImpl(Vector2u newSize) override;
-		virtual void SetWindowTitleImpl(const string& newTitle) override;
+		virtual void SetWindowTitleImpl(const String& newTitle) override;
 		virtual void SetWindowModeImpl(WindowMode newMode) override;
 		virtual void SetWindowPositionImpl(Vector2i newPosition) override;
 		virtual void ShowImpl() override;
 		virtual void HideImpl() override;
 
 		virtual void PollEventsImpl() override;
+
+		virtual void OnShutdown() override;
 
 	private:
 

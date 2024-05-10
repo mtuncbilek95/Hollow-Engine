@@ -6,14 +6,14 @@
 
 namespace Hollow
 {
-	sharedPtr<PlatformWindow> PlatformWindow::InitializeWindow(const WindowDesc& desc)
+	SharedPtr<PlatformWindow> PlatformWindow::InitializeWindow(const WindowDesc& desc)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		return std::make_shared<Win32Window>(desc);
 #endif
 	}
 	PlatformWindow::PlatformWindow(const WindowDesc& desc) : Object(), mWindowSize(desc.WindowSize),
-		mWindowPosition(desc.WindowPosition), mWindowTitle(desc.WindowTitle), mWindowMode(desc.WindowMode)
+		mWindowPosition(desc.WindowPosition), mWindowTitle(desc.WindowTitle), mWindowMode(desc.WindowMode), mVisible(false)
 	{
 	}
 
@@ -23,7 +23,7 @@ namespace Hollow
 		mWindowSize = newSize;
 	}
 
-	void PlatformWindow::SetWindowTitle(const string& newTitle)
+	void PlatformWindow::SetWindowTitle(const String& newTitle)
 	{
 		SetWindowTitleImpl(newTitle);
 		mWindowTitle = newTitle;
@@ -57,6 +57,10 @@ namespace Hollow
 	{
 		mEventQueue.clear();
 		PollEventsImpl();
+	}
+
+	void PlatformWindow::OnShutdown()
+	{
 	}
 
 	void PlatformWindow::TriggerWindowEvent(const WindowEventDesc& desc)

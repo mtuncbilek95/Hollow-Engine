@@ -4,10 +4,9 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API PolygonMode : byte
+	enum class RUNTIME_API GraphicsAPI : byte
 	{
-		Fill,
-		Line,
-		Point
+		DirectX12,
+		Vulkan
 	};
 }

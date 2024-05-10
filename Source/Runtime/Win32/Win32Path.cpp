@@ -8,46 +8,46 @@
 
 namespace Hollow
 {
-	string Win32Path::GetExecutableDir()
+	String Win32Path::GetExecutableDir()
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		char buffer[MAX_PATH];
 		GetModuleFileNameA(NULL, buffer, MAX_PATH);
-		return string(buffer);
+		return String(buffer);
 #else
-		return string();
+		return String();
 #endif
 	}
 
-	string Win32Path::GetProgramFilesDir()
+	String Win32Path::GetProgramFilesDir()
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		char buffer[MAX_PATH];
 		SHGetFolderPathA(NULL, CSIDL_PROGRAM_FILES, NULL, 0, buffer);
-		return string(buffer);
+		return String(buffer);
 #else
-		return string();
+		return String();
 #endif
 	}
 
-	string Win32Path::GetAppDataDir()
+	String Win32Path::GetAppDataDir()
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		char buffer[MAX_PATH];
 		SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, buffer);
-		return string(buffer);
+		return String(buffer);
 #else
-		return string();
+		return String();
 #endif
 	}
-	string Win32Path::GetTempDir()
+	String Win32Path::GetTempDir()
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		char buffer[MAX_PATH];
 		GetTempPathA(MAX_PATH, buffer);
-		return string(buffer);
+		return String(buffer);
 #else
-		return string();
+		return String();
 #endif
 	}
 }

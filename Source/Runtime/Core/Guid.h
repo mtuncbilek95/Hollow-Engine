@@ -11,14 +11,14 @@ namespace Hollow
 		Guid();
 		Guid(uint32 a, uint16 b, uint16 c, uint64 d);
 		Guid(const Guid& other);
-		Guid(const string& str);
+		Guid(const String& str);
 
 		uint32& GetA() { return mA; }
 		uint16& GetB() { return mB; }
 		uint16& GetC() { return mC; }
 		uint64& GetD() { return mD; }
 
-		string Tostring();
+		String ToString();
 
 	private:
 		uint32 mA;

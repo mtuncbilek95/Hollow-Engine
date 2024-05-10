@@ -15,7 +15,7 @@ namespace Hollow
 		Vector2i WindowPosition;
 		WindowMode WindowMode;
 
-		arrayList<string> DroppedFiles;
+		ArrayList<String> DroppedFiles;
 	};
 }
 

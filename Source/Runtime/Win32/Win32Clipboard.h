@@ -8,8 +8,8 @@ namespace Hollow
 	class RUNTIME_API Win32Clipboard final
 	{
 	public:
-		static void SetClipboardText(const string& text);
-		static string GetClipboardText();
+		static void SetClipboardText(const String& text);
+		static String GetClipboardText();
 
 	public:
 		Win32Clipboard() = delete;

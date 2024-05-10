@@ -10,15 +10,15 @@ namespace Hollow
 	class RUNTIME_API PlatformDirectory final
 	{
 	public:
-		static bool Exists(const string& path);
-		static bool Create(const string& path);
-		static bool Delete(const string& path);
-		static bool Copy(const string& source, const string& destination);
-		static bool Move(const string& source, const string& destination);
-		static bool Rename(const string& source, const string& destination);
-		static bool GetFiles(const string& path, arrayList<string>& files);
-		static bool GetDirectories(const string& path, arrayList<string>& directories);
-		static bool GetFilesWithExtension(const string& path, const string& extension, arrayList<string>& files);
+		static bool Exists(const String& path);
+		static bool Create(const String& path);
+		static bool Delete(const String& path);
+		static bool Copy(const String& source, const String& destination);
+		static bool Move(const String& source, const String& destination);
+		static bool Rename(const String& source, const String& destination);
+		static bool GetFiles(const String& path, ArrayList<String>& files);
+		static bool GetDirectories(const String& path, ArrayList<String>& directories);
+		static bool GetFilesWithExtension(const String& path, const String& extension, ArrayList<String>& files);
 
 	public:
 		PlatformDirectory() = delete;

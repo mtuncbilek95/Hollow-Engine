@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	void Win32Message::ShowMessage(const string& title, const string& message, const int flags)
+	void Win32Message::ShowMessage(const String& title, const String& message, const int flags)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		MessageBoxA(NULL, message.c_str(), title.c_str(), flags);

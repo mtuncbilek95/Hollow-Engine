@@ -7,7 +7,7 @@ typedef Hollow::Win32Error PlatformDependency;
 
 namespace Hollow
 {
-	string Hollow::PlatformError::GetPlatformError()
+	String Hollow::PlatformError::GetPlatformError()
 	{
 		return PlatformDependency::GetPlatformError();
 	}

@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	class RUNTIME_API Object
+	class RUNTIME_API Object : public std::enable_shared_from_this<Object>
 	{
 	public:
 		Object()
@@ -16,7 +16,9 @@ namespace Hollow
 		}
 		virtual ~Object() = default;
 
+		FORCEINLINE SharedPtr<Object> GetSharedPtr() { return shared_from_this(); }
 		FORCEINLINE Guid GetResourceID() const { return mResourceID; }
+		virtual void OnShutdown() = 0;
 
 	private:
 		Guid mResourceID;

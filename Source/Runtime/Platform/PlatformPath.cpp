@@ -7,22 +7,22 @@ typedef Hollow::Win32Path PlatformDependency;
 
 namespace Hollow
 {
-	string PlatformPath::GetExecutableDir()
+	String PlatformPath::GetExecutableDir()
 	{
 		return PlatformDependency::GetExecutableDir();
 	}
 
-	string PlatformPath::GetProgramFilesDir()
+	String PlatformPath::GetProgramFilesDir()
 	{
 		return PlatformDependency::GetProgramFilesDir();
 	}
 
-	string PlatformPath::GetAppDataDir()
+	String PlatformPath::GetAppDataDir()
 	{
 		return PlatformDependency::GetAppDataDir();
 	}
 
-	string PlatformPath::GetTempDir()
+	String PlatformPath::GetTempDir()
 	{
 		return PlatformDependency::GetTempDir();
 	}

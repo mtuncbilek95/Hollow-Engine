@@ -6,22 +6,23 @@ namespace Hollow
 {
 	enum class RUNTIME_API GraphicsDeviceObjectType : byte
 	{
+		Unknown,
 		Swapchain,
-		Texture,
-		TextureView,
-		GraphicsBuffer,
 		GraphicsMemory,
-		RenderPass,
-		Shader,
+		Texture,
+		TextureBuffer,
 		Sampler,
-		Pipeline,
+		GraphicsBuffer,
+		CommandBuffer,
+		CommandPool,
 		DescriptorSet,
 		DescriptorPool,
 		DescriptorLayout,
-		CommandBuffer,
-		CommandPool,
-		Fence,
+		Shader,
+		Pipeline,
+		RenderPass,
 		Semaphore,
+		Fence,
 		Queue
 	};
 }

@@ -4,9 +4,8 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API SamplerFilter
+	struct RUNTIME_API TextureBufferDesc
 	{
-		Nearest,
-		Linear
+
 	};
 }

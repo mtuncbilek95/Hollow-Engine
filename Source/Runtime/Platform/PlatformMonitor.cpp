@@ -7,12 +7,12 @@ typedef Hollow::Win32Monitor PlatformDependency;
 
 namespace Hollow
 {
-	sharedPtr<Monitor> PlatformMonitor::GetPrimaryMonitor()
+	SharedPtr<Monitor> PlatformMonitor::GetPrimaryMonitor()
 	{
 		return PlatformDependency::GetPrimaryMonitor();
 	}
 
-	arrayList<sharedPtr<Monitor>> PlatformMonitor::GetAllMonitors()
+	ArrayList<SharedPtr<Monitor>> PlatformMonitor::GetAllMonitors()
 	{
 		return PlatformDependency::GetAllMonitors();
 	}

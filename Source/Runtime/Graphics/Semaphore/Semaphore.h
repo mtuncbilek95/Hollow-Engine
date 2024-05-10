@@ -8,11 +8,13 @@ namespace Hollow
 	class RUNTIME_API Semaphore : public GraphicsDeviceObject
 	{
 	public:
-		Semaphore(GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice) {}
+		Semaphore(const SharedPtr<GraphicsDevice> device) : GraphicsDeviceObject(device) {}
 		virtual ~Semaphore() override = default;
 
-		FORCEINLINE GraphicsDeviceObjectType GetDeviceObjectType() const noexcept final { return GraphicsDeviceObjectType::Semaphore; }
+		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Semaphore; }
 
 		virtual void OnShutdown() noexcept override = 0;
+
+	private:
 	};
 }

@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	bool Win32File::Exists(const string& path)
+	bool Win32File::Exists(const String& path)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		DWORD dwAttrib = GetFileAttributesA(path.c_str());
@@ -19,7 +19,7 @@ namespace Hollow
 #endif 
 	}
 
-	bool Win32File::Create(const string& path)
+	bool Win32File::Create(const String& path)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		// Create the file
@@ -37,7 +37,7 @@ namespace Hollow
 #endif 
 	}
 
-	bool Win32File::Delete(const string& path)
+	bool Win32File::Delete(const String& path)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		// Delete the file
@@ -47,7 +47,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Write(const string& path, const string& data, const uint64 offset)
+	bool Win32File::Write(const String& path, const String& data, const uint64 offset)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
@@ -77,7 +77,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Write(const string& path, const MemoryBuffer& buffer, const uint64 offset)
+	bool Win32File::Write(const String& path, const MemoryBuffer& buffer, const uint64 offset)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
@@ -107,7 +107,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Read(const string& path, string& contentOut, const uint64 startByte, const uint64 endByte)
+	bool Win32File::Read(const String& path, String& contentOut, const uint64 startByte, const uint64 endByte)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
@@ -154,7 +154,7 @@ namespace Hollow
 		CloseHandle(hFile);
 
 		// Copy the buffer to the content
-		contentOut = string(buffer, bytesRead);
+		contentOut = String(buffer, bytesRead);
 
 		// Free the buffer
 		delete[] buffer;
@@ -164,7 +164,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Read(const string& path, MemoryBuffer& view, const uint64 startByte, const uint64 endByte)
+	bool Win32File::Read(const String& path, MemoryBuffer& view, const uint64 startByte, const uint64 endByte)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
@@ -218,7 +218,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Copy(const string& source, const string& destination)
+	bool Win32File::Copy(const String& source, const String& destination)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		// Check if the source file exists
@@ -232,7 +232,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Move(const string& source, const string& destination)
+	bool Win32File::Move(const String& source, const String& destination)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		// Check if the source file exists
@@ -246,7 +246,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Rename(const string& source, const string& destination)
+	bool Win32File::Rename(const String& source, const String& destination)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		// Check if the source file exists
@@ -260,7 +260,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::GetSize(const string& path, uint64& sizeOut)
+	bool Win32File::GetSize(const String& path, uint64& sizeOut)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
@@ -287,15 +287,15 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::GetName(const string& path, string& nameOut)
+	bool Win32File::GetName(const String& path, String& nameOut)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 
 		// Get the name of the file
-		string name = path;
+		String name = path;
 		// find the last slash as '/' or '\'
 		size_t lastSlash = name.find_last_of("/\\"); 
-		if (lastSlash != string::npos)
+		if (lastSlash != String::npos)
 			name = name.substr(lastSlash + 1);
 
 		nameOut = name;
@@ -305,13 +305,13 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::GetExtension(const string& path, string& extensionOut)
+	bool Win32File::GetExtension(const String& path, String& extensionOut)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		// Get the extension of the file
-		string extension = path;
+		String extension = path;
 		size_t lastDot = extension.find_last_of(".");
-		if (lastDot != string::npos)
+		if (lastDot != String::npos)
 			extension = extension.substr(lastDot + 1);
 
 		extensionOut = extension;
@@ -321,13 +321,13 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::GetDirectory(const string& path, string& directoryOut)
+	bool Win32File::GetDirectory(const String& path, String& directoryOut)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		// Get the directory of the file
-		string directory = path;
+		String directory = path;
 		size_t lastSlash = directory.find_last_of("/\\");
-		if (lastSlash != string::npos)
+		if (lastSlash != String::npos)
 			directory = directory.substr(0, lastSlash);
 
 		directoryOut = directory;

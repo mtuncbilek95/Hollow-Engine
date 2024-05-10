@@ -8,6 +8,6 @@ namespace Hollow
 	class RUNTIME_API Win32Message final
 	{
 	public:
-		static void ShowMessage(const string& title, const string& message,const int flags);
+		static void ShowMessage(const String& title, const String& message,const int flags);
 	};
 }

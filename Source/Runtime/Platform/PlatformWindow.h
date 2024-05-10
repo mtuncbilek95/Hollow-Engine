@@ -15,7 +15,7 @@ namespace Hollow
 		friend class GraphicsDevice;
 		friend class WindowManager;
 	public:
-		static sharedPtr<PlatformWindow> InitializeWindow(const WindowDesc& desc);
+		static SharedPtr<PlatformWindow> InitializeWindow(const WindowDesc& desc);
 
 	public:
 		PlatformWindow(const WindowDesc& desc);
@@ -23,12 +23,12 @@ namespace Hollow
 
 		const Vector2u& GetWindowsize() const { return mWindowSize; }
 		const Vector2i& GetWindowPosition() const { return mWindowPosition; }
-		const string& GetWindowTitle() const { return mWindowTitle; }
+		const String& GetWindowTitle() const { return mWindowTitle; }
 		const WindowMode& GetWindowMode() const { return mWindowMode; }
 		const bool IsVisible() const { return mVisible; }
 
 		void SetWindowSize(Vector2u newSize);
-		void SetWindowTitle(const string& newTitle);
+		void SetWindowTitle(const String& newTitle);
 		void SetWindowMode(WindowMode newMode);
 		void SetWindowPosition(Vector2i newPosition);
 
@@ -37,9 +37,11 @@ namespace Hollow
 
 		void PollEvents();
 
+		virtual void OnShutdown() override;
+
 	protected:
 		virtual void SetWindowSizeImpl(Vector2u newSize) = 0;
-		virtual void SetWindowTitleImpl(const string& newTitle)  = 0;
+		virtual void SetWindowTitleImpl(const String& newTitle)  = 0;
 		virtual void SetWindowModeImpl(WindowMode newMode) = 0;
 		virtual void SetWindowPositionImpl(Vector2i newPosition) = 0;
 
@@ -56,17 +58,17 @@ namespace Hollow
 		void OnWindowMove(Vector2i newPosition);
 
 	private:
-		void SetConnectedSwapchain(sharedPtr<Swapchain> swapchain) { mConnectedSwapchain = swapchain; }
+		void SetConnectedSwapchain(SharedPtr<Swapchain> swapchain) { mConnectedSwapchain = swapchain; }
 
 	private:
 		Vector2u mWindowSize;
 		Vector2i mWindowPosition;
-		string mWindowTitle;
+		String mWindowTitle;
 		WindowMode mWindowMode;
 		bool mVisible;
 
-		sharedPtr<Swapchain> mConnectedSwapchain;
+		SharedPtr<Swapchain> mConnectedSwapchain;
 
-		arrayList<WindowEventDesc> mEventQueue;
+		ArrayList<WindowEventDesc> mEventQueue;
 	};
 }

@@ -16,7 +16,7 @@ namespace Hollow
 	{
 	}
 
-	Guid::Guid(const string& str) : mA(0), mB(0), mC(0), mD(0)
+	Guid::Guid(const String& str) : mA(0), mB(0), mC(0), mD(0)
 	{
 		uint16 d_first;
 		uint64 d_second;
@@ -36,7 +36,7 @@ namespace Hollow
 		}
 	}
 
-	string Guid::Tostring()
+	String Guid::ToString()
 	{
 		char buffer[64];
 		sprintf(buffer, "%08x-%04hx-%04hx-%04hx-%012llx", mA, mB, mC, (uint16)(mD >> 48), mD & 0x0000FFFFFFFFFFFF);

@@ -6,36 +6,20 @@
 
 namespace Hollow
 {
-	class RUNTIME_API GraphicsManager : public ManagerAPI<GraphicsManager>
+	class RUNTIME_API GraphicsManager final : public ManagerAPI<GraphicsManager>
 	{
-		friend class GraphicsDevice;
-		friend class GraphicsQueue;
+		friend class GraphicsInstance;
 
 	public:
-		GraphicsManager() : mGraphicsDevice(nullptr) {}
-		~GraphicsManager() = default;
+		GraphicsManager() = default;
+		~GraphicsManager() override = default;
 
-		GraphicsDevice* GetGraphicsDevice();
-
-		sharedPtr<GraphicsQueue> GetPresentQueue() const noexcept;
-		sharedPtr<GraphicsQueue> GetComputeQueue() const noexcept;
-		sharedPtr<GraphicsQueue> GetTransferQueue() const noexcept;
-		sharedPtr<GraphicsMemory> GetHostMemory() const noexcept;
-		sharedPtr<GraphicsMemory> GetDeviceMemory() const noexcept;
-
-		void CreateInternalResources();
+		SharedPtr<GraphicsDevice> GetDefaultDevice() noexcept { return mGraphicsDevice; }
 
 	private:
-		void SetGraphicsDevice(GraphicsDevice* graphicsDevice);
+		void SetGraphicsDevice(SharedPtr<GraphicsDevice> device);
 
 	private:
-		GraphicsDevice* mGraphicsDevice;
-
-		sharedPtr<GraphicsQueue> mPresentQueue;
-		sharedPtr<GraphicsQueue> mComputeQueue;
-		sharedPtr<GraphicsQueue> mTransferQueue;
-
-		sharedPtr<GraphicsMemory> mHostMemory;
-		sharedPtr<GraphicsMemory> mDeviceMemory;
+		SharedPtr<GraphicsDevice> mGraphicsDevice;
 	};
 }

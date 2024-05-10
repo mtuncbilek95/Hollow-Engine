@@ -6,6 +6,7 @@ namespace Hollow
 {
 	enum class RUNTIME_API GraphicsAdapterType : byte
 	{
+		Unknown,
 		Discrete,
 		Integrated,
 		Other

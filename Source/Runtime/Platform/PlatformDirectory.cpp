@@ -7,47 +7,47 @@ typedef Hollow::Win32Directory PlatformDependency;
 
 namespace Hollow
 {
-	bool PlatformDirectory::Exists(const string& path)
+	bool PlatformDirectory::Exists(const String& path)
 	{
 		return PlatformDependency::Exists(path);
 	}
 
-	bool PlatformDirectory::Create(const string& path)
+	bool PlatformDirectory::Create(const String& path)
 	{
 		return PlatformDependency::Create(path);
 	}
 
-	bool PlatformDirectory::Delete(const string& path)
+	bool PlatformDirectory::Delete(const String& path)
 	{
 		return PlatformDependency::Delete(path);
 	}
 
-	bool PlatformDirectory::Copy(const string& source, const string& destination)
+	bool PlatformDirectory::Copy(const String& source, const String& destination)
 	{
 		return PlatformDependency::Copy(source, destination);
 	}
 
-	bool PlatformDirectory::Move(const string& source, const string& destination)
+	bool PlatformDirectory::Move(const String& source, const String& destination)
 	{
 		return PlatformDependency::Move(source, destination);
 	}
 
-	bool PlatformDirectory::Rename(const string& source, const string& destination)
+	bool PlatformDirectory::Rename(const String& source, const String& destination)
 	{
 		return PlatformDependency::Rename(source, destination);
 	}
 
-	bool PlatformDirectory::GetFiles(const string& path, arrayList<string>& files)
+	bool PlatformDirectory::GetFiles(const String& path, ArrayList<String>& files)
 	{
 		return PlatformDependency::GetFiles(path, files);
 	}
 
-	bool PlatformDirectory::GetDirectories(const string& path, arrayList<string>& directories)
+	bool PlatformDirectory::GetDirectories(const String& path, ArrayList<String>& directories)
 	{
 		return PlatformDependency::GetDirectories(path, directories);
 	}
 
-	bool PlatformDirectory::GetFilesWithExtension(const string& path, const string& extension, arrayList<string>& files)
+	bool PlatformDirectory::GetFilesWithExtension(const String& path, const String& extension, ArrayList<String>& files)
 	{
 		return PlatformDependency::GetFilesWithExtension(path, extension, files);
 	}

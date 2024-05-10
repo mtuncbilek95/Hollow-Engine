@@ -7,11 +7,11 @@ namespace Hollow
 {
 	struct RUNTIME_API MonitorDesc
 	{
-		string MonitorName;
+		String MonitorName;
 		Vector2i MonitorResolution;
 		uint16 RefreshRate;
 		byte BitsPerPixel;
 
-		arrayList<Vector2i> SupportedResolutions;
+		ArrayList<Vector2i> SupportedResolutions;
 	};
 }

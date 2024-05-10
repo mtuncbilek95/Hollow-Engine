@@ -12,7 +12,7 @@ namespace Hollow
 		WindowManager() = default;
 		~WindowManager() = default;
 
-		sharedPtr<PlatformWindow> InitializeWindow(const WindowDesc& desc)
+		SharedPtr<PlatformWindow> InitializeWindow(const WindowDesc& desc)
 		{
 			if(mDefaultWindow == nullptr)
 				return mDefaultWindow = PlatformWindow::InitializeWindow(desc);
@@ -20,18 +20,18 @@ namespace Hollow
 			return mDefaultWindow;
 		}
 
-		sharedPtr<PlatformWindow> CreateExtraWindow(const WindowDesc& desc)
+		SharedPtr<PlatformWindow> CreateExtraWindow(const WindowDesc& desc)
 		{
-			sharedPtr<PlatformWindow> window = PlatformWindow::InitializeWindow(desc);
+			SharedPtr<PlatformWindow> window = PlatformWindow::InitializeWindow(desc);
 			mExtraWindows.push_back(window);
 			return window;
 		}
 
-		sharedPtr<PlatformWindow> GetDefaultWindow() { return mDefaultWindow; }
-		arrayList<sharedPtr<PlatformWindow>>& GetExtraWindows() { return mExtraWindows; }
+		SharedPtr<PlatformWindow> GetDefaultWindow() { return mDefaultWindow; }
+		ArrayList<SharedPtr<PlatformWindow>>& GetExtraWindows() { return mExtraWindows; }
 
 	private:
-		sharedPtr<PlatformWindow> mDefaultWindow;
-		arrayList<sharedPtr<PlatformWindow>> mExtraWindows;
+		SharedPtr<PlatformWindow> mDefaultWindow;
+		ArrayList<SharedPtr<PlatformWindow>> mExtraWindows;
 	};
 }

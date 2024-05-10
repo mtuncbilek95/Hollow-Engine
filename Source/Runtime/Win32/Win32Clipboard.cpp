@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	void Win32Clipboard::SetClipboardText(const string& text)
+	void Win32Clipboard::SetClipboardText(const String& text)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		OpenClipboard(nullptr);
@@ -25,7 +25,7 @@ namespace Hollow
 #endif
 	}
 
-	string Win32Clipboard::GetClipboardText()
+	String Win32Clipboard::GetClipboardText()
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		OpenClipboard(nullptr);
@@ -35,7 +35,7 @@ namespace Hollow
 		if (clipboardData)
 		{
 			GlobalLock(clipboardData);
-			string text = static_cast<char*>(GlobalLock(clipboardData));
+			String text = static_cast<char*>(GlobalLock(clipboardData));
 			GlobalUnlock(clipboardData);
 			 
 			CloseClipboard();
@@ -44,9 +44,9 @@ namespace Hollow
 		}
 
 		CloseClipboard();
-		return string();
+		return String();
 #else
-		return string();
+		return String();
 #endif
 	}
 

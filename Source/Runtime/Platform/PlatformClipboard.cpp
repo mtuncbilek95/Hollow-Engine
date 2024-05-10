@@ -7,12 +7,12 @@ typedef Hollow::Win32Clipboard PlatformDependency;
 
 namespace Hollow
 {
-	void PlatformClipboard::SetClipboardText(const string& text)
+	void PlatformClipboard::SetClipboardText(const String& text)
 	{
 		PlatformDependency::SetClipboardText(text);
 	}
 
-	string PlatformClipboard::GetClipboardText()
+	String PlatformClipboard::GetClipboardText()
 	{
 		return PlatformDependency::GetClipboardText();
 	}

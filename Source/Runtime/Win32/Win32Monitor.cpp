@@ -18,7 +18,7 @@ namespace Hollow
 		devMode.dmDriverExtra = 0;
 		EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
 
-		arrayList<Vector2i> resolutions;
+		ArrayList<Vector2i> resolutions;
 		DEVMODE resMode = {};
 		resMode.dmSize = sizeof(resMode);
 		resMode.dmDriverExtra = 0;
@@ -43,14 +43,14 @@ namespace Hollow
 		monitorDesc.MonitorResolution.y = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
 		monitorDesc.SupportedResolutions = resolutions;
 
-		sharedPtr<Monitor> monitor = Monitor::CreateMonitorInfo(monitorDesc);
-		((arrayList<sharedPtr<Monitor>>*)dwData)->push_back(monitor);
+		SharedPtr<Monitor> monitor = Monitor::CreateMonitorInfo(monitorDesc);
+		((ArrayList<SharedPtr<Monitor>>*)dwData)->push_back(monitor);
 
 		return true;
 	}
 #endif
 
-	sharedPtr<Monitor> Win32Monitor::GetPrimaryMonitor()
+	SharedPtr<Monitor> Win32Monitor::GetPrimaryMonitor()
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		MONITORINFOEX monitorInfo;
@@ -62,7 +62,7 @@ namespace Hollow
 		devMode.dmDriverExtra = 0;
 		EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
 
-		arrayList<Vector2i> resolutions;
+		ArrayList<Vector2i> resolutions;
 		DEVMODE resMode = {};
 		resMode.dmSize = sizeof(resMode);
 		resMode.dmDriverExtra = 0;
@@ -93,9 +93,9 @@ namespace Hollow
 #endif
 	}
 
-	arrayList<sharedPtr<Monitor>> Win32Monitor::GetAllMonitors()
+	ArrayList<SharedPtr<Monitor>> Win32Monitor::GetAllMonitors()
 	{
-		arrayList<sharedPtr<Monitor>> monitors;
+		ArrayList<SharedPtr<Monitor>> monitors;
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		uint32 index = 0;
 		EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, (LPARAM)&monitors);

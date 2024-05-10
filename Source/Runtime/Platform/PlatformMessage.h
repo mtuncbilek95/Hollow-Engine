@@ -22,7 +22,7 @@ namespace Hollow
 	class RUNTIME_API PlatformMessage final
 	{
 	public:
-		static void ShowMessage(const string& title, const string& message, const int flags);
+		static void ShowMessage(const String& title, const String& message, const int flags);
 
 	public:
 		PlatformMessage() = delete;

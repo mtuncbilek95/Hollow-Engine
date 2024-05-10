@@ -10,7 +10,7 @@ namespace Hollow
 	class RUNTIME_API Monitor
 	{
 	public:
-		static sharedPtr<Monitor> CreateMonitorInfo(const MonitorDesc& desc)
+		static SharedPtr<Monitor> CreateMonitorInfo(const MonitorDesc& desc)
 		{
 			return std::make_shared<Monitor>(desc);
 		}
@@ -20,13 +20,13 @@ namespace Hollow
 			mRefreshRate(desc.RefreshRate), mBitsPerPixel(desc.BitsPerPixel){}
 		~Monitor() = default;
 
-		string GetMonitorName() const { return mMonitorName; }
+		String GetMonitorName() const { return mMonitorName; }
 		Vector2i GetMonitorResolution() const { return mMonitorResolution; }
 		uint16 GetRefreshRate() const { return mRefreshRate; }
 		byte GetBitsPerPixel() const { return mBitsPerPixel; }
 
 	private:
-		string mMonitorName;
+		String mMonitorName;
 		Vector2i mMonitorResolution;
 		uint16 mRefreshRate;
 		byte mBitsPerPixel;
