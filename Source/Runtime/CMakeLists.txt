@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.26)
 
+find_package(Vulkan REQUIRED)
+
+if(Vulkan_FOUND)
+    get_filename_component(Vulkan_SDK_DIR "${Vulkan_LIBRARIES}" DIRECTORY)
+    message(STATUS "Vulkan SDK found at: ${Vulkan_SDK_DIR}")
+endif()
+
 # ---------------------- FILE ADDITION -----------------------
 file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Source/Runtime/*.cpp" "${CMAKE_SOURCE_DIR}/Source/Runtime/*.h")
 source_group(TREE "${CMAKE_SOURCE_DIR}/Source/Runtime" FILES ${SUBDIRECTORIES})
@@ -8,6 +15,36 @@ add_executable(Runtime main.cpp ${SUBDIRECTORIES})
 
 # ------------------- INCLUDE DIRECTORIES --------------------
 target_include_directories(Runtime PRIVATE "${CMAKE_SOURCE_DIR}/Source")
+# ------------------------------------------------------------
+
+# ------------------ SHADER DIRECTORY ------------------
+target_include_directories(Runtime PUBLIC "${Vulkan_INCLUDE_DIRS}")
+
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/dxcompilerd.lib")
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/glslangd.lib")
+
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/shaderc_combinedd.lib")
+
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-cored.lib")
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-glsld.lib")
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-hlsld.lib")
+else()
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/dxcompiler.lib")
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/glslang.lib")
+
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/shaderc_combined.lib")
+
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-core.lib")
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-glsl.lib")
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-hlsl.lib")
+endif()
+# ------------------------------------------------------------
+
+# ------------------- VULKAN IMPLEMENTATION ------------------
+target_include_directories(Runtime PUBLIC "${Vulkan_INCLUDE_DIRS}/vulkan")
+
+target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/vulkan-1.lib")
 # ------------------------------------------------------------
 
 # ----------------- PREPROCESSOR DEFINITIONS -----------------

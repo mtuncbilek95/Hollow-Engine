@@ -15,7 +15,7 @@ namespace Hollow
 	{
 	}
 
-	MemoryBuffer::MemoryBuffer(const MemoryOwnedBuffer* pOwned) : mBuffer(pOwned->GetBuffer()), mSize(pOwned->GetSize())
+	MemoryBuffer::MemoryBuffer(const MemoryOwnedBuffer* pOwned) : mBuffer(pOwned->GetBuffer()), mSize(pOwned->Getsize())
 	{
 	}
 }

@@ -36,7 +36,7 @@ namespace Hollow
 		}
 	}
 
-	string Guid::ToString()
+	string Guid::Tostring()
 	{
 		char buffer[64];
 		sprintf(buffer, "%08x-%04hx-%04hx-%04hx-%012llx", mA, mB, mC, (uint16)(mD >> 48), mD & 0x0000FFFFFFFFFFFF);

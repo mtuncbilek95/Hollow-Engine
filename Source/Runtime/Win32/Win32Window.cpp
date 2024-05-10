@@ -45,24 +45,20 @@ namespace Hollow
 #endif
 	}
 
-	void Win32Window::SetWindowSize(Vector2u newSize)
+	void Win32Window::SetWindowSizeImpl(Vector2u newSize)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
-
-		if(SetWindowPos(mHandle, HWND_TOP, 0, 0, newSize.x, newSize.y, SWP_NOMOVE | SWP_SHOWWINDOW))
-			PlatformWindow::SetWindowSize(newSize);
+		SetWindowPos(mHandle, HWND_TOP, 0, 0, newSize.x, newSize.y, SWP_NOMOVE | SWP_SHOWWINDOW);
 #endif
 	}
-	void Win32Window::SetWindowTitle(const string& newTitle)
+	void Win32Window::SetWindowTitleImpl(const string& newTitle)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
-
-		if (SetWindowText(mHandle, newTitle.c_str()))
-			PlatformWindow::SetWindowTitle(newTitle);
+		SetWindowText(mHandle, newTitle.c_str());
 #endif
 	}
 
-	void Win32Window::SetWindowMode(WindowMode newMode)
+	void Win32Window::SetWindowModeImpl(WindowMode newMode)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		switch (newMode)
@@ -78,35 +74,32 @@ namespace Hollow
 			break;
 		}
 #endif
-		PlatformWindow::SetWindowMode(newMode);
 	}
 
-	void Win32Window::SetWindowPosition(Vector2i newPosition)
+	void Win32Window::SetWindowPositionImpl(Vector2i newPosition)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
-		if(SetWindowPos(mHandle, HWND_TOP, newPosition.x, newPosition.y, 0, 0, SWP_NOSIZE | SWP_SHOWWINDOW))
-			PlatformWindow::SetWindowPosition(newPosition);
+		SetWindowPos(mHandle, HWND_TOP, newPosition.x, newPosition.y, 0, 0, SWP_NOSIZE | SWP_SHOWWINDOW);
 #endif
 	}
 
-	void Win32Window::Show()
+	void Win32Window::ShowImpl()
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		ShowWindow(mHandle, SW_SHOW);
 #endif
 	}
 
-	void Win32Window::Hide()
+	void Win32Window::HideImpl()
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		ShowWindow(mHandle, SW_HIDE);
 #endif
+
 	}
 
-	void Win32Window::PollEvents()
+	void Win32Window::PollEventsImpl()
 	{
-		PlatformWindow::PollEvents();
-
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		MSG msg;
 		while (PeekMessage(&msg, mHandle, 0, 0, PM_REMOVE))

@@ -97,7 +97,7 @@ namespace Hollow
 
 		// Write the data to the file
 		DWORD bytesWritten;
-		const bool result = WriteFile(hFile, buffer.GetBuffer(), buffer.GetSize(), &bytesWritten, NULL);
+		const bool result = WriteFile(hFile, buffer.GetBuffer(), buffer.Getsize(), &bytesWritten, NULL);
 
 		// Close the file
 		CloseHandle(hFile);

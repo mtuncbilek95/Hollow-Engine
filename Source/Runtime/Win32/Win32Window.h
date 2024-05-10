@@ -21,14 +21,15 @@ namespace Hollow
 		HINSTANCE GetInstance() const { return mInstance; }
 #endif
 
-		virtual void SetWindowSize(Vector2u newSize) override;
-		virtual void SetWindowTitle(const string& newTitle) override;
-		virtual void SetWindowMode(WindowMode newMode) override;
-		virtual void SetWindowPosition(Vector2i newPosition) override;
-		virtual void Show() override;
-		virtual void Hide() override;
+	protected:
+		virtual void SetWindowSizeImpl(Vector2u newSize) override;
+		virtual void SetWindowTitleImpl(const string& newTitle) override;
+		virtual void SetWindowModeImpl(WindowMode newMode) override;
+		virtual void SetWindowPositionImpl(Vector2i newPosition) override;
+		virtual void ShowImpl() override;
+		virtual void HideImpl() override;
 
-		virtual void PollEvents() override;
+		virtual void PollEventsImpl() override;
 
 	private:
 

@@ -28,3 +28,7 @@ typedef double float64;
 #define KB_TO_BYTE(kb) (kb * 1000.0)
 #define BYTE_TO_MB(bt) (bt / 1000.0 / 1000.0)
 #define BYTE_TO_KB(bt) (bt / 1000.0)
+
+#define GENERATE_ENUM_FLAG(EnumType, primitiveType) \
+FORCEINLINE static EnumType operator | (EnumType a, EnumType b) { return static_cast<EnumType>(static_cast<primitiveType>(a) | static_cast<primitiveType>(b)); } \
+FORCEINLINE static bool operator & (EnumType a, EnumType b) { return (static_cast<primitiveType>(a) & static_cast<primitiveType>(b)) != 0; } \

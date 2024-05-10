@@ -18,7 +18,7 @@ namespace Hollow
 		uint16& GetC() { return mC; }
 		uint64& GetD() { return mD; }
 
-		string ToString();
+		string Tostring();
 
 	private:
 		uint32 mA;

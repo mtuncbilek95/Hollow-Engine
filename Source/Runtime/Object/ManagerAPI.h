@@ -12,7 +12,7 @@ namespace Hollow
 		ManagerAPI() = default;
 		virtual ~ManagerAPI() = default;
 
-		static TObject& GetInstance()
+		static TObject& GetInstanceAPI()
 		{
 			static TObject instance;
 			return instance;

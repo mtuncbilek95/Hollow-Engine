@@ -15,5 +15,9 @@ int main()
 
 	window->Show();
 
+	while (window->IsVisible())
+	{
+		window->PollEvents();
+	}
 	return 0;
 }

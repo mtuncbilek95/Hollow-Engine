@@ -17,9 +17,46 @@ namespace Hollow
 	{
 	}
 
+	void PlatformWindow::SetWindowSize(Vector2u newSize)
+	{
+		SetWindowSizeImpl(newSize);
+		mWindowSize = newSize;
+	}
+
+	void PlatformWindow::SetWindowTitle(const string& newTitle)
+	{
+		SetWindowTitleImpl(newTitle);
+		mWindowTitle = newTitle;
+	}
+
+	void PlatformWindow::SetWindowMode(WindowMode newMode)
+	{
+		SetWindowModeImpl(newMode);
+		mWindowMode = newMode;
+	}
+
+	void PlatformWindow::SetWindowPosition(Vector2i newPosition)
+	{
+		SetWindowPositionImpl(newPosition);
+		mWindowPosition = newPosition;
+	}
+
+	void PlatformWindow::Show()
+	{
+		ShowImpl();
+		mVisible = true;
+	}
+
+	void PlatformWindow::Hide()
+	{
+		HideImpl();
+		mVisible = false;
+	}
+
 	void PlatformWindow::PollEvents()
 	{
 		mEventQueue.clear();
+		PollEventsImpl();
 	}
 
 	void PlatformWindow::TriggerWindowEvent(const WindowEventDesc& desc)
@@ -32,17 +69,18 @@ namespace Hollow
 		}
 		case WindowEventType::WindowClosed:
 		{
+			OnWindowClose();
 			// Close the window
 			break;
 		}
 		case WindowEventType::WindowResized:
 		{
-			SetWindowSize(desc.WindowSize);
+			OnWindowResize(desc.WindowSize);
 			break;
 		}
 		case WindowEventType::WindowMoved:
 		{
-			SetWindowPosition(desc.WindowPosition);
+			OnWindowMove(desc.WindowPosition);
 			break;
 		}
 		case WindowEventType::WindowFocused:
@@ -75,5 +113,22 @@ namespace Hollow
 		}
 
 		mEventQueue.push_back(desc);
+	}
+
+	void PlatformWindow::OnWindowClose()
+	{
+		mVisible = false;
+	}
+
+	void PlatformWindow::OnWindowResize(Vector2u newSize)
+	{
+		// Check if window is minimized or maximized
+		// Resize the swapchain according to everything
+	}
+
+	void PlatformWindow::OnWindowMove(Vector2i newPosition)
+	{
+		// Check if the window is switching between monitors
+		// If it is, update the monitor and the window position
 	}
 }

@@ -17,7 +17,7 @@ namespace Hollow
 		~MemoryBuffer() = default;
 
 		FORCEINLINE void* GetBuffer() const { return mBuffer; }
-		FORCEINLINE uint64 GetSize() const { return mSize; }
+		FORCEINLINE uint64 Getsize() const { return mSize; }
 
 	private:
 		void* mBuffer;
