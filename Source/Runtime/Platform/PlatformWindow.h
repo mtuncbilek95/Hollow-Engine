@@ -21,7 +21,7 @@ namespace Hollow
 		PlatformWindow(const WindowDesc& desc);
 		virtual ~PlatformWindow() override = default;
 
-		const Vector2u& GetWindowsize() const { return mWindowSize; }
+		const Vector2u& GetWindowResolution() const { return mWindowSize; }
 		const Vector2i& GetWindowPosition() const { return mWindowPosition; }
 		const String& GetWindowTitle() const { return mWindowTitle; }
 		const WindowMode& GetWindowMode() const { return mWindowMode; }
@@ -56,6 +56,9 @@ namespace Hollow
 		void OnWindowClose();
 		void OnWindowResize(Vector2u newSize);
 		void OnWindowMove(Vector2i newPosition);
+
+		void SetWindowPosInternal(Vector2i newPosition) { mWindowPosition = newPosition; }
+		void SetWindowSizeInternal(Vector2u newSize) { mWindowSize = newSize; }
 
 	private:
 		void SetConnectedSwapchain(SharedPtr<Swapchain> swapchain) { mConnectedSwapchain = swapchain; }

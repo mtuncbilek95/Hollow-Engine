@@ -35,7 +35,6 @@ namespace Hollow
 			}
 
 			// If the memory block is just right, use it
-			uint64 sizeLeftInBlock = mSubMemoryBlocks[i].SizeInBytes - sizeInBytes;
 			SubMemory newBlock = { true, sizeInBytes };
 			mUsedSize += sizeInBytes;
 			mSubMemoryBlocks.insert(mSubMemoryBlocks.begin() + i, newBlock);

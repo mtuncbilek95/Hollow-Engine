@@ -3,6 +3,7 @@
 #include <Runtime/Core/Definitions.h>
 #include <Runtime/Core/StdFix.h>
 #include <Runtime/Window/WindowMode.h>
+#include <Runtime/Monitor/Monitor.h>
 
 namespace Hollow
 {
@@ -12,5 +13,6 @@ namespace Hollow
 		Vector2i WindowPosition;
 		String WindowTitle;
 		WindowMode WindowMode;
+		SharedPtr<Monitor> pMonitor;
 	};
 }

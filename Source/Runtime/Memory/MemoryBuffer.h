@@ -13,11 +13,19 @@ namespace Hollow
 		MemoryBuffer();
 		MemoryBuffer(void* pData, const uint64 size);
 		MemoryBuffer(const MemoryBuffer& other);
-		MemoryBuffer(const MemoryOwnedBuffer* pOwned);
+		MemoryBuffer(const SharedPtr<MemoryOwnedBuffer> pOwned);
 		~MemoryBuffer() = default;
 
+		MemoryBuffer& operator=(const MemoryBuffer& other)
+		{
+			mBuffer = other.mBuffer;
+			mSize = other.mSize;
+
+			return *this;
+		}
+
 		FORCEINLINE void* GetBuffer() const { return mBuffer; }
-		FORCEINLINE uint64 Getsize() const { return mSize; }
+		FORCEINLINE uint64 GetSize() const { return mSize; }
 
 	private:
 		void* mBuffer;

@@ -8,6 +8,19 @@
 #include <Runtime/Vulkan/Fence/VulkanFence.h>
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
 #include <Runtime/Vulkan/Buffer/VulkanBuffer.h>
+#include <Runtime/Vulkan/Memory/VulkanMemory.h>
+#include <Runtime/Vulkan/Shader/VulkanShader.h>
+#include <Runtime/Vulkan/Command/VulkanCommandBuffer.h>
+#include <Runtime/Vulkan/Command/VulkanCommandPool.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorSet.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorPool.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorLayout.h>
+#include <Runtime/Vulkan/Sampler/VulkanSampler.h>
+#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
+#include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
+
+#include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorUtils.h>
 
 namespace Hollow
 {
@@ -238,7 +251,8 @@ namespace Hollow
 
 	SharedPtr<GraphicsMemory> VulkanDevice::CreateGraphicsMemoryImpl(const GraphicsMemoryDesc& desc)
 	{
-		return SharedPtr<GraphicsMemory>();
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanMemory>(desc, device);
 	}
 
 	SharedPtr<Semaphore> VulkanDevice::CreateSyncSemaphoreImpl()
@@ -296,32 +310,38 @@ namespace Hollow
 
 	SharedPtr<Sampler> VulkanDevice::CreateSamplerImpl(const SamplerDesc& desc)
 	{
-		return SharedPtr<Sampler>();
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanSampler>(desc, device);
 	}
 
 	SharedPtr<Shader> VulkanDevice::CreateShaderImpl(const ShaderDesc& desc)
 	{
-		return SharedPtr<Shader>();
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanShader>(desc, device);
 	}
 
 	SharedPtr<RenderPass> VulkanDevice::CreateRenderPassImpl(const RenderPassDesc& desc)
 	{
-		return SharedPtr<RenderPass>();
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanRenderPass>(desc, device);
 	}
 
 	SharedPtr<Pipeline> VulkanDevice::CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc)
 	{
-		return SharedPtr<Pipeline>();
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanPipeline>(desc, device);
 	}
 
 	SharedPtr<CommandBuffer> VulkanDevice::CreateCommandBufferImpl(const CommandBufferDesc& desc)
 	{
-		return SharedPtr<CommandBuffer>();
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanCommandBuffer>(desc, device);
 	}
 
 	SharedPtr<CommandPool> VulkanDevice::CreateCommandPoolImpl(const CommandPoolDesc& desc)
 	{
-		return SharedPtr<CommandPool>();
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanCommandPool>(desc, device);
 	}
 
 	SharedPtr<GraphicsBuffer> VulkanDevice::CreateGraphicsBufferImpl(const GraphicsBufferDesc& desc)
@@ -332,54 +352,273 @@ namespace Hollow
 
 	SharedPtr<DescriptorSet> VulkanDevice::CreateDescriptorSetImpl(const DescriptorSetDesc& desc)
 	{
-		return SharedPtr<DescriptorSet>();
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanDescriptorSet>(desc, device);
 	}
 
 	SharedPtr<DescriptorPool> VulkanDevice::CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc)
 	{
-		return SharedPtr<DescriptorPool>();
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanDescriptorPool>(desc, device);
 	}
 
 	SharedPtr<DescriptorLayout> VulkanDevice::CreateDescriptorLayoutImpl(const DescriptorLayoutDesc& desc)
 	{
-		return SharedPtr<DescriptorLayout>();
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanDescriptorLayout>(desc, device);
 	}
 
 	void VulkanDevice::WaitForSemaphoreImpl(SharedPtr<Semaphore> ppSemaphores[], uint32 amount)
 	{
+		VkSemaphore semaphores[32];
+		for (byte i = 0; i < amount; i++)
+		{
+			if (ppSemaphores[i] != nullptr)
+				semaphores[i] = std::static_pointer_cast<VulkanSemaphore>(ppSemaphores[i])->GetVkSemaphore();
+			else
+				CORE_LOG(HE_WARNING, "VulkanDevice", "Null semaphore found");
+		}
+
+		uint64 waitValue = 5;
+
+		VkSemaphoreWaitInfo waitInfo = {};
+		waitInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
+		waitInfo.semaphoreCount = amount;
+		waitInfo.pSemaphores = semaphores;
+		waitInfo.pValues = &waitValue;
+		waitInfo.flags = VK_SEMAPHORE_WAIT_ANY_BIT;
+		waitInfo.pNext = nullptr;
+
+		CORE_ASSERT(vkWaitSemaphores(mVkDevice, &waitInfo, UINT64_MAX) == VK_SUCCESS, "VulkanDevice", "Failed to wait for semaphores");
 	}
 
 	void VulkanDevice::WaitForFenceImpl(SharedPtr<Fence> ppFences[], uint32 amount)
 	{
+		VkFence fences[32];
+		for (byte i = 0; i < amount; i++)
+			fences[i] = std::static_pointer_cast<VulkanFence>(ppFences[i])->GetVkFence();
+
+		CORE_ASSERT(vkWaitForFences(mVkDevice, amount, fences, VK_TRUE, UINT64_MAX) == VK_SUCCESS, "VulkanDevice", "Failed to wait for fences");
 	}
 
 	void VulkanDevice::ResetFencesImpl(SharedPtr<Fence> ppFences[], uint32 amount)
 	{
+		VkFence fences[32];
+		for (byte i = 0; i < amount; i++)
+			fences[i] = std::static_pointer_cast<VulkanFence>(ppFences[i])->GetVkFence();
+
+		CORE_ASSERT(vkResetFences(mVkDevice, amount, fences) == VK_SUCCESS, "VulkanDevice", "Failed to reset fences");
 	}
 
 	void VulkanDevice::UpdateBufferDataImpl(SharedPtr<GraphicsBuffer> pBuffer, BufferDataUpdateDesc& desc)
 	{
+		auto pMemory = std::static_pointer_cast<VulkanMemory>(pBuffer->GetMemory());
+		auto pTarget = std::static_pointer_cast<VulkanBuffer>(pBuffer);
+
+		void* pData;
+
+		CORE_ASSERT(vkMapMemory(mVkDevice, pMemory->GetVkDeviceMemory(), pTarget->GetVkAlignedOffset() + desc.OffsetInBytes, desc.Memory.GetSize(), 0, &pData) == VK_SUCCESS,
+			"VulkanDevice", "Failed to map memory");
+		memcpy(pData, (byte*)desc.Memory.GetBuffer(), desc.Memory.GetSize());
+		vkUnmapMemory(mVkDevice, pMemory->GetVkDeviceMemory());
 	}
 
 	void VulkanDevice::WaitForIdleImpl()
 	{
+		CORE_ASSERT(vkDeviceWaitIdle(mVkDevice) == VK_SUCCESS, "VulkanDevice", "Failed to wait for device idle");
 	}
 
 	void VulkanDevice::WaitQueueIdleImpl(SharedPtr<GraphicsQueue> pQueue)
 	{
+		CORE_ASSERT(vkQueueWaitIdle(std::static_pointer_cast<VulkanQueue>(pQueue)->GetVkQueue()) == VK_SUCCESS, "VulkanDevice", "Failed to wait for queue idle");
 	}
 
 	void VulkanDevice::SubmitToQueueImpl(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], uint32 amount, 
 		SharedPtr<Semaphore> ppWaitSemaphores[], uint32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], 
 		uint32 signalSemaphoreCount, SharedPtr<Fence> pFence)
 	{
+		VkCommandBuffer commandBuffers[32];
+		for (byte i = 0; i < amount; i++)
+			commandBuffers[i] = std::static_pointer_cast<VulkanCommandBuffer>(ppCommandBuffers[i])->GetVkCommandBuffer();
+
+		VkSemaphore waitSemaphores[32];
+		for (byte i = 0; i < waitSemaphoreCount; i++)
+			waitSemaphores[i] = std::static_pointer_cast<VulkanSemaphore>(ppWaitSemaphores[i])->GetVkSemaphore();
+
+		VkSemaphore signalSemaphores[32];
+		for (byte i = 0; i < signalSemaphoreCount; i++)
+			signalSemaphores[i] = std::static_pointer_cast<VulkanSemaphore>(ppSignalSemaphores[i])->GetVkSemaphore();
+
+		VkPipelineStageFlags waitStages[32];
+		for (byte i = 0; i < waitSemaphoreCount; i++)
+			waitStages[i] = VulkanPipelineUtils::GetVkPipelineStageFlags(stageFlags[i]);
+
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = amount;
+		submitInfo.pCommandBuffers = commandBuffers;
+		submitInfo.waitSemaphoreCount = waitSemaphoreCount;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		submitInfo.pWaitDstStageMask = waitStages;
+		submitInfo.signalSemaphoreCount = signalSemaphoreCount;
+		submitInfo.pSignalSemaphores = signalSemaphores;
+
+		VkFence fence = VK_NULL_HANDLE;
+		if (pFence != nullptr)
+			fence = std::static_pointer_cast<VulkanFence>(pFence)->GetVkFence();
+
+		CORE_ASSERT(vkQueueSubmit(std::static_pointer_cast<VulkanQueue>(pQueue)->GetVkQueue(), 1, &submitInfo, fence) == VK_SUCCESS, "VulkanDevice", "Failed to submit to queue");
 	}
 
 	void VulkanDevice::CopyDescriptorSetImpl(SharedPtr<DescriptorSet> pSrcSet, SharedPtr<DescriptorSet> pDstSet, DescriptorSetCopyDesc& desc)
 	{
+		auto pDst = std::static_pointer_cast<VulkanDescriptorSet>(pDstSet);
+		auto pSrc = std::static_pointer_cast<VulkanDescriptorSet>(pSrcSet);
+
+		VkCopyDescriptorSet infos[32];
+
+		for (uint8 i = 0; i < desc.Entries.size(); i++)
+		{
+			VkCopyDescriptorSet info = {};
+			info.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
+			info.srcSet = pSrc->GetVkDescriptorSet();
+			info.dstSet = pDst->GetVkDescriptorSet();
+			info.srcBinding = desc.Entries[i].SourceBinding;
+			info.dstBinding = desc.Entries[i].DestinationBinding;
+			info.srcArrayElement = desc.Entries[i].SourceArrayElement;
+			info.dstArrayElement = desc.Entries[i].DestinationArrayElement;
+			info.descriptorCount = desc.Entries[i].DescriptorCount;
+
+			info.pNext = nullptr;
+
+			infos[i] = info;
+		}
+
+		vkUpdateDescriptorSets(mVkDevice, 0, nullptr, desc.Entries.size(), infos);
 	}
 
 	void VulkanDevice::UpdateDescriptorSetImpl(SharedPtr<DescriptorSet> pDstSet, DescriptorSetUpdateDesc& desc)
 	{
+		auto pDst = std::static_pointer_cast<VulkanDescriptorSet>(pDstSet);
+
+		VkWriteDescriptorSet writeInformations[32];
+		VkDescriptorBufferInfo writeBufferInformations[32];
+		VkDescriptorImageInfo writeImageInformations[32];
+		uint32 bufferIndex = 0;
+		uint32 imageIndex = 0;
+
+		for (uint8 i = 0; i < desc.Entries.size(); i++)
+		{
+			VkWriteDescriptorSet writeInfo = {};
+			writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeInfo.dstSet = pDst->GetVkDescriptorSet();
+			writeInfo.dstBinding = desc.Entries[i].Binding;
+			writeInfo.dstArrayElement = desc.Entries[i].ArrayElement;
+			writeInfo.descriptorCount = desc.Entries[i].Count;
+			writeInfo.descriptorType = VulkanDescriptorUtils::GetVkDescriptorType(desc.Entries[i].Type);
+			writeInfo.pNext = nullptr;
+
+			switch (desc.Entries[i].Type)
+			{
+			case DescriptorType::Sampler:
+			{
+				auto pSampler = std::static_pointer_cast<VulkanSampler>(desc.Entries[i].pResource);
+
+				VkDescriptorImageInfo samplerInfo = {};
+				samplerInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				samplerInfo.imageView = VK_NULL_HANDLE;
+				samplerInfo.sampler = pSampler->GetVkSampler();
+				writeImageInformations[imageIndex] = samplerInfo;
+				writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+				imageIndex++;
+				break;
+			}
+			case DescriptorType::CombinedImageSampler:
+			{
+				// Add code for handling CombinedImageSampler descriptor type
+				break;
+			}
+			case DescriptorType::SampledImage:
+			{
+				auto pView = std::static_pointer_cast<VulkanTextureBuffer>(desc.Entries[i].pResource);
+
+				VkDescriptorImageInfo imageInfo = {};
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = pView->GetVkTextureBuffer();
+				imageInfo.sampler = VK_NULL_HANDLE;
+				writeImageInformations[imageIndex] = imageInfo;
+				writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+				imageIndex++;
+				break;
+			}
+			case DescriptorType::StorageImage:
+			{
+				// Add code for handling StorageImage descriptor type
+				break;
+			}
+			case DescriptorType::UniformTexelBuffer:
+			{
+				// Add code for handling UniformTexelBuffer descriptor type
+				break;
+			}
+			case DescriptorType::StorageTexelBuffer:
+			{
+				// Add code for handling StorageTexelBuffer descriptor type
+				break;
+			}
+			case DescriptorType::UniformBuffer:
+			{
+				auto pBuffer = std::static_pointer_cast<VulkanBuffer>(desc.Entries[i].pResource);
+
+				VkDescriptorBufferInfo bufferInfo = {};
+				bufferInfo.buffer = pBuffer->GetVkBuffer();
+				bufferInfo.offset = desc.Entries[i].BufferOffset;
+				bufferInfo.range = pBuffer->GetTotalSizeInBytes();
+				writeBufferInformations[bufferIndex] = bufferInfo;
+				writeInfo.pBufferInfo = &writeBufferInformations[bufferIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				bufferIndex++;
+				break;
+			}
+			case DescriptorType::StorageBuffer:
+			{
+				auto pBuffer = std::static_pointer_cast<VulkanBuffer>(desc.Entries[i].pResource);
+
+				VkDescriptorBufferInfo bufferInfo = {};
+				bufferInfo.buffer = pBuffer->GetVkBuffer();
+				bufferInfo.offset = desc.Entries[i].BufferOffset;
+				bufferInfo.range = pBuffer->GetTotalSizeInBytes();
+				writeBufferInformations[bufferIndex] = bufferInfo;
+				writeInfo.pBufferInfo = &writeBufferInformations[bufferIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+				bufferIndex++;
+				break;
+			}
+			case DescriptorType::UniformBufferDynamic:
+			{
+				// Add code for handling UniformBufferDynamic descriptor type
+				break;
+			}
+			case DescriptorType::StorageBufferDynamic:
+			{
+				// Add code for handling StorageBufferDynamic descriptor type
+				break;
+			}
+			case DescriptorType::InputAttachment:
+			{
+				// Add code for handling InputAttachment descriptor type
+				break;
+			}
+			default:
+				CORE_LOG(HE_WARNING, "VulkanDevice", "The DescriptorType that you are using is not valid for UpdateDescriptorSet()");
+				break;
+			}
+
+			writeInformations[i] = writeInfo;
+		}
+
+		vkUpdateDescriptorSets(mVkDevice, desc.Entries.size(), writeInformations, 0, nullptr);
 	}
 }

@@ -49,3 +49,4 @@ using Vector4u = DirectX::XMUINT4;
 using VectorSIMD = DirectX::XMVECTOR;
 using MatrixSIMD = DirectX::XMMATRIX;
 
+using namespace DirectX;

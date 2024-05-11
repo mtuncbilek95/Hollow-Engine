@@ -15,7 +15,7 @@ namespace Hollow
 		VulkanTextureBuffer(const TextureBufferDesc& desc, VkImageView imageView, SharedPtr<VulkanDevice> pDevice);
 		~VulkanTextureBuffer() override = default;
 
-		VkImageView GetVkTextureView() const { return mVkTextureView; }
+		VkImageView GetVkTextureBuffer() const { return mVkTextureView; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
 
 		void OnShutdown() noexcept override;

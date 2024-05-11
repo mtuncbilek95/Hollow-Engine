@@ -41,6 +41,9 @@ namespace Hollow
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Sampler; }
 		virtual void OnShutdown() noexcept override = 0;
 
+	protected:
+		void SetMaxAnisotropy(uint32 maxAnisotropy) { mMaxAnisotropy = maxAnisotropy; }
+
 	private:
 		SamplerFilter mMagFilter;
 		SamplerFilter mMinFilter;

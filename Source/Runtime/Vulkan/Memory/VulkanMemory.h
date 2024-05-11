@@ -8,7 +8,7 @@
 
 namespace Hollow
 {
-	class RUNTIME_API VulkanMemory : public GraphicsMemory
+	class RUNTIME_API VulkanMemory final : public GraphicsMemory
 	{
 	public:
 		VulkanMemory(const GraphicsMemoryDesc& desc, const SharedPtr<VulkanDevice> pDevice);

@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.26)
 
+# ---------------------- CMAKE INCLUDES ----------------------
+include("${CMAKE_SOURCE_DIR}/CMake/FetchLibraries.cmake")
+# ------------------------------------------------------------
+
+# ---------------------- DATA FETCHING -----------------------
 find_package(Vulkan REQUIRED)
 
 if(Vulkan_FOUND)
@@ -7,14 +12,24 @@ if(Vulkan_FOUND)
     message(STATUS "Vulkan SDK found at: ${Vulkan_SDK_DIR}")
 endif()
 
+FetchContent_MakeAvailable(stbi)
+# ------------------------------------------------------------
+
 # ---------------------- FILE ADDITION -----------------------
 file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Source/Runtime/*.cpp" "${CMAKE_SOURCE_DIR}/Source/Runtime/*.h")
 source_group(TREE "${CMAKE_SOURCE_DIR}/Source/Runtime" FILES ${SUBDIRECTORIES})
-add_executable(Runtime main.cpp ${SUBDIRECTORIES})
+add_library(Runtime STATIC main.cpp ${SUBDIRECTORIES})
 # ------------------------------------------------------------
 
 # ------------------- INCLUDE DIRECTORIES --------------------
 target_include_directories(Runtime PRIVATE "${CMAKE_SOURCE_DIR}/Source")
+
+if (stbi_POPULATED) 
+    target_compile_definitions(Runtime PUBLIC STB_IMAGE_IMPLEMENTATION)
+    target_compile_definitions(Runtime PUBLIC STB_TRUETYPE_IMPLEMENTATION)
+
+    target_include_directories(Runtime PUBLIC ${stbi_SOURCE_DIR})
+endif ()
 # ------------------------------------------------------------
 
 # ------------------ SHADER DIRECTORY ------------------

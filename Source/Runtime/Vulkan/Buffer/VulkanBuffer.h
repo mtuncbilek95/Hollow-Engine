@@ -8,7 +8,7 @@
 
 namespace Hollow
 {
-	class RUNTIME_API VulkanBuffer : public GraphicsBuffer
+	class RUNTIME_API VulkanBuffer final : public GraphicsBuffer
 	{
 	public:
 		VulkanBuffer(const GraphicsBufferDesc& desc,const SharedPtr<VulkanDevice> pDevice);

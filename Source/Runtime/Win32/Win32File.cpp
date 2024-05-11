@@ -97,7 +97,7 @@ namespace Hollow
 
 		// Write the data to the file
 		DWORD bytesWritten;
-		const bool result = WriteFile(hFile, buffer.GetBuffer(), buffer.Getsize(), &bytesWritten, NULL);
+		const bool result = WriteFile(hFile, buffer.GetBuffer(), buffer.GetSize(), &bytesWritten, NULL);
 
 		// Close the file
 		CloseHandle(hFile);
@@ -195,8 +195,9 @@ namespace Hollow
 
 		// Read the file
 		DWORD bytesRead;
-		char* buffer = new char[acceptedRange];
+		char* buffer = new char[acceptedRange + 1];
 		const bool result = ReadFile(hFile, buffer, acceptedRange, &bytesRead, NULL);
+		buffer[acceptedRange] = '\0';
 
 		// Check if the file was read
 		if (!result)

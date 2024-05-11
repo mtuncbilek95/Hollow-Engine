@@ -10,12 +10,15 @@ namespace Hollow
 	{
 	}
 
-	MemoryOwnedBuffer::MemoryOwnedBuffer(void* pStart, void* pEnd) : mBuffer(pStart), mSize((uint64)pEnd - (uint64)pStart)
+	MemoryOwnedBuffer::MemoryOwnedBuffer(void* pStart, void* pEnd) : mBuffer(pStart), mSize((byte*)pEnd - (byte*)pStart)
+	{
+	}
+
+	MemoryOwnedBuffer::MemoryOwnedBuffer(const MemoryOwnedBuffer& other) : mBuffer(other.mBuffer), mSize(other.mSize)
 	{
 	}
 
 	MemoryOwnedBuffer::~MemoryOwnedBuffer()
 	{
-		delete mBuffer;
 	}
 }

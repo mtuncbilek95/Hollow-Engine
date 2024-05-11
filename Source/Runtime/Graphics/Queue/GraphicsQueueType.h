@@ -6,8 +6,8 @@ namespace Hollow
 {
 	enum class GraphicsQueueType : byte
 	{
-		Graphics,
-		Compute,
-		Transfer
+		Graphics = 1,
+		Compute = 2,
+		Transfer = 4
 	};
 }

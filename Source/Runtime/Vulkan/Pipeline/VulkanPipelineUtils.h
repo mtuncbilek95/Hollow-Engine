@@ -13,7 +13,7 @@
 #include <Runtime/Graphics/Pipeline/DepthStencilState/StencilOperation.h>
 #include <Runtime/Graphics/Pipeline/DepthStencilState/StencilFaceDesc.h>
 
-#include <Runtime/Vulkan/Common/VulkanCommonUtils.h>
+#include <Runtime/Vulkan/Core/VulkanCoreUtils.h>
 
 #include <vulkan.h>
 
@@ -195,7 +195,7 @@ namespace Hollow
 			state.failOp = GetVkStencilOp(desc.FailOperation);
 			state.passOp = GetVkStencilOp(desc.PassOperation);
 			state.depthFailOp = GetVkStencilOp(desc.DepthFailOperation);
-			state.compareOp = VulkanCommonUtils::GetVkCompareOperation(desc.CompareOperation);
+			state.compareOp = VulkanCoreUtils::GetVkCompareOperation(desc.CompareOperation);
 			state.compareMask = desc.CompareMask;
 			state.writeMask = desc.WriteMask;
 			state.reference = desc.Reference;

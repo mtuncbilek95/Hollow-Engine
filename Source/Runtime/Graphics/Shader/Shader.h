@@ -9,17 +9,17 @@ namespace Hollow
 	class RUNTIME_API Shader : public GraphicsDeviceObject
 	{
 	public:
-		Shader(const ShaderDesc& desc, const SharedPtr<GraphicsDevice> pDevice) : GraphicsDeviceObject(pDevice),
-			mSource(desc.Source), mStage(desc.Stage),
-			mEntryPoint(desc.EntryPoint), mShaderLanguage(desc.Language), mShaderName(desc.ShaderName)
+		Shader(const ShaderDesc& desc, const SharedPtr<GraphicsDevice> pDevice) : GraphicsDeviceObject(pDevice), mEntryPoint(desc.EntryPoint),
+			mSourceCode(desc.ShaderCode), mStage(desc.Stage),
+			mShaderLanguage(desc.Language), mShaderName(desc.ShaderName)
 		{}
 		virtual ~Shader() override = default;
 
 		const String& GetShaderName() const { return mShaderName; }
-		const String& GetSource() const { return mSource; }
+		const String& GetEntryPoint() const { return mEntryPoint; }
+		const MemoryBuffer& GetSource() const { return mSourceCode; }
 		ShaderStage GetStage() const { return mStage; }
 		ShaderLanguage GetShaderLanguage() const { return mShaderLanguage; }
-		const String& GetEntryPoint() const { return mEntryPoint; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Shader; }
 
@@ -27,9 +27,9 @@ namespace Hollow
 
 	private:
 		String mShaderName;
-		String mSource;
+		String mEntryPoint;
+		MemoryBuffer mSourceCode;
 		ShaderStage mStage;
 		ShaderLanguage mShaderLanguage;
-		String mEntryPoint;
 	};
 }

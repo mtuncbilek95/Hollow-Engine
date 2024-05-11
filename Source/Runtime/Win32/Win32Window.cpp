@@ -40,8 +40,32 @@ namespace Hollow
 
 		if (mHandle)
 		{
-			mContext = GetDC(mHandle);
+			switch (desc.WindowMode)
+			{
+			case WindowMode::Windowed:
+			{
+				// Find the center of the monitor
+				Vector2i monitorCenter = { (desc.pMonitor->GetMonitorResolution().x - (int32)desc.WindowSize.x) / 2 , (desc.pMonitor->GetMonitorResolution().y - (int32)desc.WindowSize.y) / 2 };
+				SetWindowPosInternal(monitorCenter);
+				SetWindowLong(mHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+				SetWindowPos(mHandle, HWND_TOP, monitorCenter.x, monitorCenter.y, desc.WindowSize.x, desc.WindowSize.y, SWP_SHOWWINDOW);
+				break;
+			}
+			case WindowMode::Borderless:
+				SetWindowLong(mHandle, GWL_STYLE, WS_POPUP);
+				SetWindowSizeInternal({ static_cast<uint32>(desc.pMonitor->GetMonitorResolution().x), static_cast<uint32>(desc.pMonitor->GetMonitorResolution().y) });
+				SetWindowPos(mHandle, HWND_TOP, 0, 0, desc.pMonitor->GetMonitorResolution().x, desc.pMonitor->GetMonitorResolution().y, SWP_NOMOVE | SWP_SHOWWINDOW);
+				break;
+			case WindowMode::Fullscreen:
+				SetWindowLong(mHandle, GWL_STYLE, WS_POPUP);
+				SetWindowSizeInternal({ static_cast<uint32>(desc.pMonitor->GetMonitorResolution().x), static_cast<uint32>(desc.pMonitor->GetMonitorResolution().y) });
+				SetWindowPos(mHandle, HWND_TOP, 0, 0, desc.pMonitor->GetMonitorResolution().x, desc.pMonitor->GetMonitorResolution().y, SWP_NOMOVE | SWP_SHOWWINDOW);
+				break;
+			}
 		}
+
+		if (mHandle)
+			mContext = GetDC(mHandle);
 #endif
 	}
 

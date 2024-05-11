@@ -18,7 +18,6 @@ namespace Hollow
 	class RUNTIME_API DescriptorSet;
 	class RUNTIME_API Texture;
 
-
 	/**
 	 * @class CommandBuffer
 	 * 

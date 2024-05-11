@@ -11,6 +11,6 @@ namespace Hollow
 	 */
 	struct RUNTIME_API CommandBufferDesc
 	{
-		CommandPool* pOwnerPool;
+		SharedPtr<CommandPool> pOwnerPool;
 	};
 }

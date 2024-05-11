@@ -11,11 +11,11 @@ namespace Hollow
 		MemoryOwnedBuffer();
 		MemoryOwnedBuffer(void* pData, uint64 size);
 		MemoryOwnedBuffer(void* pStart, void* pEnd);
-		MemoryOwnedBuffer(const MemoryOwnedBuffer& other) = delete;
+		MemoryOwnedBuffer(const MemoryOwnedBuffer& other);
 		~MemoryOwnedBuffer();
 
 		FORCEINLINE void* GetBuffer() const { return mBuffer; }
-		FORCEINLINE uint64 Getsize() const { return mSize; }
+		FORCEINLINE uint64 GetSize() const { return mSize; }
 
 	private:
 		void* mBuffer;
