@@ -6,6 +6,10 @@
 
 namespace Hollow
 {
+	/**
+	 * @class GraphicsMemory
+	 * @brief Represents a block of memory that can be used for CPU and GPU resources.
+	 */
 	class RUNTIME_API GraphicsMemory : public GraphicsDeviceObject
 	{
 		struct RUNTIME_API SubMemory

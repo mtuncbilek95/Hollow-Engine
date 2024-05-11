@@ -6,10 +6,10 @@
 #include <Runtime/Window/WindowDesc.h>
 #include <Runtime/Window/WindowEventDesc.h>
 
+#include <Runtime/Graphics/Swapchain/Swapchain.h>
+
 namespace Hollow
 {
-	class RUNTIME_API Swapchain;
-
 	class RUNTIME_API PlatformWindow : public Object
 	{
 		friend class GraphicsDevice;

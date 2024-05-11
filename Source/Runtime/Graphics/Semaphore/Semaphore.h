@@ -5,6 +5,10 @@
 
 namespace Hollow
 {
+	/**
+	 * @class Semaphore
+	 * @brief Represents the sync object for the GPU.
+	 */
 	class RUNTIME_API Semaphore : public GraphicsDeviceObject
 	{
 	public:
@@ -14,7 +18,5 @@ namespace Hollow
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Semaphore; }
 
 		virtual void OnShutdown() noexcept override = 0;
-
-	private:
 	};
 }

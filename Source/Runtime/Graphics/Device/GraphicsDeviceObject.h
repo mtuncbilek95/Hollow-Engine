@@ -14,7 +14,7 @@ namespace Hollow
 		GraphicsDeviceObject(const SharedPtr<GraphicsDevice> device) : Object(), mOwnerDevice(device) {}
 		virtual ~GraphicsDeviceObject() override = default;
 
-		FORCEINLINE SharedPtr<GraphicsDevice> GetDevice() const { return mOwnerDevice; }
+		FORCEINLINE SharedPtr<GraphicsDevice> GetOwnerDevice() const { return mOwnerDevice; }
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept = 0;
 
 		virtual void OnShutdown() override = 0;

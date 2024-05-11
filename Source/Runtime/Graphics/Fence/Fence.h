@@ -6,6 +6,10 @@
 
 namespace Hollow
 {
+	/**
+	 * @class Fence
+	 * @brief Represents the sync object that can be used to synchronize CPU and GPU.
+	 */
 	class RUNTIME_API Fence : public GraphicsDeviceObject
 	{
 	public:

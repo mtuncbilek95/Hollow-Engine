@@ -17,7 +17,6 @@ namespace Hollow
 	{
 	public:
 		static void Print(const char* message, ...);
-		static void PrintError(const char* message, ...);
 		static void Log(ConsoleType type, const char* title, const char* message, ...);
 		static void Assert(bool condition, const char* title, const char* message, ...);
 

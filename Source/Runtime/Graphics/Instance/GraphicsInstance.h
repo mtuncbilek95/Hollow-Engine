@@ -10,6 +10,10 @@ namespace Hollow
 	struct RUNTIME_API GraphicsDeviceDesc;
 	class RUNTIME_API GraphicsDevice;
 
+	/**
+	 * @class GraphicsInstance
+	 * @brief GraphicsInstance is the main entry point for the graphics API.
+	 */
 	class RUNTIME_API GraphicsInstance : public Object
 	{
 	public:
@@ -34,7 +38,6 @@ namespace Hollow
 
 	protected:
 		virtual void EnumerateAdaptersImpl() = 0;
-		virtual SharedPtr<GraphicsDevice> CreateDeviceImpl(const GraphicsDeviceDesc& desc) = 0;
 
 		void AddAdapter(SharedPtr<GraphicsAdapter> adapter) { mAdapters.push_back(adapter); }
 

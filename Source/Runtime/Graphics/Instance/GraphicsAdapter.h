@@ -5,6 +5,10 @@
 
 namespace Hollow
 {
+	/**
+	 * @struct GraphicsAdapter
+	 * @brief Represents a graphics adapter.
+	 */
 	struct RUNTIME_API GraphicsAdapter
 	{
 		GraphicsAdapterType AdapterType;
