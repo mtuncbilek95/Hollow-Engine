@@ -138,7 +138,7 @@ namespace Hollow
 
 		// Read the file
 		DWORD bytesRead;
-		char* buffer = new char[acceptedRange];
+		char* buffer = new char[acceptedRange + 1];
 		const bool result = ReadFile(hFile, buffer, acceptedRange, &bytesRead, NULL);
 
 		// Check if the file was read
