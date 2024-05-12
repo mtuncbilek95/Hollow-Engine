@@ -2,6 +2,8 @@
 #include <Runtime/Platform/PlatformMonitor.h>
 #include <Runtime/Platform/PlatformFile.h>
 #include <Runtime/Window/WindowManager.h>
+#include <Runtime/Graphics/API/GraphicsManager.h>
+
 #include <Runtime/Graphics/Instance/GraphicsInstance.h>
 #include <Runtime/Graphics/Device/GraphicsDevice.h>
 #include <Runtime/Graphics/Queue/GraphicsQueue.h>
@@ -22,7 +24,7 @@
 #include <Runtime/Graphics/Descriptor/DescriptorSet.h>
 #include <Runtime/Resource/Texture/TextureImporter.h>
 
-#define INSTANCE_COUNT 11
+#define INSTANCE_COUNT 225
 
 using namespace Hollow;
 
@@ -105,17 +107,21 @@ ArrayList<Transform> InstanceTransforms(INSTANCE_COUNT);
 
 ConstantBuffer MVPData = {
 		{},
-		XMMatrixLookAtLH({0, 0, -5}, {0, 0 ,0}, {0, 1, 0}),
-		XMMatrixPerspectiveFovLH(XMConvertToRadians(80), static_cast<float>(1920.f / 1080.f), 0.01f, 1000.f)
+		XMMatrixLookAtLH({0, 0, -7}, {0, 0 ,0}, {0, 1, 0}),
+		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<float>(1300.f / 1300.f), 0.01f, 1000.f)
 };
 
 void UpdateTransforms()
 {
 	for (byte i = 0; i < INSTANCE_COUNT; i++)
 	{
-		InstanceTransforms[i].Rotation.x += i * 0.05f + 0.1f;
-		InstanceTransforms[i].Rotation.y += i * 0.05f + 0.1f;
-		InstanceTransforms[i].Rotation.z += i * 0.05f + 0.1f;
+		InstanceTransforms[i].Rotation.x += 0.1f;
+		if(i % 2 == 0)
+			InstanceTransforms[i].Rotation.y += 0.2f;
+		else
+			InstanceTransforms[i].Rotation.y -= 0.2f;
+
+		InstanceTransforms[i].Rotation.z += 0.3f;
 
 		MVPData.Model[i] = XMMatrixScaling(InstanceTransforms[i].Scale.x, InstanceTransforms[i].Scale.y, InstanceTransforms[i].Scale.z) *
 			XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i].Rotation.y),
@@ -130,24 +136,32 @@ int main(int argC, char** argV)
 	// Initialize the platform API
 	PlatformAPI::GetInstanceAPI().InitializeArguments(argC, argV);
 
+	// make them start at the right up corner and go left
+	int sideLength = int(sqrt(INSTANCE_COUNT));
+	int numCols = sideLength;
+
+	float initialX = 1 - numCols;
+	float initialY = -numCols;
+
 	// Initialize the transforms
-	float depth = 1.0f;
-	for (byte i = 0; i < INSTANCE_COUNT; i++)
+	for (byte i = 0; i < int(sqrt(INSTANCE_COUNT)); i++)
 	{
-		int centerIndex = (INSTANCE_COUNT - 1) / 2;
-		int startPos = -centerIndex;
+		initialY += 1;
 
-		depth *= -1.0f;
+		for (int j = 0; j < int(sqrt(INSTANCE_COUNT)); j++)
+		{
+			float xPos = initialX + j;
 
-		InstanceTransforms[i].Position = { static_cast<float>(startPos + i), 0.0f, static_cast<float>(centerIndex / 2) * depth };
-		InstanceTransforms[i].Rotation = { 0.0f, 0.0f, 0.0f };
-		InstanceTransforms[i].Scale = { 1.0f, 1.0f, 1.0f };
+			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position = { xPos + j, initialY + i, (float)sideLength - 1 };
+			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Rotation = { 0, 0, 0 };
+			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale = { 1, 1, 1 };
 
-		MVPData.Model[i] = XMMatrixScaling(InstanceTransforms[i].Scale.x, InstanceTransforms[i].Scale.y, InstanceTransforms[i].Scale.z) *
-			XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i].Rotation.y),
-				XMConvertToRadians(InstanceTransforms[i].Rotation.z),
-				XMConvertToRadians(InstanceTransforms[i].Rotation.x)) *
-			XMMatrixTranslation(InstanceTransforms[i].Position.x, InstanceTransforms[i].Position.y, InstanceTransforms[i].Position.z);
+			MVPData.Model[i * int(sqrt(INSTANCE_COUNT)) + j] = XMMatrixScaling(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale.x, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale.y, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale.z) *
+				XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Rotation.y),
+					XMConvertToRadians(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Rotation.z),
+					XMConvertToRadians(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Rotation.x)) *
+				XMMatrixTranslation(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position.x, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position.y, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position.z);
+		}
 	}
 
 	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/TestTexture.png");
@@ -157,10 +171,10 @@ int main(int argC, char** argV)
 
 	// Create a window
 	Hollow::WindowDesc desc = {};
-	desc.WindowSize = { 1920, 1080 };
+	desc.WindowSize = { 1300, 1300 };
 	desc.WindowPosition = { 0, 0 };
 	desc.WindowTitle = "Hollow Engine";
-	desc.WindowMode = WindowMode::Borderless;
+	desc.WindowMode = WindowMode::Windowed;
 	desc.pMonitor = primaryMonitor;
 
 	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
@@ -182,11 +196,6 @@ int main(int argC, char** argV)
 	deviceDesc.TransferQueueCount = 1;
 	auto mDevice = mGraphicsInstance->CreateGraphicsDevice(deviceDesc);
 
-	// Create a graphics queue for swapchain presentation
-	GraphicsQueueDesc queueDesc = {};
-	queueDesc.QueueType = GraphicsQueueType::Graphics;
-	auto mPresentQueue = mDevice->CreateQueue(queueDesc);
-
 	// Create a swapchain
 	SwapchainDesc swapchainDesc = {};
 	swapchainDesc.BufferCount = 2;
@@ -195,7 +204,7 @@ int main(int argC, char** argV)
 	swapchainDesc.SwapchainUsage = TextureUsage::ColorAttachment;
 	swapchainDesc.VSync = PresentMode::FullVSync;
 	swapchainDesc.SwapchainMode = ShareMode::Exclusive;
-	swapchainDesc.pQueue = mPresentQueue;
+	swapchainDesc.pQueue = GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue();
 
 	auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
 
@@ -204,13 +213,13 @@ int main(int argC, char** argV)
 	// Create bundle memory for pre-allocation
 	GraphicsMemoryDesc hostMemoryDesc = {};
 	hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
-	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
+	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(50);
 
 	auto mHostMemory = mDevice->CreateGraphicsMemory(hostMemoryDesc);
 
 	GraphicsMemoryDesc deviceMemoryDesc = {};
 	deviceMemoryDesc.MemoryType = GraphicsMemoryType::DeviceLocal;
-	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
+	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(50);
 
 	auto mDeviceMemory = mDevice->CreateGraphicsMemory(deviceMemoryDesc);
 
@@ -313,7 +322,7 @@ int main(int argC, char** argV)
 	mCommandBuffer->SetTextureBarrier(mDepthTexture, depthTextureBarrier);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(mPresentQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
 
 	mDevice->WaitForFence(&mFence, 1);
 	mDevice->ResetFences(&mFence, 1);
@@ -376,11 +385,16 @@ int main(int argC, char** argV)
 
 	// Descriptor Pool
 	DescriptorPoolDesc descriptorPoolDesc = {};
-	descriptorPoolDesc.Type = GraphicsMemoryType::HostVisible;
+	descriptorPoolDesc.MaxSets = 10;
 	descriptorPoolDesc.PoolSizes = {
 		{DescriptorType::UniformBuffer, 1},
 		{DescriptorType::Sampler, 1},
-		{DescriptorType::SampledImage, 1}
+		{DescriptorType::SampledImage, 1},
+		{DescriptorType::StorageImage, 1},
+		{DescriptorType::StorageBuffer, 1},
+		{DescriptorType::UniformTexelBuffer, 1},
+		{DescriptorType::StorageTexelBuffer, 1},
+		{DescriptorType::InputAttachment, 1}
 	};
 
 	auto mDescriptorPool = mDevice->CreateDescriptorPool(descriptorPoolDesc);
@@ -608,17 +622,17 @@ int main(int argC, char** argV)
 	uint64 indexBufferSize = sizeof(uint32) * indices.size();
 	uint64 uniformBufferSize = sizeof(ConstantBuffer);
 
-	BufferDataUpdateDesc vertexDataUpdateDesc;
+	BufferDataUpdateDesc vertexDataUpdateDesc = {};
 	vertexDataUpdateDesc.Memory = { (void*)vertices.data(), vertexBufferSize };
 	vertexDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingVertexBuffer, vertexDataUpdateDesc);
 
-	BufferDataUpdateDesc indexDataUpdateDesc;
+	BufferDataUpdateDesc indexDataUpdateDesc = {};
 	indexDataUpdateDesc.Memory = { (void*)indices.data(), indexBufferSize };
 	indexDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingIndexBuffer, indexDataUpdateDesc);
 
-	BufferDataUpdateDesc uniformDataUpdateDesc;
+	BufferDataUpdateDesc uniformDataUpdateDesc = {};
 	uniformDataUpdateDesc.Memory = { (void*)&MVPData, uniformBufferSize};
 	uniformDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
@@ -702,7 +716,7 @@ int main(int argC, char** argV)
 	mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(mPresentQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
 
 	mDevice->WaitForFence(&mFence, 1);
 	mDevice->ResetFences(&mFence, 1);
@@ -747,7 +761,7 @@ int main(int argC, char** argV)
 		mCommandBuffer->EndRenderPass();
 		mCommandBuffer->EndRecording();
 
-		mDevice->SubmitToQueue(mPresentQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+		mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
 		mDevice->WaitForFence(&mFence, 1);
 		mDevice->ResetFences(&mFence, 1);
 
@@ -755,6 +769,8 @@ int main(int argC, char** argV)
 	}
 
 	mDevice->WaitForIdle();
+	mDevice->OnShutdown();
+	mGraphicsInstance->OnShutdown();
 
 	return 0;
 }

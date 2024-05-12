@@ -7,8 +7,6 @@ namespace Hollow
 	{
 		ArrayList<VkDescriptorPoolSize> poolSizes;
 
-		uint32 maxSets = 0;
-
 		for (auto& poolSize : desc.PoolSizes)
 		{
 			VkDescriptorPoolSize size = {};
@@ -16,15 +14,13 @@ namespace Hollow
 			size.descriptorCount = poolSize.Count;
 
 			poolSizes.push_back(size);
-
-			maxSets += poolSize.Count;
 		}
 
 		VkDescriptorPoolCreateInfo poolInfo = {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = static_cast<uint32>(poolSizes.size());
 		poolInfo.pPoolSizes = poolSizes.data();
-		poolInfo.maxSets = maxSets;
+		poolInfo.maxSets = desc.MaxSets;
 		poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 		poolInfo.pNext = nullptr;
 

@@ -183,8 +183,6 @@ namespace Hollow
 
 		CORE_ASSERT(vkCreatePipelineLayout(mVkDevice, &pipelineLayoutInfo, nullptr, &mVkPipelineLayout) == VK_SUCCESS, "PipelineLayout", "Failed to create pipeline layout!");
 
-		CORE_LOG(HE_VERBOSE, "Pipeline", "PipelineLayout created successfully!");
-
 		// Create Pipeline
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -203,8 +201,6 @@ namespace Hollow
 		pipelineInfo.subpass = desc.SubpassIndex;
 
 		CORE_ASSERT(vkCreateGraphicsPipelines(mVkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &mVkPipeline) == VK_SUCCESS, "GraphicsPipeline", "Failed to create graphics pipeline!");
-
-		CORE_LOG(HE_VERBOSE, "Pipeline", "GraphicsPipeline created successfully!");
 	}
 
 	void VulkanPipeline::OnShutdown() noexcept
@@ -217,7 +213,5 @@ namespace Hollow
 		mVkPipeline = VK_NULL_HANDLE;
 		mVkPipelineLayout = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
-
-		CORE_LOG(HE_VERBOSE, "VulkanPipeline", "Pipeline destroyed successfully!");
 	}
 }

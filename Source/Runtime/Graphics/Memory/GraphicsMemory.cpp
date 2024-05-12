@@ -21,14 +21,14 @@ namespace Hollow
 		for (uint32 i = 0; i < mSubMemoryBlocks.size(); ++i)
 		{
 			// Skip the block if it is already owned
-			if (mSubMemoryBlocks[i].bOwned)
+			if (mSubMemoryBlocks[i].bOwned == true)
 			{
 				offset += mSubMemoryBlocks[i].SizeInBytes;
 				continue;
 			}
 
 			// If the memory block is too big, skip it
-			if (mSubMemoryBlocks[i].SizeInBytes > sizeInBytes)
+			if (mSubMemoryBlocks[i].SizeInBytes < sizeInBytes)
 			{
 				offset += mSubMemoryBlocks[i].SizeInBytes;
 				continue;

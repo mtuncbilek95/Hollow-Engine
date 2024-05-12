@@ -7,6 +7,7 @@ project("Hollow-Engine")
 # ------------------ CXX FLAGS ---------------------
 if(POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
+  cmake_policy(SET CMP0077 NEW)
   set(CMAKE_CXX_STANDARD 20)
 endif()
 # --------------------------------------------------
@@ -25,6 +26,7 @@ endif ()
 
 # ------------------ SUBDIRECTORIES ----------------
 add_subdirectory("Source/Runtime")
+add_subdirectory("Source/Editor")
 
 add_subdirectory("Tests/01_Runtime")
 # --------------------------------------------------

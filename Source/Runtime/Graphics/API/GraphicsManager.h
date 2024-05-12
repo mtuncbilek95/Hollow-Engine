@@ -9,17 +9,36 @@ namespace Hollow
 	class RUNTIME_API GraphicsManager final : public ManagerAPI<GraphicsManager>
 	{
 		friend class GraphicsInstance;
-
 	public:
 		GraphicsManager() = default;
 		~GraphicsManager() override = default;
 
-		SharedPtr<GraphicsDevice> GetDefaultDevice() noexcept { return mGraphicsDevice; }
+		// The budget memories are in megabytes
+		void SetMemoryBudget(const uint64 hostMemoryBudget, const uint64 deviceMemoryBudget) noexcept;
+		void SetResourceBudget(const uint64 resourceCount, const uint64 setCount) noexcept;
+
+		SharedPtr<GraphicsDevice> GetDefaultDevice() const noexcept { return mGraphicsDevice; }
+
+		SharedPtr<GraphicsQueue> GetDefaultPresentQueue() const noexcept { return mPresentQueue; }
+		SharedPtr<GraphicsQueue> GetDefaultComputeQueue() const noexcept { return mComputeQueue; }
+		SharedPtr<GraphicsQueue> GetDefaultTransferQueue() const noexcept { return mTransferQueue; }
+
+		SharedPtr<GraphicsMemory> GetDefaultHostMemory() const noexcept { return mHostMemory; }
+		SharedPtr<GraphicsMemory> GetDefaultDeviceMemory() const noexcept { return mDeviceMemory; }
 
 	private:
 		void SetGraphicsDevice(SharedPtr<GraphicsDevice> device);
 
 	private:
 		SharedPtr<GraphicsDevice> mGraphicsDevice;
+
+		SharedPtr<GraphicsQueue> mPresentQueue;
+		SharedPtr<GraphicsQueue> mComputeQueue;
+		SharedPtr<GraphicsQueue> mTransferQueue;
+
+		SharedPtr<GraphicsMemory> mHostMemory;
+		SharedPtr<GraphicsMemory> mDeviceMemory;
+
+		SharedPtr<DescriptorPool> mDescriptorPool;
 	};
 }

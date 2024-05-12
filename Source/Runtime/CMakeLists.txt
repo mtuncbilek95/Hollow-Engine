@@ -13,6 +13,8 @@ if(Vulkan_FOUND)
 endif()
 
 FetchContent_MakeAvailable(stbi)
+FetchContent_MakeAvailable(assimp)
+FetchContent_MakeAvailable(spirv-reflect)
 # ------------------------------------------------------------
 
 # ---------------------- FILE ADDITION -----------------------
@@ -30,6 +32,21 @@ if (stbi_POPULATED)
 
     target_include_directories(Runtime PUBLIC ${stbi_SOURCE_DIR})
 endif ()
+
+if(assimp_POPULATED)
+	target_link_libraries(Runtime PRIVATE assimp)
+    target_compile_definitions(Runtime PRIVATE ASSIMP_LOADED=1)
+endif()
+
+if(Vulkan_FOUND)
+    target_include_directories(Runtime PUBLIC "${Vulkan_INCLUDE_DIRS}/vulkan")
+    target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/vulkan-1.lib")
+endif()
+
+if(spirv-reflect_POPULATED)
+	target_include_directories(Runtime PUBLIC ${spirv-reflect_SOURCE_DIR})
+	target_link_libraries(Runtime PUBLIC spirv-reflect-static)
+endif()
 # ------------------------------------------------------------
 
 # ------------------ SHADER DIRECTORY ------------------
@@ -54,12 +71,6 @@ else()
     target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-glsl.lib")
     target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-hlsl.lib")
 endif()
-# ------------------------------------------------------------
-
-# ------------------- VULKAN IMPLEMENTATION ------------------
-target_include_directories(Runtime PUBLIC "${Vulkan_INCLUDE_DIRS}/vulkan")
-
-target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/vulkan-1.lib")
 # ------------------------------------------------------------
 
 # ----------------- PREPROCESSOR DEFINITIONS -----------------

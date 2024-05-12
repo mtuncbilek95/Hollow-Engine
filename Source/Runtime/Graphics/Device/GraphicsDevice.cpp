@@ -48,6 +48,7 @@ namespace Hollow
 		}
 
 		mOwnedSwapchain = CreateSwapchainImpl(desc);
+		mDeviceObjects.push_back(mOwnedSwapchain);
 		WindowManager::GetInstanceAPI().GetDefaultWindow()->SetConnectedSwapchain(mOwnedSwapchain);
 		return mOwnedSwapchain;
 	}

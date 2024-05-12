@@ -22,6 +22,13 @@
 #include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
 #include <Runtime/Vulkan/Descriptor/VulkanDescriptorUtils.h>
 
+struct Vertex
+{
+	Vector3f Position;
+	Vector3f Color;
+	Vector2f TexCoord;
+};
+
 namespace Hollow
 {
 	VulkanDevice::VulkanDevice(const GraphicsDeviceDesc& desc) : GraphicsDevice(desc), mVkDevice(VK_NULL_HANDLE), mVkPhysicalDevice(VK_NULL_HANDLE), mVkInstance(VK_NULL_HANDLE)
@@ -419,7 +426,7 @@ namespace Hollow
 
 		CORE_ASSERT(vkMapMemory(mVkDevice, pMemory->GetVkDeviceMemory(), pTarget->GetVkAlignedOffset() + desc.OffsetInBytes, desc.Memory.GetSize(), 0, &pData) == VK_SUCCESS,
 			"VulkanDevice", "Failed to map memory");
-		memcpy(pData, (byte*)desc.Memory.GetBuffer(), desc.Memory.GetSize());
+		memcpy(pData, desc.Memory.GetBuffer(), desc.Memory.GetSize());
 		vkUnmapMemory(mVkDevice, pMemory->GetVkDeviceMemory());
 	}
 

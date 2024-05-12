@@ -8,7 +8,7 @@ namespace Hollow
 {
 	struct RUNTIME_API DescriptorPoolDesc
 	{
-		GraphicsMemoryType Type;
+		uint64 MaxSets;
 		ArrayList<DescriptorPoolSize> PoolSizes;
 	};
 }
