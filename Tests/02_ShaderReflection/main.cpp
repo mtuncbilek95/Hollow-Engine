@@ -1,6 +1,9 @@
 #include <Runtime/Platform/PlatformAPI.h>
-#include <Runtime/Platform/PlatformFile.h>
-#include <Runtime/ShaderCompiler/ShaderCompiler.h>
+#include <Runtime/Graphics/Instance/GraphicsInstance.h>
+#include <Runtime/Graphics/Device/GraphicsDevice.h>
+
+#include <Runtime/Resource/Shader/ShaderResource.h>
+
 
 using namespace Hollow;
 
@@ -9,15 +12,27 @@ int main(int argC, char** argV)
 	PlatformAPI::GetInstanceAPI().InitializeArguments(argC, argV);
 
 	const String& engineSourcePath = PlatformAPI::GetInstanceAPI().GetEngineSourcePath();
-
 	String shaderPath = engineSourcePath + "Tests/02_ShaderReflection/testVertex.vert";
 
-	MemoryBuffer vBuffer = {};
-	SharedPtr<MemoryOwnedBuffer> vShaderCode;
-	String errorMessage;
-	PlatformFile::Read(shaderPath, vBuffer);
+	GraphicsInstanceDesc instanceDesc = {};
+	instanceDesc.ApplicationName = "Shader Reflection Test";
+	instanceDesc.API = GraphicsAPI::Vulkan;
+	instanceDesc.InstanceName = "Shader Reflection Test Instance";
+	instanceDesc.EnabledExtensions = {};
 
-	ShaderCompiler::CompileShaderToSPIRV(vBuffer, "main", ShaderStage::Vertex, ShaderLanguage::GLSL, vShaderCode, errorMessage);
+	auto mInstance = GraphicsInstance::CreateInstance(instanceDesc);
 
-	//ShaderCompiler::ReflectShader(vShaderCode);
+	GraphicsDeviceDesc deviceDesc = {};
+	deviceDesc.Instance = mInstance;
+	deviceDesc.ComputeQueueCount = 1;
+	deviceDesc.GraphicsQueueCount = 1;
+	deviceDesc.TransferQueueCount = 1;
+
+	auto mDevice = mInstance->CreateGraphicsDevice(deviceDesc);
+
+	ShaderResource shaderResource;
+	shaderResource.CompileShader(shaderPath, "TestVertex", "main", ShaderStage::Vertex, ShaderLanguage::GLSL);
+
+	CORE_LOG(HE_INFO, "Shader Reflection Test", "Reflection Output Count: %d", shaderResource.GetReflection()->GetOutputDescriptors().size());
+	return 0;
 }
