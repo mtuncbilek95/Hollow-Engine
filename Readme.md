@@ -11,28 +11,26 @@
 3. Run the <b>GenerateProject.bat</b> file to generate the Visual Studio solution. <b>(W.I.P)</b>
 
 ## Features
-- [ ] Vulkan Renderer
+- [x] Vulkan Renderer
 - [ ] DirectX-12 Renderer
 - [x] Win32
 - [ ] Linux
 - [ ] MacOS
-- [ ] ResourceSystem <b>(W.I.P)</b>
+- [x] ResourceSystem <b>(W.I.P)</b>
 - [ ] Editor <b>(W.I.P)</b>
 
 ## Dependencies
-- [ ] Vulkan SDK
+- [x] Vulkan SDK
 - [ ] DirectX 12 SDK
-- [ ] Assimp
-- [ ] ImGui <b>(W.I.P)</b>
+- [x] Assimp
+- [x] ImGui
 - [ ] PhysX
 - [ ] FMod
-- [ ] STBI
-- [ ] Nlohmann JSON
+- [x] STBI
+- [x] Nlohmann JSON
 
 ## Tests
-- [ ] Hello Triangle
-- [ ] Rotating Square in 2D
-- [ ] Rotating Textured Cube
-- [ ] Instanced Cube with Multiple Positions
-- [ ] Json Serializer Implementation
-- [ ] Mesh_Import
+- [x] Runtime Test
+- [x] Resource Management for Shader
+- [ ] Resource Management for Texture <b>(W.I.P)</b>
+- [ ] Resource Management for Mesh
