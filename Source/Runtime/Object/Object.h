@@ -20,6 +20,8 @@ namespace Hollow
 		FORCEINLINE Guid GetResourceID() const { return mResourceID; }
 		virtual void OnShutdown() = 0;
 
+		virtual void ResetObject() {}
+
 	private:
 		Guid mResourceID;
 	};

@@ -2,6 +2,7 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Object/Object.h>
+#include <Runtime/Resource/Core/ResourceObject.h>
 #include <Runtime/Resource/Core/ResourceObjectType.h>
 
 namespace Hollow

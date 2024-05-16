@@ -10,6 +10,7 @@ namespace Hollow
 		Mesh,
 		Shader,
 		Texture,
-		Font
+		Font,
+		RenderTarget
 	};
 }

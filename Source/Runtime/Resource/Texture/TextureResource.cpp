@@ -1,11 +1,14 @@
 #include "TextureResource.h"
 
 #include <Runtime/Graphics/Texture/TextureUtils.h>
+#include <Runtime/Graphics/API/GraphicsManager.h>
 
 namespace Hollow
 {
 	TextureResource::TextureResource() : ResourceSubObject(), mMipDataInitialized(false)
 	{
+		mGraphicsDevice = GraphicsManager::GetInstanceAPI().GetDefaultDevice();
+		CreateInternalResources();
 	}
 
 	SharedPtr<TextureBuffer> TextureResource::CreateResourceBuffer(const TextureAspectFlags flag, const byte mipLevel, const byte arrayLevel)
@@ -33,6 +36,9 @@ namespace Hollow
 
 	void TextureResource::InitializeMipData(const SharedPtr<Texture> texture)
 	{
+		if (mTexture)
+			ResetObject();
+
 		mTexture = texture;
 
 		if (!mMipDataInitialized)
@@ -59,16 +65,16 @@ namespace Hollow
 
 		mTexture = mGraphicsDevice->CreateTexture(desc);
 
-		mMipData.reserve(desc.ArraySize);
-		for (byte i = 0; i < desc.ArraySize; i++)
+		// For each arrayindex, create a mip chain
+		for (uint32 arrayIndex = 0; arrayIndex <desc.ArraySize; ++arrayIndex)
 		{
-			mMipData[i].reserve(desc.MipLevels);
-		}
+			ArrayList<MipData> mips;
 
-		for (byte i = 0; i < desc.ArraySize; i++)
-		{
-			for (byte j = 0; j < desc.MipLevels; j++)
+			// For each mip level, create a mip data
+			for (uint32 mipIndex = 0; mipIndex < desc.MipLevels; mipIndex++)
 			{
+				MipData mipData = {};
+
 				if (preAllocData)
 				{
 					GraphicsBufferDesc bufferDesc = {};
@@ -78,28 +84,47 @@ namespace Hollow
 					bufferDesc.SubSizeInBytes = mTexture->GetImageSize().x * mTexture->GetImageSize().y * TextureUtils::GetTextureFormatSize(mTexture->GetImageFormat());
 					bufferDesc.Usage = GraphicsBufferUsage::TransferSource;
 
-					mMipData[i][j].MipStageBuffer = mGraphicsDevice->CreateGraphicsBuffer(bufferDesc);
+					mipData.MipStageBuffer = mGraphicsDevice->CreateGraphicsBuffer(bufferDesc);
 				}
 
 				if (preAllocMips)
 				{
-					mMipData[i][j].MipTextureBuffer = CreateResourceBuffer(TextureAspectFlags::ColorAspect, j, i);
+					TextureBufferDesc bufferDesc = {};
+					bufferDesc.AspectFlags = TextureAspectFlags::ColorAspect;
+					bufferDesc.ArrayLayer = arrayIndex;
+					bufferDesc.MipLevel = mipIndex;
+					bufferDesc.pTexture = mTexture;
+					
+					mipData.MipTextureBuffer = mGraphicsDevice->CreateTextureBuffer(bufferDesc);
 				}
+
+				mips.push_back(mipData);
 			}
+
+			mMipData.push_back(mips);
 		}
 	}
 
 	void TextureResource::UpdateTextureData(const MemoryBuffer& data, const Vector3u& offset, const TextureMemoryLayout inputMemoryLayout, const GraphicsMemoryAccessFlags inputAccessFlags, const PipelineStageFlags inputPipelineFlags, const GraphicsQueueType inputQueueType, const byte mipLevel, const byte arrayLevel)
 	{
-		BufferDataUpdateDesc textureDataUpdateDesc = {};
-		textureDataUpdateDesc.Memory = data;
-		textureDataUpdateDesc.OffsetInBytes = 0;
-		mGraphicsDevice->UpdateBufferData(mMipData[arrayLevel][mipLevel].MipStageBuffer, textureDataUpdateDesc);
+		// First Update the staging buffer
+		auto& mipData = mMipData[arrayLevel][mipLevel];
 
-		// First, make sure that texture is ready to be written.
+		if (mipData.MipStageBuffer)
+		{
+			BufferDataUpdateDesc updateDesc = {};
+			updateDesc.Memory = data;
+			updateDesc.OffsetInBytes = 0;
+			mGraphicsDevice->UpdateBufferData(mipData.MipStageBuffer, updateDesc);
+		}
+		
+		// Start recording the command buffer
+		mCommandBuffer->BeginRecording();
+
+		// Make sure that texture is ready to be written
 		TextureBarrierUpdateDesc preTextureBarrier = {};
-		preTextureBarrier.MipIndex = 0;
-		preTextureBarrier.ArrayIndex = 0;
+		preTextureBarrier.MipIndex = mipLevel;
+		preTextureBarrier.ArrayIndex = arrayLevel;
 		preTextureBarrier.SourceAccessMask = GraphicsMemoryAccessFlags::Unknown;
 		preTextureBarrier.OldLayout = TextureMemoryLayout::Unknown;
 		preTextureBarrier.SourceQueue = GraphicsQueueType::Graphics;
@@ -114,30 +139,26 @@ namespace Hollow
 
 		mCommandBuffer->SetTextureBarrier(mTexture, preTextureBarrier);
 
-		BufferTextureCopyDesc textureCopyDesc = {};
-		textureCopyDesc.BufferOffsetInBytes = 0;
-		textureCopyDesc.TargetArrayIndex = 0;
-		textureCopyDesc.TargetMipIndex = 0;
-		textureCopyDesc.TextureOffset = { 0,0,0 };
-		textureCopyDesc.TextureSize = mDesc.ImageSize;
-		mCommandBuffer->CopyBufferToTexture(mMipData[arrayLevel][mipLevel].MipStageBuffer, mTexture, textureCopyDesc);
-
 		TextureBarrierUpdateDesc postTextureBarrier = {};
-		postTextureBarrier.MipIndex = 0;
-		postTextureBarrier.ArrayIndex = 0;
+		postTextureBarrier.MipIndex = mipLevel;
+		postTextureBarrier.ArrayIndex = arrayLevel;
 		postTextureBarrier.SourceAccessMask = GraphicsMemoryAccessFlags::TransferWrite;
 		postTextureBarrier.OldLayout = TextureMemoryLayout::TransferDestination;
 		postTextureBarrier.SourceQueue = GraphicsQueueType::Graphics;
 		postTextureBarrier.SourceStageFlags = PipelineStageFlags::Transfer;
 
-		postTextureBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::ShaderRead;
-		postTextureBarrier.NewLayout = TextureMemoryLayout::ShaderReadOnly;
-		postTextureBarrier.DestinationQueue = GraphicsQueueType::Graphics;
-		postTextureBarrier.DestinationStageFlags = PipelineStageFlags::FragmentShader;
+		postTextureBarrier.DestinationAccessMask = inputAccessFlags;
+		postTextureBarrier.NewLayout = inputMemoryLayout;
+		postTextureBarrier.DestinationQueue = inputQueueType;
+		postTextureBarrier.DestinationStageFlags = inputPipelineFlags;
 
 		postTextureBarrier.AspectMask = TextureAspectFlags::ColorAspect;
 
 		mCommandBuffer->SetTextureBarrier(mTexture, postTextureBarrier);
+
+		mCommandBuffer->EndRecording();
+
+		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
 	}
 
 	void TextureResource::OnShutdown() noexcept
@@ -156,3 +177,4 @@ namespace Hollow
 		mFence = mGraphicsDevice->CreateSyncFence(fenceDesc);
 	}
 }
+
