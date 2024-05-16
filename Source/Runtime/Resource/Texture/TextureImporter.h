@@ -8,7 +8,7 @@ namespace Hollow
 	class RUNTIME_API TextureImporter
 	{
 	public:
-		static SharedPtr<TextureResourceLayout> ImportTexture(const String& path);
+		static SharedPtr<TextureResourceLayout> ImportTexture(String path);
 
 	public:
 		TextureImporter() = delete;

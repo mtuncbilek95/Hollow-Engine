@@ -8,7 +8,7 @@ namespace Hollow
 	class RUNTIME_API MeshImporter
 	{
 	public:
-		static MeshResourceLayout Import(String& path);
+		static MeshResourceLayout Import(String path);
 
 	public:
 		MeshImporter() = delete;

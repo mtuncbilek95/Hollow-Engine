@@ -14,6 +14,7 @@ endif()
 
 FetchContent_MakeAvailable(stbi)
 FetchContent_MakeAvailable(assimp)
+FetchContent_MakeAvailable(entt)
 FetchContent_MakeAvailable(spirv-reflect)
 # ------------------------------------------------------------
 
@@ -46,6 +47,10 @@ endif()
 if(spirv-reflect_POPULATED)
 	target_include_directories(Runtime PUBLIC ${spirv-reflect_SOURCE_DIR})
 	target_link_libraries(Runtime PUBLIC spirv-reflect-static)
+endif()
+
+if(entt_POPULATED)
+	target_include_directories(Runtime PUBLIC ${entt_SOURCE_DIR}/src)
 endif()
 # ------------------------------------------------------------
 

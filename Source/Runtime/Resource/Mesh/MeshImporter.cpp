@@ -8,7 +8,7 @@
 
 namespace Hollow
 {
-	MeshResourceLayout MeshImporter::Import(String& path)
+	MeshResourceLayout MeshImporter::Import(String path)
 	{
 		if (!PlatformFile::Exists(path))
 			return MeshResourceLayout();
