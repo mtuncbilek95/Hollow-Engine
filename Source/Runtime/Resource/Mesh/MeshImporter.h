@@ -10,6 +10,9 @@ namespace Hollow
 	public:
 		static MeshResourceLayout Import(String path);
 
+		static uint64 CalculateTotalMesh(const MeshResourceLayout& layout);
+		static uint64 CalculateTotalSubMesh(const SubMeshObject& subMesh);
+
 	public:
 		MeshImporter() = delete;
 		~MeshImporter() = delete;

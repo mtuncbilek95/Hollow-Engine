@@ -379,21 +379,16 @@ namespace Hollow
 	{
 		VkSemaphore semaphores[32];
 		for (byte i = 0; i < amount; i++)
-		{
-			if (ppSemaphores[i] != nullptr)
-				semaphores[i] = std::static_pointer_cast<VulkanSemaphore>(ppSemaphores[i])->GetVkSemaphore();
-			else
-				CORE_LOG(HE_WARNING, "VulkanDevice", "Null semaphore found");
-		}
+			semaphores[i] = std::static_pointer_cast<VulkanSemaphore>(ppSemaphores[i])->GetVkSemaphore();
 
-		uint64 waitValue = 5;
+		uint64 waitValue = 1;
 
 		VkSemaphoreWaitInfo waitInfo = {};
 		waitInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
 		waitInfo.semaphoreCount = amount;
 		waitInfo.pSemaphores = semaphores;
 		waitInfo.pValues = &waitValue;
-		waitInfo.flags = VK_SEMAPHORE_WAIT_ANY_BIT;
+		waitInfo.flags = 0;
 		waitInfo.pNext = nullptr;
 
 		CORE_ASSERT(vkWaitSemaphores(mVkDevice, &waitInfo, UINT64_MAX) == VK_SUCCESS, "VulkanDevice", "Failed to wait for semaphores");

@@ -4,6 +4,7 @@
 #include <Runtime/Graphics/Device/GraphicsDeviceObject.h>
 #include <Runtime/Graphics/Swapchain/SwapchainDesc.h>
 #include <Runtime/Graphics/Queue/GraphicsQueue.h>
+#include <Runtime/Graphics/Command/CommandBuffer.h>
 
 namespace Hollow
 {
@@ -38,13 +39,17 @@ namespace Hollow
 		virtual void OnShutdown() noexcept override = 0;
 
 	protected:
-		void SetNewImageSize(const Vector2u& newSize) { mImageSize = newSize; }
+		void SetNewImageSize(const Vector2u newSize) { mImageSize = newSize; }
 
 		void AddTexture(SharedPtr<Texture> pTexture);
 		void AddTextureBuffer(SharedPtr<TextureBuffer> pTextureView);
 		SharedPtr<Semaphore> GetImageSemaphore(uint32 index) const { return mSemaphores[index]; }
+		SharedPtr<Fence> GetImageFence(uint32 index) const { return mFences[index]; }
+		ArrayList<SharedPtr<Semaphore>>& GetSemaphores() { return mSemaphores; }
+		ArrayList<SharedPtr<Fence>>& GetImageFences() { return mFences; }
 
 		virtual void ResizeImpl(const Vector2u& newSize) = 0;
+
 		virtual void PresentImpl(SharedPtr<Semaphore> ppWaitSemaphores[], uint32 amount) = 0;
 
 	private:
@@ -59,5 +64,6 @@ namespace Hollow
 		ArrayList<SharedPtr<Texture>> mImages;
 		ArrayList<SharedPtr<TextureBuffer>> mImageBuffers;
 		ArrayList<SharedPtr<Semaphore>> mSemaphores;
+		ArrayList<SharedPtr<Fence>> mFences;
 	};
 }

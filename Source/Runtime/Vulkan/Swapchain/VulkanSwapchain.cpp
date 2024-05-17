@@ -159,7 +159,8 @@ namespace Hollow
 			TextureDesc textureDesc = {};
 			textureDesc.ArraySize = 1;
 			textureDesc.ImageFormat = desc.SwapchainImageFormat;
-			textureDesc.ImageSize = { desc.ImageSize.x, desc.ImageSize.y, 1 };
+			textureDesc.ImageSize = { GetImageSize().x, GetImageSize().y, 1 };
+			printf("Image Size: %d x %d\n", GetImageSize().x, GetImageSize().y);
 			textureDesc.MipLevels = 1;
 			textureDesc.SampleCount = TextureSampleCount::Sample1;
 			textureDesc.Type = TextureType::Texture2D;
@@ -263,7 +264,7 @@ namespace Hollow
 		// Check if requested image size is supported
 		if (surfaceCapabilities.maxImageExtent.width > 0 && surfaceCapabilities.maxImageExtent.height > 0)
 		{
-			if (GetImageSize().x > surfaceCapabilities.maxImageExtent.width || GetImageSize().y > surfaceCapabilities.maxImageExtent.height)
+			if (newSize.x > surfaceCapabilities.maxImageExtent.width || newSize.y > surfaceCapabilities.maxImageExtent.height)
 			{
 				CORE_LOG(HE_WARNING, "VulkanSwapchain", "Requested image size is not supported. Using the current extent size.");
 				SetNewImageSize({ surfaceCapabilities.currentExtent.width, surfaceCapabilities.currentExtent.height });
@@ -365,7 +366,7 @@ namespace Hollow
 		}
 	}
 
-	void VulkanSwapchain::PresentImpl(SharedPtr<Semaphore> ppWaitSemaphores[], uint32 amount)
+	void VulkanSwapchain::PresentImpl(SharedPtr<Semaphore> ppSignalSemaphores[], uint32 amount)
 	{
 		CORE_ASSERT(amount < 16, "VulkanSwapchain", "Too many semaphores");
 
@@ -377,24 +378,26 @@ namespace Hollow
 		CORE_ASSERT(vkAcquireNextImageKHR(mVkDevice, mVkSwapchain, uint64_max, imageSemaphore->GetVkSemaphore(), VK_NULL_HANDLE, &imageIndex) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to acquire next image");
 
-		VkSemaphore waitSemaphores[16] = {};
+		VkSemaphore signalSemaphores[16] = {};
 		for (byte i = 0; i < amount; i++)
 		{
-			auto semaphore = std::static_pointer_cast<VulkanSemaphore>(ppWaitSemaphores[i]);
-			waitSemaphores[i] = semaphore->GetVkSemaphore();
+			auto semaphore = std::static_pointer_cast<VulkanSemaphore>(ppSignalSemaphores[i]);
+			signalSemaphores[i] = semaphore->GetVkSemaphore();
 		}
 
 		PipelineStageFlags flags = PipelineStageFlags::ColorAttachmentOutput;
+		VkSemaphore waitSemaphores[1] = { imageSemaphore->GetVkSemaphore() };
 
-		auto waitSemaphore = GetImageSemaphore(imageIndex);
-		GetOwnerDevice()->SubmitToQueue(GetPresentQueue(), nullptr, 0, &waitSemaphore, 1, &flags, ppWaitSemaphores, amount, nullptr);
+		auto pWaitSemaphore = GetImageSemaphore(imageIndex);
+		
+		GetOwnerDevice()->SubmitToQueue(GetPresentQueue(), nullptr, 0, &pWaitSemaphore, 1, &flags, ppSignalSemaphores, amount, nullptr);
 
 		// Present the image
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		presentInfo.pNext = nullptr;
 		presentInfo.waitSemaphoreCount = amount;
-		presentInfo.pWaitSemaphores = waitSemaphores;
+		presentInfo.pWaitSemaphores = signalSemaphores;
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = &mVkSwapchain;
 		presentInfo.pImageIndices = &imageIndex;

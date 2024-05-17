@@ -99,4 +99,51 @@ namespace Hollow
 
 		return mainLayout;
 	}
+
+	uint64 MeshImporter::CalculateTotalMesh(const MeshResourceLayout& layout)
+	{
+		uint64 totalsize = 0;
+
+		for (const auto& subMesh : layout.SubMeshes)
+		{
+			totalsize += subMesh.Positions.size() * sizeof(Vector3f);
+			totalsize += subMesh.Normals.size() * sizeof(Vector3f);
+			totalsize += subMesh.Tangents.size() * sizeof(Vector3f);
+			totalsize += subMesh.Bitangents.size() * sizeof(Vector3f);
+
+			for (const auto& uvSet : subMesh.UVs)
+			{
+				totalsize += uvSet.size() * sizeof(Vector2f);
+			}
+
+			for (const auto& colorSet : subMesh.Colors)
+			{
+				totalsize += colorSet.size() * sizeof(Vector4f);
+			}
+		}
+		
+		return totalsize;
+	}
+
+	uint64 MeshImporter::CalculateTotalSubMesh(const SubMeshObject& subMesh)
+	{
+		uint32 totalsize = 0;
+
+		totalsize += subMesh.Positions.size() * sizeof(Vector3f);
+		totalsize += subMesh.Normals.size() * sizeof(Vector3f);
+		totalsize += subMesh.Tangents.size() * sizeof(Vector3f);
+		totalsize += subMesh.Bitangents.size() * sizeof(Vector3f);
+
+		for (const auto& uvSet : subMesh.UVs)
+		{
+			totalsize += uvSet.size() * sizeof(Vector2f);
+		}
+
+		for (const auto& colorSet : subMesh.Colors)
+		{
+			totalsize += colorSet.size() * sizeof(Vector4f);
+		}
+
+		return totalsize;
+	}
 }

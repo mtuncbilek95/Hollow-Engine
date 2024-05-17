@@ -24,6 +24,8 @@
 #include <Runtime/Graphics/Descriptor/DescriptorSet.h>
 #include <Runtime/Resource/Texture/TextureImporter.h>
 
+#include <chrono>
+
 #define INSTANCE_COUNT 225
 
 using namespace Hollow;
@@ -108,20 +110,20 @@ ArrayList<Transform> InstanceTransforms(INSTANCE_COUNT);
 ConstantBuffer MVPData = {
 		{},
 		XMMatrixLookAtLH({0, 0, -7}, {0, 0 ,0}, {0, 1, 0}),
-		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<float>(1300.f / 1300.f), 0.01f, 1000.f)
+		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<float>(1920.f / 1080.f), 0.01f, 1000.f)
 };
 
 void UpdateTransforms()
 {
 	for (byte i = 0; i < INSTANCE_COUNT; i++)
 	{
-		InstanceTransforms[i].Rotation.x += 0.1f;
+		InstanceTransforms[i].Rotation.x += 0.01f;
 		if(i % 2 == 0)
-			InstanceTransforms[i].Rotation.y += 0.2f;
+			InstanceTransforms[i].Rotation.y += 0.02f;
 		else
-			InstanceTransforms[i].Rotation.y -= 0.2f;
+			InstanceTransforms[i].Rotation.y -= 0.014f;
 
-		InstanceTransforms[i].Rotation.z += 0.3f;
+		InstanceTransforms[i].Rotation.z += 0.03f;
 
 		MVPData.Model[i] = XMMatrixScaling(InstanceTransforms[i].Scale.x, InstanceTransforms[i].Scale.y, InstanceTransforms[i].Scale.z) *
 			XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i].Rotation.y),
@@ -171,10 +173,10 @@ int main(int argC, char** argV)
 
 	// Create a window
 	Hollow::WindowDesc desc = {};
-	desc.WindowSize = { 1300, 1300 };
+	desc.WindowSize = { 2560, 1440 };
 	desc.WindowPosition = { 0, 0 };
 	desc.WindowTitle = "Hollow Engine";
-	desc.WindowMode = WindowMode::Windowed;
+	desc.WindowMode = WindowMode::Borderless;
 	desc.pMonitor = primaryMonitor;
 
 	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
@@ -191,7 +193,7 @@ int main(int argC, char** argV)
 	// Create a graphics device
 	GraphicsDeviceDesc deviceDesc = {};
 	deviceDesc.Instance = mGraphicsInstance;
-	deviceDesc.GraphicsQueueCount = 1;
+	deviceDesc.GraphicsQueueCount = 2;
 	deviceDesc.ComputeQueueCount = 1;
 	deviceDesc.TransferQueueCount = 1;
 	auto mDevice = mGraphicsInstance->CreateGraphicsDevice(deviceDesc);
@@ -202,24 +204,29 @@ int main(int argC, char** argV)
 	swapchainDesc.ImageSize = mWindow->GetWindowResolution();
 	swapchainDesc.SwapchainImageFormat = TextureFormat::RGBA8_UNorm;
 	swapchainDesc.SwapchainUsage = TextureUsage::ColorAttachment;
-	swapchainDesc.VSync = PresentMode::FullVSync;
+	swapchainDesc.VSync = PresentMode::VSyncQueued;
 	swapchainDesc.SwapchainMode = ShareMode::Exclusive;
 	swapchainDesc.pQueue = GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue();
 
 	auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
+
+	// Create a graphics queue
+	GraphicsQueueDesc queueDesc = {};
+	queueDesc.QueueType = GraphicsQueueType::Graphics;
+	auto mGraphicsQueue = mDevice->CreateQueue(queueDesc);
 
 	// ----------------- CREATE BUNDLE MEMORY -----------------
 
 	// Create bundle memory for pre-allocation
 	GraphicsMemoryDesc hostMemoryDesc = {};
 	hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
-	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(50);
+	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(512);
 
 	auto mHostMemory = mDevice->CreateGraphicsMemory(hostMemoryDesc);
 
 	GraphicsMemoryDesc deviceMemoryDesc = {};
 	deviceMemoryDesc.MemoryType = GraphicsMemoryType::DeviceLocal;
-	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(50);
+	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(512);
 
 	auto mDeviceMemory = mDevice->CreateGraphicsMemory(deviceMemoryDesc);
 
@@ -303,7 +310,6 @@ int main(int argC, char** argV)
 	// ----------------- UPDATE DEPTH TEXTURE -----------------
 
 	mCommandBuffer->BeginRecording();
-
 	TextureBarrierUpdateDesc depthTextureBarrier = {};
 	depthTextureBarrier.MipIndex = 0;
 	depthTextureBarrier.ArrayIndex = 0;
@@ -322,7 +328,7 @@ int main(int argC, char** argV)
 	mCommandBuffer->SetTextureBarrier(mDepthTexture, depthTextureBarrier);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+	mDevice->SubmitToQueue(mGraphicsQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
 
 	mDevice->WaitForFence(&mFence, 1);
 	mDevice->ResetFences(&mFence, 1);
@@ -716,14 +722,14 @@ int main(int argC, char** argV)
 	mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+	mDevice->SubmitToQueue(mGraphicsQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
 
 	mDevice->WaitForFence(&mFence, 1);
 	mDevice->ResetFences(&mFence, 1);
 
 	// ----------------- RENDER LOOP -----------------
 
-	float elapsedTime = 0.0f;
+	auto startTime = std::chrono::high_resolution_clock::now();
 
 	while (mWindow->IsVisible())
 	{
@@ -762,6 +768,7 @@ int main(int argC, char** argV)
 		mCommandBuffer->EndRecording();
 
 		mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+
 		mDevice->WaitForFence(&mFence, 1);
 		mDevice->ResetFences(&mFence, 1);
 

@@ -63,9 +63,9 @@ namespace Hollow
 
 		// First request the extensions we want as false.
 		ArrayList<ExtensionEntry> requestedExtensions = {};
-		requestedExtensions.push_back({ VK_KHR_SURFACE_EXTENSION_NAME, false });
 		requestedExtensions.push_back({ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME , false });
 		requestedExtensions.push_back({ VK_KHR_SURFACE_EXTENSION_NAME, false });
+
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		requestedExtensions.push_back({ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, false });
 #endif
@@ -168,7 +168,8 @@ namespace Hollow
 
 		VkDebugUtilsMessengerCreateInfoEXT debugMessengerInfo = {};
 		debugMessengerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-		debugMessengerInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+		debugMessengerInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | 
+			VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 		debugMessengerInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
 			VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 		debugMessengerInfo.pfnUserCallback = DebugCallback;

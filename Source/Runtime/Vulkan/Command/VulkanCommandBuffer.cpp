@@ -78,9 +78,7 @@ namespace Hollow
 		clearValues[0].color = { colorPass.x, colorPass.y, colorPass.z, colorPass.w };
 
 		if (pRenderPass->GetDepthStencilAttachment().pTextureBuffer != nullptr)
-		{
 			clearValues[1].depthStencil = { 1.0f, 0 };
-		}
 
 		renderPassInfo.clearValueCount = 2;
 		renderPassInfo.pClearValues = clearValues;

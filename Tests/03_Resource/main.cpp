@@ -481,7 +481,22 @@ int main(int argC, char** argV)
 	SharedPtr<MeshResource> mMesh = std::make_shared<MeshResource>();
 
 	mMesh->ConnectMemory(mHostMemory, mDeviceMemory, true);
-	// Im stuck on the code I fucking wrote lmao :D I cant calculate the mesh data :D
+
+	for (byte i = 0; i < meshLayout.SubMeshes.size(); i++)
+	{
+		auto& subMesh = meshLayout.SubMeshes[i];
+
+		uint64 perVertex = MeshImporter::CalculateTotalSubMesh(subMesh);
+		uint64 perIndex  = sizeof(subMesh.Indices[i]);
+
+		// Create mesh buffers
+		mMesh->CreateMeshBuffers(perVertex, subMesh.Positions.size(), perIndex, subMesh.Indices.size());
+
+		// Update vertex buffer
+		MemoryBuffer vertexBuffer = {};
+
+		mMesh->UpdateVertexBuffer(i, MemoryBuffer(subMesh.Positions.data(), perVertex), 0);
+	}
 
 	return 0;
 }

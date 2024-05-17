@@ -27,6 +27,16 @@ namespace Hollow
 				return VK_NULL_HANDLE;
 			}
 
+			void FillQueues(VkDevice vkDevice)
+			{
+				for (uint32 i = 0; i < QueueCapacity; ++i)
+				{
+					VkQueue pQueue;
+					vkGetDeviceQueue(vkDevice, FamilyIndex, i, &pQueue);
+					FreeQueues.push_back(pQueue);
+				}
+			}
+
 			byte QueueCapacity;
 			byte FamilyIndex;
 			byte RequestedCount;

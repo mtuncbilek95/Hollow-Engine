@@ -17,6 +17,7 @@ namespace Hollow
 		for (uint32 i = 0; i < mBufferCount; i++)
 		{
 			mSemaphores.push_back(pDevice->CreateSyncSemaphore());
+			mFences.push_back(pDevice->CreateSyncFence({ false }));
 		}
 	}
 
