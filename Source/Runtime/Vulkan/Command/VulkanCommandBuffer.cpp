@@ -221,4 +221,33 @@ namespace Hollow
 
 		vkCmdPipelineBarrier(mVkCommandBuffer, VulkanPipelineUtils::GetVkPipelineStageFlags(desc.SourceStageFlags), VulkanPipelineUtils::GetVkPipelineStageFlags(desc.DestinationStageFlags), 0, 0, nullptr, 0, nullptr, 1, &barrier);
 	}
+
+	void VulkanCommandBuffer::SetBufferMemoryBarrierImpl(SharedPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrierUpdateDesc& desc)
+	{
+		auto device = std::static_pointer_cast<VulkanDevice>(GetOwnerDevice());
+
+		VkBufferMemoryBarrier barrier = {};
+		barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+		barrier.srcAccessMask = VulkanMemoryUtils::GetVkAccessFlags(desc.SourceAccessMask);
+		barrier.dstAccessMask = VulkanMemoryUtils::GetVkAccessFlags(desc.DestinationAccessMask);
+		barrier.srcQueueFamilyIndex = device->GetQueueFamilyIndex(desc.SourceQueue);
+		barrier.dstQueueFamilyIndex = device->GetQueueFamilyIndex(desc.DestinationQueue);
+		barrier.buffer = std::static_pointer_cast<VulkanBuffer>(pBuffer)->GetVkBuffer();
+		barrier.offset = desc.Offset;
+		barrier.size = desc.Size;
+
+		vkCmdPipelineBarrier(mVkCommandBuffer, VulkanPipelineUtils::GetVkPipelineStageFlags(desc.SourceStageFlags), VulkanPipelineUtils::GetVkPipelineStageFlags(desc.DestinationStageFlags), 0, 0, nullptr, 1, &barrier, 0, nullptr);
+	}
+
+	void VulkanCommandBuffer::SetCommonMemoryBarrierImpl(CommonMemoryBarrierUpdateDesc& desc)
+	{
+		auto device = std::static_pointer_cast<VulkanDevice>(GetOwnerDevice());
+
+		VkMemoryBarrier barrier = {};
+		barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+		barrier.srcAccessMask = VulkanMemoryUtils::GetVkAccessFlags(desc.SourceAccessMask);
+		barrier.dstAccessMask = VulkanMemoryUtils::GetVkAccessFlags(desc.DestinationAccessMask);
+
+		vkCmdPipelineBarrier(mVkCommandBuffer, VulkanPipelineUtils::GetVkPipelineStageFlags(desc.SourceStageFlags), VulkanPipelineUtils::GetVkPipelineStageFlags(desc.DestinationStageFlags), 0, 1, &barrier, 0, nullptr, 0, nullptr);
+	}
 }

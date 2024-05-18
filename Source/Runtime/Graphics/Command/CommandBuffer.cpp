@@ -76,6 +76,16 @@ namespace Hollow
 		SetTextureBarrierImpl(pTexture, desc);
 	}
 
+	void CommandBuffer::SetBufferMemoryBarrier(SharedPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrierUpdateDesc& desc)
+	{
+		SetBufferMemoryBarrierImpl(pBuffer, desc);
+	}
+
+	void CommandBuffer::SetCommonMemoryBarrier(CommonMemoryBarrierUpdateDesc& desc)
+	{
+		SetCommonMemoryBarrierImpl(desc);
+	}
+
 	void CommandBuffer::DrawIndexed(uint32 indexCount, uint32 indexOffset, uint32 vertexOffset, uint32 instanceOffset, uint32 instanceCount)
 	{
 		DrawIndexedImpl(indexCount, indexOffset, vertexOffset, instanceOffset, instanceCount);

@@ -9,6 +9,8 @@
 #include <Runtime/Graphics/Core/BufferBufferCopyDesc.h>
 #include <Runtime/Graphics/Core/BufferTextureCopyDesc.h>
 #include <Runtime/Graphics/Core/TextureBarrierUpdateDesc.h>
+#include <Runtime/Graphics/Core/BufferMemoryBarrierUpdateDesc.h>
+#include <Runtime/Graphics/Core/CommonMemoryBarrierUpdateDesc.h>
 
 namespace Hollow
 {
@@ -45,6 +47,8 @@ namespace Hollow
 		void CopyBufferToBuffer(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<GraphicsBuffer> pDestinationBuffer, BufferBufferCopyDesc& desc);
 		void CopyBufferToTexture(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<Texture> pDestinationTexture, BufferTextureCopyDesc& desc);
 		void SetTextureBarrier(SharedPtr<Texture> pTexture, TextureBarrierUpdateDesc& desc);
+		void SetBufferMemoryBarrier(SharedPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrierUpdateDesc& desc);
+		void SetCommonMemoryBarrier(CommonMemoryBarrierUpdateDesc& desc);
 
 		SharedPtr<CommandPool> GetOwnerPool() const noexcept { return mOwnerPool; }
 		SharedPtr<GraphicsBuffer> GetBoundIndexBuffer() const noexcept { return mBoundIndexBuffer; }
@@ -71,6 +75,9 @@ namespace Hollow
 		virtual void CopyBufferToBufferImpl(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<GraphicsBuffer> pDestinationBuffer, BufferBufferCopyDesc& desc) = 0;
 		virtual void CopyBufferToTextureImpl(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<Texture> pDestinationTexture, BufferTextureCopyDesc& desc) = 0;
 		virtual void SetTextureBarrierImpl(SharedPtr<Texture> pTexture, TextureBarrierUpdateDesc& desc) = 0;
+		virtual void SetBufferMemoryBarrierImpl(SharedPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrierUpdateDesc& desc) = 0;
+		virtual void SetCommonMemoryBarrierImpl(CommonMemoryBarrierUpdateDesc& desc) = 0;
+
 	private:
 		SharedPtr<CommandPool> mOwnerPool;
 		SharedPtr<GraphicsBuffer> mBoundIndexBuffer;
