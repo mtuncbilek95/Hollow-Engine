@@ -18,7 +18,10 @@ namespace Hollow
         ColorAttachmentOutput = 512,
         ComputeShader = 1024,
         Transfer = 2048,
-        BottomOfPipe = 4096
+        BottomOfPipe = 4096,
+		Host = 8192,
+		AllGraphics = 16384,
+		AllCommands = 32768
     };
 
     GENERATE_ENUM_FLAG(PipelineStageFlags, uint16);

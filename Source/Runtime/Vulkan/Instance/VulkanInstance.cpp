@@ -65,6 +65,7 @@ namespace Hollow
 		ArrayList<ExtensionEntry> requestedExtensions = {};
 		requestedExtensions.push_back({ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME , false });
 		requestedExtensions.push_back({ VK_KHR_SURFACE_EXTENSION_NAME, false });
+		requestedExtensions.push_back({ VK_KHR_DISPLAY_EXTENSION_NAME, false });
 
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		requestedExtensions.push_back({ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, false });
@@ -116,6 +117,9 @@ namespace Hollow
 				unsupportedExtensionNames.push_back(extension.pExtensionName);
 		}
 
+		for (auto& extension : unsupportedExtensionNames)
+			CORE_LOG(HE_WARNING, "VulkanInstance", "Unsupported extension: %s", extension);
+
 		// Get supported layers
 		uint32 supportedLayerCount = 0;
 		CORE_ASSERT(vkEnumerateInstanceLayerProperties(&supportedLayerCount, nullptr) == VK_SUCCESS, "VulkanInstance",
@@ -133,18 +137,19 @@ namespace Hollow
 
 		// Add needed layers
 		ArrayList<const char*> layerNames = {};
-
+		layerNames.push_back("VK_LAYER_KHRONOS_synchronization2");
 #ifdef HOLLOW_DEBUG
 		layerNames.push_back("VK_LAYER_KHRONOS_validation");
+		layerNames.push_back("VK_LAYER_LUNARG_screenshot");
 #endif
 
 		VkApplicationInfo appInfo = {};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 		appInfo.pApplicationName = desc.ApplicationName.c_str();
-		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+		appInfo.applicationVersion = VK_MAKE_VERSION(1, 3, 0);
 		appInfo.pEngineName = desc.InstanceName.c_str();
-		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.apiVersion = VK_API_VERSION_1_0;
+		appInfo.engineVersion = VK_MAKE_VERSION(1, 3, 0);
+		appInfo.apiVersion = VK_API_VERSION_1_3;
 
 		// Instance info
 		VkInstanceCreateInfo instanceInfo = {};
@@ -212,6 +217,15 @@ namespace Hollow
 			VkPhysicalDeviceFeatures deviceFeatures = {};
 			vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
+			VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeatures = {};
+			dynamicRenderingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
+			
+			VkPhysicalDeviceFeatures2 deviceFeatures2 = {};
+			deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+			deviceFeatures2.pNext = &dynamicRenderingFeatures;
+
+			vkGetPhysicalDeviceFeatures2(device, &deviceFeatures2);
+
 			// Get the device memory properties
 			VkPhysicalDeviceMemoryProperties deviceMemoryProperties = {};
 			vkGetPhysicalDeviceMemoryProperties(device, &deviceMemoryProperties);
@@ -254,6 +268,15 @@ namespace Hollow
 
 			if (deviceFeatures.tessellationShader)
 				adapterDesc->AdapterScore += 100;
+			
+			if (dynamicRenderingFeatures.dynamicRendering)
+				adapterDesc->AdapterScore += 1000;
+			else
+#if defined(HOLLOW_DEBUG)
+				CORE_ASSERT(false, "VulkanInstance", "Dynamic rendering not supported. We fucked!");
+#else
+				exit(-1);
+#endif
 
 			CORE_LOG(HE_WARNING, "Adapter Device Name", "%s", adapterDesc->ProductName.c_str());
 			CORE_LOG(HE_INFO, "Device ID", "%d ", adapterDesc->DeviceId);

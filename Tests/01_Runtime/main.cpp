@@ -26,7 +26,7 @@
 
 #include <chrono>
 
-#define INSTANCE_COUNT 225
+#define INSTANCE_COUNT 49
 
 using namespace Hollow;
 
@@ -176,7 +176,7 @@ int main(int argC, char** argV)
 	desc.WindowSize = { 2560, 1440 };
 	desc.WindowPosition = { 0, 0 };
 	desc.WindowTitle = "Hollow Engine";
-	desc.WindowMode = WindowMode::Borderless;
+	desc.WindowMode = WindowMode::Fullscreen;
 	desc.pMonitor = primaryMonitor;
 
 	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
@@ -789,6 +789,7 @@ int main(int argC, char** argV)
 		auto waitSemaphore = mSwapchain->GetImageSemaphore(imageIndex);
 		auto signalSemaphore = mSwapchain->GetFlightSemaphore(imageIndex);
 		auto flag = PipelineStageFlags::ColorAttachmentOutput;
+
 		mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffers[imageIndex], 1, &waitSemaphore, 1, &flag, &signalSemaphore, 1, perFence);
 
 		mDevice->WaitForFence(&perFence, 1);
@@ -797,7 +798,6 @@ int main(int argC, char** argV)
 		mSwapchain->Present();
 	}
 
-	mDevice->WaitForIdle();
 	mDevice->WaitForIdle();
 	mDevice->OnShutdown();
 	mGraphicsInstance->OnShutdown();

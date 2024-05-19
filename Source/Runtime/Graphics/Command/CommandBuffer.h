@@ -59,7 +59,7 @@ namespace Hollow
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::CommandBuffer; }
 
 		virtual void OnShutdown() noexcept override = 0;
-
+		
 	protected:
 		virtual void BeginRecordingImpl() = 0;
 		virtual void EndRecordingImpl() = 0;
