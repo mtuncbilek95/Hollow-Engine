@@ -160,7 +160,6 @@ namespace Hollow
 			textureDesc.ArraySize = 1;
 			textureDesc.ImageFormat = desc.SwapchainImageFormat;
 			textureDesc.ImageSize = { GetImageSize().x, GetImageSize().y, 1 };
-			printf("Image Size: %d x %d\n", GetImageSize().x, GetImageSize().y);
 			textureDesc.MipLevels = 1;
 			textureDesc.SampleCount = TextureSampleCount::Sample1;
 			textureDesc.Type = TextureType::Texture2D;
@@ -366,38 +365,41 @@ namespace Hollow
 		}
 	}
 
-	void VulkanSwapchain::PresentImpl(SharedPtr<Semaphore> ppSignalSemaphores[], uint32 amount)
+	void VulkanSwapchain::AcquireNextImageImpl()
 	{
-		CORE_ASSERT(amount < 16, "VulkanSwapchain", "Too many semaphores");
-
 		// Acquire the next image
 		uint32 imageIndex = GetCurrentFrameIndex();
 
 		auto imageSemaphore = std::static_pointer_cast<VulkanSemaphore>(GetImageSemaphore(imageIndex));
+		auto flightSemaphore = GetFlightSemaphore(imageIndex);
 
 		CORE_ASSERT(vkAcquireNextImageKHR(mVkDevice, mVkSwapchain, uint64_max, imageSemaphore->GetVkSemaphore(), VK_NULL_HANDLE, &imageIndex) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to acquire next image");
+	}
 
-		VkSemaphore signalSemaphores[16] = {};
-		for (byte i = 0; i < amount; i++)
-		{
-			auto semaphore = std::static_pointer_cast<VulkanSemaphore>(ppSignalSemaphores[i]);
-			signalSemaphores[i] = semaphore->GetVkSemaphore();
-		}
+	void VulkanSwapchain::PresentImpl()
+	{
+		// Acquire the next image
+		uint32 imageIndex = GetCurrentFrameIndex();
+
+		auto imageSemaphore = std::static_pointer_cast<VulkanSemaphore>(GetImageSemaphore(imageIndex));
+		auto flightSemaphore = GetFlightSemaphore(imageIndex);
+
+		VkSemaphore flightSemapore = std::static_pointer_cast<VulkanSemaphore>(flightSemaphore)->GetVkSemaphore();
 
 		PipelineStageFlags flags = PipelineStageFlags::ColorAttachmentOutput;
 		VkSemaphore waitSemaphores[1] = { imageSemaphore->GetVkSemaphore() };
 
 		auto pWaitSemaphore = GetImageSemaphore(imageIndex);
 		
-		GetOwnerDevice()->SubmitToQueue(GetPresentQueue(), nullptr, 0, &pWaitSemaphore, 1, &flags, ppSignalSemaphores, amount, nullptr);
+		GetOwnerDevice()->SubmitToQueue(GetPresentQueue(), nullptr, 0, &pWaitSemaphore, 1, &flags, &flightSemaphore, 1, nullptr);
 
 		// Present the image
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		presentInfo.pNext = nullptr;
-		presentInfo.waitSemaphoreCount = amount;
-		presentInfo.pWaitSemaphores = signalSemaphores;
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = &flightSemapore;
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = &mVkSwapchain;
 		presentInfo.pImageIndices = &imageIndex;

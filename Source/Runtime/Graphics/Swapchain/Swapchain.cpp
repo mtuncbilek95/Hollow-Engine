@@ -16,8 +16,8 @@ namespace Hollow
 		// Create the fences for the swapchain
 		for (uint32 i = 0; i < mBufferCount; i++)
 		{
-			mSemaphores.push_back(pDevice->CreateSyncSemaphore());
-			mFences.push_back(pDevice->CreateSyncFence({ false }));
+			mImageSemaphores.push_back(pDevice->CreateSyncSemaphore());
+			mFlightSemaphores.push_back(pDevice->CreateSyncSemaphore());
 		}
 	}
 
@@ -39,10 +39,14 @@ namespace Hollow
 		ResizeImpl(newSize);
 	}
 
-	void Swapchain::Present(SharedPtr<Semaphore> ppWaitSemaphores[], uint32 amount)
+	void Swapchain::AcquireNextImage()
 	{
-		PresentImpl(ppWaitSemaphores, amount);
+		AcquireNextImageImpl();
+	}
 
+	void Swapchain::Present()
+	{
+		PresentImpl();
 		mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mBufferCount;
 	}
 

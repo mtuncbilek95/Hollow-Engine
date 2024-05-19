@@ -110,7 +110,7 @@ ArrayList<Transform> InstanceTransforms(INSTANCE_COUNT);
 ConstantBuffer MVPData = {
 		{},
 		XMMatrixLookAtLH({0, 0, -7}, {0, 0 ,0}, {0, 1, 0}),
-		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<float>(1920.f / 1080.f), 0.01f, 1000.f)
+		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<float>(2560.f / 1440.f), 0.01f, 1000.f)
 };
 
 void UpdateTransforms()
@@ -118,7 +118,7 @@ void UpdateTransforms()
 	for (byte i = 0; i < INSTANCE_COUNT; i++)
 	{
 		InstanceTransforms[i].Rotation.x += 0.01f;
-		if(i % 2 == 0)
+		if (i % 2 == 0)
 			InstanceTransforms[i].Rotation.y += 0.02f;
 		else
 			InstanceTransforms[i].Rotation.y -= 0.014f;
@@ -193,40 +193,35 @@ int main(int argC, char** argV)
 	// Create a graphics device
 	GraphicsDeviceDesc deviceDesc = {};
 	deviceDesc.Instance = mGraphicsInstance;
-	deviceDesc.GraphicsQueueCount = 2;
+	deviceDesc.GraphicsQueueCount = 1;
 	deviceDesc.ComputeQueueCount = 1;
 	deviceDesc.TransferQueueCount = 1;
 	auto mDevice = mGraphicsInstance->CreateGraphicsDevice(deviceDesc);
 
 	// Create a swapchain
 	SwapchainDesc swapchainDesc = {};
-	swapchainDesc.BufferCount = 2;
+	swapchainDesc.BufferCount = 4;
 	swapchainDesc.ImageSize = mWindow->GetWindowResolution();
 	swapchainDesc.SwapchainImageFormat = TextureFormat::RGBA8_UNorm;
 	swapchainDesc.SwapchainUsage = TextureUsage::ColorAttachment;
-	swapchainDesc.VSync = PresentMode::VSyncQueued;
+	swapchainDesc.VSync = PresentMode::FullVSync;
 	swapchainDesc.SwapchainMode = ShareMode::Exclusive;
 	swapchainDesc.pQueue = GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue();
 
 	auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
-
-	// Create a graphics queue
-	GraphicsQueueDesc queueDesc = {};
-	queueDesc.QueueType = GraphicsQueueType::Graphics;
-	auto mGraphicsQueue = mDevice->CreateQueue(queueDesc);
 
 	// ----------------- CREATE BUNDLE MEMORY -----------------
 
 	// Create bundle memory for pre-allocation
 	GraphicsMemoryDesc hostMemoryDesc = {};
 	hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
-	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(512);
+	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
 
 	auto mHostMemory = mDevice->CreateGraphicsMemory(hostMemoryDesc);
 
 	GraphicsMemoryDesc deviceMemoryDesc = {};
 	deviceMemoryDesc.MemoryType = GraphicsMemoryType::DeviceLocal;
-	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(512);
+	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
 
 	auto mDeviceMemory = mDevice->CreateGraphicsMemory(deviceMemoryDesc);
 
@@ -266,10 +261,13 @@ int main(int argC, char** argV)
 
 	// ----------------- CREATE FENCE -----------------
 
-	FenceDesc fenceDesc = {};
-	fenceDesc.bSignalled = false;
+	ArrayList<SharedPtr<Fence>> mRuntimeFences;
+	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
+	{
+		mRuntimeFences.push_back(mDevice->CreateSyncFence({ false }));
+	}
 
-	auto mFence = mDevice->CreateSyncFence(fenceDesc);
+	auto mCompileFence = mDevice->CreateSyncFence({ false });
 
 	// ----------------- CREATE COMMAND POOL -----------------
 
@@ -285,12 +283,18 @@ int main(int argC, char** argV)
 
 	auto mCommandBuffer = mDevice->CreateCommandBuffer(commandBufferDesc);
 
+	ArrayList<SharedPtr<CommandBuffer>> mCommandBuffers;
+	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
+	{
+		mCommandBuffers.push_back(mDevice->CreateCommandBuffer(commandBufferDesc));
+	}
+
 	// ----------------- CREATE DEPTH TEXTURE -----------------
 
 	TextureDesc depthTextureDesc = {};
 	depthTextureDesc.ArraySize = 1;
 	depthTextureDesc.ImageFormat = TextureFormat::D32_Float_S8_UInt;
-	depthTextureDesc.ImageSize = { mSwapchain->GetImageSize().x, mSwapchain->GetImageSize().y, 1};
+	depthTextureDesc.ImageSize = { mSwapchain->GetImageSize().x, mSwapchain->GetImageSize().y, 1 };
 	depthTextureDesc.MipLevels = 1;
 	depthTextureDesc.SampleCount = TextureSampleCount::Sample1;
 	depthTextureDesc.Type = TextureType::Texture2D;
@@ -328,10 +332,10 @@ int main(int argC, char** argV)
 	mCommandBuffer->SetTextureBarrier(mDepthTexture, depthTextureBarrier);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(mGraphicsQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 
-	mDevice->WaitForFence(&mFence, 1);
-	mDevice->ResetFences(&mFence, 1);
+	mDevice->WaitForFence(&mCompileFence, 1);
+	mDevice->ResetFences(&mCompileFence, 1);
 
 	// ----------------- CREATE RENDERPASS -----------------
 
@@ -639,7 +643,7 @@ int main(int argC, char** argV)
 	mDevice->UpdateBufferData(mStagingIndexBuffer, indexDataUpdateDesc);
 
 	BufferDataUpdateDesc uniformDataUpdateDesc = {};
-	uniformDataUpdateDesc.Memory = { (void*)&MVPData, uniformBufferSize};
+	uniformDataUpdateDesc.Memory = { (void*)&MVPData, uniformBufferSize };
 	uniformDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 
@@ -722,17 +726,30 @@ int main(int argC, char** argV)
 	mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(mGraphicsQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 
-	mDevice->WaitForFence(&mFence, 1);
-	mDevice->ResetFences(&mFence, 1);
+	mDevice->WaitForFence(&mCompileFence, 1);
+	mDevice->ResetFences(&mCompileFence, 1);
 
 	// ----------------- RENDER LOOP -----------------
+
+	ArrayList<SharedPtr<Semaphore>> mSemaphores;
+
+	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
+	{
+		auto mSemaphore = mDevice->CreateSyncSemaphore();
+		mSemaphores.push_back(mSemaphore);
+	}
 
 	auto startTime = std::chrono::high_resolution_clock::now();
 
 	while (mWindow->IsVisible())
 	{
+		auto imageIndex = mSwapchain->GetCurrentFrameIndex();
+		auto perFence = mRuntimeFences[mSwapchain->GetCurrentFrameIndex()];
+
+		mSwapchain->AcquireNextImage();
+
 		UpdateTransforms();
 
 		BufferDataUpdateDesc constantDataUpdateDesc;
@@ -742,37 +759,37 @@ int main(int argC, char** argV)
 
 		mWindow->PollEvents();
 
-		mCommandBuffer->BeginRecording();
+		mCommandBuffers[imageIndex]->BeginRecording();
 
 		BufferBufferCopyDesc constantCopyDesc = {};
 		constantCopyDesc.DestinationOffset = 0;
 		constantCopyDesc.Size = constantDataUpdateDesc.Memory.GetSize();
 		constantCopyDesc.SourceOffset = 0;
-		mCommandBuffer->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, constantCopyDesc);
+		mCommandBuffers[imageIndex]->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, constantCopyDesc);
 
-		mCommandBuffer->BeginRenderPass(mRenderPasses.data(), { 0.6f, 0.3f, 0.5f, 0.0f });
+		mCommandBuffers[imageIndex]->BeginRenderPass(mRenderPasses.data(), { 0.6f, 0.3f, 0.5f, 0.0f });
 
-		mCommandBuffer->BindPipeline(mGraphicsPipelines.data());
-		mCommandBuffer->SetViewports(&viewport, 1);
-		mCommandBuffer->SetScissors(&scissor, 1);
+		mCommandBuffers[imageIndex]->BindPipeline(mGraphicsPipelines.data());
+		mCommandBuffers[imageIndex]->SetViewports(&viewport, 1);
+		mCommandBuffers[imageIndex]->SetScissors(&scissor, 1);
 
-		mCommandBuffer->BindVertexBuffers(&mVertexBuffer, 1);
-		mCommandBuffer->BindIndexBuffer(mIndexBuffer, GraphicsIndexType::Index32);
+		mCommandBuffers[imageIndex]->BindVertexBuffers(&mVertexBuffer, 1);
+		mCommandBuffers[imageIndex]->BindIndexBuffer(mIndexBuffer, GraphicsIndexType::Index32);
 
 		mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
-		mCommandBuffer->BindDescriptors(&mDescriptorSet, 1);
+		mCommandBuffers[imageIndex]->BindDescriptors(&mDescriptorSet, 1);
 
-		mCommandBuffer->DrawIndexed(indices.size(), 0, 0, 0, INSTANCE_COUNT);
+		mCommandBuffers[imageIndex]->DrawIndexed(indices.size(), 0, 0, 0, INSTANCE_COUNT);
 
-		mCommandBuffer->EndRenderPass();
-		mCommandBuffer->EndRecording();
+		mCommandBuffers[imageIndex]->EndRenderPass();
+		mCommandBuffers[imageIndex]->EndRecording();
 
-		mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+		mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffers[imageIndex], 1, nullptr, 0, nullptr, nullptr, 0, perFence);
 
-		mDevice->WaitForFence(&mFence, 1);
-		mDevice->ResetFences(&mFence, 1);
+		mSwapchain->Present();
 
-		mSwapchain->Present(nullptr, 0);
+		mDevice->WaitForFence(&perFence, 1);
+		mDevice->ResetFences(&perFence, 1);
 	}
 
 	mDevice->WaitForIdle();

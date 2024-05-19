@@ -241,8 +241,6 @@ namespace Hollow
 
 	void VulkanCommandBuffer::SetCommonMemoryBarrierImpl(CommonMemoryBarrierUpdateDesc& desc)
 	{
-		auto device = std::static_pointer_cast<VulkanDevice>(GetOwnerDevice());
-
 		VkMemoryBarrier barrier = {};
 		barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
 		barrier.srcAccessMask = VulkanMemoryUtils::GetVkAccessFlags(desc.SourceAccessMask);

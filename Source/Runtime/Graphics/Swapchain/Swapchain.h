@@ -20,7 +20,8 @@ namespace Hollow
 		virtual ~Swapchain() override = default;
 
 		void Resize(const Vector2u& newSize);
-		void Present(SharedPtr<Semaphore> ppWaitSemaphores[], uint32 amount);
+		void AcquireNextImage();
+		void Present();
 
 		Vector2u GetImageSize() const { return mImageSize; }
 		TextureFormat GetSwapchainFormat() const { return mSwapchainFormat; }
@@ -43,14 +44,16 @@ namespace Hollow
 
 		void AddTexture(SharedPtr<Texture> pTexture);
 		void AddTextureBuffer(SharedPtr<TextureBuffer> pTextureView);
-		SharedPtr<Semaphore> GetImageSemaphore(uint32 index) const { return mSemaphores[index]; }
-		SharedPtr<Fence> GetImageFence(uint32 index) const { return mFences[index]; }
-		ArrayList<SharedPtr<Semaphore>>& GetSemaphores() { return mSemaphores; }
-		ArrayList<SharedPtr<Fence>>& GetImageFences() { return mFences; }
+		SharedPtr<Semaphore> GetImageSemaphore(uint32 index) const { return mImageSemaphores[index]; }
+		ArrayList<SharedPtr<Semaphore>>& GetImageSemaphores() { return mImageSemaphores; }
+		SharedPtr<Semaphore> GetFlightSemaphore(uint32 index) const { return mFlightSemaphores[index]; }
+		ArrayList<SharedPtr<Semaphore>>& GetFlightSemaphores() { return mFlightSemaphores; }
+		SharedPtr<Fence> GetFlightFence(uint32 index) const { return mFlightFences[index]; }
+		ArrayList<SharedPtr<Fence>>& GetFlightFences() { return mFlightFences; }
 
 		virtual void ResizeImpl(const Vector2u& newSize) = 0;
-
-		virtual void PresentImpl(SharedPtr<Semaphore> ppWaitSemaphores[], uint32 amount) = 0;
+		virtual void AcquireNextImageImpl() = 0;
+		virtual void PresentImpl() = 0;
 
 	private:
 		byte mBufferCount;
@@ -63,7 +66,8 @@ namespace Hollow
 		byte mCurrentFrameIndex;
 		ArrayList<SharedPtr<Texture>> mImages;
 		ArrayList<SharedPtr<TextureBuffer>> mImageBuffers;
-		ArrayList<SharedPtr<Semaphore>> mSemaphores;
-		ArrayList<SharedPtr<Fence>> mFences;
+		ArrayList<SharedPtr<Semaphore>> mImageSemaphores;
+		ArrayList<SharedPtr<Semaphore>> mFlightSemaphores;
+		ArrayList<SharedPtr<Fence>> mFlightFences;
 	};
 }
