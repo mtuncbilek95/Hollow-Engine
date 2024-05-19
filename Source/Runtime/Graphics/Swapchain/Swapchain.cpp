@@ -6,6 +6,7 @@
 #include <Runtime/Graphics/Texture/Texture.h>
 #include <Runtime/Graphics/Texture/TextureBuffer.h>
 #include <Runtime/Graphics/Semaphore/Semaphore.h>
+#include <Runtime/Graphics/Command/CommandBuffer.h>
 
 namespace Hollow
 {

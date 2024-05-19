@@ -9,6 +9,7 @@
 namespace Hollow
 {
 	class GraphicsQueue;
+	class CommandPool;
 	struct RUNTIME_API SwapchainDesc
 	{
 		Vector2u ImageSize;

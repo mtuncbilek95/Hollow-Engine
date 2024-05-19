@@ -35,6 +35,11 @@ namespace Hollow
 		const ArrayList<SharedPtr<Texture>>& GetImages() const { return mImages; }
 		const ArrayList<SharedPtr<TextureBuffer>>& GetImageViews() const { return mImageBuffers; }
 
+		SharedPtr<Semaphore> GetImageSemaphore(uint32 index) const { return mImageSemaphores[index]; }
+		ArrayList<SharedPtr<Semaphore>>& GetImageSemaphores() { return mImageSemaphores; }
+		SharedPtr<Semaphore> GetFlightSemaphore(uint32 index) const { return mFlightSemaphores[index]; }
+		ArrayList<SharedPtr<Semaphore>>& GetFlightSemaphores() { return mFlightSemaphores; }
+
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::Swapchain; }
 
 		virtual void OnShutdown() noexcept override = 0;
@@ -44,12 +49,6 @@ namespace Hollow
 
 		void AddTexture(SharedPtr<Texture> pTexture);
 		void AddTextureBuffer(SharedPtr<TextureBuffer> pTextureView);
-		SharedPtr<Semaphore> GetImageSemaphore(uint32 index) const { return mImageSemaphores[index]; }
-		ArrayList<SharedPtr<Semaphore>>& GetImageSemaphores() { return mImageSemaphores; }
-		SharedPtr<Semaphore> GetFlightSemaphore(uint32 index) const { return mFlightSemaphores[index]; }
-		ArrayList<SharedPtr<Semaphore>>& GetFlightSemaphores() { return mFlightSemaphores; }
-		SharedPtr<Fence> GetFlightFence(uint32 index) const { return mFlightFences[index]; }
-		ArrayList<SharedPtr<Fence>>& GetFlightFences() { return mFlightFences; }
 
 		virtual void ResizeImpl(const Vector2u& newSize) = 0;
 		virtual void AcquireNextImageImpl() = 0;
@@ -68,6 +67,5 @@ namespace Hollow
 		ArrayList<SharedPtr<TextureBuffer>> mImageBuffers;
 		ArrayList<SharedPtr<Semaphore>> mImageSemaphores;
 		ArrayList<SharedPtr<Semaphore>> mFlightSemaphores;
-		ArrayList<SharedPtr<Fence>> mFlightFences;
 	};
 }

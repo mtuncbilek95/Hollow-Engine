@@ -193,7 +193,7 @@ int main(int argC, char** argV)
 	// Create a graphics device
 	GraphicsDeviceDesc deviceDesc = {};
 	deviceDesc.Instance = mGraphicsInstance;
-	deviceDesc.GraphicsQueueCount = 1;
+	deviceDesc.GraphicsQueueCount = 2;
 	deviceDesc.ComputeQueueCount = 1;
 	deviceDesc.TransferQueueCount = 1;
 	auto mDevice = mGraphicsInstance->CreateGraphicsDevice(deviceDesc);
@@ -209,6 +209,8 @@ int main(int argC, char** argV)
 	swapchainDesc.pQueue = GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue();
 
 	auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
+
+	auto mGraphicsQueue = mDevice->CreateQueue({ GraphicsQueueType::Graphics });
 
 	// ----------------- CREATE BUNDLE MEMORY -----------------
 
@@ -332,7 +334,7 @@ int main(int argC, char** argV)
 	mCommandBuffer->SetTextureBarrier(mDepthTexture, depthTextureBarrier);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
+	mDevice->SubmitToQueue(mGraphicsQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 
 	mDevice->WaitForFence(&mCompileFence, 1);
 	mDevice->ResetFences(&mCompileFence, 1);
@@ -726,7 +728,7 @@ int main(int argC, char** argV)
 	mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
+	mDevice->SubmitToQueue(mGraphicsQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 
 	mDevice->WaitForFence(&mCompileFence, 1);
 	mDevice->ResetFences(&mCompileFence, 1);
@@ -784,14 +786,18 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->EndRenderPass();
 		mCommandBuffers[imageIndex]->EndRecording();
 
-		mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffers[imageIndex], 1, nullptr, 0, nullptr, nullptr, 0, perFence);
-
-		mSwapchain->Present();
+		auto waitSemaphore = mSwapchain->GetImageSemaphore(imageIndex);
+		auto signalSemaphore = mSwapchain->GetFlightSemaphore(imageIndex);
+		auto flag = PipelineStageFlags::ColorAttachmentOutput;
+		mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffers[imageIndex], 1, &waitSemaphore, 1, &flag, &signalSemaphore, 1, perFence);
 
 		mDevice->WaitForFence(&perFence, 1);
 		mDevice->ResetFences(&perFence, 1);
+
+		mSwapchain->Present();
 	}
 
+	mDevice->WaitForIdle();
 	mDevice->WaitForIdle();
 	mDevice->OnShutdown();
 	mGraphicsInstance->OnShutdown();

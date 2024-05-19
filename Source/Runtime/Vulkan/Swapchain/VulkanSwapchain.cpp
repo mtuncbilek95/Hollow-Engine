@@ -381,25 +381,14 @@ namespace Hollow
 	{
 		// Acquire the next image
 		uint32 imageIndex = GetCurrentFrameIndex();
-
-		auto imageSemaphore = std::static_pointer_cast<VulkanSemaphore>(GetImageSemaphore(imageIndex));
-		auto flightSemaphore = GetFlightSemaphore(imageIndex);
-
-		VkSemaphore flightSemapore = std::static_pointer_cast<VulkanSemaphore>(flightSemaphore)->GetVkSemaphore();
-
-		PipelineStageFlags flags = PipelineStageFlags::ColorAttachmentOutput;
-		VkSemaphore waitSemaphores[1] = { imageSemaphore->GetVkSemaphore() };
-
-		auto pWaitSemaphore = GetImageSemaphore(imageIndex);
-		
-		GetOwnerDevice()->SubmitToQueue(GetPresentQueue(), nullptr, 0, &pWaitSemaphore, 1, &flags, &flightSemaphore, 1, nullptr);
+		VkSemaphore flightSemaphore = std::static_pointer_cast<VulkanSemaphore>(GetFlightSemaphore(imageIndex))->GetVkSemaphore();
 
 		// Present the image
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		presentInfo.pNext = nullptr;
 		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = &flightSemapore;
+		presentInfo.pWaitSemaphores = &flightSemaphore;
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = &mVkSwapchain;
 		presentInfo.pImageIndices = &imageIndex;
