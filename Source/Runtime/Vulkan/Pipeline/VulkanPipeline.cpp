@@ -1,7 +1,6 @@
 #include "VulkanPipeline.h"
 
 #include <Runtime/Vulkan/Shader/VulkanShader.h>
-#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
 #include <Runtime/Vulkan/Core/VulkanCoreUtils.h>
 #include <Runtime/Vulkan/Shader/VulkanShaderUtils.h>
 #include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
@@ -64,9 +63,9 @@ namespace Hollow
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vertexInputInfo.vertexBindingDescriptionCount = bindings.size();
-		vertexInputInfo.pVertexBindingDescriptions = bindings.data(); // Optional
-		vertexInputInfo.vertexAttributeDescriptionCount = attributes.size(); // Optional
-		vertexInputInfo.pVertexAttributeDescriptions = attributes.data(); // Optional
+		vertexInputInfo.pVertexBindingDescriptions = bindings.data();
+		vertexInputInfo.vertexAttributeDescriptionCount = attributes.size();
+		vertexInputInfo.pVertexAttributeDescriptions = attributes.data();
 
 		// Create Dynamic State
 		ArrayList<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
@@ -172,6 +171,19 @@ namespace Hollow
 			layouts[i] = std::static_pointer_cast<VulkanDescriptorLayout>(desc.ResourceLayout.ResourceLayouts[i])->GetVkDescriptorLayout();
 		}
 
+		ArrayList<VkFormat> formats;
+		for(auto& format : desc.ColorAttachmentFormats)
+			formats.push_back(VulkanTextureUtils::GetVkTextureFormat(format));
+
+		VkPipelineRenderingCreateInfo renderingInfo = {};
+		renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
+		renderingInfo.colorAttachmentCount = desc.ColorAttachmentCount;
+		renderingInfo.pColorAttachmentFormats = formats.data();
+		renderingInfo.depthAttachmentFormat = VulkanTextureUtils::GetVkTextureFormat(desc.DepthAttachmentFormat);
+		renderingInfo.stencilAttachmentFormat = VulkanTextureUtils::GetVkTextureFormat(desc.StencilAttachmentFormat);
+		renderingInfo.pNext = nullptr;
+		renderingInfo.viewMask = 0;
+
 		// Pipeline Layout Info
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -197,8 +209,9 @@ namespace Hollow
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDynamicState = &dynamicState;
 		pipelineInfo.layout = mVkPipelineLayout;
-		pipelineInfo.renderPass = std::static_pointer_cast<VulkanRenderPass>(desc.pRenderPass)->GetVkRenderPass();
-		pipelineInfo.subpass = desc.SubpassIndex;
+		pipelineInfo.renderPass = nullptr;
+		pipelineInfo.subpass = 0;
+		pipelineInfo.pNext = &renderingInfo;
 
 		CORE_ASSERT(vkCreateGraphicsPipelines(mVkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &mVkPipeline) == VK_SUCCESS, "GraphicsPipeline", "Failed to create graphics pipeline!");
 	}

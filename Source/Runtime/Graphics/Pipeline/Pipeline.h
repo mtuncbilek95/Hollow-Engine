@@ -12,7 +12,8 @@ namespace Hollow
 		Pipeline(const GraphicsPipelineDesc& desc, const SharedPtr<GraphicsDevice> pDevice) : GraphicsDeviceObject(pDevice), mBlendState(desc.BlendState), 
             mDepthStencilState(desc.DepthStencilState), mInputLayout(desc.InputLayout), mMultisample(desc.Multisample), 
             mRasterizerState(desc.RasterizerState), mResourceLayout(desc.ResourceLayout), mGraphicsShaders(desc.GraphicsShaders), 
-            mRenderPass(desc.pRenderPass), mViewport(desc.Viewport), mScissor(desc.Scissor), mSubpassIndex(desc.SubpassIndex),
+			mViewport(desc.Viewport), mScissor(desc.Scissor), mColorAttachmentCount(desc.ColorAttachmentCount), mColorAttachmentFormats(desc.ColorAttachmentFormats),
+			mDepthAttachmentFormat(desc.DepthAttachmentFormat), mStencilAttachmentFormat(desc.StencilAttachmentFormat),
             mBindPoint(PipelineBindPoint::Graphics)
         {}
 		virtual ~Pipeline() override = default;
@@ -24,10 +25,8 @@ namespace Hollow
         RasterizerStateDesc GetRasterizerState() const { return mRasterizerState; }
         ResourceLayoutDesc GetResourceLayout() const { return mResourceLayout; }
         ArrayList<SharedPtr<Shader>> GetGraphicsShaders() const { return mGraphicsShaders; }
-        SharedPtr<RenderPass> GetRenderPass() const { return mRenderPass; }
         ViewportDesc GetViewport() const { return mViewport; }
         ScissorDesc GetScissor() const { return mScissor; }
-        byte GetSubpassIndex() const { return mSubpassIndex; }
         PipelineBindPoint GetBindPoint() const { return mBindPoint; }
 
         FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::Pipeline; }
@@ -42,10 +41,12 @@ namespace Hollow
         RasterizerStateDesc mRasterizerState;
         ResourceLayoutDesc mResourceLayout;
         ArrayList<SharedPtr<Shader>> mGraphicsShaders;
-        SharedPtr<RenderPass> mRenderPass;
         ViewportDesc mViewport;
         ScissorDesc mScissor;
-        byte mSubpassIndex;
+		uint32 mColorAttachmentCount;
+		ArrayList<TextureFormat> mColorAttachmentFormats;
+		TextureFormat mDepthAttachmentFormat;
+		TextureFormat mStencilAttachmentFormat;
 
         PipelineBindPoint mBindPoint;
 	};

@@ -4,9 +4,10 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API RenderPassStoreOperation : byte
+	enum class RUNTIME_API AttachmentStoreOperation : byte
 	{
 		Store,
-		Ignore
+		DontCare,
+		None
 	};
 }

@@ -11,7 +11,6 @@
 #include <Runtime/Graphics/Descriptor/DescriptorLayout.h>
 #include <Runtime/Graphics/Descriptor/DescriptorSet.h>
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
-#include <Runtime/Resource/RenderTarget/RenderTargetResource.h>
 #include <Runtime/Graphics/API/GraphicsManager.h>
 
 #include <imgui.h>
@@ -50,7 +49,6 @@ namespace Hollow
 		SharedPtr<ShaderResource> mImguiFragmentShader;
 
 		SharedPtr<Pipeline> mImguiPipeline;
-		ArrayList<RenderTargetResource> mRenderTargets;
 		SharedPtr<Fence> mFence;
 	};
 }

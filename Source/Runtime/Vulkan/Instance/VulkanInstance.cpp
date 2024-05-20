@@ -1,6 +1,6 @@
 #include "VulkanInstance.h"
 
-#ifdef HOLLOW_PLATFORM_WINDOWS
+#if defined(HOLLOW_PLATFORM_WINDOWS)
 
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -16,7 +16,7 @@
 namespace Hollow
 {
 
-#ifdef HOLLOW_DEBUG
+#if defined(HOLLOW_DEBUG)
 	PFN_vkCreateDebugUtilsMessengerEXT debugMessengerCreateProc = nullptr;
 	PFN_vkDestroyDebugUtilsMessengerEXT debugMessengerDestroyProc = nullptr;
 
@@ -65,7 +65,6 @@ namespace Hollow
 		ArrayList<ExtensionEntry> requestedExtensions = {};
 		requestedExtensions.push_back({ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME , false });
 		requestedExtensions.push_back({ VK_KHR_SURFACE_EXTENSION_NAME, false });
-		requestedExtensions.push_back({ VK_KHR_DISPLAY_EXTENSION_NAME, false });
 
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		requestedExtensions.push_back({ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, false });
@@ -87,7 +86,7 @@ namespace Hollow
 		CORE_ASSERT(vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, supportedExtensions.data()) == VK_SUCCESS, "VulkanInstance",
 			"Failed to enumerate instance extension properties");
 
-#ifdef HOLLOW_DEBUG
+#if defined(HOLLOW_DEBUG)
 		for (auto& extension : supportedExtensions)
 			CORE_LOG(HE_INFO, "DEBUG INFO SUPPORTED EXTENSIONS", "%s", extension.extensionName);
 #endif
@@ -130,15 +129,14 @@ namespace Hollow
 		CORE_ASSERT(vkEnumerateInstanceLayerProperties(&supportedLayerCount, supportedLayers.data()) == VK_SUCCESS, "VulkanInstance",
 			"Failed to enumerate instance layer properties");
 
-#ifdef HOLLOW_DEBUG
+#if defined(HOLLOW_DEBUG)
 		for (auto& layer : supportedLayers)
 			CORE_LOG(HE_INFO, "DEBUG INFO SUPPORTED LAYERS", " % s", layer.layerName);
 #endif
 
 		// Add needed layers
 		ArrayList<const char*> layerNames = {};
-		layerNames.push_back("VK_LAYER_KHRONOS_synchronization2");
-#ifdef HOLLOW_DEBUG
+#if defined(HOLLOW_DEBUG)
 		layerNames.push_back("VK_LAYER_KHRONOS_validation");
 		layerNames.push_back("VK_LAYER_LUNARG_screenshot");
 #endif
@@ -166,7 +164,7 @@ namespace Hollow
 		CORE_ASSERT(vkCreateInstance(&instanceInfo, nullptr, &mVkInstance) == VK_SUCCESS, "VulkanInstance", "Failed to create instance");
 
 		// Handle debug messenger
-#ifdef HOLLOW_DEBUG
+#if defined(HOLLOW_DEBUG)
 
 		debugMessengerCreateProc = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(mVkInstance, "vkCreateDebugUtilsMessengerEXT"));
 		debugMessengerDestroyProc = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(mVkInstance, "vkDestroyDebugUtilsMessengerEXT"));
@@ -185,7 +183,7 @@ namespace Hollow
 
 	void VulkanInstance::OnShutdown()
 	{
-#ifdef HOLLOW_DEBUG
+#if defined(HOLLOW_DEBUG)
 		debugMessengerDestroyProc(mVkInstance, mVkDebugMessenger, nullptr);
 		mVkDebugMessenger = VK_NULL_HANDLE;
 #endif
@@ -216,15 +214,6 @@ namespace Hollow
 			// Get the device features
 			VkPhysicalDeviceFeatures deviceFeatures = {};
 			vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
-
-			VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeatures = {};
-			dynamicRenderingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
-			
-			VkPhysicalDeviceFeatures2 deviceFeatures2 = {};
-			deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-			deviceFeatures2.pNext = &dynamicRenderingFeatures;
-
-			vkGetPhysicalDeviceFeatures2(device, &deviceFeatures2);
 
 			// Get the device memory properties
 			VkPhysicalDeviceMemoryProperties deviceMemoryProperties = {};
@@ -268,15 +257,6 @@ namespace Hollow
 
 			if (deviceFeatures.tessellationShader)
 				adapterDesc->AdapterScore += 100;
-			
-			if (dynamicRenderingFeatures.dynamicRendering)
-				adapterDesc->AdapterScore += 1000;
-			else
-#if defined(HOLLOW_DEBUG)
-				CORE_ASSERT(false, "VulkanInstance", "Dynamic rendering not supported. We fucked!");
-#else
-				exit(-1);
-#endif
 
 			CORE_LOG(HE_WARNING, "Adapter Device Name", "%s", adapterDesc->ProductName.c_str());
 			CORE_LOG(HE_INFO, "Device ID", "%d ", adapterDesc->DeviceId);

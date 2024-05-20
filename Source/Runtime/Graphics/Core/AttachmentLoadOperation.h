@@ -4,10 +4,10 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API RenderPassLoadOperation : byte
+	enum class RUNTIME_API AttachmentLoadOperation : byte
 	{
-		Ignore,
 		Load,
-		Clear
+		Clear,
+		DontCare
 	};
 }

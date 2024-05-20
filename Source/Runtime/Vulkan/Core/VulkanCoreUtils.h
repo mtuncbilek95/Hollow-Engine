@@ -5,6 +5,9 @@
 #include <Runtime/Graphics/Core/LogicOperation.h>
 #include <Runtime/Graphics/Core/CompareOperation.h>
 #include <Runtime/Graphics/Core/GraphicsIndexType.h>
+#include <Runtime/Graphics/Core/ResolveModeFlags.h>
+#include <Runtime/Graphics/Core/AttachmentLoadOperation.h>
+#include <Runtime/Graphics/Core/AttachmentStoreOperation.h>
 
 #include <vulkan.h>
 
@@ -104,6 +107,55 @@ namespace Hollow
 				return VK_INDEX_TYPE_UINT16;
 			}
 
+		}
+
+		static VkResolveModeFlagBits GetVkResolveModeFlagBits(ResolveModeFlags flags)
+		{
+			switch (flags)
+			{
+			case ResolveModeFlags::None:
+				return VK_RESOLVE_MODE_NONE;
+			case ResolveModeFlags::SampleZero:
+				return VK_RESOLVE_MODE_SAMPLE_ZERO_BIT;
+			case ResolveModeFlags::Average:
+				return VK_RESOLVE_MODE_AVERAGE_BIT;
+			case ResolveModeFlags::Min:
+				return VK_RESOLVE_MODE_MIN_BIT;
+			case ResolveModeFlags::Max:
+				return VK_RESOLVE_MODE_MAX_BIT;
+			default:
+				return VK_RESOLVE_MODE_NONE;
+			}
+		}
+
+		static VkAttachmentLoadOp GetVkAttachmentLoadOperation(AttachmentLoadOperation operation)
+		{
+			switch (operation)
+			{
+			case AttachmentLoadOperation::Load:
+				return VK_ATTACHMENT_LOAD_OP_LOAD;
+			case AttachmentLoadOperation::Clear:
+				return VK_ATTACHMENT_LOAD_OP_CLEAR;
+			case AttachmentLoadOperation::DontCare:
+				return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			default:
+				return VK_ATTACHMENT_LOAD_OP_LOAD;
+			}
+		}
+
+		static VkAttachmentStoreOp GetVkAttachmentStoreOperation(AttachmentStoreOperation operation)
+		{
+			switch (operation)
+			{
+			case AttachmentStoreOperation::Store:
+				return VK_ATTACHMENT_STORE_OP_STORE;
+			case AttachmentStoreOperation::DontCare:
+				return VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			case AttachmentStoreOperation::None:
+				return VK_ATTACHMENT_STORE_OP_NONE;
+			default:
+				return VK_ATTACHMENT_STORE_OP_STORE;
+			}
 		}
 
 	public:

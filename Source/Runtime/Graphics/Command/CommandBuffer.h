@@ -3,6 +3,7 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Device/GraphicsDeviceObject.h>
 #include <Runtime/Graphics/Command/CommandBufferDesc.h>
+#include <Runtime/Graphics/Core/DynamicPassDesc.h>
 #include <Runtime/Graphics/Core/GraphicsIndexType.h>
 #include <Runtime/Graphics/Core/ViewportDesc.h>
 #include <Runtime/Graphics/Core/ScissorDesc.h>
@@ -16,7 +17,6 @@ namespace Hollow
 {
 	class RUNTIME_API GraphicsBuffer;
 	class RUNTIME_API Pipeline;
-	class RUNTIME_API RenderPass;
 	class RUNTIME_API DescriptorSet;
 	class RUNTIME_API Texture;
 
@@ -29,15 +29,15 @@ namespace Hollow
 	{
 	public:
 		CommandBuffer(const CommandBufferDesc& desc, const SharedPtr<GraphicsDevice> pDevice) : GraphicsDeviceObject(pDevice) , mOwnerPool(desc.pOwnerPool), mBoundIndexBuffer(nullptr),
-		mBoundPipeline(nullptr), mBoundRenderPass(nullptr), mRecording(false) 
+		mBoundPipeline(nullptr), mRecording(false) 
 		{}
 		virtual ~CommandBuffer() override = default;
 
 		void BeginRecording();
 		void EndRecording();
-		void BeginRenderPass(SharedPtr<RenderPass> ppRenderPass[], Vector4f colorPass);
-		void EndRenderPass();
-		void BindPipeline(SharedPtr<Pipeline> ppPipeline[]);
+		void BeginRendering(const DynamicPassDesc& desc);
+		void EndRendering();
+		void BindPipeline(SharedPtr<Pipeline> pPipeline);
 		void BindVertexBuffers(SharedPtr<GraphicsBuffer> pBuffer[], uint32 amount);
 		void BindIndexBuffer(SharedPtr<GraphicsBuffer> pBuffer, GraphicsIndexType indexType);
 		void BindDescriptors(SharedPtr<DescriptorSet> ppSet[], uint32 amount);
@@ -53,7 +53,6 @@ namespace Hollow
 		SharedPtr<CommandPool> GetOwnerPool() const noexcept { return mOwnerPool; }
 		SharedPtr<GraphicsBuffer> GetBoundIndexBuffer() const noexcept { return mBoundIndexBuffer; }
 		SharedPtr<Pipeline> GetBoundPipeline() const noexcept { return mBoundPipeline; }
-		SharedPtr<RenderPass> GetBoundRenderPass() const noexcept { return mBoundRenderPass; }
 		bool IsRecording() const noexcept { return mRecording; }
 
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::CommandBuffer; }
@@ -63,9 +62,9 @@ namespace Hollow
 	protected:
 		virtual void BeginRecordingImpl() = 0;
 		virtual void EndRecordingImpl() = 0;
-		virtual void BeginRenderPassImpl(SharedPtr<RenderPass> ppRenderPass[], Vector4f colorPass) = 0;
-		virtual void EndRenderPassImpl() = 0;
-		virtual void BindPipelineImpl(SharedPtr<Pipeline> ppPipeline[]) = 0;
+		virtual void BeginRenderingImpl(const DynamicPassDesc& desc) = 0;
+		virtual void EndRenderingImpl() = 0;
+		virtual void BindPipelineImpl(SharedPtr<Pipeline> pPipeline) = 0;
 		virtual void BindVertexBuffersImpl(SharedPtr<GraphicsBuffer> ppBuffer[], uint32 amount) = 0;
 		virtual void BindIndexBufferImpl(SharedPtr<GraphicsBuffer> pBuffer, GraphicsIndexType indexType) = 0;
 		virtual void BindDescriptorsImpl(SharedPtr<DescriptorSet> ppSet[], uint32 amount) = 0;
@@ -82,7 +81,6 @@ namespace Hollow
 		SharedPtr<CommandPool> mOwnerPool;
 		SharedPtr<GraphicsBuffer> mBoundIndexBuffer;
 		SharedPtr<Pipeline> mBoundPipeline;
-		SharedPtr<RenderPass> mBoundRenderPass;
 		bool mRecording;
 	};
 }

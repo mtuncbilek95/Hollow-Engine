@@ -8,7 +8,7 @@
 #include <Runtime/Graphics/Pipeline/Multisample/MultisampleDesc.h>
 #include <Runtime/Graphics/Pipeline/RasterizerState/RasterizerStateDesc.h>
 #include <Runtime/Graphics/Pipeline/ResourceLayout/ResourceLayoutDesc.h>
-#include <Runtime/Graphics/RenderPass/RenderPass.h>
+#include <Runtime/Graphics/Texture/TextureFormat.h>
 #include <Runtime/Graphics/Shader/Shader.h>
 #include <Runtime/Graphics/Core/ViewportDesc.h>
 #include <Runtime/Graphics/Core/ScissorDesc.h>
@@ -24,9 +24,11 @@ namespace Hollow
         RasterizerStateDesc RasterizerState;
         ResourceLayoutDesc ResourceLayout;
         ArrayList<SharedPtr<Shader>> GraphicsShaders;
-        SharedPtr<RenderPass> pRenderPass;
         ViewportDesc Viewport;
         ScissorDesc Scissor;
-        byte SubpassIndex;
+		uint32 ColorAttachmentCount;
+		ArrayList<TextureFormat> ColorAttachmentFormats;
+		TextureFormat DepthAttachmentFormat;
+		TextureFormat StencilAttachmentFormat;
     };
 }

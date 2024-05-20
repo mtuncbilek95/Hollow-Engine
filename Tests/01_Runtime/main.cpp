@@ -11,7 +11,6 @@
 #include <Runtime/Graphics/Fence/Fence.h>
 #include <Runtime/Graphics/Shader/Shader.h>
 #include <Runtime/ShaderCompiler/ShaderCompiler.h>
-#include <Runtime/Graphics/RenderPass/RenderPass.h>
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
 #include <Runtime/Graphics/Sampler/Sampler.h>
 #include <Runtime/Graphics/Buffer/GraphicsBuffer.h>
@@ -47,7 +46,7 @@ struct ConstantBuffer
 struct Vertex
 {
 	Vector3f Position;
-	Vector3f Color;
+	ArrayList<Vector3f> Color;
 	Vector2f TexCoord;
 };
 
@@ -110,7 +109,7 @@ ArrayList<Transform> InstanceTransforms(INSTANCE_COUNT);
 ConstantBuffer MVPData = {
 		{},
 		XMMatrixLookAtLH({0, 0, -7}, {0, 0 ,0}, {0, 1, 0}),
-		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<float>(2560.f / 1440.f), 0.01f, 1000.f)
+		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<float>(1300.f / 1300.f), 0.01f, 1000.f)
 };
 
 void UpdateTransforms()
@@ -173,27 +172,25 @@ int main(int argC, char** argV)
 
 	// Create a window
 	Hollow::WindowDesc desc = {};
-	desc.WindowSize = { 2560, 1440 };
+	desc.WindowSize = { 1300, 1300 };
 	desc.WindowPosition = { 0, 0 };
 	desc.WindowTitle = "Hollow Engine";
-	desc.WindowMode = WindowMode::Fullscreen;
+	desc.WindowMode = WindowMode::Windowed;
 	desc.pMonitor = primaryMonitor;
 
 	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
-	mWindow->Show();
 
 	// Create a graphics instance
 	GraphicsInstanceDesc instanceDesc = {};
 	instanceDesc.API = GraphicsAPI::Vulkan;
 	instanceDesc.ApplicationName = "Hollow Engine";
 	instanceDesc.InstanceName = "Hollow Engine";
-	instanceDesc.EnabledExtensions = {};
 	auto mGraphicsInstance = GraphicsInstance::CreateInstance(instanceDesc);
 
 	// Create a graphics device
 	GraphicsDeviceDesc deviceDesc = {};
 	deviceDesc.Instance = mGraphicsInstance;
-	deviceDesc.GraphicsQueueCount = 2;
+	deviceDesc.GraphicsQueueCount = 1;
 	deviceDesc.ComputeQueueCount = 1;
 	deviceDesc.TransferQueueCount = 1;
 	auto mDevice = mGraphicsInstance->CreateGraphicsDevice(deviceDesc);
@@ -209,8 +206,6 @@ int main(int argC, char** argV)
 	swapchainDesc.pQueue = GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue();
 
 	auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
-
-	auto mGraphicsQueue = mDevice->CreateQueue({ GraphicsQueueType::Graphics });
 
 	// ----------------- CREATE BUNDLE MEMORY -----------------
 
@@ -295,7 +290,7 @@ int main(int argC, char** argV)
 
 	TextureDesc depthTextureDesc = {};
 	depthTextureDesc.ArraySize = 1;
-	depthTextureDesc.ImageFormat = TextureFormat::D32_Float_S8_UInt;
+	depthTextureDesc.ImageFormat = TextureFormat::D32_Float;
 	depthTextureDesc.ImageSize = { mSwapchain->GetImageSize().x, mSwapchain->GetImageSize().y, 1 };
 	depthTextureDesc.MipLevels = 1;
 	depthTextureDesc.SampleCount = TextureSampleCount::Sample1;
@@ -316,6 +311,29 @@ int main(int argC, char** argV)
 	// ----------------- UPDATE DEPTH TEXTURE -----------------
 
 	mCommandBuffer->BeginRecording();
+
+	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
+	{
+		auto colorBuffer = mSwapchain->GetImage(i);
+
+		TextureBarrierUpdateDesc colorTextureBarrier = {};
+		colorTextureBarrier.MipIndex = 0;
+		colorTextureBarrier.ArrayIndex = 0;
+		colorTextureBarrier.SourceAccessMask = GraphicsMemoryAccessFlags::Unknown;
+		colorTextureBarrier.SourceQueue = GraphicsQueueType::Graphics;
+		colorTextureBarrier.OldLayout = TextureMemoryLayout::Unknown;
+		colorTextureBarrier.SourceStageFlags = PipelineStageFlags::TopOfPipe;
+
+		colorTextureBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::ColorAttachmentRead;
+		colorTextureBarrier.DestinationQueue = GraphicsQueueType::Graphics;
+		colorTextureBarrier.DestinationStageFlags = PipelineStageFlags::ColorAttachmentOutput;
+		colorTextureBarrier.NewLayout = TextureMemoryLayout::Present;
+
+		colorTextureBarrier.AspectMask = TextureAspectFlags::ColorAspect;
+
+		mCommandBuffer->SetTextureBarrier(colorBuffer, colorTextureBarrier);
+	}
+
 	TextureBarrierUpdateDesc depthTextureBarrier = {};
 	depthTextureBarrier.MipIndex = 0;
 	depthTextureBarrier.ArrayIndex = 0;
@@ -329,59 +347,15 @@ int main(int argC, char** argV)
 	depthTextureBarrier.DestinationQueue = GraphicsQueueType::Graphics;
 	depthTextureBarrier.DestinationStageFlags = PipelineStageFlags::EarlyFragmentTests;
 
-	depthTextureBarrier.AspectMask = TextureAspectFlags::DepthAspect | TextureAspectFlags::StencilAspect;
+	depthTextureBarrier.AspectMask = TextureAspectFlags::DepthAspect;
 
 	mCommandBuffer->SetTextureBarrier(mDepthTexture, depthTextureBarrier);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(mGraphicsQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
+	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 
 	mDevice->WaitForFence(&mCompileFence, 1);
 	mDevice->ResetFences(&mCompileFence, 1);
-
-	// ----------------- CREATE RENDERPASS -----------------
-
-	ArrayList<SharedPtr<RenderPass>> mRenderPasses;
-
-	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
-	{
-		RenderPassDesc renderPassDesc = {};
-
-		RenderPassAttachmentDesc colorAttachment = {};
-		colorAttachment.Format = swapchainDesc.SwapchainImageFormat;
-		colorAttachment.SampleCount = TextureSampleCount::Sample1;
-		colorAttachment.LoadOperation = RenderPassLoadOperation::Clear;
-		colorAttachment.StoreOperation = RenderPassStoreOperation::Store;
-		colorAttachment.StencilLoadOperation = RenderPassLoadOperation::Ignore;
-		colorAttachment.StencilStoreOperation = RenderPassStoreOperation::Ignore;
-		colorAttachment.InputLayout = TextureMemoryLayout::Unknown;
-		colorAttachment.OutputLayout = TextureMemoryLayout::Present;
-		colorAttachment.ArrayLevel = 0;
-		colorAttachment.MipLevel = 0;
-		colorAttachment.pTextureBuffer = mSwapchain->GetImageViews()[i];
-
-		renderPassDesc.Attachments.push_back(colorAttachment);
-
-		RenderPassAttachmentDesc depthAttachment = {};
-		depthAttachment.Format = depthTextureDesc.ImageFormat;
-		depthAttachment.SampleCount = depthTextureDesc.SampleCount;
-		depthAttachment.LoadOperation = RenderPassLoadOperation::Clear;
-		depthAttachment.StoreOperation = RenderPassStoreOperation::Store;
-		depthAttachment.StencilLoadOperation = RenderPassLoadOperation::Ignore;
-		depthAttachment.StencilStoreOperation = RenderPassStoreOperation::Ignore;
-		depthAttachment.InputLayout = TextureMemoryLayout::DepthStencilAttachment;
-		depthAttachment.OutputLayout = TextureMemoryLayout::DepthStencilAttachment;
-		depthAttachment.ArrayLevel = 0;
-		depthAttachment.MipLevel = 0;
-		depthAttachment.pTextureBuffer = mDepthTextureView;
-
-		renderPassDesc.TargetSize = mSwapchain->GetImageSize();
-		renderPassDesc.DepthStencilAttachment = depthAttachment;
-
-		auto renderPass = mDevice->CreateRenderPass(renderPassDesc);
-
-		mRenderPasses.push_back(renderPass);
-	}
 
 	// ----------------- CREATE DESCRIPTORS -----------------
 
@@ -497,28 +471,24 @@ int main(int argC, char** argV)
 	scissor.OffsetSize = { 0, 0 };
 	scissor.ScissorSize = mSwapchain->GetImageSize();
 
-	ArrayList<SharedPtr<Pipeline>> mGraphicsPipelines;
+	// Create Pipeline
+	GraphicsPipelineDesc pipelineDesc = {};
+	pipelineDesc.BlendState = blendState;
+	pipelineDesc.DepthStencilState = depthStencilState;
+	pipelineDesc.InputLayout = inputLayout;
+	pipelineDesc.Multisample = multisample;
+	pipelineDesc.RasterizerState = rasterizerState;
+	pipelineDesc.ResourceLayout.ResourceLayouts = { mDescriptorLayout };
+	pipelineDesc.GraphicsShaders = { mVertexShader, mFragmentShader };
+	pipelineDesc.Viewport = viewport;
+	pipelineDesc.Scissor = scissor;
+	pipelineDesc.ColorAttachmentCount = 1;
+	pipelineDesc.ColorAttachmentFormats = { TextureFormat::RGBA8_UNorm };
+	pipelineDesc.DepthAttachmentFormat = TextureFormat::D32_Float;
+	pipelineDesc.StencilAttachmentFormat = TextureFormat::Unknown;
 
-	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
-	{
-		// Create Pipeline
-		GraphicsPipelineDesc pipelineDesc = {};
-		pipelineDesc.BlendState = blendState;
-		pipelineDesc.DepthStencilState = depthStencilState;
-		pipelineDesc.InputLayout = inputLayout;
-		pipelineDesc.Multisample = multisample;
-		pipelineDesc.RasterizerState = rasterizerState;
-		pipelineDesc.ResourceLayout.ResourceLayouts = { mDescriptorLayout };
-		pipelineDesc.GraphicsShaders = { mVertexShader, mFragmentShader };
-		pipelineDesc.pRenderPass = mRenderPasses[i];
-		pipelineDesc.Viewport = viewport;
-		pipelineDesc.Scissor = scissor;
-		pipelineDesc.SubpassIndex = 0;
+	auto mPipeline = mDevice->CreateGraphicsPipeline(pipelineDesc);
 
-		auto mPipeline = mDevice->CreateGraphicsPipeline(pipelineDesc);
-
-		mGraphicsPipelines.push_back(mPipeline);
-	}
 
 	// ----------------- CREATE SAMPLER -----------------
 
@@ -728,7 +698,7 @@ int main(int argC, char** argV)
 	mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(mGraphicsQueue, &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
+	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 
 	mDevice->WaitForFence(&mCompileFence, 1);
 	mDevice->ResetFences(&mCompileFence, 1);
@@ -743,7 +713,7 @@ int main(int argC, char** argV)
 		mSemaphores.push_back(mSemaphore);
 	}
 
-	auto startTime = std::chrono::high_resolution_clock::now();
+	mWindow->Show();
 
 	while (mWindow->IsVisible())
 	{
@@ -769,12 +739,50 @@ int main(int argC, char** argV)
 		constantCopyDesc.SourceOffset = 0;
 		mCommandBuffers[imageIndex]->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, constantCopyDesc);
 
-		mCommandBuffers[imageIndex]->BeginRenderPass(mRenderPasses.data(), { 0.6f, 0.3f, 0.5f, 0.0f });
+		TextureBarrierUpdateDesc preRenderBarrier = {};
+		preRenderBarrier.ArrayIndex = 0;
+		preRenderBarrier.MipIndex = 0;
+		preRenderBarrier.SourceAccessMask = GraphicsMemoryAccessFlags::ColorAttachmentRead;
+		preRenderBarrier.SourceQueue = GraphicsQueueType::Graphics;
+		preRenderBarrier.SourceStageFlags = PipelineStageFlags::ColorAttachmentOutput;
+		preRenderBarrier.OldLayout = TextureMemoryLayout::Present;
 
-		mCommandBuffers[imageIndex]->BindPipeline(mGraphicsPipelines.data());
+		preRenderBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::ColorAttachmentWrite;
+		preRenderBarrier.DestinationQueue = GraphicsQueueType::Graphics;
+		preRenderBarrier.DestinationStageFlags = PipelineStageFlags::ColorAttachmentOutput;
+		preRenderBarrier.NewLayout = TextureMemoryLayout::ColorAttachment;
+
+		preRenderBarrier.AspectMask = TextureAspectFlags::ColorAspect;
+
+		mCommandBuffers[imageIndex]->SetTextureBarrier(mSwapchain->GetImage(imageIndex), preRenderBarrier);
+
+		DynamicPassAttachmentDesc passColorAttachmentDesc = {};
+		passColorAttachmentDesc.ImageBuffer = mSwapchain->GetImageView(imageIndex);
+		passColorAttachmentDesc.TextureLayout = TextureMemoryLayout::ColorAttachment;
+		passColorAttachmentDesc.LoadOperation = AttachmentLoadOperation::Clear;
+		passColorAttachmentDesc.StoreOperation = AttachmentStoreOperation::Store;
+		passColorAttachmentDesc.ClearColor = { 0.1f, 0.2f, 0.3f, 1.0f };
+
+		DynamicPassAttachmentDesc passDepthAttachmentDesc = {};
+		passDepthAttachmentDesc.ImageBuffer = mDepthTextureView;
+		passDepthAttachmentDesc.TextureLayout = TextureMemoryLayout::DepthStencilAttachment;
+		passDepthAttachmentDesc.LoadOperation = AttachmentLoadOperation::Clear;
+		passDepthAttachmentDesc.StoreOperation = AttachmentStoreOperation::Store;
+		passDepthAttachmentDesc.ClearDepthStencil = { 1.0f, 0 };
+
+		DynamicPassDesc passDesc = {};
+		passDesc.ColorAttachments = { passColorAttachmentDesc };
+		passDesc.DepthAttachment = passDepthAttachmentDesc;
+		passDesc.layerCount = 1;
+		passDesc.Extent = { mSwapchain->GetImageSize().x, mSwapchain->GetImageSize().y };
+		passDesc.Offset = { 0, 0 };
+		passDesc.viewMask = 0;
+
+		mCommandBuffers[imageIndex]->BeginRendering(passDesc);
+
+		mCommandBuffers[imageIndex]->BindPipeline(mPipeline);
 		mCommandBuffers[imageIndex]->SetViewports(&viewport, 1);
 		mCommandBuffers[imageIndex]->SetScissors(&scissor, 1);
-
 		mCommandBuffers[imageIndex]->BindVertexBuffers(&mVertexBuffer, 1);
 		mCommandBuffers[imageIndex]->BindIndexBuffer(mIndexBuffer, GraphicsIndexType::Index32);
 
@@ -783,7 +791,24 @@ int main(int argC, char** argV)
 
 		mCommandBuffers[imageIndex]->DrawIndexed(indices.size(), 0, 0, 0, INSTANCE_COUNT);
 
-		mCommandBuffers[imageIndex]->EndRenderPass();
+		mCommandBuffers[imageIndex]->EndRendering();
+
+		TextureBarrierUpdateDesc postRenderBarrier = {};
+		postRenderBarrier.ArrayIndex = 0;
+		postRenderBarrier.MipIndex = 0;
+		postRenderBarrier.SourceAccessMask = GraphicsMemoryAccessFlags::ColorAttachmentWrite;
+		postRenderBarrier.SourceQueue = GraphicsQueueType::Graphics;
+		postRenderBarrier.SourceStageFlags = PipelineStageFlags::ColorAttachmentOutput;
+		postRenderBarrier.OldLayout = TextureMemoryLayout::ColorAttachment;
+
+		postRenderBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::MemoryRead;
+		postRenderBarrier.DestinationQueue = GraphicsQueueType::Graphics;
+		postRenderBarrier.DestinationStageFlags = PipelineStageFlags::BottomOfPipe;
+		postRenderBarrier.NewLayout = TextureMemoryLayout::Present;
+
+		postRenderBarrier.AspectMask = TextureAspectFlags::ColorAspect;
+
+		mCommandBuffers[imageIndex]->SetTextureBarrier(mSwapchain->GetImage(imageIndex), postRenderBarrier);
 		mCommandBuffers[imageIndex]->EndRecording();
 
 		auto waitSemaphore = mSwapchain->GetImageSemaphore(imageIndex);

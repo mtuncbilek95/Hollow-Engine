@@ -16,7 +16,6 @@
 #include <Runtime/Vulkan/Descriptor/VulkanDescriptorPool.h>
 #include <Runtime/Vulkan/Descriptor/VulkanDescriptorLayout.h>
 #include <Runtime/Vulkan/Sampler/VulkanSampler.h>
-#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
 #include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
 
 #include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
@@ -142,10 +141,28 @@ namespace Hollow
 		// Device Extensions
 		ArrayList<const char*> deviceExtensions;
 		deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+		deviceExtensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
+
+		//Check if the device supports the extensions
+		uint32 extensionCount = 0;
+		vkEnumerateDeviceExtensionProperties(mVkPhysicalDevice, nullptr, &extensionCount, nullptr);
+		ArrayList<VkExtensionProperties> availableExtensions(extensionCount);
+		vkEnumerateDeviceExtensionProperties(mVkPhysicalDevice, nullptr, &extensionCount, availableExtensions.data());
+
+#if defined(HOLLOW_DEBUG)
+		for(auto& extension : availableExtensions)
+			CORE_LOG(HE_INFO, "VulkanDevice", "Available Extension: %s", extension.extensionName);
+#endif
 
 		// Device Features
 		VkPhysicalDeviceFeatures deviceFeatures = {};
 		vkGetPhysicalDeviceFeatures(mVkPhysicalDevice, &deviceFeatures);
+
+		// Dynamic Rendering Features
+		VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeatures = {};
+		dynamicRenderingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
+		dynamicRenderingFeatures.pNext = nullptr;
+		dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
 
 		// Device Info
 		VkDeviceCreateInfo deviceInfo = {};
@@ -156,7 +173,7 @@ namespace Hollow
 		deviceInfo.ppEnabledExtensionNames = deviceExtensions.data();
 		deviceInfo.pEnabledFeatures = &deviceFeatures;
 		deviceInfo.flags = VkDeviceCreateFlags();
-		deviceInfo.pNext = nullptr;
+		deviceInfo.pNext = &dynamicRenderingFeatures;
 
 		CORE_ASSERT(vkCreateDevice(mVkPhysicalDevice, &deviceInfo, nullptr, &mVkDevice) == VK_SUCCESS, "VulkanDevice", "Failed to create logical device");
 
@@ -325,12 +342,6 @@ namespace Hollow
 	{
 		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
 		return std::make_shared<VulkanShader>(desc, device);
-	}
-
-	SharedPtr<RenderPass> VulkanDevice::CreateRenderPassImpl(const RenderPassDesc& desc)
-	{
-		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
-		return std::make_shared<VulkanRenderPass>(desc, device);
 	}
 
 	SharedPtr<Pipeline> VulkanDevice::CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc)

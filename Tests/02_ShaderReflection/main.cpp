@@ -18,7 +18,6 @@ int main(int argC, char** argV)
 	instanceDesc.ApplicationName = "Shader Reflection Test";
 	instanceDesc.API = GraphicsAPI::Vulkan;
 	instanceDesc.InstanceName = "Shader Reflection Test Instance";
-	instanceDesc.EnabledExtensions = {};
 
 	auto mInstance = GraphicsInstance::CreateInstance(instanceDesc);
 

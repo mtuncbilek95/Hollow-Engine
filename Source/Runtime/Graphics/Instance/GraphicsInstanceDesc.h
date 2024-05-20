@@ -10,6 +10,5 @@ namespace Hollow
 		String InstanceName;
 		String ApplicationName;
 		GraphicsAPI API = GraphicsAPI::Vulkan;
-		ArrayList<String> EnabledExtensions;
 	};
 }

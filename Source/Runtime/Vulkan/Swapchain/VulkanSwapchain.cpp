@@ -1,6 +1,6 @@
 #include "VulkanSwapchain.h"
 
-#ifdef HOLLOW_PLATFORM_WINDOWS
+#if defined(HOLLOW_PLATFORM_WINDOWS)
 
 #include <Runtime/Win32/Win32Window.h>
 #include <vulkan_win32.h>
@@ -28,7 +28,7 @@ namespace Hollow
 		mVkInstance = vulkanDevice->GetVkInstance();
 
 		// Create the surface
-#ifdef HOLLOW_PLATFORM_WINDOWS
+#if defined(HOLLOW_PLATFORM_WINDOWS)
 		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 		surfaceInfo.hinstance = reinterpret_cast<Win32Window*>(WindowManager::GetInstanceAPI().GetDefaultWindow().get())->GetInstance();
@@ -43,7 +43,7 @@ namespace Hollow
 		CORE_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(mVkPhysicalDevice, mVkSurface, &surfaceCapabilities) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to get surface capabilities");
 
-#ifdef HOLLOW_DEBUG
+#if defined(HOLLOW_DEBUG)
 		CORE_LOG(HE_INFO, "DEBUG INFO SURFACE", "Min Image Count: %d", surfaceCapabilities.minImageCount);
 		CORE_LOG(HE_WARNING, "DEBUG INFO SURFACE", "Max Image Count: %d", surfaceCapabilities.maxImageCount);
 		CORE_LOG(HE_INFO, "DEBUG INFO SURFACE", "Current Extent: %d x %d", surfaceCapabilities.currentExtent.width, surfaceCapabilities.currentExtent.height);
@@ -213,7 +213,7 @@ namespace Hollow
 			vkDestroySurfaceKHR(mVkInstance, mVkSurface, nullptr);
 
 		// Create the surface
-#ifdef HOLLOW_PLATFORM_WINDOWS
+#if defined(HOLLOW_PLATFORM_WINDOWS)
 		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 		surfaceInfo.hinstance = reinterpret_cast<Win32Window*>(WindowManager::GetInstanceAPI().GetDefaultWindow().get())->GetInstance();
@@ -228,7 +228,7 @@ namespace Hollow
 		CORE_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(mVkPhysicalDevice, mVkSurface, &surfaceCapabilities) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to get surface capabilities");
 
-#ifdef HOLLOW_DEBUG
+#if defined(HOLLOW_DEBUG)
 		CORE_LOG(HE_INFO, "DEBUG INFO SURFACE", "Min Image Count: %d", surfaceCapabilities.minImageCount);
 		CORE_LOG(HE_WARNING, "DEBUG INFO SURFACE", "Max Image Count: %d", surfaceCapabilities.maxImageCount);
 		CORE_LOG(HE_INFO, "DEBUG INFO SURFACE", "Current Extent: %d x %d", surfaceCapabilities.currentExtent.width, surfaceCapabilities.currentExtent.height);

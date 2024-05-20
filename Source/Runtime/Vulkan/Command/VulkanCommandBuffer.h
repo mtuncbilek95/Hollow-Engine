@@ -22,9 +22,9 @@ namespace Hollow
 	protected:
 		virtual void BeginRecordingImpl() override;
 		virtual void EndRecordingImpl() override;
-		virtual void BeginRenderPassImpl(SharedPtr<RenderPass> ppRenderPass[], Vector4f colorPass) override;
-		virtual void EndRenderPassImpl() override;
-		virtual void BindPipelineImpl(SharedPtr<Pipeline> ppPipeline[]) override;
+		virtual void BeginRenderingImpl(const DynamicPassDesc& desc) override;
+		virtual void EndRenderingImpl() override;
+		virtual void BindPipelineImpl(SharedPtr<Pipeline> pPipeline) override;
 		virtual void BindVertexBuffersImpl(SharedPtr<GraphicsBuffer> ppBuffer[], uint32 amount) override;
 		virtual void BindIndexBufferImpl(SharedPtr<GraphicsBuffer> pBuffer, GraphicsIndexType indexType) override;
 		virtual void BindDescriptorsImpl(SharedPtr<DescriptorSet> ppSet[], uint32 amount) override;

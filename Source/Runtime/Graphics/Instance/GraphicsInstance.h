@@ -49,6 +49,5 @@ namespace Hollow
 
 		SharedPtr<GraphicsDevice> mOwnedDevice;
 		ArrayList<SharedPtr<GraphicsAdapter>> mAdapters;
-		ArrayList<String> mInstanceExtensions;
 	};
 }

@@ -67,7 +67,6 @@ namespace Hollow
 		virtual SharedPtr<GraphicsQueue> CreateQueueImpl(const GraphicsQueueDesc& desc) override;
 		virtual SharedPtr<Sampler> CreateSamplerImpl(const SamplerDesc& desc) override;
 		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc) override;
-		virtual SharedPtr<RenderPass> CreateRenderPassImpl(const RenderPassDesc& desc) override;
 		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) override;
 		virtual SharedPtr<CommandBuffer> CreateCommandBufferImpl(const CommandBufferDesc& desc) override;
 		virtual SharedPtr<CommandPool> CreateCommandPoolImpl(const CommandPoolDesc& desc) override;

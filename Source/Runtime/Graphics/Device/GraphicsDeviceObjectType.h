@@ -18,9 +18,9 @@ namespace Hollow
 		DescriptorSet,
 		DescriptorPool,
 		DescriptorLayout,
+		DynamicPass,
 		Shader,
 		Pipeline,
-		RenderPass,
 		Semaphore,
 		Fence,
 		Queue

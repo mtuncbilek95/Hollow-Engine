@@ -9,7 +9,6 @@
 #include <Runtime/Graphics/Semaphore/Semaphore.h>
 #include <Runtime/Graphics/Fence/Fence.h>
 #include <Runtime/Graphics/Shader/Shader.h>
-#include <Runtime/Graphics/RenderPass/RenderPass.h>
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
 #include <Runtime/Graphics/Command/CommandBuffer.h>
 #include <Runtime/Graphics/Command/CommandPool.h>
@@ -107,13 +106,6 @@ namespace Hollow
 		auto shader = CreateShaderImpl(desc);
 		mDeviceObjects.push_back(shader);
 		return shader;
-	}
-
-	SharedPtr<RenderPass> GraphicsDevice::CreateRenderPass(const RenderPassDesc& desc)
-	{
-		auto renderPass = CreateRenderPassImpl(desc);
-		mDeviceObjects.push_back(renderPass);
-		return renderPass;
 	}
 
 	SharedPtr<Pipeline> GraphicsDevice::CreateGraphicsPipeline(const GraphicsPipelineDesc& desc)

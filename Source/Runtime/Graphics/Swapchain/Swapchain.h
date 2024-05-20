@@ -33,7 +33,9 @@ namespace Hollow
 		ShareMode GetShareMode() const { return mShareMode; }
 
 		const ArrayList<SharedPtr<Texture>>& GetImages() const { return mImages; }
+		SharedPtr<Texture> GetImage(uint32 index) const { return mImages[index]; }
 		const ArrayList<SharedPtr<TextureBuffer>>& GetImageViews() const { return mImageBuffers; }
+		SharedPtr<TextureBuffer> GetImageView(uint32 index) const { return mImageBuffers[index]; }
 
 		SharedPtr<Semaphore> GetImageSemaphore(uint32 index) const { return mImageSemaphores[index]; }
 		ArrayList<SharedPtr<Semaphore>>& GetImageSemaphores() { return mImageSemaphores; }

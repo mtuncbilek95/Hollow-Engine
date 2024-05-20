@@ -21,7 +21,7 @@ namespace Hollow
 	}
 
 	GraphicsInstance::GraphicsInstance(const GraphicsInstanceDesc& desc) : Object(), mInstanceName(desc.InstanceName),
-		mApplicationName(desc.ApplicationName), mGraphicsAPI(desc.API), mInstanceExtensions(desc.EnabledExtensions)
+		mApplicationName(desc.ApplicationName), mGraphicsAPI(desc.API)
 	{
 	}
 

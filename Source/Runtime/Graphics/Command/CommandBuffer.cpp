@@ -17,22 +17,20 @@ namespace Hollow
 		mRecording = false;
 	}
 
-	void CommandBuffer::BeginRenderPass(SharedPtr<RenderPass> ppRenderPass[], Vector4f colorPass)
+	void CommandBuffer::BeginRendering(const DynamicPassDesc& desc)
 	{
-		BeginRenderPassImpl(ppRenderPass, colorPass);
-		mBoundRenderPass = ppRenderPass[GetOwnerDevice()->GetSwapchain()->GetCurrentFrameIndex()];
+		BeginRenderingImpl(desc);
 	}
 
-	void CommandBuffer::EndRenderPass()
+	void CommandBuffer::EndRendering()
 	{
-		EndRenderPassImpl();
-		mBoundRenderPass = nullptr;
+		EndRenderingImpl();
 	}
 
-	void CommandBuffer::BindPipeline(SharedPtr<Pipeline> ppPipeline[])
+	void CommandBuffer::BindPipeline(SharedPtr<Pipeline> pPipeline)
 	{
-		BindPipelineImpl(ppPipeline);
-		mBoundPipeline = ppPipeline[GetOwnerDevice()->GetSwapchain()->GetCurrentFrameIndex()];
+		BindPipelineImpl(pPipeline);
+		mBoundPipeline = pPipeline;
 	}
 
 	void CommandBuffer::BindVertexBuffers(SharedPtr<GraphicsBuffer> ppBuffer[], uint32 amount)

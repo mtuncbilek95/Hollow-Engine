@@ -12,7 +12,6 @@
 #include <Runtime/Graphics/Queue/GraphicsQueueDesc.h>
 #include <Runtime/Graphics/Sampler/SamplerDesc.h>
 #include <Runtime/Graphics/Shader/ShaderDesc.h>
-#include <Runtime/Graphics/RenderPass/RenderPassDesc.h>
 #include <Runtime/Graphics/Pipeline/GraphicsPipelineDesc.h>
 #include <Runtime/Graphics/Command/CommandBufferDesc.h>
 #include <Runtime/Graphics/Command/CommandPoolDesc.h>
@@ -38,7 +37,6 @@ namespace Hollow
 	class RUNTIME_API GraphicsQueue;
 	class RUNTIME_API Sampler;
 	class RUNTIME_API Shader;
-	class RUNTIME_API RenderPass;
 	class RUNTIME_API Pipeline;
 	class RUNTIME_API CommandBuffer;
 	class RUNTIME_API CommandPool;
@@ -70,7 +68,6 @@ namespace Hollow
 		SharedPtr<GraphicsQueue> CreateQueue(const GraphicsQueueDesc& desc);
 		SharedPtr<Sampler> CreateSampler(const SamplerDesc& desc);
 		SharedPtr<Shader> CreateShader(const ShaderDesc& desc);
-		SharedPtr<RenderPass> CreateRenderPass(const RenderPassDesc& desc);
 		SharedPtr<Pipeline> CreateGraphicsPipeline(const GraphicsPipelineDesc& desc);
 		SharedPtr<CommandBuffer> CreateCommandBuffer(const CommandBufferDesc& desc);
 		SharedPtr<CommandPool> CreateCommandPool(const CommandPoolDesc& desc);
@@ -100,7 +97,6 @@ namespace Hollow
 		virtual SharedPtr<GraphicsQueue> CreateQueueImpl(const GraphicsQueueDesc& desc) = 0;
 		virtual SharedPtr<Sampler> CreateSamplerImpl(const SamplerDesc& desc) = 0;
 		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc) = 0;
-		virtual SharedPtr<RenderPass> CreateRenderPassImpl(const RenderPassDesc& desc) = 0;
 		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) = 0;
 		virtual SharedPtr<CommandBuffer> CreateCommandBufferImpl(const CommandBufferDesc& desc) = 0;
 		virtual SharedPtr<CommandPool> CreateCommandPoolImpl(const CommandPoolDesc& desc) = 0;
