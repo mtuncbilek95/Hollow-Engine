@@ -12,6 +12,8 @@
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
 #include <Runtime/Graphics/Command/CommandBuffer.h>
 #include <Runtime/Graphics/Command/CommandPool.h>
+#include <Runtime/Graphics/RenderPass/RenderPass.h>
+#include <Runtime/Graphics/Framebuffer/Framebuffer.h>
 #include <Runtime/Graphics/Memory/GraphicsMemory.h>
 #include <Runtime/Graphics/Buffer/GraphicsBuffer.h>
 #include <Runtime/Graphics/Descriptor/DescriptorSet.h>
@@ -127,6 +129,20 @@ namespace Hollow
 		auto commandPool = CreateCommandPoolImpl(desc);
 		mDeviceObjects.push_back(commandPool);
 		return commandPool;
+	}
+
+	SharedPtr<RenderPass> GraphicsDevice::CreateRenderPass(const RenderPassDesc& desc)
+	{
+		auto renderPass = CreateRenderPassImpl(desc);
+		mDeviceObjects.push_back(renderPass);
+		return renderPass;
+	}
+
+	SharedPtr<Framebuffer> GraphicsDevice::CreateFramebuffer(const FramebufferDesc& desc)
+	{
+		auto framebuffer = CreateFramebufferImpl(desc);
+		mDeviceObjects.push_back(framebuffer);
+		return framebuffer;
 	}
 
 	SharedPtr<GraphicsBuffer> GraphicsDevice::CreateGraphicsBuffer(const GraphicsBufferDesc& desc)

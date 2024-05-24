@@ -11,6 +11,8 @@
 #include <Runtime/Graphics/Descriptor/DescriptorLayout.h>
 #include <Runtime/Graphics/Descriptor/DescriptorSet.h>
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
+#include <Runtime/Graphics/RenderPass/RenderPass.h>
+#include <Runtime/Graphics/Framebuffer/Framebuffer.h>
 #include <Runtime/Graphics/API/GraphicsManager.h>
 
 #include <imgui.h>
@@ -25,30 +27,18 @@ namespace Hollow
 
 		void CreateImguiResources();
 
+		void UpdateRender();
+
 		virtual void OnShutdown() override;
 	private:
 		ImGuiContext* mContext;
 
 		SharedPtr<GraphicsDevice> mDevice;
+		SharedPtr<DescriptorPool> mDescriptorPool;
 
 		SharedPtr<CommandBuffer> mCommandBuffer;
 		SharedPtr<CommandPool> mCommandPool;
 
-		SharedPtr<GraphicsBuffer> mUniformBuffer;
-		SharedPtr<GraphicsBuffer> mUniformStagingBuffer;
-
-		SharedPtr<MeshResource> mImguiMesh;
-		SharedPtr<TextureResource> mFontTexture;
-		SharedPtr<Sampler> mFontSampler;
-		SharedPtr<DescriptorSet> mFontDescriptorSet;
-		SharedPtr<DescriptorSet> mUniformDescriptorSet;
-		SharedPtr<DescriptorLayout> mFontDescriptorLayout;
-		SharedPtr<DescriptorLayout> mUniformDescriptorLayout;
-
-		SharedPtr<ShaderResource> mImguiVertexShader;
-		SharedPtr<ShaderResource> mImguiFragmentShader;
-
-		SharedPtr<Pipeline> mImguiPipeline;
-		SharedPtr<Fence> mFence;
+		SharedPtr<Pipeline> mPipeline;
 	};
 }

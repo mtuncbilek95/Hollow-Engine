@@ -9,9 +9,13 @@ FetchContent_MakeAvailable(imgui)
 # ------------------------------------------------------------
 
 # ---------------------- IMGUI FILES -------------------------
-file(GLOB IMGUI_FILES "${imgui_SOURCE_DIR}/*.cpp" "${imgui_SOURCE_DIR}/*.h")
+file(GLOB IMGUI_FILES "${imgui_SOURCE_DIR}/*.cpp" "${imgui_SOURCE_DIR}/*.h" "${imgui_SOURCE_DIR}/backends/imgui_impl_win32.h" "${imgui_SOURCE_DIR}/backends/imgui_impl_win32.cpp"
+"${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.h" "${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp")
 source_group(TREE "${imgui_SOURCE_DIR}" FILES ${IMGUI_FILES})
 add_library(imgui STATIC ${IMGUI_FILES})
+
+target_include_directories(imgui PUBLIC "${imgui_SOURCE_DIR}")
+target_link_libraries(imgui PRIVATE Runtime)
 # ------------------------------------------------------------
 
 # ---------------------- FILE ADDITION -----------------------

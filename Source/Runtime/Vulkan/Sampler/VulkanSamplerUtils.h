@@ -6,7 +6,7 @@
 #include <Runtime/Graphics/Sampler/SamplerBorderColor.h>
 #include <Runtime/Graphics/Sampler/SamplerMapMode.h>
 
-#include <vulkan.h>
+#include <vulkan/vulkan.h>
 
 namespace Hollow
 {

@@ -4,7 +4,7 @@
 #include <Runtime/Graphics/Shader/Shader.h>
 #include <Runtime/Vulkan/Device/VulkanDevice.h>
 
-#include <vulkan.h>
+#include <vulkan/vulkan.h>
 
 namespace Hollow
 {

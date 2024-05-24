@@ -19,6 +19,8 @@
 #include <Runtime/Graphics/Descriptor/DescriptorSetDesc.h>
 #include <Runtime/Graphics/Descriptor/DescriptorPoolDesc.h>
 #include <Runtime/Graphics/Descriptor/DescriptorLayoutDesc.h>
+#include <Runtime/Graphics/RenderPass/RenderPassDesc.h>
+#include <Runtime/Graphics/Framebuffer/FramebufferDesc.h>
 
 #include <Runtime/Graphics/Core/BufferDataUpdateDesc.h>
 #include <Runtime/Graphics/Descriptor/DescriptorSetCopyDesc.h>
@@ -44,6 +46,8 @@ namespace Hollow
 	class RUNTIME_API DescriptorSet;
 	class RUNTIME_API DescriptorPool;
 	class RUNTIME_API DescriptorLayout;
+	class RUNTIME_API RenderPass;
+	class RUNTIME_API Framebuffer;
 
 	/**
 	 * @class GraphicsDevice
@@ -71,6 +75,8 @@ namespace Hollow
 		SharedPtr<Pipeline> CreateGraphicsPipeline(const GraphicsPipelineDesc& desc);
 		SharedPtr<CommandBuffer> CreateCommandBuffer(const CommandBufferDesc& desc);
 		SharedPtr<CommandPool> CreateCommandPool(const CommandPoolDesc& desc);
+		SharedPtr<RenderPass> CreateRenderPass(const RenderPassDesc& desc);
+		SharedPtr<Framebuffer> CreateFramebuffer(const FramebufferDesc& desc);
 		SharedPtr<GraphicsBuffer> CreateGraphicsBuffer(const GraphicsBufferDesc& desc);
 		SharedPtr<DescriptorSet> CreateDescriptorSet(const DescriptorSetDesc& desc);
 		SharedPtr<DescriptorPool> CreateDescriptorPool(const DescriptorPoolDesc& desc);
@@ -100,6 +106,8 @@ namespace Hollow
 		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) = 0;
 		virtual SharedPtr<CommandBuffer> CreateCommandBufferImpl(const CommandBufferDesc& desc) = 0;
 		virtual SharedPtr<CommandPool> CreateCommandPoolImpl(const CommandPoolDesc& desc) = 0;
+		virtual SharedPtr<RenderPass> CreateRenderPassImpl(const RenderPassDesc& desc) = 0;
+		virtual SharedPtr<Framebuffer> CreateFramebufferImpl(const FramebufferDesc& desc) = 0;
 		virtual SharedPtr<GraphicsBuffer> CreateGraphicsBufferImpl(const GraphicsBufferDesc& desc) = 0;
 		virtual SharedPtr<DescriptorSet> CreateDescriptorSetImpl(const DescriptorSetDesc& desc) = 0;
 		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc) = 0;

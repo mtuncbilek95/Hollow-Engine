@@ -19,6 +19,7 @@ namespace Hollow
 		DescriptorPool,
 		DescriptorLayout,
 		RenderPass,
+		Framebuffer,
 		Shader,
 		Pipeline,
 		Semaphore,

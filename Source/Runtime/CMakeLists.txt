@@ -29,7 +29,7 @@ target_include_directories(Runtime PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 
 if (stbi_POPULATED) 
     target_compile_definitions(Runtime PUBLIC STB_IMAGE_IMPLEMENTATION)
-    target_compile_definitions(Runtime PUBLIC STB_TRUETYPE_IMPLEMENTATION)
+    #target_compile_definitions(Runtime PUBLIC STB_TRUETYPE_IMPLEMENTATION)
 
     target_include_directories(Runtime PUBLIC ${stbi_SOURCE_DIR})
 endif ()
@@ -40,7 +40,7 @@ if(assimp_POPULATED)
 endif()
 
 if(Vulkan_FOUND)
-    target_include_directories(Runtime PUBLIC "${Vulkan_INCLUDE_DIRS}/vulkan")
+    target_include_directories(Runtime PUBLIC "${Vulkan_INCLUDE_DIRS}")
     target_link_libraries(Runtime PUBLIC "${Vulkan_SDK_DIR}/vulkan-1.lib")
 endif()
 

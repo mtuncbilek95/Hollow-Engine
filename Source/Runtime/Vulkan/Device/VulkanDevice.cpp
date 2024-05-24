@@ -17,6 +17,8 @@
 #include <Runtime/Vulkan/Descriptor/VulkanDescriptorLayout.h>
 #include <Runtime/Vulkan/Sampler/VulkanSampler.h>
 #include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
+#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
+#include <Runtime/Vulkan/Framebuffer/VulkanFramebuffer.h>
 
 #include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
 #include <Runtime/Vulkan/Descriptor/VulkanDescriptorUtils.h>
@@ -360,6 +362,18 @@ namespace Hollow
 	{
 		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
 		return std::make_shared<VulkanCommandPool>(desc, device);
+	}
+
+	SharedPtr<RenderPass> VulkanDevice::CreateRenderPassImpl(const RenderPassDesc& desc)
+	{
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanRenderPass>(desc, device);
+	}
+
+	SharedPtr<Framebuffer> VulkanDevice::CreateFramebufferImpl(const FramebufferDesc& desc)
+	{
+		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
+		return std::make_shared<VulkanFramebuffer>(desc, device);
 	}
 
 	SharedPtr<GraphicsBuffer> VulkanDevice::CreateGraphicsBufferImpl(const GraphicsBufferDesc& desc)

@@ -4,7 +4,7 @@
 #include <Runtime/Graphics/Command/CommandBuffer.h>
 #include <Runtime/Vulkan/Device/VulkanDevice.h>
 
-#include <vulkan.h>
+#include <vulkan/vulkan.h>
 
 namespace Hollow
 {
@@ -24,6 +24,8 @@ namespace Hollow
 		virtual void EndRecordingImpl() override;
 		virtual void BeginRenderingImpl(const DynamicPassDesc& desc) override;
 		virtual void EndRenderingImpl() override;
+		virtual void BeginRenderPassImpl(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vector4f& clearColor, const Vector2f& depthStencil) override;
+		virtual void EndRenderPassImpl() override;
 		virtual void BindPipelineImpl(SharedPtr<Pipeline> pPipeline) override;
 		virtual void BindVertexBuffersImpl(SharedPtr<GraphicsBuffer> ppBuffer[], uint32 amount) override;
 		virtual void BindIndexBufferImpl(SharedPtr<GraphicsBuffer> pBuffer, GraphicsIndexType indexType) override;

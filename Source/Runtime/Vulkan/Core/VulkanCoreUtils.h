@@ -9,7 +9,10 @@
 #include <Runtime/Graphics/Core/AttachmentLoadOperation.h>
 #include <Runtime/Graphics/Core/AttachmentStoreOperation.h>
 
-#include <vulkan.h>
+#include <Runtime/Graphics/API/GraphicsManager.h>
+#include <Runtime/Graphics/Swapchain/Swapchain.h>
+
+#include <vulkan/vulkan.h>
 
 namespace Hollow
 {
@@ -156,6 +159,21 @@ namespace Hollow
 			default:
 				return VK_ATTACHMENT_STORE_OP_STORE;
 			}
+		}
+
+		static VkPipelineRenderingCreateInfo CreatePipelineRenderingInfo()
+		{
+			VkFormat formats[] = { VK_FORMAT_B8G8R8_SRGB };
+			VkPipelineRenderingCreateInfo renderingCreateInfo = {};
+			renderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
+			renderingCreateInfo.pNext = nullptr;
+			renderingCreateInfo.colorAttachmentCount = 1;
+			renderingCreateInfo.pColorAttachmentFormats = formats;
+			renderingCreateInfo.depthAttachmentFormat = VK_FORMAT_UNDEFINED;
+			renderingCreateInfo.stencilAttachmentFormat = VK_FORMAT_UNDEFINED;
+			renderingCreateInfo.viewMask = 0;
+
+			return renderingCreateInfo;
 		}
 
 	public:

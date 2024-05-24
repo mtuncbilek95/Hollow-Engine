@@ -7,7 +7,7 @@
 #endif // !NOMINMAX
 
 #include <Windows.h>
-#include <vulkan_win32.h>
+#include <vulkan/vulkan_win32.h>
 #define VK_USE_PLATFORM_WIN32_KHR
 #endif
 

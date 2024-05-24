@@ -27,6 +27,18 @@ namespace Hollow
 		EndRenderingImpl();
 	}
 
+	void CommandBuffer::BeginRenderPass(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vector4f& clearColor, const Vector2f& depthStencil)
+	{
+		BeginRenderPassImpl(pRenderPass, pFramebuffer, clearColor, depthStencil);
+		mBoundRenderPass = pRenderPass;
+	}
+
+	void CommandBuffer::EndRenderPass()
+	{
+		EndRenderPassImpl();
+		mBoundRenderPass = nullptr;
+	}
+
 	void CommandBuffer::BindPipeline(SharedPtr<Pipeline> pPipeline)
 	{
 		BindPipelineImpl(pPipeline);

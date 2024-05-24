@@ -6,6 +6,8 @@
 #include <Runtime/Vulkan/Texture/VulkanTextureUtils.h>
 
 #include <Runtime/Vulkan/Command/VulkanCommandPool.h>
+#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
+#include <Runtime/Vulkan/Framebuffer/VulkanFramebuffer.h>
 #include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchain.h>
 #include <Runtime/Vulkan/Buffer/VulkanBuffer.h>
@@ -125,6 +127,33 @@ namespace Hollow
 	void VulkanCommandBuffer::EndRenderingImpl()
 	{
 		vkCmdEndRendering(mVkCommandBuffer);
+	}
+
+	void VulkanCommandBuffer::BeginRenderPassImpl(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vector4f& clearColor, const Vector2f& depthStencil)
+	{
+		VkRenderPass rPass = std::static_pointer_cast<VulkanRenderPass>(pRenderPass)->GetVkRenderPass();
+		VkFramebuffer rFramebuffer = std::static_pointer_cast<VulkanFramebuffer>(pFramebuffer)->GetVkFramebuffer();
+
+		VkRenderPassBeginInfo renderPassInfo = {};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassInfo.renderPass = rPass;
+		renderPassInfo.framebuffer = rFramebuffer;
+		renderPassInfo.renderArea.offset = { 0, 0 };
+		renderPassInfo.renderArea.extent = { pFramebuffer->GetImageSize().x, pFramebuffer->GetImageSize().y };
+
+		VkClearValue clearValues[2];
+		clearValues[0].color = { clearColor.x, clearColor.y, clearColor.z, clearColor.w };
+		clearValues[1].depthStencil = { depthStencil.x, static_cast<uint32>(depthStencil.y) };
+
+		renderPassInfo.clearValueCount = 2;
+		renderPassInfo.pClearValues = clearValues;
+
+		vkCmdBeginRenderPass(mVkCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	}
+
+	void VulkanCommandBuffer::EndRenderPassImpl()
+	{
+		vkCmdEndRenderPass(mVkCommandBuffer);
 	}
 
 	void VulkanCommandBuffer::BindPipelineImpl(SharedPtr<Pipeline> pPipeline)

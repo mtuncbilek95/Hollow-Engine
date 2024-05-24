@@ -3,7 +3,7 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Descriptor/DescriptorType.h>
 
-#include <vulkan.h>
+#include <vulkan/vulkan.h>
 
 namespace Hollow
 {

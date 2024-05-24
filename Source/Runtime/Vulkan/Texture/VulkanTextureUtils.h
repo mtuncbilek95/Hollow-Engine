@@ -8,7 +8,7 @@
 #include <Runtime/Graphics/Texture/TextureSampleCount.h>
 #include <Runtime/Graphics/Texture/TextureMemoryLayout.h>
 
-#include <vulkan.h>
+#include <vulkan/vulkan.h>
 
 namespace Hollow
 {

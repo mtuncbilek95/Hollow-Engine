@@ -4,7 +4,7 @@
 #include <Runtime/Graphics/Memory/GraphicsMemoryType.h>
 #include <Runtime/Graphics/Memory/GraphicsMemoryAccessFlags.h>
 
-#include <vulkan.h>
+#include <vulkan/vulkan.h>
 
 namespace Hollow
 {

@@ -19,6 +19,8 @@ namespace Hollow
 	class RUNTIME_API Pipeline;
 	class RUNTIME_API DescriptorSet;
 	class RUNTIME_API Texture;
+	class RUNTIME_API RenderPass;
+	class RUNTIME_API Framebuffer;
 
 	/**
 	 * @class CommandBuffer
@@ -37,6 +39,8 @@ namespace Hollow
 		void EndRecording();
 		void BeginRendering(const DynamicPassDesc& desc);
 		void EndRendering();
+		void BeginRenderPass(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vector4f& clearColor, const Vector2f& depthStencil);
+		void EndRenderPass();
 		void BindPipeline(SharedPtr<Pipeline> pPipeline);
 		void BindVertexBuffers(SharedPtr<GraphicsBuffer> pBuffer[], uint32 amount);
 		void BindIndexBuffer(SharedPtr<GraphicsBuffer> pBuffer, GraphicsIndexType indexType);
@@ -65,6 +69,8 @@ namespace Hollow
 		virtual void EndRecordingImpl() = 0;
 		virtual void BeginRenderingImpl(const DynamicPassDesc& desc) = 0;
 		virtual void EndRenderingImpl() = 0;
+		virtual void BeginRenderPassImpl(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vector4f& clearColor, const Vector2f& depthStencil) = 0;
+		virtual void EndRenderPassImpl() = 0;
 		virtual void BindPipelineImpl(SharedPtr<Pipeline> pPipeline) = 0;
 		virtual void BindVertexBuffersImpl(SharedPtr<GraphicsBuffer> ppBuffer[], uint32 amount) = 0;
 		virtual void BindIndexBufferImpl(SharedPtr<GraphicsBuffer> pBuffer, GraphicsIndexType indexType) = 0;
@@ -81,6 +87,8 @@ namespace Hollow
 
 	private:
 		SharedPtr<CommandPool> mOwnerPool;
+		SharedPtr<RenderPass> mBoundRenderPass;
+		SharedPtr<Framebuffer> mBoundFramebuffer;
 		SharedPtr<GraphicsBuffer> mBoundIndexBuffer;
 		SharedPtr<Pipeline> mBoundPipeline;
 		bool mRecording;

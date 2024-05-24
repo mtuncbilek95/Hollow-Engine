@@ -3,7 +3,7 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Device/GraphicsDevice.h>
 
-#include <vulkan.h>
+#include <vulkan/vulkan.h>
 
 namespace Hollow
 {
@@ -70,6 +70,8 @@ namespace Hollow
 		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) override;
 		virtual SharedPtr<CommandBuffer> CreateCommandBufferImpl(const CommandBufferDesc& desc) override;
 		virtual SharedPtr<CommandPool> CreateCommandPoolImpl(const CommandPoolDesc& desc) override;
+		virtual SharedPtr<RenderPass> CreateRenderPassImpl(const RenderPassDesc& desc) override;
+		virtual SharedPtr<Framebuffer> CreateFramebufferImpl(const FramebufferDesc& desc) override;
 		virtual SharedPtr<GraphicsBuffer> CreateGraphicsBufferImpl(const GraphicsBufferDesc& desc) override;
 		virtual SharedPtr<DescriptorSet> CreateDescriptorSetImpl(const DescriptorSetDesc& desc) override;
 		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc) override;
