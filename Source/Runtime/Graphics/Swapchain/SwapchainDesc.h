@@ -3,6 +3,7 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Texture/TextureFormat.h>
 #include <Runtime/Graphics/Texture/TextureUsage.h>
+#include <Runtime/Graphics/Texture/TextureType.h>
 #include <Runtime/Graphics/Core/PresentMode.h>
 #include <Runtime/Graphics/Core/ShareMode.h>
 

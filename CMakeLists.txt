@@ -31,4 +31,5 @@ add_subdirectory("Source/Editor")
 add_subdirectory("Tests/01_Runtime")
 add_subdirectory("Tests/02_ShaderReflection")
 add_subdirectory("Tests/03_Resource")
+add_subdirectory("Tests/04_RenderTarget")
 # --------------------------------------------------

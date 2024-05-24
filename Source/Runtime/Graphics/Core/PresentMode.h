@@ -4,9 +4,9 @@ namespace Hollow
 {
 	enum class RUNTIME_API PresentMode : byte
 	{
-		Immediate,
-		VSyncImmediate,
-		VSyncQueued,
-		FullVSync
+		Immediate, // VK_IMMEDIATE
+		VSyncImmediate, // VK_FIFO_RELAXED
+		VSyncQueued, // VK_MAILBOX
+		FullVSync // VK_FIFO
 	};
 }

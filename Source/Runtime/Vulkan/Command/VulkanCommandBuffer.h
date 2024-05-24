@@ -33,6 +33,7 @@ namespace Hollow
 		virtual void SetScissorsImpl(ScissorDesc pScissors[], byte count) override;
 		virtual void CopyBufferToBufferImpl(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<GraphicsBuffer> pDestinationBuffer, BufferBufferCopyDesc& desc) override;
 		virtual void CopyBufferToTextureImpl(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<Texture> pDestinationTexture, BufferTextureCopyDesc& desc) override;
+		virtual void ResolveTextureImpl(SharedPtr<Texture> pSourceTexture, SharedPtr<Texture> pDestinationTexture) override;
 		virtual void SetTextureBarrierImpl(SharedPtr<Texture> pTexture, TextureBarrierUpdateDesc& desc) override;
 		virtual void SetBufferMemoryBarrierImpl(SharedPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrierUpdateDesc& desc) override;
 		virtual void SetCommonMemoryBarrierImpl(CommonMemoryBarrierUpdateDesc& desc) override;

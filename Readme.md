@@ -28,10 +28,11 @@
 - [ ] PhysX
 - [ ] FMod
 - [x] STBI
-- [x] Nlohmann JSON
+- [ ] Nlohmann JSON
 
 ## Tests
 - [x] Runtime Test
+- [x] Resource Management for RenderTarget
 - [x] Resource Management for Shader
 - [ ] Resource Management for Texture <b>(W.I.P)</b>
 - [ ] Resource Management for Mesh

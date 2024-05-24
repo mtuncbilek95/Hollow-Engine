@@ -69,6 +69,11 @@ namespace Hollow
 		CopyBufferToTextureImpl(pSourceBuffer, pDestinationTexture, desc);
 	}
 
+	void CommandBuffer::ResolveTexture(SharedPtr<Texture> pSourceTexture, SharedPtr<Texture> pDestinationTexture)
+	{
+		ResolveTextureImpl(pSourceTexture, pDestinationTexture);
+	}
+
 	void CommandBuffer::SetTextureBarrier(SharedPtr<Texture> pTexture, TextureBarrierUpdateDesc& desc)
 	{
 		SetTextureBarrierImpl(pTexture, desc);

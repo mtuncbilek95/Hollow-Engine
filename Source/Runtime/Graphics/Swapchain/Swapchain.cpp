@@ -48,7 +48,6 @@ namespace Hollow
 	void Swapchain::Present()
 	{
 		PresentImpl();
-		mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mBufferCount;
 	}
 
 	void Swapchain::AddTexture(SharedPtr<Texture> pTexture)

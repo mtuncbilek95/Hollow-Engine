@@ -158,7 +158,7 @@ namespace Hollow
 		{
 			TextureDesc textureDesc = {};
 			textureDesc.ArraySize = 1;
-			textureDesc.ImageFormat = desc.SwapchainImageFormat;
+			textureDesc.ImageFormat = GetSwapchainFormat();
 			textureDesc.ImageSize = { GetImageSize().x, GetImageSize().y, 1 };
 			textureDesc.MipLevels = 1;
 			textureDesc.SampleCount = TextureSampleCount::Sample1;
@@ -367,19 +367,14 @@ namespace Hollow
 
 	void VulkanSwapchain::AcquireNextImageImpl()
 	{
-		// Acquire the next image
-		uint32 imageIndex = GetCurrentFrameIndex();
+		auto imageSemaphore = std::static_pointer_cast<VulkanSemaphore>(GetImageSemaphore(mCurrentFrameIndex));
 
-		auto imageSemaphore = std::static_pointer_cast<VulkanSemaphore>(GetImageSemaphore(imageIndex));
-		auto flightSemaphore = GetFlightSemaphore(imageIndex);
-
-		CORE_ASSERT(vkAcquireNextImageKHR(mVkDevice, mVkSwapchain, uint64_max, imageSemaphore->GetVkSemaphore(), VK_NULL_HANDLE, &imageIndex) == VK_SUCCESS, "VulkanSwapchain",
+		CORE_ASSERT(vkAcquireNextImageKHR(mVkDevice, mVkSwapchain, uint64_max, imageSemaphore->GetVkSemaphore(), VK_NULL_HANDLE, &mCurrentFrameIndex) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to acquire next image");
 	}
 
 	void VulkanSwapchain::PresentImpl()
 	{
-		// Acquire the next image
 		uint32 imageIndex = GetCurrentFrameIndex();
 		VkSemaphore flightSemaphore = std::static_pointer_cast<VulkanSemaphore>(GetFlightSemaphore(imageIndex))->GetVkSemaphore();
 
@@ -395,5 +390,7 @@ namespace Hollow
 
 		auto pQueue = std::static_pointer_cast<VulkanQueue>(GetPresentQueue());
 		CORE_ASSERT(vkQueuePresentKHR(pQueue->GetVkQueue(), &presentInfo) == VK_SUCCESS, "VulkanSwapchain", "Failed to present image");
+
+		mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mBufferCount;
 	}
 }

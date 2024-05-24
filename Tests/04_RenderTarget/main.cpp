@@ -11,6 +11,7 @@
 #include <Runtime/Graphics/Fence/Fence.h>
 #include <Runtime/Graphics/Shader/Shader.h>
 #include <Runtime/ShaderCompiler/ShaderCompiler.h>
+#include <Runtime/Resource/RenderTarget/RenderTargetResource.h>
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
 #include <Runtime/Graphics/Sampler/Sampler.h>
 #include <Runtime/Graphics/Buffer/GraphicsBuffer.h>
@@ -116,13 +117,20 @@ void UpdateTransforms()
 {
 	for (byte i = 0; i < INSTANCE_COUNT; i++)
 	{
-		InstanceTransforms[i].Rotation.x += 0.01f;
 		if (i % 2 == 0)
-			InstanceTransforms[i].Rotation.y += 0.02f;
-		else
-			InstanceTransforms[i].Rotation.y -= 0.014f;
+		{
+			InstanceTransforms[i].Rotation.x += 0.009f;
+			InstanceTransforms[i].Rotation.y += 0.023f;
+			InstanceTransforms[i].Rotation.z += 0.026f;
 
-		InstanceTransforms[i].Rotation.z += 0.03f;
+		}
+		else
+		{
+			InstanceTransforms[i].Rotation.x -= 0.019f;
+			InstanceTransforms[i].Rotation.y -= 0.014f;
+			InstanceTransforms[i].Rotation.z -= 0.037f;
+		}
+
 
 		MVPData.Model[i] = XMMatrixScaling(InstanceTransforms[i].Scale.x, InstanceTransforms[i].Scale.y, InstanceTransforms[i].Scale.z) *
 			XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i].Rotation.y),
@@ -299,6 +307,16 @@ int main(int argC, char** argV)
 #pragma region Depth and Multisample Textures
 	// ----------------- CREATE DEPTH TEXTURE -----------------
 
+	TextureDesc colorTextureDesc = {};
+	colorTextureDesc.ArraySize = 1;
+	colorTextureDesc.ImageFormat = swapchainDesc.SwapchainImageFormat;
+	colorTextureDesc.ImageSize = { mSwapchain->GetImageSize().x, mSwapchain->GetImageSize().y, 1 };
+	colorTextureDesc.MipLevels = 1;
+	colorTextureDesc.SampleCount = TextureSampleCount::Sample8;
+	colorTextureDesc.Type = TextureType::Texture2DMS;
+	colorTextureDesc.Usage = TextureUsage::ColorAttachment;
+	colorTextureDesc.pMemory = mDeviceMemory;
+
 	TextureDesc depthTextureDesc = {};
 	depthTextureDesc.ArraySize = 4;
 	depthTextureDesc.ImageFormat = TextureFormat::D32_Float;
@@ -309,45 +327,14 @@ int main(int argC, char** argV)
 	depthTextureDesc.Usage = TextureUsage::DepthStencilAttachment;
 	depthTextureDesc.pMemory = mDeviceMemory;
 
-	auto mDepthTexture = mDevice->CreateTexture(depthTextureDesc);
+	RenderTargetDesc rTargetDesc = {};
+	rTargetDesc.mRegionSize = mSwapchain->GetImageSize();
+	rTargetDesc.DescStruct.ColorAttachmentCount = mSwapchain->GetBufferCount();
+	rTargetDesc.DescStruct.ColorAttachment = colorTextureDesc;
+	rTargetDesc.DescStruct.HasDepthAttachment = true;
+	rTargetDesc.DescStruct.DepthAttachment = depthTextureDesc;
 
-	TextureBufferDesc depthTextureViewDesc = {};
-	depthTextureViewDesc.ArrayLayer = 0;
-	depthTextureViewDesc.AspectFlags = TextureAspectFlags::DepthAspect;
-	depthTextureViewDesc.MipLevel = 0;
-	depthTextureViewDesc.pTexture = mDepthTexture;
-
-	auto mDepthTextureView = mDevice->CreateTextureBuffer(depthTextureViewDesc);
-
-	// ----------------- CREATE MULTISAMPLE TEXTURES FOR SWAPCHAIN -----------------
-	ArrayList<SharedPtr<Texture>> mColorTextures;
-	ArrayList<SharedPtr<TextureBuffer>> mColorTextureViews;
-
-	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
-	{
-		TextureDesc colorTextureDesc = {};
-		colorTextureDesc.ArraySize = 1;
-		colorTextureDesc.ImageFormat = swapchainDesc.SwapchainImageFormat;
-		colorTextureDesc.ImageSize = { mSwapchain->GetImageSize().x, mSwapchain->GetImageSize().y, 1 };
-		colorTextureDesc.MipLevels = 1;
-		colorTextureDesc.SampleCount = TextureSampleCount::Sample8;
-		colorTextureDesc.Type = TextureType::Texture2DMS;
-		colorTextureDesc.Usage = TextureUsage::ColorAttachment;
-		colorTextureDesc.pMemory = mDeviceMemory;
-
-		auto mColorTexture = mDevice->CreateTexture(colorTextureDesc);
-		mColorTextures.push_back(mColorTexture);
-
-		TextureBufferDesc colorTextureViewDesc = {};
-		colorTextureViewDesc.ArrayLayer = 0;
-		colorTextureViewDesc.AspectFlags = TextureAspectFlags::ColorAspect;
-		colorTextureViewDesc.MipLevel = 0;
-		colorTextureViewDesc.pTexture = mColorTexture;
-
-		auto mColorTextureView = mDevice->CreateTextureBuffer(colorTextureViewDesc);
-		mColorTextureViews.push_back(mColorTextureView);
-	}
-
+	auto mRenderTarget = RenderTargetResource::CreateRenderTarget(rTargetDesc);
 	// ----------------- UPDATE DEPTH TEXTURE -----------------
 
 	mCommandBuffer->BeginRecording();
@@ -388,7 +375,7 @@ int main(int argC, char** argV)
 
 	depthTextureBarrier.AspectMask = TextureAspectFlags::DepthAspect;
 
-	mCommandBuffer->SetTextureBarrier(mDepthTexture, depthTextureBarrier);
+	mCommandBuffer->SetTextureBarrier(mRenderTarget->GetDepthBuffer()->GetTexture(), depthTextureBarrier);
 
 	mCommandBuffer->EndRecording();
 	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
@@ -798,7 +785,7 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->SetTextureBarrier(mSwapchain->GetImage(imageIndex), preRenderBarrier);
 
 		DynamicPassAttachmentDesc passColorAttachmentDesc = {};
-		passColorAttachmentDesc.ImageBuffer = mColorTextureViews[imageIndex];
+		passColorAttachmentDesc.ImageBuffer = mRenderTarget->GetColorBuffer(imageIndex);
 		passColorAttachmentDesc.ResolveLayout = TextureMemoryLayout::ColorAttachment;
 		passColorAttachmentDesc.ResolveBuffer = mSwapchain->GetImageView(imageIndex);
 		passColorAttachmentDesc.ResolveMode = ResolveModeFlags::Average;
@@ -808,7 +795,7 @@ int main(int argC, char** argV)
 		passColorAttachmentDesc.ClearColor = { 0.1f, 0.2f, 0.3f, 1.0f };
 
 		DynamicPassAttachmentDesc passDepthAttachmentDesc = {};
-		passDepthAttachmentDesc.ImageBuffer = mDepthTextureView;
+		passDepthAttachmentDesc.ImageBuffer = mRenderTarget->GetDepthBuffer();
 		passDepthAttachmentDesc.TextureLayout = TextureMemoryLayout::DepthStencilAttachment;
 		passDepthAttachmentDesc.LoadOperation = AttachmentLoadOperation::Clear;
 		passDepthAttachmentDesc.StoreOperation = AttachmentStoreOperation::Store;

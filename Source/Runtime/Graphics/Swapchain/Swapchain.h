@@ -15,6 +15,7 @@ namespace Hollow
 
 	class RUNTIME_API Swapchain : public GraphicsDeviceObject
 	{
+		friend class VulkanSwapchain;
 	public:
 		Swapchain(const SwapchainDesc& desc, const SharedPtr<GraphicsDevice> pDevice);
 		virtual ~Swapchain() override = default;
@@ -27,9 +28,9 @@ namespace Hollow
 		TextureFormat GetSwapchainFormat() const { return mSwapchainFormat; }
 		TextureUsage GetSwapchainUsage() const { return mSwapchainUsage; }
 		PresentMode GetPresentMode() const { return mPresentMode; }
-		const byte& GetBufferCount() const { return mBufferCount; }
+		byte GetBufferCount() const { return mBufferCount; }
 		SharedPtr<GraphicsQueue> GetPresentQueue() const { return mGraphicsQueue; }
-		const byte& GetCurrentFrameIndex() const { return mCurrentFrameIndex; }
+		uint32 GetCurrentFrameIndex() const { return mCurrentFrameIndex; }
 		ShareMode GetShareMode() const { return mShareMode; }
 
 		const ArrayList<SharedPtr<Texture>>& GetImages() const { return mImages; }
@@ -64,7 +65,7 @@ namespace Hollow
 		SharedPtr<GraphicsQueue> mGraphicsQueue;
 		PresentMode mPresentMode;
 		ShareMode mShareMode;
-		byte mCurrentFrameIndex;
+		uint32 mCurrentFrameIndex;
 		ArrayList<SharedPtr<Texture>> mImages;
 		ArrayList<SharedPtr<TextureBuffer>> mImageBuffers;
 		ArrayList<SharedPtr<Semaphore>> mImageSemaphores;

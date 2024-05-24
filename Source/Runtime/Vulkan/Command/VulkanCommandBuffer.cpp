@@ -235,6 +235,27 @@ namespace Hollow
 		vkCmdCopyBufferToImage(mVkCommandBuffer, srcBuffer, dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
 	}
 
+	void VulkanCommandBuffer::ResolveTextureImpl(SharedPtr<Texture> pSourceTexture, SharedPtr<Texture> pDestinationTexture)
+	{
+		VkImage srcImage = std::static_pointer_cast<VulkanTexture>(pSourceTexture)->GetVkTexture();
+		VkImage dstImage = std::static_pointer_cast<VulkanTexture>(pDestinationTexture)->GetVkTexture();
+
+		VkImageResolve resolveRegion = {};
+		resolveRegion.dstOffset = { 0, 0, 0 };
+		resolveRegion.srcOffset = { 0, 0, 0 };
+		resolveRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		resolveRegion.srcSubresource.mipLevel = 0;
+		resolveRegion.srcSubresource.baseArrayLayer = 0;
+		resolveRegion.srcSubresource.layerCount = pSourceTexture->GetArraySize();
+		resolveRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		resolveRegion.dstSubresource.mipLevel = 0;
+		resolveRegion.dstSubresource.baseArrayLayer = 0;
+		resolveRegion.dstSubresource.layerCount = pDestinationTexture->GetArraySize();
+		resolveRegion.extent = { pSourceTexture->GetImageSize().x, pSourceTexture->GetImageSize().y, 1 };
+
+		vkCmdResolveImage(mVkCommandBuffer, srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &resolveRegion);
+	}
+
 	void VulkanCommandBuffer::SetTextureBarrierImpl(SharedPtr<Texture> pTexture, TextureBarrierUpdateDesc& desc)
 	{
 		auto device = std::static_pointer_cast<VulkanDevice>(GetOwnerDevice());

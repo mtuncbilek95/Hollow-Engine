@@ -115,10 +115,10 @@ namespace Hollow
 		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 		multisampling.sampleShadingEnable = desc.Multisample.bSampleShadingEnabled;
 		multisampling.rasterizationSamples = VulkanTextureUtils::GetVkSampleCount(desc.Multisample.Samples);
-		multisampling.minSampleShading = 1.0f; // Optional
-		multisampling.pSampleMask = nullptr; // Optional
-		multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
-		multisampling.alphaToOneEnable = VK_FALSE; // Optional
+		multisampling.minSampleShading = 1.0f;
+		multisampling.pSampleMask = nullptr;
+		multisampling.alphaToCoverageEnable = VK_TRUE;
+		multisampling.alphaToOneEnable = VK_FALSE;
 
 		// Create ColorBlendAttachment
 		ArrayList<VkPipelineColorBlendAttachmentState> colorAttachments;

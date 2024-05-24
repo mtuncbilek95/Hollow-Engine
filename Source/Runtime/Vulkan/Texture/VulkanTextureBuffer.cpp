@@ -25,9 +25,9 @@ namespace Hollow
 		imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 		imageViewInfo.subresourceRange.aspectMask = VulkanTextureUtils::GetVkTextureAspectFlags(desc.AspectFlags);
 		imageViewInfo.subresourceRange.baseMipLevel = desc.MipLevel;
-		imageViewInfo.subresourceRange.levelCount = 1;
+		imageViewInfo.subresourceRange.levelCount = desc.MipLevel > 0 ? VK_REMAINING_MIP_LEVELS : 1;
 		imageViewInfo.subresourceRange.baseArrayLayer = desc.ArrayLayer;
-		imageViewInfo.subresourceRange.layerCount = 1;
+		imageViewInfo.subresourceRange.layerCount = desc.ArrayLayer > 0 ? VK_REMAINING_ARRAY_LAYERS : 1;
 
 		CORE_ASSERT(vkCreateImageView(mVkDevice, &imageViewInfo, nullptr, &mVkTextureView) == VK_SUCCESS, "VulkanTextureView", "Failed to create VulkanTextureView.");
 	}

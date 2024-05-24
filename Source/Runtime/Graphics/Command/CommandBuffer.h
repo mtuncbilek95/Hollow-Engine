@@ -46,6 +46,7 @@ namespace Hollow
 		void SetScissors(ScissorDesc pScissors[], byte count);
 		void CopyBufferToBuffer(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<GraphicsBuffer> pDestinationBuffer, BufferBufferCopyDesc& desc);
 		void CopyBufferToTexture(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<Texture> pDestinationTexture, BufferTextureCopyDesc& desc);
+		void ResolveTexture(SharedPtr<Texture> pSourceTexture, SharedPtr<Texture> pDestinationTexture);
 		void SetTextureBarrier(SharedPtr<Texture> pTexture, TextureBarrierUpdateDesc& desc);
 		void SetBufferMemoryBarrier(SharedPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrierUpdateDesc& desc);
 		void SetCommonMemoryBarrier(CommonMemoryBarrierUpdateDesc& desc);
@@ -73,6 +74,7 @@ namespace Hollow
 		virtual void SetScissorsImpl(ScissorDesc pScissors[], byte count) = 0;
 		virtual void CopyBufferToBufferImpl(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<GraphicsBuffer> pDestinationBuffer, BufferBufferCopyDesc& desc) = 0;
 		virtual void CopyBufferToTextureImpl(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<Texture> pDestinationTexture, BufferTextureCopyDesc& desc) = 0;
+		virtual void ResolveTextureImpl(SharedPtr<Texture> pSourceTexture, SharedPtr<Texture> pDestinationTexture) = 0;
 		virtual void SetTextureBarrierImpl(SharedPtr<Texture> pTexture, TextureBarrierUpdateDesc& desc) = 0;
 		virtual void SetBufferMemoryBarrierImpl(SharedPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrierUpdateDesc& desc) = 0;
 		virtual void SetCommonMemoryBarrierImpl(CommonMemoryBarrierUpdateDesc& desc) = 0;
