@@ -27,10 +27,10 @@ endif ()
 # ------------------ SUBDIRECTORIES ----------------
 add_subdirectory("Source/Runtime")
 add_subdirectory("Source/Editor")
+add_subdirectory("Source/EditorPlayer")
 
 add_subdirectory("Tests/01_Runtime")
 add_subdirectory("Tests/02_ShaderReflection")
 add_subdirectory("Tests/03_Resource")
 add_subdirectory("Tests/04_RenderTarget")
-add_subdirectory("Tests/05_Editor")
 # --------------------------------------------------
