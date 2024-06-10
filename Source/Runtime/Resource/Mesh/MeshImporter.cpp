@@ -8,6 +8,12 @@
 
 namespace Hollow
 {
+	struct Vertex
+	{
+		Vector3f Position;
+		Vector2f UV;
+	};
+
 	MeshResourceLayout MeshImporter::Import(String path)
 	{
 		if (!PlatformFile::Exists(path))
@@ -26,76 +32,47 @@ namespace Hollow
 
 		MeshResourceLayout mainLayout;
 
-		for (uint64 meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++)
+		auto mainMesh = scene->mMeshes[0];
+
+		if(mainMesh->HasPositions())
 		{
-			SubMeshObject subMesh = {};
-			const aiMesh* mesh = scene->mMeshes[meshIndex];
+			for (uint32 i = 0; i < mainMesh->mNumVertices; ++i)
+				mainLayout.Vertices.Position.push_back({ mainMesh->mVertices[i].x, mainMesh->mVertices[i].y, mainMesh->mVertices[i].z });
 
-			if (mesh->HasPositions())
+			for (uint32 i = 0; i < mainMesh->mNumFaces; ++i)
 			{
-				for (uint64 vertexIndex = 0; vertexIndex < mesh->mNumVertices; vertexIndex++)
-				{
-					subMesh.Positions.push_back(Vector3f(mesh->mVertices[vertexIndex].x, mesh->mVertices[vertexIndex].y, mesh->mVertices[vertexIndex].z));
-				}
+				aiFace face = mainMesh->mFaces[i];
+				for (uint32 j = 0; j < face.mNumIndices; ++j)
+					mainLayout.Indices.push_back(face.mIndices[j]);
 			}
-
-			if (mesh->HasNormals())
-			{
-				for (uint64 normalIndex = 0; normalIndex < mesh->mNumVertices; normalIndex++)
-				{
-					subMesh.Normals.push_back(Vector3f(mesh->mNormals[normalIndex].x, mesh->mNormals[normalIndex].y, mesh->mNormals[normalIndex].z));
-				}
-			}
-
-			if (mesh->HasTangentsAndBitangents())
-			{
-				for (uint64 tangentIndex = 0; tangentIndex < mesh->mNumVertices; tangentIndex++)
-				{
-					subMesh.Tangents.push_back(Vector3f(mesh->mTangents[tangentIndex].x, mesh->mTangents[tangentIndex].y, mesh->mTangents[tangentIndex].z));
-					subMesh.Bitangents.push_back(Vector3f(mesh->mBitangents[tangentIndex].x, mesh->mBitangents[tangentIndex].y, mesh->mBitangents[tangentIndex].z));
-				}
-			}
-
-			for (uint64 uvIndex = 0; uvIndex < AI_MAX_NUMBER_OF_TEXTURECOORDS; uvIndex++)
-			{
-				if (mesh->HasTextureCoords(uvIndex))
-				{
-					ArrayList<Vector2f> uvSet;
-					for (uint64 uvSetIndex = 0; uvSetIndex < mesh->mNumVertices; uvSetIndex++)
-					{
-						uvSet.push_back(Vector2f(mesh->mTextureCoords[uvIndex][uvSetIndex].x, mesh->mTextureCoords[uvIndex][uvSetIndex].y));
-					}
-					subMesh.UVs.push_back(uvSet);
-				}
-			}
-
-			for (uint64 colorIndex = 0; colorIndex < AI_MAX_NUMBER_OF_COLOR_SETS; colorIndex++)
-			{
-				if (mesh->HasVertexColors(colorIndex))
-				{
-					ArrayList<Vector4f> colorSet;
-					for (uint64 colorSetIndex = 0; colorSetIndex < mesh->mNumVertices; colorSetIndex++)
-					{
-						colorSet.push_back(Vector4f(mesh->mColors[colorIndex][colorSetIndex].r, mesh->mColors[colorIndex][colorSetIndex].g, mesh->mColors[colorIndex][colorSetIndex].b, mesh->mColors[colorIndex][colorSetIndex].a));
-					}
-					subMesh.Colors.push_back(colorSet);
-				}
-			}
-
-			if (mesh->HasFaces())
-			{
-				for (uint64 faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++)
-				{
-					const aiFace& face = mesh->mFaces[faceIndex];
-					for (uint64 indexIndex = 0; indexIndex < face.mNumIndices; indexIndex++)
-					{
-						subMesh.Indices.push_back(face.mIndices[indexIndex]);
-					}
-				}
-			}
-
-			mainLayout.SubMeshes.push_back(subMesh);
 		}
+
+		/*if (mainMesh->HasNormals())
+		{
+			for (uint32 i = 0; i < mainMesh->mNumVertices; ++i)
+				mainLayout.Vertices.Normal.push_back({ mainMesh->mNormals[i].x, mainMesh->mNormals[i].y, mainMesh->mNormals[i].z });
+		}
+
+		if (mainMesh->HasTangentsAndBitangents())
+		{
+			for (uint32 i = 0; i < mainMesh->mNumVertices; ++i)
+			{
+				mainLayout.Vertices.Tangent.push_back({ mainMesh->mTangents[i].x, mainMesh->mTangents[i].y, mainMesh->mTangents[i].z });
+				mainLayout.Vertices.Bitangent.push_back({ mainMesh->mBitangents[i].x, mainMesh->mBitangents[i].y, mainMesh->mBitangents[i].z });
+			}
+		}*/
+
+		if (mainMesh->HasTextureCoords(0))
+		{
+			for (uint32 i = 0; i < mainMesh->mNumVertices; ++i)
+				mainLayout.Vertices.UV.push_back({ mainMesh->mTextureCoords[0][i].x, mainMesh->mTextureCoords[0][i].y });
+		}
+
+		/*if (mainMesh->HasVertexColors(0))
+		{
+			for (uint32 i = 0; i < mainMesh->mNumVertices; ++i)
+				mainLayout.Vertices.Color.push_back({ mainMesh->mColors[0][i].r, mainMesh->mColors[0][i].g, mainMesh->mColors[0][i].b, mainMesh->mColors[0][i].a });
+		}*/
 
 		return mainLayout;
 	}
@@ -104,46 +81,41 @@ namespace Hollow
 	{
 		uint64 totalsize = 0;
 
-		for (const auto& subMesh : layout.SubMeshes)
-		{
-			totalsize += subMesh.Positions.size() * sizeof(Vector3f);
-			totalsize += subMesh.Normals.size() * sizeof(Vector3f);
-			totalsize += subMesh.Tangents.size() * sizeof(Vector3f);
-			totalsize += subMesh.Bitangents.size() * sizeof(Vector3f);
-
-			for (const auto& uvSet : subMesh.UVs)
-			{
-				totalsize += uvSet.size() * sizeof(Vector2f);
-			}
-
-			for (const auto& colorSet : subMesh.Colors)
-			{
-				totalsize += colorSet.size() * sizeof(Vector4f);
-			}
-		}
+		totalsize += layout.Vertices.Position.size() * sizeof(Vector3f);
+		totalsize += layout.Vertices.UV.size() * sizeof(Vector2f);
 		
 		return totalsize;
 	}
 
-	uint64 MeshImporter::CalculateTotalSubMesh(const SubMeshObject& subMesh)
+	uint64 MeshImporter::CalculateIndexSize(const MeshResourceLayout& layout)
 	{
-		uint32 totalsize = 0;
+		uint64 totalsize = 0;
 
-		totalsize += subMesh.Positions.size() * sizeof(Vector3f);
-		totalsize += subMesh.Normals.size() * sizeof(Vector3f);
-		totalsize += subMesh.Tangents.size() * sizeof(Vector3f);
-		totalsize += subMesh.Bitangents.size() * sizeof(Vector3f);
-
-		for (const auto& uvSet : subMesh.UVs)
-		{
-			totalsize += uvSet.size() * sizeof(Vector2f);
-		}
-
-		for (const auto& colorSet : subMesh.Colors)
-		{
-			totalsize += colorSet.size() * sizeof(Vector4f);
-		}
+		totalsize += layout.Indices.size() * sizeof(uint32);
 
 		return totalsize;
+	}
+
+	MemoryBuffer* MeshImporter::MeshToMemoryBuffer(const MeshResourceLayout& layout)
+	{
+		ArrayList<Vertex>* vertices = new ArrayList<Vertex>();
+
+		for (uint32 i = 0; i < layout.Vertices.Position.size(); ++i)
+		{
+			Vertex vertex;
+			vertex.Position = layout.Vertices.Position[i];
+			vertex.UV = layout.Vertices.UV[i];
+
+			vertices->push_back(vertex);
+		}
+
+		auto buffer = new MemoryBuffer((void*)vertices->data(), vertices->size() * sizeof(Vertex));
+		return buffer;
+	}
+
+	MemoryBuffer* MeshImporter::IndexToMemoryBuffer(const MeshResourceLayout& layout)
+	{
+		auto buffer = new MemoryBuffer((void*)layout.Indices.data(), layout.Indices.size() * sizeof(uint32));
+		return buffer;
 	}
 }

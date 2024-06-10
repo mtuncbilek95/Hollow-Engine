@@ -24,6 +24,9 @@
 #include <Runtime/Graphics/Descriptor/DescriptorSet.h>
 #include <Runtime/Resource/Texture/TextureImporter.h>
 
+#include <Runtime/Resource/Mesh/MeshResource.h>
+#include <Runtime/Resource/Mesh/MeshImporter.h>
+
 #define INSTANCE_COUNT 49
 
 using namespace Hollow;
@@ -40,67 +43,6 @@ struct ConstantBuffer
 	MatrixSIMD Model[INSTANCE_COUNT];
 	MatrixSIMD View;
 	MatrixSIMD Projection;
-};
-
-struct Vertex
-{
-	Vector3f Position;
-	Vector3f Color;
-	Vector2f TexCoord;
-};
-
-const ArrayList<Vertex> vertices =
-{
-	{{-0.5f, -0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}
-};
-
-const ArrayList<uint32> indices =
-{
-	3, 1, 0,
-	3, 2, 1,
-
-	4, 5, 7,
-	5, 6, 7,
-
-	11, 9, 8,
-	11, 10, 9,
-
-	12, 13, 15,
-	13, 14, 15,
-
-	16, 17, 19,
-	17, 18, 19,
-
-	23, 21, 20,
-	23, 22, 21
 };
 
 ArrayList<Transform> InstanceTransforms(INSTANCE_COUNT);
@@ -158,10 +100,10 @@ int main(int argC, char** argV)
 
 		for (int j = 0; j < int(sqrt(INSTANCE_COUNT)); j++)
 		{
-			float xPos = initialX + j;
+			float xPos = initialX + j * 1.2;
 
-			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position = { xPos + j, initialY + i, (float)sideLength - 1 };
-			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Rotation = { 0, 0, 0 };
+			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position = { xPos + j, initialY + i * 1.2f, (float)sideLength - 1 };
+			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Rotation = { 0, -90.f, 180.f };
 			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale = { 1, 1, 1 };
 
 			MVPData.Model[i * int(sqrt(INSTANCE_COUNT)) + j] = XMMatrixScaling(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale.x, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale.y, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale.z) *
@@ -171,8 +113,6 @@ int main(int argC, char** argV)
 				XMMatrixTranslation(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position.x, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position.y, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position.z);
 		}
 	}
-
-	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/TestTexture.png");
 #pragma endregion
 
 #pragma region Window and Graphics Initialization
@@ -181,10 +121,10 @@ int main(int argC, char** argV)
 
 	// Create a window
 	Hollow::WindowDesc desc = {};
-	desc.WindowSize = { 2560, 1440 };
+	desc.WindowSize = { 1920, 1080 };
 	desc.WindowPosition = { 0, 0 };
 	desc.WindowTitle = "Hollow Engine";
-	desc.WindowMode = WindowMode::Fullscreen;
+	desc.WindowMode = WindowMode::Windowed;
 	desc.pMonitor = primaryMonitor;
 
 	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
@@ -240,7 +180,7 @@ int main(int argC, char** argV)
 	MemoryBuffer vBuffer = {};
 	SharedPtr<MemoryOwnedBuffer> vShaderCode;
 	String errorMessage;
-	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/01_Runtime/Shaders/testVertex.vert", vBuffer);
+	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_MeshImport/Shaders/testVertex.vert", vBuffer);
 	ShaderDesc vertexShaderDesc = {};
 
 	if (ShaderCompiler::CompileShaderToSPIRV(vBuffer, "main", ShaderStage::Vertex, ShaderLanguage::GLSL, vShaderCode, errorMessage))
@@ -256,7 +196,7 @@ int main(int argC, char** argV)
 
 	MemoryBuffer fBuffer = {};
 	SharedPtr<MemoryOwnedBuffer> fShaderCode;
-	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/01_Runtime/Shaders/testFrag.frag", fBuffer);
+	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_MeshImport/Shaders/testFrag.frag", fBuffer);
 	ShaderDesc fragmentShaderDesc = {};
 
 	if (ShaderCompiler::CompileShaderToSPIRV(fBuffer, "main", ShaderStage::Fragment, ShaderLanguage::GLSL, fShaderCode, errorMessage))
@@ -454,11 +394,6 @@ int main(int argC, char** argV)
 	inputElement1.Format = TextureFormat::RGB32_Float;
 	inputElement1.Semantic = InputElementSemantic::Position;
 
-	// Color InputElement
-	InputElement inputElement2 = {};
-	inputElement2.Format = TextureFormat::RGB32_Float;
-	inputElement2.Semantic = InputElementSemantic::Color;
-
 	// TexCoord InputElement
 	InputElement inputElement3 = {};
 	inputElement3.Format = TextureFormat::RG32_Float;
@@ -467,7 +402,7 @@ int main(int argC, char** argV)
 	// InputBinding
 	InputBinding inputBinding = {};
 	inputBinding.StepRate = InputBindingStepRate::Vertex;
-	inputBinding.Elements = { inputElement1, inputElement2, inputElement3 };
+	inputBinding.Elements = { inputElement1, inputElement3 };
 
 	// Create InputLayout
 	InputLayoutDesc inputLayout = {};
@@ -543,12 +478,21 @@ int main(int argC, char** argV)
 	auto mSampler = mDevice->CreateSampler(samplerDesc);
 #pragma endregion
 
+	auto mMeshData = MeshImporter::Import(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_MeshImport/Resource/DamagedHelmet.gltf");
+	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_MeshImport/Resource/Default_albedo.jpg");
+
+	auto mSubSize = MeshImporter::CalculateTotalMesh(mMeshData);
+	auto mIndexSize = MeshImporter::CalculateIndexSize(mMeshData);
+
+	auto vertices = MeshImporter::MeshToMemoryBuffer(mMeshData);
+	auto indices = MeshImporter::IndexToMemoryBuffer(mMeshData);
+
 #pragma region Buffer Initialization
 	// ----------------- CREATE OBJECT BUFFER -----------------
 
 	GraphicsBufferDesc vertexBufferDesc = {};
-	vertexBufferDesc.SubResourceCount = vertices.size();
-	vertexBufferDesc.SubSizeInBytes = sizeof(Vertex);
+	vertexBufferDesc.SubResourceCount = 1;
+	vertexBufferDesc.SubSizeInBytes = mSubSize;
 	vertexBufferDesc.Usage = GraphicsBufferUsage::Vertex | GraphicsBufferUsage::TransferDestination;
 	vertexBufferDesc.ShareMode = ShareMode::Exclusive;
 	vertexBufferDesc.pMemory = mDeviceMemory;
@@ -556,8 +500,8 @@ int main(int argC, char** argV)
 	auto mVertexBuffer = mDevice->CreateGraphicsBuffer(vertexBufferDesc);
 
 	GraphicsBufferDesc indexBufferDesc = {};
-	indexBufferDesc.SubResourceCount = indices.size();
-	indexBufferDesc.SubSizeInBytes = sizeof(uint32);
+	indexBufferDesc.SubResourceCount = 1;
+	indexBufferDesc.SubSizeInBytes = mIndexSize;
 	indexBufferDesc.Usage = GraphicsBufferUsage::Index | GraphicsBufferUsage::TransferDestination;
 	indexBufferDesc.ShareMode = ShareMode::Exclusive;
 	indexBufferDesc.pMemory = mDeviceMemory;
@@ -596,8 +540,8 @@ int main(int argC, char** argV)
 	// ----------------- CREATE STAGING BUFFER -----------------
 
 	GraphicsBufferDesc stagingVertexBufferDesc = {};
-	stagingVertexBufferDesc.SubResourceCount = vertices.size();
-	stagingVertexBufferDesc.SubSizeInBytes = sizeof(Vertex);
+	stagingVertexBufferDesc.SubResourceCount = 1;
+	stagingVertexBufferDesc.SubSizeInBytes = mSubSize;
 	stagingVertexBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
 	stagingVertexBufferDesc.ShareMode = ShareMode::Exclusive;
 	stagingVertexBufferDesc.pMemory = mHostMemory;
@@ -605,8 +549,8 @@ int main(int argC, char** argV)
 	auto mStagingVertexBuffer = mDevice->CreateGraphicsBuffer(stagingVertexBufferDesc);
 
 	GraphicsBufferDesc stagingIndexBufferDesc = {};
-	stagingIndexBufferDesc.SubResourceCount = indices.size();
-	stagingIndexBufferDesc.SubSizeInBytes = sizeof(uint32);
+	stagingIndexBufferDesc.SubResourceCount = 1;
+	stagingIndexBufferDesc.SubSizeInBytes = mIndexSize;
 	stagingIndexBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
 	stagingIndexBufferDesc.ShareMode = ShareMode::Exclusive;
 	stagingIndexBufferDesc.pMemory = mHostMemory;
@@ -633,17 +577,15 @@ int main(int argC, char** argV)
 
 	// ----------------- UPDATE STAGING BUFFER -----------------
 
-	uint64 vertexBufferSize = sizeof(Vertex) * vertices.size();
-	uint64 indexBufferSize = sizeof(uint32) * indices.size();
 	uint64 uniformBufferSize = sizeof(ConstantBuffer);
 
 	BufferDataUpdateDesc vertexDataUpdateDesc = {};
-	vertexDataUpdateDesc.Memory = { (void*)vertices.data(), vertexBufferSize };
+	vertexDataUpdateDesc.Memory = *vertices;
 	vertexDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingVertexBuffer, vertexDataUpdateDesc);
 
 	BufferDataUpdateDesc indexDataUpdateDesc = {};
-	indexDataUpdateDesc.Memory = { (void*)indices.data(), indexBufferSize };
+	indexDataUpdateDesc.Memory = *indices;
 	indexDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingIndexBuffer, indexDataUpdateDesc);
 
@@ -662,13 +604,13 @@ int main(int argC, char** argV)
 	mCommandBuffer->BeginRecording();
 	BufferBufferCopyDesc vertexCopyDesc = {};
 	vertexCopyDesc.DestinationOffset = 0;
-	vertexCopyDesc.Size = vertexBufferSize;
+	vertexCopyDesc.Size = mSubSize;
 	vertexCopyDesc.SourceOffset = 0;
 	mCommandBuffer->CopyBufferToBuffer(mStagingVertexBuffer, mVertexBuffer, vertexCopyDesc);
 
 	BufferBufferCopyDesc indexCopyDesc = {};
 	indexCopyDesc.DestinationOffset = 0;
-	indexCopyDesc.Size = indexBufferSize;
+	indexCopyDesc.Size = mIndexSize;
 	indexCopyDesc.SourceOffset = 0;
 
 	mCommandBuffer->CopyBufferToBuffer(mStagingIndexBuffer, mIndexBuffer, indexCopyDesc);
@@ -816,7 +758,7 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->BindIndexBuffer(mIndexBuffer, GraphicsIndexType::Index32);
 
 		mCommandBuffers[imageIndex]->BindDescriptors(&mDescriptorSet, 1);
-		mCommandBuffers[imageIndex]->DrawIndexed(indices.size(), 0, 0, 0, INSTANCE_COUNT);
+		mCommandBuffers[imageIndex]->DrawIndexed(mMeshData.Indices.size(), 0, 0, 0, INSTANCE_COUNT);
 		mCommandBuffers[imageIndex]->EndRendering();
 
 		TextureBarrierUpdateDesc postRenderBarrier = {};
@@ -852,6 +794,4 @@ int main(int argC, char** argV)
 	mDevice->WaitForIdle();
 	mDevice->OnShutdown();
 	mGraphicsInstance->OnShutdown();
-#pragma endregion
-	return 0;
 }

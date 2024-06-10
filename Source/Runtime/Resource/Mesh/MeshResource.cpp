@@ -113,6 +113,9 @@ namespace Hollow
 		mCommandBuffer->EndRecording();
 
 		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+
+		mGraphicsDevice->WaitForFence(&mFence, 1);
+		mGraphicsDevice->ResetFences(&mFence, 1);
 	}
 
 	void MeshResource::UpdateIndexBuffer(uint32 meshIndex, MemoryBuffer pBuffer, uint32 offset)
@@ -152,6 +155,9 @@ namespace Hollow
 		mCommandBuffer->EndRecording();
 
 		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+
+		mGraphicsDevice->WaitForFence(&mFence, 1);
+		mGraphicsDevice->ResetFences(&mFence, 1);
 	}
 
 	void MeshResource::OnShutdown() noexcept
@@ -166,7 +172,7 @@ namespace Hollow
 		CommandBufferDesc bufferDesc = { mCommandPool };
 		mCommandBuffer = mGraphicsDevice->CreateCommandBuffer(bufferDesc);
 
-		FenceDesc fenceDesc = { true };
+		FenceDesc fenceDesc = { false };
 		mFence = mGraphicsDevice->CreateSyncFence(fenceDesc);
 	}
 }
