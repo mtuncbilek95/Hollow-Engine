@@ -8,16 +8,13 @@
 
 namespace Hollow
 {
-	struct Vertex
-	{
-		Vector3f Position;
-		Vector2f UV;
-	};
-
 	MeshResourceLayout MeshImporter::Import(String path)
 	{
 		if (!PlatformFile::Exists(path))
+		{
+			CORE_LOG(HE_ERROR, "MeshImporter", "Failed to load mesh file with error: File does not exist");
 			return MeshResourceLayout();
+		}
 
 		Assimp::Importer assimpImporter;
 
@@ -32,90 +29,51 @@ namespace Hollow
 
 		MeshResourceLayout mainLayout;
 
-		auto mainMesh = scene->mMeshes[0];
-
-		if(mainMesh->HasPositions())
+		for (i32 meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++)
 		{
-			for (u32 i = 0; i < mainMesh->mNumVertices; ++i)
-				mainLayout.Vertices.Position.push_back({ mainMesh->mVertices[i].x, mainMesh->mVertices[i].y, mainMesh->mVertices[i].z });
+			// Define layout per mesh in the whole scene.
+			SubMeshLayout subMeshLayout;
 
-			for (u32 i = 0; i < mainMesh->mNumFaces; ++i)
+			// Get the mesh from the scene via Assimp.
+			const aiMesh* mesh = scene->mMeshes[meshIndex];
+
+			if(!mesh->HasPositions() || !mesh->HasNormals() || !mesh->HasTextureCoords(0) || !mesh->HasTangentsAndBitangents())
 			{
-				aiFace face = mainMesh->mFaces[i];
-				for (u32 j = 0; j < face.mNumIndices; ++j)
-					mainLayout.Indices.push_back(face.mIndices[j]);
+				CORE_LOG(HE_ERROR, "MeshImporter", "Failed to load mesh file with error: Mesh does not have required data");
+				return MeshResourceLayout();
 			}
-		}
 
-		/*if (mainMesh->HasNormals())
-		{
-			for (u32 i = 0; i < mainMesh->mNumVertices; ++i)
-				mainLayout.Vertices.Normal.push_back({ mainMesh->mNormals[i].x, mainMesh->mNormals[i].y, mainMesh->mNormals[i].z });
-		}
-
-		if (mainMesh->HasTangentsAndBitangents())
-		{
-			for (u32 i = 0; i < mainMesh->mNumVertices; ++i)
+			// Define layout per vertex in the mesh.
+			for (i32 vertexIndex = 0; vertexIndex < mesh->mNumVertices; vertexIndex++)
 			{
-				mainLayout.Vertices.Tangent.push_back({ mainMesh->mTangents[i].x, mainMesh->mTangents[i].y, mainMesh->mTangents[i].z });
-				mainLayout.Vertices.Bitangent.push_back({ mainMesh->mBitangents[i].x, mainMesh->mBitangents[i].y, mainMesh->mBitangents[i].z });
+				VertexData vertexData;
+
+				// Get the vertex data from the mesh via Assimp.
+				vertexData.Position = Vector3f(mesh->mVertices[vertexIndex].x, mesh->mVertices[vertexIndex].y, mesh->mVertices[vertexIndex].z);
+				vertexData.Normal = Vector3f(mesh->mNormals[vertexIndex].x, mesh->mNormals[vertexIndex].y, mesh->mNormals[vertexIndex].z);
+				vertexData.Tangent = Vector3f(mesh->mTangents[vertexIndex].x, mesh->mTangents[vertexIndex].y, mesh->mTangents[vertexIndex].z);
+				vertexData.Bitangent = Vector3f(mesh->mBitangents[vertexIndex].x, mesh->mBitangents[vertexIndex].y, mesh->mBitangents[vertexIndex].z);
+				vertexData.UV = Vector2f(mesh->mTextureCoords[0][vertexIndex].x, mesh->mTextureCoords[0][vertexIndex].y);
+				vertexData.Color = Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+
+				// Add the vertex data to the layout.
+				subMeshLayout.Vertices.push_back(vertexData);
 			}
-		}*/
 
-		if (mainMesh->HasTextureCoords(0))
-		{
-			for (u32 i = 0; i < mainMesh->mNumVertices; ++i)
-				mainLayout.Vertices.UV.push_back({ mainMesh->mTextureCoords[0][i].x, mainMesh->mTextureCoords[0][i].y });
+			// Define layout per face in the mesh.
+			for (i32 faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++)
+			{
+				// Get the face data from the mesh via Assimp.
+				const aiFace& face = mesh->mFaces[faceIndex];
+
+				for (i32 indexIndex = 0; indexIndex < face.mNumIndices; indexIndex++)
+					subMeshLayout.Indices.push_back(face.mIndices[indexIndex]);
+			}
+
+			// Add the sub-mesh layout to the main layout.
+			mainLayout.SubMeshes.push_back(subMeshLayout);
 		}
-
-		/*if (mainMesh->HasVertexColors(0))
-		{
-			for (u32 i = 0; i < mainMesh->mNumVertices; ++i)
-				mainLayout.Vertices.Color.push_back({ mainMesh->mColors[0][i].r, mainMesh->mColors[0][i].g, mainMesh->mColors[0][i].b, mainMesh->mColors[0][i].a });
-		}*/
 
 		return mainLayout;
-	}
-
-	u64 MeshImporter::CalculateTotalMesh(const MeshResourceLayout& layout)
-	{
-		u64 totalsize = 0;
-
-		totalsize += layout.Vertices.Position.size() * sizeof(Vector3f);
-		totalsize += layout.Vertices.UV.size() * sizeof(Vector2f);
-		
-		return totalsize;
-	}
-
-	u64 MeshImporter::CalculateIndexSize(const MeshResourceLayout& layout)
-	{
-		u64 totalsize = 0;
-
-		totalsize += layout.Indices.size() * sizeof(u32);
-
-		return totalsize;
-	}
-
-	MemoryOwnedBuffer MeshImporter::MeshToMemoryBuffer(const MeshResourceLayout& layout)
-	{
-		ArrayList<Vertex> vertices;
-
-		for (u32 i = 0; i < layout.Vertices.Position.size(); ++i)
-		{
-			Vertex vertex;
-			vertex.Position = layout.Vertices.Position[i];
-			vertex.UV = layout.Vertices.UV[i];
-
-			vertices.push_back(vertex);
-		}
-
-		MemoryOwnedBuffer buffer((void*)vertices.data(), vertices.size() * sizeof(Vertex));
-		return buffer;
-	}
-
-	MemoryOwnedBuffer MeshImporter::IndexToMemoryBuffer(const MeshResourceLayout& layout)
-	{
-		MemoryOwnedBuffer buffer((void*)layout.Indices.data(), layout.Indices.size() * sizeof(u32));
-		return buffer;
 	}
 }

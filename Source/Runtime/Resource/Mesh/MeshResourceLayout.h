@@ -4,19 +4,24 @@
 
 namespace Hollow
 {
-	struct VertexData
+	struct RUNTIME_API VertexData
 	{
-		ArrayList<Vector3f> Position;
-		ArrayList<Vector3f> Normal;
-		ArrayList<Vector3f> Tangent;
-		ArrayList<Vector3f> Bitangent;
-		ArrayList<Vector2f> UV;
-		ArrayList<Vector4f> Color;
+		Vector3f Position;
+		Vector3f Normal;
+		Vector3f Tangent;
+		Vector3f Bitangent;
+		Vector4f Color;
+		Vector2f UV;
+	};
+
+	struct RUNTIME_API SubMeshLayout
+	{
+		ArrayList<VertexData> Vertices;
+		ArrayList<u32> Indices;
 	};
 
 	struct RUNTIME_API MeshResourceLayout
 	{
-		VertexData Vertices;
-		ArrayList<u32> Indices;
+		ArrayList<SubMeshLayout> SubMeshes;
 	};
 }

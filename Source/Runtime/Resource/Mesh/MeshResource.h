@@ -33,10 +33,7 @@ namespace Hollow
 		SharedPtr<GraphicsMemory> GetHostMemory() const { return mHostMemory; }
 		SharedPtr<GraphicsMemory> GetDeviceMemory() const { return mDeviceMemory; }
 
-		const ArrayList<MeshResourceData>& GetMeshBuffers() const { return mMeshBuffers; }
-
-		u64 GetTotalVertexCount() const { return mTotalVertexCount; }
-		u64 GetTotalIndexCount() const { return mTotalIndexCount; }
+		MeshResourceData& GetMeshBuffer() { return mMeshBuffer; }
 
 		bool IsPreAllocated() const { return mPreAllocate; }
 
@@ -44,8 +41,8 @@ namespace Hollow
 
 		void ConnectMemory(const SharedPtr<GraphicsMemory>& hostMemory, const SharedPtr<GraphicsMemory>& deviceMemory, bool bPreAllocate = true);
 		void CreateMeshBuffers(u32 perVertexSize, u32 resourceCount, u32 perIndexSize, u32 indexCount);
-		void UpdateVertexBuffer(u32 meshIndex, MemoryOwnedBuffer& pBuffer, u32 offset);
-		void UpdateIndexBuffer(u32 meshIndex, MemoryOwnedBuffer& pBuffer, u32 offset);
+		void UpdateVertexBuffer(MemoryOwnedBuffer& pBuffer, u32 offset);
+		void UpdateIndexBuffer(MemoryOwnedBuffer& pBuffer, u32 offset);
 
 		virtual void OnShutdown() noexcept override;
 
@@ -63,12 +60,12 @@ namespace Hollow
 		SharedPtr<GraphicsMemory> mHostMemory;
 		SharedPtr<GraphicsMemory> mDeviceMemory;
 
-		ArrayList<MeshResourceData> mMeshBuffers;
+		MeshResourceData mMeshBuffer;
+
 		u64 mTotalVertexCount;
 		u64 mTotalIndexCount;
 
 		bool mPreAllocate;
-
 		SharedPtr<Fence> mFence;
 	};
 }

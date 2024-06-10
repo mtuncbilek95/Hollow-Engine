@@ -8,8 +8,7 @@ namespace Hollow
 	{
 		None = 1,
 		Front = 2,
-		Back = 4
+		Back = 4,
+		All = Front | Back
 	};
-
-	GENERATE_ENUM_FLAG(FaceCullMode, byte);
 }

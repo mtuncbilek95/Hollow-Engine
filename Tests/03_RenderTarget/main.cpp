@@ -24,9 +24,6 @@
 #include <Runtime/Graphics/Descriptor/DescriptorSet.h>
 #include <Runtime/Resource/Texture/TextureImporter.h>
 
-#include <Runtime/Resource/Mesh/MeshResource.h>
-#include <Runtime/Resource/Mesh/MeshImporter.h>
-
 #define INSTANCE_COUNT 49
 
 using namespace Hollow;
@@ -43,6 +40,67 @@ struct ConstantBuffer
 	MatrixSIMD Model[INSTANCE_COUNT];
 	MatrixSIMD View;
 	MatrixSIMD Projection;
+};
+
+struct Vertex
+{
+	Vector3f Position;
+	Vector3f Color;
+	Vector2f TexCoord;
+};
+
+const ArrayList<Vertex> vertices =
+{
+	{{-0.5f, -0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+	{{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+	{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+	{{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+
+	{{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+	{{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+	{{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+	{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+
+	{{ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+	{{ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+	{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+	{{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+
+	{{-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+	{{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+	{{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+	{{-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+
+	{{-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+	{{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+	{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+	{{ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+
+	{{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+	{{-0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+	{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+	{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}
+};
+
+const ArrayList<u32> indices =
+{
+	3, 1, 0,
+	3, 2, 1,
+
+	4, 5, 7,
+	5, 6, 7,
+
+	11, 9, 8,
+	11, 10, 9,
+
+	12, 13, 15,
+	13, 14, 15,
+
+	16, 17, 19,
+	17, 18, 19,
+
+	23, 21, 20,
+	23, 22, 21
 };
 
 ArrayList<Transform> InstanceTransforms(INSTANCE_COUNT);
@@ -80,7 +138,7 @@ void UpdateTransforms()
 	}
 }
 
-int main(int argC, char** argV)
+i32 main(i32 argC, char** argV)
 {
 	// Initialize the platform API
 	PlatformAPI::GetInstanceAPI().InitializeArguments(argC, argV);
@@ -100,10 +158,10 @@ int main(int argC, char** argV)
 
 		for (i32 j = 0; j < i32(sqrt(INSTANCE_COUNT)); j++)
 		{
-			f32 xPos = initialX + j * 1.2;
+			f32 xPos = initialX + j;
 
-			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position = { xPos + j, initialY + i * 1.2f, (f32)sideLength - 1 };
-			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation = { 0, -90.f, 180.f };
+			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position = { xPos + j, initialY + i, (f32)sideLength - 1 };
+			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation = { 0, 0, 0 };
 			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale = { 1, 1, 1 };
 
 			MVPData.Model[i * i32(sqrt(INSTANCE_COUNT)) + j] = XMMatrixScaling(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.x, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.y, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.z) *
@@ -113,6 +171,8 @@ int main(int argC, char** argV)
 				XMMatrixTranslation(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.x, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.y, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.z);
 		}
 	}
+
+	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/03_RenderTarget/Resources/TestTexture.png");
 #pragma endregion
 
 #pragma region Window and Graphics Initialization
@@ -180,7 +240,7 @@ int main(int argC, char** argV)
 	MemoryBuffer vBuffer = {};
 	SharedPtr<MemoryOwnedBuffer> vShaderCode;
 	String errorMessage;
-	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_MeshImport/Shaders/testVertex.vert", vBuffer);
+	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/03_RenderTarget/Shaders/testVertex.vert", vBuffer);
 	ShaderDesc vertexShaderDesc = {};
 
 	if (ShaderCompiler::CompileShaderToSPIRV(vBuffer, "main", ShaderStage::Vertex, ShaderLanguage::GLSL, vShaderCode, errorMessage))
@@ -196,7 +256,7 @@ int main(int argC, char** argV)
 
 	MemoryBuffer fBuffer = {};
 	SharedPtr<MemoryOwnedBuffer> fShaderCode;
-	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_MeshImport/Shaders/testFrag.frag", fBuffer);
+	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/03_RenderTarget/Shaders/testFrag.frag", fBuffer);
 	ShaderDesc fragmentShaderDesc = {};
 
 	if (ShaderCompiler::CompileShaderToSPIRV(fBuffer, "main", ShaderStage::Fragment, ShaderLanguage::GLSL, fShaderCode, errorMessage))
@@ -394,6 +454,11 @@ int main(int argC, char** argV)
 	inputElement1.Format = TextureFormat::RGB32_Float;
 	inputElement1.Semantic = InputElementSemantic::Position;
 
+	// Color InputElement
+	InputElement inputElement2 = {};
+	inputElement2.Format = TextureFormat::RGB32_Float;
+	inputElement2.Semantic = InputElementSemantic::Color;
+
 	// TexCoord InputElement
 	InputElement inputElement3 = {};
 	inputElement3.Format = TextureFormat::RG32_Float;
@@ -402,7 +467,7 @@ int main(int argC, char** argV)
 	// InputBinding
 	InputBinding inputBinding = {};
 	inputBinding.StepRate = InputBindingStepRate::Vertex;
-	inputBinding.Elements = { inputElement1, inputElement3 };
+	inputBinding.Elements = { inputElement1, inputElement2, inputElement3 };
 
 	// Create InputLayout
 	InputLayoutDesc inputLayout = {};
@@ -478,21 +543,26 @@ int main(int argC, char** argV)
 	auto mSampler = mDevice->CreateSampler(samplerDesc);
 #pragma endregion
 
-	auto mMeshData = MeshImporter::Import(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_MeshImport/Resource/DamagedHelmet.gltf");
-	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_MeshImport/Resource/Default_albedo.jpg");
-
-	auto mSubSize = MeshImporter::CalculateTotalMesh(mMeshData);
-	auto mIndexSize = MeshImporter::CalculateIndexSize(mMeshData);
-
-	auto vertices = MeshImporter::MeshToMemoryBuffer(mMeshData);
-	auto indices = MeshImporter::IndexToMemoryBuffer(mMeshData);
-
 #pragma region Buffer Initialization
 	// ----------------- CREATE OBJECT BUFFER -----------------
 
-	auto mMesh = std::make_shared<MeshResource>();
-	mMesh->ConnectMemory(mHostMemory, mDeviceMemory);
-	mMesh->CreateMeshBuffers(mSubSize, 1, mIndexSize, 1);
+	GraphicsBufferDesc vertexBufferDesc = {};
+	vertexBufferDesc.SubResourceCount = vertices.size();
+	vertexBufferDesc.SubSizeInBytes = sizeof(Vertex);
+	vertexBufferDesc.Usage = GraphicsBufferUsage::Vertex | GraphicsBufferUsage::TransferDestination;
+	vertexBufferDesc.ShareMode = ShareMode::Exclusive;
+	vertexBufferDesc.pMemory = mDeviceMemory;
+
+	auto mVertexBuffer = mDevice->CreateGraphicsBuffer(vertexBufferDesc);
+
+	GraphicsBufferDesc indexBufferDesc = {};
+	indexBufferDesc.SubResourceCount = indices.size();
+	indexBufferDesc.SubSizeInBytes = sizeof(u32);
+	indexBufferDesc.Usage = GraphicsBufferUsage::Index | GraphicsBufferUsage::TransferDestination;
+	indexBufferDesc.ShareMode = ShareMode::Exclusive;
+	indexBufferDesc.pMemory = mDeviceMemory;
+
+	auto mIndexBuffer = mDevice->CreateGraphicsBuffer(indexBufferDesc);
 
 	GraphicsBufferDesc uniformBufferDesc = {};
 	uniformBufferDesc.SubResourceCount = 1;
@@ -525,6 +595,24 @@ int main(int argC, char** argV)
 
 	// ----------------- CREATE STAGING BUFFER -----------------
 
+	GraphicsBufferDesc stagingVertexBufferDesc = {};
+	stagingVertexBufferDesc.SubResourceCount = vertices.size();
+	stagingVertexBufferDesc.SubSizeInBytes = sizeof(Vertex);
+	stagingVertexBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
+	stagingVertexBufferDesc.ShareMode = ShareMode::Exclusive;
+	stagingVertexBufferDesc.pMemory = mHostMemory;
+
+	auto mStagingVertexBuffer = mDevice->CreateGraphicsBuffer(stagingVertexBufferDesc);
+
+	GraphicsBufferDesc stagingIndexBufferDesc = {};
+	stagingIndexBufferDesc.SubResourceCount = indices.size();
+	stagingIndexBufferDesc.SubSizeInBytes = sizeof(u32);
+	stagingIndexBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
+	stagingIndexBufferDesc.ShareMode = ShareMode::Exclusive;
+	stagingIndexBufferDesc.pMemory = mHostMemory;
+
+	auto mStagingIndexBuffer = mDevice->CreateGraphicsBuffer(stagingIndexBufferDesc);
+
 	GraphicsBufferDesc stagingUniformBufferDesc = {};
 	stagingUniformBufferDesc.SubResourceCount = 1;
 	stagingUniformBufferDesc.SubSizeInBytes = sizeof(ConstantBuffer);
@@ -545,7 +633,19 @@ int main(int argC, char** argV)
 
 	// ----------------- UPDATE STAGING BUFFER -----------------
 
+	u64 vertexBufferSize = sizeof(Vertex) * vertices.size();
+	u64 indexBufferSize = sizeof(u32) * indices.size();
 	u64 uniformBufferSize = sizeof(ConstantBuffer);
+
+	BufferDataUpdateDesc vertexDataUpdateDesc = {};
+	vertexDataUpdateDesc.Memory = MemoryBuffer((void*)vertices.data(), vertexBufferSize);
+	vertexDataUpdateDesc.OffsetInBytes = 0;
+	mDevice->UpdateBufferData(mStagingVertexBuffer, vertexDataUpdateDesc);
+
+	BufferDataUpdateDesc indexDataUpdateDesc = {};
+	indexDataUpdateDesc.Memory = MemoryBuffer((void*)indices.data(), indexBufferSize);
+	indexDataUpdateDesc.OffsetInBytes = 0;
+	mDevice->UpdateBufferData(mStagingIndexBuffer, indexDataUpdateDesc);
 
 	BufferDataUpdateDesc uniformDataUpdateDesc = {};
 	uniformDataUpdateDesc.Memory = MemoryBuffer((void*)&MVPData, uniformBufferSize);
@@ -559,10 +659,19 @@ int main(int argC, char** argV)
 
 	// ----------------- COPY STAGING BUFFER TO OBJECT BUFFER -----------------
 
-	mMesh->UpdateVertexBuffer(0, vertices, 0);
-	mMesh->UpdateIndexBuffer(0, indices, 0);
-
 	mCommandBuffer->BeginRecording();
+	BufferBufferCopyDesc vertexCopyDesc = {};
+	vertexCopyDesc.DestinationOffset = 0;
+	vertexCopyDesc.Size = vertexBufferSize;
+	vertexCopyDesc.SourceOffset = 0;
+	mCommandBuffer->CopyBufferToBuffer(mStagingVertexBuffer, mVertexBuffer, vertexCopyDesc);
+
+	BufferBufferCopyDesc indexCopyDesc = {};
+	indexCopyDesc.DestinationOffset = 0;
+	indexCopyDesc.Size = indexBufferSize;
+	indexCopyDesc.SourceOffset = 0;
+
+	mCommandBuffer->CopyBufferToBuffer(mStagingIndexBuffer, mIndexBuffer, indexCopyDesc);
 
 	BufferBufferCopyDesc uniformCopyDesc = {};
 	uniformCopyDesc.DestinationOffset = 0;
@@ -703,13 +812,11 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->BindPipeline(mPipeline);
 		mCommandBuffers[imageIndex]->SetViewports(&viewport, 1);
 		mCommandBuffers[imageIndex]->SetScissors(&scissor, 1);
-		auto vBuffer = mMesh->GetMeshBuffers()[0].VertexBuffer;
-		auto iBuffer = mMesh->GetMeshBuffers()[0].IndexBuffer;
-		mCommandBuffers[imageIndex]->BindVertexBuffers(&vBuffer, 1);
-		mCommandBuffers[imageIndex]->BindIndexBuffer(iBuffer, GraphicsIndexType::Index32);
+		mCommandBuffers[imageIndex]->BindVertexBuffers(&mVertexBuffer, 1);
+		mCommandBuffers[imageIndex]->BindIndexBuffer(mIndexBuffer, GraphicsIndexType::Index32);
 
 		mCommandBuffers[imageIndex]->BindDescriptors(&mDescriptorSet, 1);
-		mCommandBuffers[imageIndex]->DrawIndexed(mMeshData.Indices.size(), 0, 0, 0, INSTANCE_COUNT);
+		mCommandBuffers[imageIndex]->DrawIndexed(indices.size(), 0, 0, 0, INSTANCE_COUNT);
 		mCommandBuffers[imageIndex]->EndRendering();
 
 		TextureBarrierUpdateDesc postRenderBarrier = {};
@@ -745,4 +852,6 @@ int main(int argC, char** argV)
 	mDevice->WaitForIdle();
 	mDevice->OnShutdown();
 	mGraphicsInstance->OnShutdown();
+#pragma endregion
+	return 0;
 }

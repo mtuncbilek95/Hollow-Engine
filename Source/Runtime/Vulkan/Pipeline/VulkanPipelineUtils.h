@@ -50,16 +50,14 @@ namespace Hollow
 
 		static VkCullModeFlags GetVkCullMode(FaceCullMode mode)
 		{
-			VkCullModeFlags flags = 0;
-
-			if (mode & FaceCullMode::None)
-				return VK_CULL_MODE_NONE;
-
-			if (mode & FaceCullMode::Front)
-				flags |= VK_CULL_MODE_FRONT_BIT;
-			if (mode & FaceCullMode::Back)
-				flags |= VK_CULL_MODE_BACK_BIT;
-			return flags;
+			switch (mode)
+			{
+			case FaceCullMode::None: return VK_CULL_MODE_NONE;
+			case FaceCullMode::Front: return VK_CULL_MODE_FRONT_BIT;
+			case FaceCullMode::Back: return VK_CULL_MODE_BACK_BIT;
+			case FaceCullMode::All: return VK_CULL_MODE_FRONT_AND_BACK;
+			default: return VK_CULL_MODE_NONE;
+			}
 		}
 
 		static VkBlendFactor GetVkBlendFactor(BlendFactor factor)

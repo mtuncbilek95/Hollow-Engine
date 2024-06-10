@@ -67,29 +67,21 @@ namespace Hollow
 			meshData.IndexStageBuffer = mGraphicsDevice->CreateGraphicsBuffer(stageDesc);
 		}
 
-		// Update the total vertex and index count
-		mTotalVertexCount += vertexCount;
-		mTotalIndexCount += indexCount;
-
-		mMeshBuffers.push_back(meshData);
+		mMeshBuffer = meshData;
+		mTotalIndexCount = indexCount;
+		mTotalVertexCount = vertexCount;
 	}
 
-	void MeshResource::UpdateVertexBuffer(u32 meshIndex, MemoryOwnedBuffer& pBuffer, u32 offset)
+	void MeshResource::UpdateVertexBuffer(MemoryOwnedBuffer& pBuffer, u32 offset)
 	{
-		if (meshIndex > mMeshBuffers.size())
-		{
-			CORE_LOG(HE_WARNING, "MeshResource", "Invalid mesh index.");
-			return;
-		}
-
 		// If the memory is not pre-allocated, create a staging buffer
 		if(!mPreAllocate)
 		{
 			GraphicsBufferDesc desc = {};
 			desc.pMemory = mHostMemory;
 			desc.ShareMode = ShareMode::Exclusive;
-			desc.SubResourceCount = mMeshBuffers[meshIndex].VertexBuffer->GetSubResourceCount();
-			desc.SubSizeInBytes = mMeshBuffers[meshIndex].VertexBuffer->GetSubSizeInBytes();
+			desc.SubResourceCount = mMeshBuffer.VertexBuffer->GetSubResourceCount();
+			desc.SubSizeInBytes = mMeshBuffer.VertexBuffer->GetSubSizeInBytes();
 			desc.Usage = GraphicsBufferUsage::TransferSource;
 
 			SharedPtr<GraphicsBuffer> stagingBuffer = mGraphicsDevice->CreateGraphicsBuffer(desc);
@@ -99,7 +91,7 @@ namespace Hollow
 		BufferDataUpdateDesc updateDesc = {};
 		updateDesc.Memory = pBuffer;
 		updateDesc.OffsetInBytes = offset;
-		mGraphicsDevice->UpdateBufferData(mMeshBuffers[meshIndex].VertexStageBuffer, updateDesc);
+		mGraphicsDevice->UpdateBufferData(mMeshBuffer.VertexStageBuffer, updateDesc);
 
 		// Copy the data from the staging buffer to the vertex buffer
 		mCommandBuffer->BeginRecording();
@@ -108,7 +100,7 @@ namespace Hollow
 		copyDesc.DestinationOffset = offset;
 		copyDesc.SourceOffset = 0;
 		copyDesc.Size = pBuffer.GetSize();
-		mCommandBuffer->CopyBufferToBuffer(mMeshBuffers[meshIndex].VertexStageBuffer, mMeshBuffers[meshIndex].VertexBuffer, copyDesc);
+		mCommandBuffer->CopyBufferToBuffer(mMeshBuffer.VertexStageBuffer, mMeshBuffer.VertexBuffer, copyDesc);
 
 		mCommandBuffer->EndRecording();
 
@@ -118,21 +110,15 @@ namespace Hollow
 		mGraphicsDevice->ResetFences(&mFence, 1);
 	}
 
-	void MeshResource::UpdateIndexBuffer(u32 meshIndex, MemoryOwnedBuffer& pBuffer, u32 offset)
+	void MeshResource::UpdateIndexBuffer(MemoryOwnedBuffer& pBuffer, u32 offset)
 	{
-		if (meshIndex > mMeshBuffers.size())
-		{
-			CORE_LOG(HE_WARNING, "MeshResource", "Invalid mesh index.");
-			return;
-		}
-
 		if (!mPreAllocate)
 		{
 			GraphicsBufferDesc desc = {};
 			desc.pMemory = mHostMemory;
 			desc.ShareMode = ShareMode::Exclusive;
-			desc.SubResourceCount = mMeshBuffers[meshIndex].IndexBuffer->GetSubResourceCount();
-			desc.SubSizeInBytes = mMeshBuffers[meshIndex].IndexBuffer->GetSubSizeInBytes();
+			desc.SubResourceCount = mMeshBuffer.IndexBuffer->GetSubResourceCount();
+			desc.SubSizeInBytes = mMeshBuffer.IndexBuffer->GetSubSizeInBytes();
 			desc.Usage = GraphicsBufferUsage::TransferSource;
 
 			SharedPtr<GraphicsBuffer> stagingBuffer = mGraphicsDevice->CreateGraphicsBuffer(desc);
@@ -141,7 +127,7 @@ namespace Hollow
 		BufferDataUpdateDesc updateDesc = {};
 		updateDesc.Memory = pBuffer;
 		updateDesc.OffsetInBytes = offset;
-		mGraphicsDevice->UpdateBufferData(mMeshBuffers[meshIndex].IndexStageBuffer, updateDesc);
+		mGraphicsDevice->UpdateBufferData(mMeshBuffer.IndexStageBuffer, updateDesc);
 
 		// Copy the data from the staging buffer to the index buffer
 		mCommandBuffer->BeginRecording();
@@ -150,7 +136,7 @@ namespace Hollow
 		copyDesc.DestinationOffset = offset;
 		copyDesc.SourceOffset = 0;
 		copyDesc.Size = pBuffer.GetSize();
-		mCommandBuffer->CopyBufferToBuffer(mMeshBuffers[meshIndex].IndexStageBuffer, mMeshBuffers[meshIndex].IndexBuffer, copyDesc);
+		mCommandBuffer->CopyBufferToBuffer(mMeshBuffer.IndexStageBuffer, mMeshBuffer.IndexBuffer, copyDesc);
 
 		mCommandBuffer->EndRecording();
 
