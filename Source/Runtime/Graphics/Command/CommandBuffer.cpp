@@ -45,7 +45,7 @@ namespace Hollow
 		mBoundPipeline = pPipeline;
 	}
 
-	void CommandBuffer::BindVertexBuffers(SharedPtr<GraphicsBuffer> ppBuffer[], uint32 amount)
+	void CommandBuffer::BindVertexBuffers(SharedPtr<GraphicsBuffer> ppBuffer[], u32 amount)
 	{
 		BindVertexBuffersImpl(ppBuffer, amount);
 	}
@@ -56,7 +56,7 @@ namespace Hollow
 		mBoundIndexBuffer = pBuffer;
 	}
 
-	void CommandBuffer::BindDescriptors(SharedPtr<DescriptorSet> ppSet[], uint32 amount)
+	void CommandBuffer::BindDescriptors(SharedPtr<DescriptorSet> ppSet[], u32 amount)
 	{
 		BindDescriptorsImpl(ppSet, amount);
 	}
@@ -101,7 +101,7 @@ namespace Hollow
 		SetCommonMemoryBarrierImpl(desc);
 	}
 
-	void CommandBuffer::DrawIndexed(uint32 indexCount, uint32 indexOffset, uint32 vertexOffset, uint32 instanceOffset, uint32 instanceCount)
+	void CommandBuffer::DrawIndexed(u32 indexCount, u32 indexOffset, u32 vertexOffset, u32 instanceOffset, u32 instanceCount)
 	{
 		DrawIndexedImpl(indexCount, indexOffset, vertexOffset, instanceOffset, instanceCount);
 	}

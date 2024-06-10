@@ -33,7 +33,7 @@ namespace Hollow
 
 	void RenderTargetResource::CreateColorBuffers(const RenderTargetDesc& desc)
 	{
-		for (uint32 i = 0; i < desc.DescStruct.ColorAttachmentCount; i++)
+		for (u32 i = 0; i < desc.DescStruct.ColorAttachmentCount; i++)
 		{
 			auto texture = mGraphicsDevice->CreateTexture(desc.DescStruct.ColorAttachment);
 
@@ -72,7 +72,7 @@ namespace Hollow
 	}
 	void RenderTargetResource::ConnectColorBuffer(const RenderTargetDesc& desc)
 	{
-		for (uint32 i = 0; i < desc.AttachmentStruct.ColorAttachments.size(); i++)
+		for (u32 i = 0; i < desc.AttachmentStruct.ColorAttachments.size(); i++)
 		{
 				TextureBufferDesc bufferDesc = {};
 				bufferDesc.ArrayLayer = 0;

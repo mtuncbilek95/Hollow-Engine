@@ -13,9 +13,9 @@ namespace Hollow
 		virtual ~RenderPass() override = default;
 
 		FORCEINLINE const ArrayList<PassAttachmentDesc>& GetColorAttachments() const noexcept { return mColorAttachments; }
-		FORCEINLINE const PassAttachmentDesc& GetColorAttachment(uint32 index) const noexcept { return mColorAttachments[index]; }
+		FORCEINLINE const PassAttachmentDesc& GetColorAttachment(u32 index) const noexcept { return mColorAttachments[index]; }
 		FORCEINLINE const ArrayList<PassAttachmentDesc>& GetInputAttachments() const noexcept { return mInputAttachments; }
-		FORCEINLINE const PassAttachmentDesc& GetInputAttachment(uint32 index) const noexcept { return mInputAttachments[index]; }
+		FORCEINLINE const PassAttachmentDesc& GetInputAttachment(u32 index) const noexcept { return mInputAttachments[index]; }
 		FORCEINLINE const PassAttachmentDesc& GetDepthStencilAttachment() const noexcept { return mDepthStencilAttachment; }
 
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept { return GraphicsDeviceObjectType::RenderPass; }

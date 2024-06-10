@@ -19,7 +19,7 @@ namespace Hollow
 		GraphicsQueueType DestinationQueue;
 
 		SharedPtr<GraphicsBuffer> pBuffer;
-		uint64 Offset;
-		uint64 Size;
+		u64 Offset;
+		u64 Size;
 	};
 }

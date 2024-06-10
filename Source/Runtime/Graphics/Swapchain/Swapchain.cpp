@@ -15,7 +15,7 @@ namespace Hollow
 		mGraphicsQueue(desc.pQueue), mCurrentFrameIndex(0), mPresentMode(desc.VSync), mShareMode(desc.SwapchainMode)
 	{
 		// Create the fences for the swapchain
-		for (uint32 i = 0; i < mBufferCount; i++)
+		for (u32 i = 0; i < mBufferCount; i++)
 		{
 			mImageSemaphores.push_back(pDevice->CreateSyncSemaphore());
 			mFlightSemaphores.push_back(pDevice->CreateSyncSemaphore());

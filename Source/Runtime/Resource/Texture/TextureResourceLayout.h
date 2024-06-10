@@ -9,6 +9,6 @@ namespace Hollow
 	{
 		Vector2i ImageSize;
 		MemoryBuffer ImageData;
-		int32 Channels;
+		i32 Channels;
 	};
 }

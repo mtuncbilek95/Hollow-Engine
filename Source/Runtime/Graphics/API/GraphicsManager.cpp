@@ -2,7 +2,7 @@
 
 namespace Hollow
 {
-	void GraphicsManager::SetMemoryBudget(const uint64 hostMemoryBudget, const uint64 deviceMemoryBudget) noexcept
+	void GraphicsManager::SetMemoryBudget(const u64 hostMemoryBudget, const u64 deviceMemoryBudget) noexcept
 	{
 		GraphicsMemoryDesc hostMemoryDesc = {};
 		hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
@@ -15,7 +15,7 @@ namespace Hollow
 		mDeviceMemory = mGraphicsDevice->CreateGraphicsMemory(deviceMemoryDesc);
 	}
 
-	void GraphicsManager::SetResourceBudget(const uint64 resourceCount, const uint64 setCount) noexcept
+	void GraphicsManager::SetResourceBudget(const u64 resourceCount, const u64 setCount) noexcept
 	{
 		DescriptorPoolDesc poolDesc = {};
 		poolDesc.PoolSizes =

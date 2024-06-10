@@ -47,7 +47,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Write(const String& path, const String& data, const uint64 offset)
+	bool Win32File::Write(const String& path, const String& data, const u64 offset)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
@@ -77,7 +77,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Write(const String& path, const MemoryBuffer& buffer, const uint64 offset)
+	bool Win32File::Write(const String& path, const MemoryBuffer& buffer, const u64 offset)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
@@ -97,7 +97,7 @@ namespace Hollow
 
 		// Write the data to the file
 		DWORD bytesWritten;
-		const bool result = WriteFile(hFile, buffer.GetBuffer(), buffer.GetSize(), &bytesWritten, NULL);
+		const bool result = WriteFile(hFile, buffer.GetData(), buffer.GetSize(), &bytesWritten, NULL);
 
 		// Close the file
 		CloseHandle(hFile);
@@ -107,7 +107,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Read(const String& path, String& contentOut, const uint64 startByte, const uint64 endByte)
+	bool Win32File::Read(const String& path, String& contentOut, const u64 startByte, const u64 endByte)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
@@ -124,13 +124,13 @@ namespace Hollow
 			return false;
 
 		// Get the file size
-		uint64 fileSize = GetFileSize(hFile, NULL);
+		u64 fileSize = GetFileSize(hFile, NULL);
 
 		// Set the file pointer to the offset
 		SetFilePointer(hFile, startByte, NULL, FILE_BEGIN);
 
 		// Calculate the expected read range
-		uint64 acceptedRange = endByte == 0 ? GetFileSize(hFile, NULL) : endByte - startByte;
+		u64 acceptedRange = endByte == 0 ? GetFileSize(hFile, NULL) : endByte - startByte;
 
 		// Check if the file is empty or the range is invalid
 		if (fileSize == 0 || acceptedRange > fileSize)
@@ -164,7 +164,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Read(const String& path, MemoryBuffer& view, const uint64 startByte, const uint64 endByte)
+	bool Win32File::Read(const String& path, MemoryBuffer& view, const u64 startByte, const u64 endByte)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
@@ -181,13 +181,13 @@ namespace Hollow
 			return false;
 
 		// Get the file size
-		uint64 fileSize = GetFileSize(hFile, NULL);
+		u64 fileSize = GetFileSize(hFile, NULL);
 
 		// Set the file pointer to the offset
 		SetFilePointer(hFile, startByte, NULL, FILE_BEGIN);
 
 		// Calculate the expected read range
-		uint64 acceptedRange = endByte == 0 ? GetFileSize(hFile, NULL) : endByte - startByte;
+		u64 acceptedRange = endByte == 0 ? GetFileSize(hFile, NULL) : endByte - startByte;
 
 		// Check if the file is empty or the range is invalid
 		if (fileSize == 0 || acceptedRange > fileSize)
@@ -261,7 +261,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::GetSize(const String& path, uint64& sizeOut)
+	bool Win32File::GetSize(const String& path, u64& sizeOut)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;

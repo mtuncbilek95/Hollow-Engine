@@ -17,8 +17,8 @@ namespace Hollow
 		VkBuffer GetVkBuffer() const { return mVkBuffer; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
 
-		uint64 GetVkOffset() const { return mOffset; }
-		uint64 GetVkAlignedOffset() const { return mAlignedOffset; }
+		u64 GetVkOffset() const { return mOffset; }
+		u64 GetVkAlignedOffset() const { return mAlignedOffset; }
 
 		void OnShutdown() noexcept override;
 
@@ -26,7 +26,7 @@ namespace Hollow
 		VkBuffer mVkBuffer;
 		VkDevice mVkDevice;
 
-		uint64 mOffset;
-		uint64 mAlignedOffset;
+		u64 mOffset;
+		u64 mAlignedOffset;
 	};
 }

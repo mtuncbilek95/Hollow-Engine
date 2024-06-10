@@ -45,7 +45,7 @@ namespace Hollow
 			case WindowMode::Windowed:
 			{
 				// Find the center of the monitor
-				Vector2i monitorCenter = { (desc.pMonitor->GetMonitorResolution().x - (int32)desc.WindowSize.x) / 2 , (desc.pMonitor->GetMonitorResolution().y - (int32)desc.WindowSize.y) / 2 };
+				Vector2i monitorCenter = { (desc.pMonitor->GetMonitorResolution().x - (i32)desc.WindowSize.x) / 2 , (desc.pMonitor->GetMonitorResolution().y - (i32)desc.WindowSize.y) / 2 };
 				SetWindowPosInternal(monitorCenter);
 				SetWindowLong(mHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
 				SetWindowPos(mHandle, HWND_TOP, monitorCenter.x, monitorCenter.y, desc.WindowSize.x, desc.WindowSize.y, SWP_FRAMECHANGED);
@@ -53,12 +53,12 @@ namespace Hollow
 			}
 			case WindowMode::Borderless:
 				SetWindowLong(mHandle, GWL_STYLE, WS_POPUP);
-				SetWindowSizeInternal({ static_cast<uint32>(desc.pMonitor->GetMonitorResolution().x), static_cast<uint32>(desc.pMonitor->GetMonitorResolution().y) });
+				SetWindowSizeInternal({ static_cast<u32>(desc.pMonitor->GetMonitorResolution().x), static_cast<u32>(desc.pMonitor->GetMonitorResolution().y) });
 				SetWindowPos(mHandle, HWND_TOP, 0, 0, desc.pMonitor->GetMonitorResolution().x, desc.pMonitor->GetMonitorResolution().y, SWP_NOMOVE | SWP_FRAMECHANGED);
 				break;
 			case WindowMode::Fullscreen:
 				SetWindowLong(mHandle, GWL_STYLE, WS_POPUP);
-				SetWindowSizeInternal({ static_cast<uint32>(desc.pMonitor->GetMonitorResolution().x), static_cast<uint32>(desc.pMonitor->GetMonitorResolution().y) });
+				SetWindowSizeInternal({ static_cast<u32>(desc.pMonitor->GetMonitorResolution().x), static_cast<u32>(desc.pMonitor->GetMonitorResolution().y) });
 				SetWindowPos(mHandle, HWND_TOP, 0, 0, desc.pMonitor->GetMonitorResolution().x, desc.pMonitor->GetMonitorResolution().y, SWP_NOMOVE | SWP_FRAMECHANGED);
 				break;
 			}
@@ -189,8 +189,8 @@ namespace Hollow
 			desc.EventType = WindowEventType::FileDropped;
 
 			HDROP hDrop = (HDROP)wParam;
-			uint32 numFiles = DragQueryFile(hDrop, 0xFFFFFFFF, nullptr, 0);
-			for (uint32 i = 0; i < numFiles; i++)
+			u32 numFiles = DragQueryFile(hDrop, 0xFFFFFFFF, nullptr, 0);
+			for (u32 i = 0; i < numFiles; i++)
 			{
 				char filePath[MAX_PATH];
 				DragQueryFile(hDrop, i, filePath, MAX_PATH);

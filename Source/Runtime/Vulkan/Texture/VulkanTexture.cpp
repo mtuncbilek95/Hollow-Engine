@@ -29,8 +29,8 @@ namespace Hollow
 		VkMemoryRequirements info = {};
 		vkGetImageMemoryRequirements(mVkDevice, mVkTexture, &info);
 
-		uint64 memoryOffset = desc.pMemory->AllocateSubMemory(info.alignment + info.size);
-		uint64 alignedOffset = memoryOffset + (memoryOffset % info.alignment == 0 ? 0 : (info.alignment - (memoryOffset % info.alignment)));
+		u64 memoryOffset = desc.pMemory->AllocateSubMemory(info.alignment + info.size);
+		u64 alignedOffset = memoryOffset + (memoryOffset % info.alignment == 0 ? 0 : (info.alignment - (memoryOffset % info.alignment)));
 
 		auto memPtr = std::static_pointer_cast<VulkanMemory>(desc.pMemory);
 		CORE_ASSERT(vkBindImageMemory(mVkDevice, mVkTexture, memPtr->GetVkDeviceMemory(), alignedOffset) == VK_SUCCESS,

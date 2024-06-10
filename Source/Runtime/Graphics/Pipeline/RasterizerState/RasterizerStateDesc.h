@@ -9,9 +9,9 @@ namespace Hollow
     struct RUNTIME_API RasterizerStateDesc
     {
         bool bDepthBiasEnabled;
-        float DepthBiasClamp;
-        float DepthBiasFactor;
-        float DepthBiasSlope;
+        f32 DepthBiasClamp;
+        f32 DepthBiasFactor;
+        f32 DepthBiasSlope;
         PolygonMode FillMode;
         FaceCullMode CullFlags;
         bool bFrontCounterClockwise;

@@ -17,7 +17,7 @@ namespace Hollow
 		mPreAllocate = bPreAllocate;
 	}
 
-	void MeshResource::CreateMeshBuffers(uint32 perVertex, uint32 vertexCount, uint32 perIndex, uint32 indexCount)
+	void MeshResource::CreateMeshBuffers(u32 perVertex, u32 vertexCount, u32 perIndex, u32 indexCount)
 	{
 		MeshResourceData meshData = {};
 
@@ -74,7 +74,7 @@ namespace Hollow
 		mMeshBuffers.push_back(meshData);
 	}
 
-	void MeshResource::UpdateVertexBuffer(uint32 meshIndex, MemoryBuffer pBuffer, uint32 offset)
+	void MeshResource::UpdateVertexBuffer(u32 meshIndex, MemoryOwnedBuffer& pBuffer, u32 offset)
 	{
 		if (meshIndex > mMeshBuffers.size())
 		{
@@ -118,7 +118,7 @@ namespace Hollow
 		mGraphicsDevice->ResetFences(&mFence, 1);
 	}
 
-	void MeshResource::UpdateIndexBuffer(uint32 meshIndex, MemoryBuffer pBuffer, uint32 offset)
+	void MeshResource::UpdateIndexBuffer(u32 meshIndex, MemoryOwnedBuffer& pBuffer, u32 offset)
 	{
 		if (meshIndex > mMeshBuffers.size())
 		{

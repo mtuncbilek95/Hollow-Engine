@@ -42,10 +42,10 @@ namespace Hollow
 		void BeginRenderPass(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vector4f& clearColor, const Vector2f& depthStencil);
 		void EndRenderPass();
 		void BindPipeline(SharedPtr<Pipeline> pPipeline);
-		void BindVertexBuffers(SharedPtr<GraphicsBuffer> pBuffer[], uint32 amount);
+		void BindVertexBuffers(SharedPtr<GraphicsBuffer> pBuffer[], u32 amount);
 		void BindIndexBuffer(SharedPtr<GraphicsBuffer> pBuffer, GraphicsIndexType indexType);
-		void BindDescriptors(SharedPtr<DescriptorSet> ppSet[], uint32 amount);
-		void DrawIndexed(uint32 indexCount, uint32 indexOffset, uint32 vertexOffset, uint32 instanceOffset, uint32 instanceCount);
+		void BindDescriptors(SharedPtr<DescriptorSet> ppSet[], u32 amount);
+		void DrawIndexed(u32 indexCount, u32 indexOffset, u32 vertexOffset, u32 instanceOffset, u32 instanceCount);
 		void SetViewports(ViewportDesc pViewports[], byte count);
 		void SetScissors(ScissorDesc pScissors[], byte count);
 		void CopyBufferToBuffer(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<GraphicsBuffer> pDestinationBuffer, BufferBufferCopyDesc& desc);
@@ -72,10 +72,10 @@ namespace Hollow
 		virtual void BeginRenderPassImpl(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vector4f& clearColor, const Vector2f& depthStencil) = 0;
 		virtual void EndRenderPassImpl() = 0;
 		virtual void BindPipelineImpl(SharedPtr<Pipeline> pPipeline) = 0;
-		virtual void BindVertexBuffersImpl(SharedPtr<GraphicsBuffer> ppBuffer[], uint32 amount) = 0;
+		virtual void BindVertexBuffersImpl(SharedPtr<GraphicsBuffer> ppBuffer[], u32 amount) = 0;
 		virtual void BindIndexBufferImpl(SharedPtr<GraphicsBuffer> pBuffer, GraphicsIndexType indexType) = 0;
-		virtual void BindDescriptorsImpl(SharedPtr<DescriptorSet> ppSet[], uint32 amount) = 0;
-		virtual void DrawIndexedImpl(uint32 indexCount, uint32 indexOffset, uint32 vertexOffset, uint32 instanceOffset, uint32 instanceCount) = 0;
+		virtual void BindDescriptorsImpl(SharedPtr<DescriptorSet> ppSet[], u32 amount) = 0;
+		virtual void DrawIndexedImpl(u32 indexCount, u32 indexOffset, u32 vertexOffset, u32 instanceOffset, u32 instanceCount) = 0;
 		virtual void SetViewportsImpl(ViewportDesc pViewports[], byte count) = 0;
 		virtual void SetScissorsImpl(ScissorDesc pScissors[], byte count) = 0;
 		virtual void CopyBufferToBufferImpl(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<GraphicsBuffer> pDestinationBuffer, BufferBufferCopyDesc& desc) = 0;

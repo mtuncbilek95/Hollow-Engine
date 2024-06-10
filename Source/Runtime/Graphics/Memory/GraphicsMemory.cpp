@@ -9,16 +9,16 @@ namespace Hollow
 		mSubMemoryBlocks.push_back(subMemory);
 	}
 
-	uint64 GraphicsMemory::AllocateSubMemory(uint64 sizeInBytes)
+	u64 GraphicsMemory::AllocateSubMemory(u64 sizeInBytes)
 	{
-		uint64 sizeLeft = mTotalSize - mUsedSize;
+		u64 sizeLeft = mTotalSize - mUsedSize;
 		if (sizeLeft < sizeInBytes)
 		{
 			return uint64_max;
 		}
 
-		uint64 offset = 0;
-		for (uint32 i = 0; i < mSubMemoryBlocks.size(); ++i)
+		u64 offset = 0;
+		for (u32 i = 0; i < mSubMemoryBlocks.size(); ++i)
 		{
 			// Skip the block if it is already owned
 			if (mSubMemoryBlocks[i].bOwned == true)
@@ -45,7 +45,7 @@ namespace Hollow
 		return uint64_max;
 	}
 
-	void GraphicsMemory::FreeSubMemory(uint64 offset)
+	void GraphicsMemory::FreeSubMemory(u64 offset)
 	{
 		return;
 	}

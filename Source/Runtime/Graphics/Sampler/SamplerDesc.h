@@ -17,13 +17,13 @@ namespace Hollow
 		SamplerAddressMode VAddressMode;
 		SamplerAddressMode WAddressMode;
 		bool bAnisotropyEnabled;
-		uint32 MaxAnisotropy;
+		u32 MaxAnisotropy;
 		SamplerBorderColor BorderColor;
 		bool bCompareEnabled;
 		CompareOperation CompareOp;
 		SamplerMapMode MapMode;
-		float MipLODBias;
-		float MinLOD;
-		float MaxLOD;
+		f32 MipLODBias;
+		f32 MinLOD;
+		f32 MaxLOD;
 	};
 }

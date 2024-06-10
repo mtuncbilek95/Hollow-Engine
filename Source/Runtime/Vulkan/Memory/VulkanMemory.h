@@ -20,7 +20,7 @@ namespace Hollow
 		void OnShutdown() noexcept override;
 
 	protected:
-		uint32 FindMemoryType(GraphicsMemoryType type);
+		u32 FindMemoryType(GraphicsMemoryType type);
 
 	private:
 		VkDeviceMemory mVkDeviceMemory;

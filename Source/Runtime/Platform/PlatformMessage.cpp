@@ -7,7 +7,7 @@ typedef Hollow::Win32Message PlatformDependency;
 
 namespace Hollow
 {
-	void PlatformMessage::ShowMessage(const String& title, const String& message, const int flags)
+	void PlatformMessage::ShowMessage(const String& title, const String& message, const i32 flags)
 	{
 		PlatformDependency::ShowMessage(title, message, flags);
 	}

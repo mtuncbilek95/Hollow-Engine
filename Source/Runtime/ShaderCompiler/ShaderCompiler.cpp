@@ -18,7 +18,7 @@ namespace Hollow
 		reflectedBlock.Size = block.size;
 		reflectedBlock.PaddedSize = block.padded_size;
 
-		for (uint32 i = 0; i < block.member_count; ++i)
+		for (u32 i = 0; i < block.member_count; ++i)
 		{
 			SpvReflectBlockVariable& member = block.members[i];
 			ShaderBlockMember reflectedMember = {};
@@ -36,7 +36,7 @@ namespace Hollow
 		compileOptions.SetSourceLanguage(ShaderCompilerUtils::GetLanguage(language));
 		compileOptions.SetSuppressWarnings();
 
-		shaderc::PreprocessedSourceCompilationResult preprocessedResult = vkCompiler.PreprocessGlsl(static_cast<const char*>(view.GetBuffer()),
+		shaderc::PreprocessedSourceCompilationResult preprocessedResult = vkCompiler.PreprocessGlsl(static_cast<const char*>(view.GetData()),
 			ShaderCompilerUtils::GetShaderKind(stage), entryMethodName.c_str(), compileOptions);
 
 		if (preprocessedResult.GetCompilationStatus() != shaderc_compilation_status_success)
@@ -46,7 +46,7 @@ namespace Hollow
 			return false;
 		}
 
-		shaderc::CompilationResult result = vkCompiler.CompileGlslToSpv(static_cast<const char*>(view.GetBuffer()), ShaderCompilerUtils::GetShaderKind(stage), "", compileOptions);
+		shaderc::CompilationResult result = vkCompiler.CompileGlslToSpv(static_cast<const char*>(view.GetData()), ShaderCompilerUtils::GetShaderKind(stage), "", compileOptions);
 
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
@@ -55,7 +55,7 @@ namespace Hollow
 			return false;
 		}
 
-		const uint64 size = (byte*)result.end() - (byte*)result.begin();
+		const u64 size = (byte*)result.end() - (byte*)result.begin();
 		byte* data = new byte[size];
 		memcpy(data, result.begin(), size);
 
@@ -70,26 +70,26 @@ namespace Hollow
 
 		SpvReflectShaderModule module = {};
 
-		if (spvReflectCreateShaderModule(buffer->GetSize(), buffer->GetBuffer(), &module) != SPV_REFLECT_RESULT_SUCCESS)
+		if (spvReflectCreateShaderModule(buffer->GetSize(), buffer->GetData(), &module) != SPV_REFLECT_RESULT_SUCCESS)
 		{
 			CORE_LOG(HE_WARNING, "ShaderCompiler", "Failed to reflect shader");
 			return false;
 		}
 
-		uint32 count = 0;
+		u32 count = 0;
 
 		// Catch descriptor sets
 		CORE_ASSERT(spvReflectEnumerateDescriptorSets(&module, &count, nullptr) == SPV_REFLECT_RESULT_SUCCESS, "ShaderCompiler", "Failed to enumerate descriptor sets");
 		ArrayList<SpvReflectDescriptorSet*> descriptorSets(count);
 		CORE_ASSERT(spvReflectEnumerateDescriptorSets(&module, &count, descriptorSets.data()) == SPV_REFLECT_RESULT_SUCCESS, "ShaderCompiler", "Failed to enumerate descriptor sets");
 
-		for (uint32 setIndex = 0; setIndex < count; ++setIndex)
+		for (u32 setIndex = 0; setIndex < count; ++setIndex)
 		{
 			SpvReflectDescriptorSet* set = descriptorSets[setIndex];
 			ShaderDescriptorSet setData = {};
 			setData.SetIndex = set->set;
 
-			for (uint32 bindingIndex = 0; bindingIndex < set->binding_count; ++bindingIndex)
+			for (u32 bindingIndex = 0; bindingIndex < set->binding_count; ++bindingIndex)
 			{
 				SpvReflectDescriptorBinding* binding = set->bindings[bindingIndex];
 
@@ -98,7 +98,7 @@ namespace Hollow
 				bindingData.Type = ShaderCompilerUtils::GetSpvDescriptorType(binding->descriptor_type);
 				bindingData.Name = binding->name;
 
-				for (uint32 blockIndex = 0; blockIndex < binding->block.member_count; blockIndex++)
+				for (u32 blockIndex = 0; blockIndex < binding->block.member_count; blockIndex++)
 				{
 					SpvReflectBlockVariable& member = binding->block.members[blockIndex];
 					ShaderBlockMember blockMember = {};
@@ -118,7 +118,7 @@ namespace Hollow
 		ArrayList<SpvReflectInterfaceVariable*> inputVariables(count);
 		CORE_ASSERT(spvReflectEnumerateInputVariables(&module, &count, inputVariables.data()) == SPV_REFLECT_RESULT_SUCCESS, "ShaderCompiler", "Failed to enumerate input variables");
 
-		for (uint32 i = 0; i < count; ++i)
+		for (u32 i = 0; i < count; ++i)
 		{
 			SpvReflectInterfaceVariable* variable = inputVariables[i];
 			ShaderIODescriptor descriptor = {};
@@ -133,7 +133,7 @@ namespace Hollow
 		ArrayList<SpvReflectInterfaceVariable*> outputVariables(count);
 		CORE_ASSERT(spvReflectEnumerateOutputVariables(&module, &count, outputVariables.data()) == SPV_REFLECT_RESULT_SUCCESS, "ShaderCompiler", "Failed to enumerate output variables");
 
-		for (uint32 i = 0; i < count; ++i)
+		for (u32 i = 0; i < count; ++i)
 		{
 			SpvReflectInterfaceVariable* variable = outputVariables[i];
 			ShaderIODescriptor descriptor = {};

@@ -30,17 +30,17 @@ namespace Hollow
 		PresentMode GetPresentMode() const { return mPresentMode; }
 		byte GetBufferCount() const { return mBufferCount; }
 		SharedPtr<GraphicsQueue> GetPresentQueue() const { return mGraphicsQueue; }
-		uint32 GetCurrentFrameIndex() const { return mCurrentFrameIndex; }
+		u32 GetCurrentFrameIndex() const { return mCurrentFrameIndex; }
 		ShareMode GetShareMode() const { return mShareMode; }
 
 		const ArrayList<SharedPtr<Texture>>& GetImages() const { return mImages; }
-		SharedPtr<Texture> GetImage(uint32 index) const { return mImages[index]; }
+		SharedPtr<Texture> GetImage(u32 index) const { return mImages[index]; }
 		const ArrayList<SharedPtr<TextureBuffer>>& GetImageViews() const { return mImageBuffers; }
-		SharedPtr<TextureBuffer> GetImageView(uint32 index) const { return mImageBuffers[index]; }
+		SharedPtr<TextureBuffer> GetImageView(u32 index) const { return mImageBuffers[index]; }
 
-		SharedPtr<Semaphore> GetImageSemaphore(uint32 index) const { return mImageSemaphores[index]; }
+		SharedPtr<Semaphore> GetImageSemaphore(u32 index) const { return mImageSemaphores[index]; }
 		ArrayList<SharedPtr<Semaphore>>& GetImageSemaphores() { return mImageSemaphores; }
-		SharedPtr<Semaphore> GetFlightSemaphore(uint32 index) const { return mFlightSemaphores[index]; }
+		SharedPtr<Semaphore> GetFlightSemaphore(u32 index) const { return mFlightSemaphores[index]; }
 		ArrayList<SharedPtr<Semaphore>>& GetFlightSemaphores() { return mFlightSemaphores; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::Swapchain; }
@@ -65,7 +65,7 @@ namespace Hollow
 		SharedPtr<GraphicsQueue> mGraphicsQueue;
 		PresentMode mPresentMode;
 		ShareMode mShareMode;
-		uint32 mCurrentFrameIndex;
+		u32 mCurrentFrameIndex;
 		ArrayList<SharedPtr<Texture>> mImages;
 		ArrayList<SharedPtr<TextureBuffer>> mImageBuffers;
 		ArrayList<SharedPtr<Semaphore>> mImageSemaphores;

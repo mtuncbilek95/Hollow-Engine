@@ -9,7 +9,7 @@ namespace Hollow
 	{
 		String MonitorName;
 		Vector2i MonitorResolution;
-		uint16 RefreshRate;
+		u16 RefreshRate;
 		byte BitsPerPixel;
 
 		ArrayList<Vector2i> SupportedResolutions;

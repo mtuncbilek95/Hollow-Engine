@@ -3,18 +3,18 @@
 #if defined(_MSC_VER) && _MSC_VER >= 1910
 
 #if defined(_WIN64)
-typedef unsigned char uint8, byte;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-typedef unsigned long long uint64, size64;
+typedef unsigned char u8, byte;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef unsigned long long u64, s64;
 
-typedef signed char int8;
-typedef signed short int16;
-typedef signed int int32;
-typedef signed long long int64;
+typedef signed char i8;
+typedef signed short i16;
+typedef signed int i32;
+typedef signed long long i64;
 
-typedef float float32;
-typedef double float64;
+typedef float f32;
+typedef double f64;
 #endif
 
 #define uint64_max 0xFFFFFFFFFFFFFFFF

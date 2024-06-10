@@ -9,8 +9,8 @@ namespace Hollow
 	{
 		Vector2u Extent;
 		Vector2i Offset;
-		uint32 layerCount;
-		uint32 viewMask;
+		u32 layerCount;
+		u32 viewMask;
 		ArrayList<DynamicPassAttachmentDesc> ColorAttachments;
 		DynamicPassAttachmentDesc DepthAttachment;
 		DynamicPassAttachmentDesc StencilAttachment;

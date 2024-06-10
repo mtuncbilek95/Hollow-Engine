@@ -8,7 +8,7 @@ namespace Hollow
 	class RUNTIME_API TextureUtils
 	{
 	public:
-		static uint32 GetTextureFormatSize(TextureFormat format)
+		static u32 GetTextureFormatSize(TextureFormat format)
 		{
 			switch (format)
 			{

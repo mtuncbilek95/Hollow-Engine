@@ -28,14 +28,14 @@ namespace Hollow
 		CORE_LOG(HE_INFO, "VulkanMemory", "Memory has been destroyed");
 	}
 
-	uint32 VulkanMemory::FindMemoryType(GraphicsMemoryType type)
+	u32 VulkanMemory::FindMemoryType(GraphicsMemoryType type)
 	{
 		VkMemoryPropertyFlagBits properties = VulkanMemoryUtils::GetVkMemoryType(type);
 
 		VkPhysicalDeviceMemoryProperties memProperties = {};
 		vkGetPhysicalDeviceMemoryProperties(mVkPhysicalDevice, &memProperties);
 
-		for (uint32 i = 0; i < memProperties.memoryTypeCount; i++)
+		for (u32 i = 0; i < memProperties.memoryTypeCount; i++)
 		{
 			if (memProperties.memoryTypes[i].propertyFlags & properties)
 				return i;

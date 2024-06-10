@@ -30,7 +30,7 @@ namespace Hollow
 		SharedPtr<Texture> pTexture;
 
 		TextureAspectFlags AspectMask;
-		uint32 MipIndex;
-		uint32 ArrayIndex;
+		u32 MipIndex;
+		u32 ArrayIndex;
 	};
 }

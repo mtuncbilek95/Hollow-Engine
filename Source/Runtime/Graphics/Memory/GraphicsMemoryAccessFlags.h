@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class RUNTIME_API GraphicsMemoryAccessFlags : uint16
+	enum class RUNTIME_API GraphicsMemoryAccessFlags : u16
 	{
 		Unknown = 0,
 		IndexRead = 1,
@@ -25,5 +25,5 @@ namespace Hollow
 		MemoryWrite = 32768
 	};
 
-	GENERATE_ENUM_FLAG(GraphicsMemoryAccessFlags, uint16);
+	GENERATE_ENUM_FLAG(GraphicsMemoryAccessFlags, u16);
 }

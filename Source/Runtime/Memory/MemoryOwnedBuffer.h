@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Runtime/Core/Definitions.h>
-#include <Runtime/Core/StdFix.h>
+#include <Runtime/Core/Core.h>
 
 namespace Hollow
 {
@@ -9,16 +8,21 @@ namespace Hollow
 	{
 	public:
 		MemoryOwnedBuffer();
-		MemoryOwnedBuffer(void* pData, uint64 size);
-		MemoryOwnedBuffer(void* pStart, void* pEnd);
+		MemoryOwnedBuffer(void* pData, const u64 size);
 		MemoryOwnedBuffer(const MemoryOwnedBuffer& other);
+		MemoryOwnedBuffer(MemoryOwnedBuffer&& other) noexcept;
 		~MemoryOwnedBuffer();
 
-		FORCEINLINE void* GetBuffer() const { return mBuffer; }
-		FORCEINLINE uint64 GetSize() const { return mSize; }
+		FORCEINLINE void* GetData() const { return mData; }
+		FORCEINLINE u64 GetSize() const { return mSize; }
+
+		MemoryOwnedBuffer& operator=(const MemoryOwnedBuffer& other);
+		MemoryOwnedBuffer& operator=(MemoryOwnedBuffer&& other) noexcept;
 
 	private:
-		void* mBuffer;
-		uint64 mSize;
+		void AllocateAndCopy(const void* pData, const u64 size);
+	private:
+		void* mData;
+		u64 mSize;
 	};
 }

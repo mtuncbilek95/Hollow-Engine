@@ -7,10 +7,10 @@ namespace Hollow
 	struct RUNTIME_API ShaderBlockMember
 	{
 		String Name;
-		uint32 Offset;
-		uint32 AbsoluteOffset;
-		uint32 Size;
-		uint32 PaddedSize;
+		u32 Offset;
+		u32 AbsoluteOffset;
+		u32 Size;
+		u32 PaddedSize;
 		ArrayList<ShaderBlockMember> Members;
 	};
 }

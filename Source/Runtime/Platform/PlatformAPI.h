@@ -11,7 +11,7 @@ namespace Hollow
 		PlatformAPI() = default;
 		virtual ~PlatformAPI() override = default;
 
-		void InitializeArguments(int argc, char** argv)
+		void InitializeArguments(i32 argc, char** argv)
 		{
 			String enginePath = argv[0];
 			String searchString = "Hollow-Engine";

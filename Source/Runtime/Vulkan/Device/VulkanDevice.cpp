@@ -37,7 +37,7 @@ namespace Hollow
 		mVkInstance = std::static_pointer_cast<VulkanInstance>(desc.Instance)->GetVkInstance();
 
 		// Get the physical device count
-		uint32 deviceCount = 0;
+		u32 deviceCount = 0;
 		vkEnumeratePhysicalDevices(mVkInstance, &deviceCount, nullptr);
 		CORE_ASSERT(deviceCount > 0, "VulkanDevice", "No physical devices found");
 
@@ -70,7 +70,7 @@ namespace Hollow
 		CORE_LOG(HE_INFO, "VulkanDevice", "Granularity: %d", deviceProperties.limits.bufferImageGranularity);
 
 		// Get the queue family count
-		uint32 queueFamilyCount = 0;
+		u32 queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(mVkPhysicalDevice, &queueFamilyCount, nullptr);
 		CORE_ASSERT(queueFamilyCount > 0, "VulkanDevice", "No queue families found");
 
@@ -79,7 +79,7 @@ namespace Hollow
 		vkGetPhysicalDeviceQueueFamilyProperties(mVkPhysicalDevice, &queueFamilyCount, queueFamilies.data());
 
 		// Find the queue families for graphics, compute and transfer
-		int index = 0;
+		i32 index = 0;
 		for (auto& prop : queueFamilies)
 		{
 			if (mGraphicsQueueFamily.FamilyIndex == 255 || mComputeQueueFamily.FamilyIndex == 255 || mTransferQueueFamily.FamilyIndex == 255)
@@ -110,7 +110,7 @@ namespace Hollow
 		}
 
 		// Queue priorities
-		float queuePriorities[] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
+		f32 queuePriorities[] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		ArrayList<VkDeviceQueueCreateInfo> queueCreateInfos = {};
 
 		// Graphics Queue Create Info
@@ -146,7 +146,7 @@ namespace Hollow
 		deviceExtensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
 
 		//Check if the device supports the extensions
-		uint32 extensionCount = 0;
+		u32 extensionCount = 0;
 		vkEnumerateDeviceExtensionProperties(mVkPhysicalDevice, nullptr, &extensionCount, nullptr);
 		ArrayList<VkExtensionProperties> availableExtensions(extensionCount);
 		vkEnumerateDeviceExtensionProperties(mVkPhysicalDevice, nullptr, &extensionCount, availableExtensions.data());
@@ -169,9 +169,9 @@ namespace Hollow
 		// Device Info
 		VkDeviceCreateInfo deviceInfo = {};
 		deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-		deviceInfo.queueCreateInfoCount = static_cast<uint32>(queueCreateInfos.size());
+		deviceInfo.queueCreateInfoCount = static_cast<u32>(queueCreateInfos.size());
 		deviceInfo.pQueueCreateInfos = queueCreateInfos.data();
-		deviceInfo.enabledExtensionCount = static_cast<uint32>(deviceExtensions.size());
+		deviceInfo.enabledExtensionCount = static_cast<u32>(deviceExtensions.size());
 		deviceInfo.ppEnabledExtensionNames = deviceExtensions.data();
 		deviceInfo.pEnabledFeatures = &deviceFeatures;
 		deviceInfo.flags = VkDeviceCreateFlags();
@@ -215,7 +215,7 @@ namespace Hollow
 		return std::make_shared<VulkanTexture>(desc, image, device);
 	}
 
-	uint32 VulkanDevice::GetQueueFamilyIndex(GraphicsQueueType type) const
+	u32 VulkanDevice::GetQueueFamilyIndex(GraphicsQueueType type) const
 	{
 		switch (type)
 		{
@@ -232,7 +232,7 @@ namespace Hollow
 
 	void VulkanDevice::OnShutdown()
 	{
-		for (int i = static_cast<int>(mDeviceObjects.size()) - 1; i >= 0; --i)
+		for (i32 i = static_cast<i32>(mDeviceObjects.size()) - 1; i >= 0; --i)
 		{
 			mDeviceObjects[i]->OnShutdown();
 			mDeviceObjects[i].reset(); // Release the shared pointer
@@ -400,13 +400,13 @@ namespace Hollow
 		return std::make_shared<VulkanDescriptorLayout>(desc, device);
 	}
 
-	void VulkanDevice::WaitForSemaphoreImpl(SharedPtr<Semaphore> ppSemaphores[], uint32 amount)
+	void VulkanDevice::WaitForSemaphoreImpl(SharedPtr<Semaphore> ppSemaphores[], u32 amount)
 	{
 		VkSemaphore semaphores[32];
 		for (byte i = 0; i < amount; i++)
 			semaphores[i] = std::static_pointer_cast<VulkanSemaphore>(ppSemaphores[i])->GetVkSemaphore();
 
-		uint64 waitValue = 1;
+		u64 waitValue = 1;
 
 		VkSemaphoreWaitInfo waitInfo = {};
 		waitInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
@@ -419,7 +419,7 @@ namespace Hollow
 		CORE_ASSERT(vkWaitSemaphores(mVkDevice, &waitInfo, UINT64_MAX) == VK_SUCCESS, "VulkanDevice", "Failed to wait for semaphores");
 	}
 
-	void VulkanDevice::WaitForFenceImpl(SharedPtr<Fence> ppFences[], uint32 amount)
+	void VulkanDevice::WaitForFenceImpl(SharedPtr<Fence> ppFences[], u32 amount)
 	{
 		VkFence fences[32];
 		for (byte i = 0; i < amount; i++)
@@ -428,7 +428,7 @@ namespace Hollow
 		CORE_ASSERT(vkWaitForFences(mVkDevice, amount, fences, VK_TRUE, UINT64_MAX) == VK_SUCCESS, "VulkanDevice", "Failed to wait for fences");
 	}
 
-	void VulkanDevice::ResetFencesImpl(SharedPtr<Fence> ppFences[], uint32 amount)
+	void VulkanDevice::ResetFencesImpl(SharedPtr<Fence> ppFences[], u32 amount)
 	{
 		VkFence fences[32];
 		for (byte i = 0; i < amount; i++)
@@ -446,7 +446,7 @@ namespace Hollow
 
 		CORE_ASSERT(vkMapMemory(mVkDevice, pMemory->GetVkDeviceMemory(), pTarget->GetVkAlignedOffset() + desc.OffsetInBytes, desc.Memory.GetSize(), 0, &pData) == VK_SUCCESS,
 			"VulkanDevice", "Failed to map memory");
-		memcpy(pData, desc.Memory.GetBuffer(), desc.Memory.GetSize());
+		memcpy(pData, desc.Memory.GetData(), desc.Memory.GetSize());
 		vkUnmapMemory(mVkDevice, pMemory->GetVkDeviceMemory());
 	}
 
@@ -460,9 +460,9 @@ namespace Hollow
 		CORE_ASSERT(vkQueueWaitIdle(std::static_pointer_cast<VulkanQueue>(pQueue)->GetVkQueue()) == VK_SUCCESS, "VulkanDevice", "Failed to wait for queue idle");
 	}
 
-	void VulkanDevice::SubmitToQueueImpl(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], uint32 amount, 
-		SharedPtr<Semaphore> ppWaitSemaphores[], uint32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], 
-		uint32 signalSemaphoreCount, SharedPtr<Fence> pFence)
+	void VulkanDevice::SubmitToQueueImpl(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], u32 amount, 
+		SharedPtr<Semaphore> ppWaitSemaphores[], u32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], 
+		u32 signalSemaphoreCount, SharedPtr<Fence> pFence)
 	{
 		VkCommandBuffer commandBuffers[32];
 		for (byte i = 0; i < amount; i++)
@@ -504,7 +504,7 @@ namespace Hollow
 
 		VkCopyDescriptorSet infos[32];
 
-		for (uint8 i = 0; i < desc.Entries.size(); i++)
+		for (u8 i = 0; i < desc.Entries.size(); i++)
 		{
 			VkCopyDescriptorSet info = {};
 			info.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
@@ -531,10 +531,10 @@ namespace Hollow
 		VkWriteDescriptorSet writeInformations[32];
 		VkDescriptorBufferInfo writeBufferInformations[32];
 		VkDescriptorImageInfo writeImageInformations[32];
-		uint32 bufferIndex = 0;
-		uint32 imageIndex = 0;
+		u32 bufferIndex = 0;
+		u32 imageIndex = 0;
 
-		for (uint8 i = 0; i < desc.Entries.size(); i++)
+		for (u8 i = 0; i < desc.Entries.size(); i++)
 		{
 			VkWriteDescriptorSet writeInfo = {};
 			writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

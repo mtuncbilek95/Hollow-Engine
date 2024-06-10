@@ -10,9 +10,9 @@ namespace Hollow
 	{
 		SharedPtr<GraphicsDeviceObject> pResource;
 		DescriptorType Type;
-		uint32 Count;
-		uint32 ArrayElement;
-		uint64 BufferOffset;
-		uint32 Binding;
+		u32 Count;
+		u32 ArrayElement;
+		u64 BufferOffset;
+		u32 Binding;
 	};
 }

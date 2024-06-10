@@ -82,7 +82,7 @@ const ArrayList<Vertex> vertices =
 	{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}
 };
 
-const ArrayList<uint32> indices =
+const ArrayList<u32> indices =
 {
 	3, 1, 0,
 	3, 2, 1,
@@ -108,7 +108,7 @@ ArrayList<Transform> InstanceTransforms(INSTANCE_COUNT);
 ConstantBuffer MVPData = {
 		{},
 		XMMatrixLookAtLH({0, 0, -7}, {0, 0 ,0}, {0, 1, 0}),
-		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<float>(2560.f / 1440.f), 0.01f, 1000.f)
+		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<f32>(2560.f / 1440.f), 0.01f, 1000.f)
 };
 
 void UpdateTransforms()
@@ -138,37 +138,37 @@ void UpdateTransforms()
 	}
 }
 
-int main(int argC, char** argV)
+i32 main(i32 argC, char** argV)
 {
 	// Initialize the platform API
 	PlatformAPI::GetInstanceAPI().InitializeArguments(argC, argV);
 
 #pragma region Object Cacophony
 	// make them start at the right up corner and go left
-	int sideLength = int(sqrt(INSTANCE_COUNT));
-	int numCols = sideLength;
+	i32 sideLength = i32(sqrt(INSTANCE_COUNT));
+	i32 numCols = sideLength;
 
-	float initialX = 1 - numCols;
-	float initialY = -numCols;
+	f32 initialX = 1 - numCols;
+	f32 initialY = -numCols;
 
 	// Initialize the transforms
-	for (byte i = 0; i < int(sqrt(INSTANCE_COUNT)); i++)
+	for (byte i = 0; i < i32(sqrt(INSTANCE_COUNT)); i++)
 	{
 		initialY += 1;
 
-		for (int j = 0; j < int(sqrt(INSTANCE_COUNT)); j++)
+		for (i32 j = 0; j < i32(sqrt(INSTANCE_COUNT)); j++)
 		{
-			float xPos = initialX + j;
+			f32 xPos = initialX + j;
 
-			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position = { xPos + j, initialY + i, (float)sideLength - 1 };
-			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Rotation = { 0, 0, 0 };
-			InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale = { 1, 1, 1 };
+			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position = { xPos + j, initialY + i, (f32)sideLength - 1 };
+			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation = { 0, 0, 0 };
+			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale = { 1, 1, 1 };
 
-			MVPData.Model[i * int(sqrt(INSTANCE_COUNT)) + j] = XMMatrixScaling(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale.x, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale.y, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Scale.z) *
-				XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Rotation.y),
-					XMConvertToRadians(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Rotation.z),
-					XMConvertToRadians(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Rotation.x)) *
-				XMMatrixTranslation(InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position.x, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position.y, InstanceTransforms[i * int(sqrt(INSTANCE_COUNT)) + j].Position.z);
+			MVPData.Model[i * i32(sqrt(INSTANCE_COUNT)) + j] = XMMatrixScaling(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.x, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.y, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.z) *
+				XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.y),
+					XMConvertToRadians(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.z),
+					XMConvertToRadians(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.x)) *
+				XMMatrixTranslation(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.x, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.y, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.z);
 		}
 	}
 
@@ -557,7 +557,7 @@ int main(int argC, char** argV)
 
 	GraphicsBufferDesc indexBufferDesc = {};
 	indexBufferDesc.SubResourceCount = indices.size();
-	indexBufferDesc.SubSizeInBytes = sizeof(uint32);
+	indexBufferDesc.SubSizeInBytes = sizeof(u32);
 	indexBufferDesc.Usage = GraphicsBufferUsage::Index | GraphicsBufferUsage::TransferDestination;
 	indexBufferDesc.ShareMode = ShareMode::Exclusive;
 	indexBufferDesc.pMemory = mDeviceMemory;
@@ -576,7 +576,7 @@ int main(int argC, char** argV)
 	TextureDesc textureDesc = {};
 	textureDesc.ArraySize = 1;
 	textureDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
-	textureDesc.ImageSize = { static_cast<uint32>(texture->ImageSize.x), static_cast<uint32>(texture->ImageSize.y), 1 };
+	textureDesc.ImageSize = { static_cast<u32>(texture->ImageSize.x), static_cast<u32>(texture->ImageSize.y), 1 };
 	textureDesc.MipLevels = 1;
 	textureDesc.SampleCount = TextureSampleCount::Sample1;
 	textureDesc.Type = TextureType::Texture2D;
@@ -606,7 +606,7 @@ int main(int argC, char** argV)
 
 	GraphicsBufferDesc stagingIndexBufferDesc = {};
 	stagingIndexBufferDesc.SubResourceCount = indices.size();
-	stagingIndexBufferDesc.SubSizeInBytes = sizeof(uint32);
+	stagingIndexBufferDesc.SubSizeInBytes = sizeof(u32);
 	stagingIndexBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
 	stagingIndexBufferDesc.ShareMode = ShareMode::Exclusive;
 	stagingIndexBufferDesc.pMemory = mHostMemory;
@@ -633,22 +633,22 @@ int main(int argC, char** argV)
 
 	// ----------------- UPDATE STAGING BUFFER -----------------
 
-	uint64 vertexBufferSize = sizeof(Vertex) * vertices.size();
-	uint64 indexBufferSize = sizeof(uint32) * indices.size();
-	uint64 uniformBufferSize = sizeof(ConstantBuffer);
+	u64 vertexBufferSize = sizeof(Vertex) * vertices.size();
+	u64 indexBufferSize = sizeof(u32) * indices.size();
+	u64 uniformBufferSize = sizeof(ConstantBuffer);
 
 	BufferDataUpdateDesc vertexDataUpdateDesc = {};
-	vertexDataUpdateDesc.Memory = { (void*)vertices.data(), vertexBufferSize };
+	vertexDataUpdateDesc.Memory = MemoryBuffer((void*)vertices.data(), vertexBufferSize);
 	vertexDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingVertexBuffer, vertexDataUpdateDesc);
 
 	BufferDataUpdateDesc indexDataUpdateDesc = {};
-	indexDataUpdateDesc.Memory = { (void*)indices.data(), indexBufferSize };
+	indexDataUpdateDesc.Memory = MemoryBuffer((void*)indices.data(), indexBufferSize);
 	indexDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingIndexBuffer, indexDataUpdateDesc);
 
 	BufferDataUpdateDesc uniformDataUpdateDesc = {};
-	uniformDataUpdateDesc.Memory = { (void*)&MVPData, uniformBufferSize };
+	uniformDataUpdateDesc.Memory = MemoryBuffer((void*)&MVPData, uniformBufferSize);
 	uniformDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 
@@ -744,13 +744,13 @@ int main(int argC, char** argV)
 	{
 		mSwapchain->AcquireNextImage();
 
-		uint32 imageIndex = mSwapchain->GetCurrentFrameIndex();
+		u32 imageIndex = mSwapchain->GetCurrentFrameIndex();
 		auto perFence = mRuntimeFences[imageIndex];
 
 		UpdateTransforms();
 
 		BufferDataUpdateDesc constantDataUpdateDesc;
-		constantDataUpdateDesc.Memory = { &MVPData, sizeof(ConstantBuffer) };
+		constantDataUpdateDesc.Memory = MemoryBuffer(&MVPData, sizeof(ConstantBuffer));
 		constantDataUpdateDesc.OffsetInBytes = 0;
 		mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 

@@ -76,7 +76,7 @@ namespace Hollow
 #endif
 
 		// Check for instance extension support
-		uint32 extensionCount = 0;
+		u32 extensionCount = 0;
 		CORE_ASSERT(vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr) == VK_SUCCESS, "VulkanInstance",
 			"Failed to enumerate instance extension properties");
 		CORE_ASSERT(extensionCount > 0, "VulkanInstance", "No instance extension properties found");
@@ -120,7 +120,7 @@ namespace Hollow
 			CORE_LOG(HE_WARNING, "VulkanInstance", "Unsupported extension: %s", extension);
 
 		// Get supported layers
-		uint32 supportedLayerCount = 0;
+		u32 supportedLayerCount = 0;
 		CORE_ASSERT(vkEnumerateInstanceLayerProperties(&supportedLayerCount, nullptr) == VK_SUCCESS, "VulkanInstance",
 			"Failed to enumerate instance layer properties");
 		CORE_ASSERT(supportedLayerCount > 0, "VulkanInstance", "No instance layer properties found");
@@ -153,9 +153,9 @@ namespace Hollow
 		VkInstanceCreateInfo instanceInfo = {};
 		instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		instanceInfo.pApplicationInfo = &appInfo;
-		instanceInfo.enabledLayerCount = static_cast<uint32>(layerNames.size());
+		instanceInfo.enabledLayerCount = static_cast<u32>(layerNames.size());
 		instanceInfo.ppEnabledLayerNames = layerNames.data();
-		instanceInfo.enabledExtensionCount = static_cast<uint32>(supportedExtensionNames.size());
+		instanceInfo.enabledExtensionCount = static_cast<u32>(supportedExtensionNames.size());
 		instanceInfo.ppEnabledExtensionNames = supportedExtensionNames.data();
 		instanceInfo.flags = VkInstanceCreateFlags();
 		instanceInfo.pNext = nullptr;
@@ -196,7 +196,7 @@ namespace Hollow
 	void VulkanInstance::EnumerateAdaptersImpl()
 	{
 		// Get the physical devices count
-		uint32 deviceCount = 0;
+		u32 deviceCount = 0;
 		CORE_ASSERT(vkEnumeratePhysicalDevices(mVkInstance, &deviceCount, nullptr) == VK_SUCCESS, "VulkanInstance", "Failed to enumerate physical devices");
 		CORE_ASSERT(deviceCount > 0, "VulkanInstance", "No physical devices found");
 
@@ -220,7 +220,7 @@ namespace Hollow
 			vkGetPhysicalDeviceMemoryProperties(device, &deviceMemoryProperties);
 
 			// Get the device queue family properties
-			uint32 queueFamilyCount = 0;
+			u32 queueFamilyCount = 0;
 			vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 			CORE_ASSERT(queueFamilyCount > 0, "VulkanInstance", "No queue family properties found");
 

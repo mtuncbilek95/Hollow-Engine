@@ -15,7 +15,7 @@ namespace Hollow
 
 		FORCEINLINE SharedPtr<RenderPass> GetRenderPass() const noexcept { return mRenderPass; }
 		FORCEINLINE const ArrayList<SharedPtr<TextureBuffer>>& GetAttachments() const noexcept { return mAttachments; }
-		FORCEINLINE SharedPtr<TextureBuffer> GetAttachment(uint32 index) const noexcept { return mAttachments[index]; }
+		FORCEINLINE SharedPtr<TextureBuffer> GetAttachment(u32 index) const noexcept { return mAttachments[index]; }
 		FORCEINLINE const Vector2u& GetImageSize() const noexcept { return mImageSize; }
 
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept { return GraphicsDeviceObjectType::Framebuffer; }

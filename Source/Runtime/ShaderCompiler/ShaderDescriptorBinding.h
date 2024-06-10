@@ -8,7 +8,7 @@ namespace Hollow
 {
 	struct RUNTIME_API ShaderDescriptorBinding
 	{
-		uint32 BindIndex;
+		u32 BindIndex;
 		ShaderDescriptorBindingType Type;
 		String Name;
 		ShaderBlockMember BlockMember;

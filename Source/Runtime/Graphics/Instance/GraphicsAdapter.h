@@ -12,9 +12,9 @@ namespace Hollow
 	struct RUNTIME_API GraphicsAdapter
 	{
 		GraphicsAdapterType AdapterType;
-		uint32 AdapterScore;
+		u32 AdapterScore;
 		String ProductName;
-		uint32 VRam;
-		uint32 DeviceId;
+		u32 VRam;
+		u32 DeviceId;
 	};
 }

@@ -8,7 +8,7 @@ namespace Hollow
 {
 	struct RUNTIME_API DescriptorPoolDesc
 	{
-		uint64 MaxSets;
+		u64 MaxSets;
 		ArrayList<DescriptorPoolSize> PoolSizes;
 	};
 }

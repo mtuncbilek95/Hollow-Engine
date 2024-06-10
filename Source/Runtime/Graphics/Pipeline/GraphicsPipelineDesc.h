@@ -26,7 +26,7 @@ namespace Hollow
         ArrayList<SharedPtr<Shader>> GraphicsShaders;
         ViewportDesc Viewport;
         ScissorDesc Scissor;
-		uint32 ColorAttachmentCount;
+		u32 ColorAttachmentCount;
 		ArrayList<TextureFormat> ColorAttachmentFormats;
 		TextureFormat DepthAttachmentFormat;
 		TextureFormat StencilAttachmentFormat;

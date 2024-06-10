@@ -14,8 +14,8 @@ namespace Hollow
 		~GraphicsManager() override = default;
 
 		// The budget memories are in megabytes
-		void SetMemoryBudget(const uint64 hostMemoryBudget, const uint64 deviceMemoryBudget) noexcept;
-		void SetResourceBudget(const uint64 resourceCount, const uint64 setCount) noexcept;
+		void SetMemoryBudget(const u64 hostMemoryBudget, const u64 deviceMemoryBudget) noexcept;
+		void SetResourceBudget(const u64 resourceCount, const u64 setCount) noexcept;
 
 		SharedPtr<GraphicsDevice> GetDefaultDevice() const noexcept { return mGraphicsDevice; }
 

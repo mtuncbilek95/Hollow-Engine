@@ -17,7 +17,7 @@ namespace Hollow
 		} AttachmentStruct;
 		struct
 		{
-			uint32 ColorAttachmentCount;
+			u32 ColorAttachmentCount;
 			TextureDesc ColorAttachment;
 			bool HasDepthAttachment;
 			TextureDesc DepthAttachment;

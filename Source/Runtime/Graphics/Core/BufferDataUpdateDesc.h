@@ -12,6 +12,6 @@ namespace Hollow
 	struct RUNTIME_API BufferDataUpdateDesc
 	{
 		MemoryBuffer Memory = {};
-		uint32 OffsetInBytes = 0;
+		u32 OffsetInBytes = 0;
 	};
 }

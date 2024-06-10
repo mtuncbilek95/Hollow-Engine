@@ -14,14 +14,14 @@ namespace Hollow
 		{}
 		virtual ~DescriptorPool() override = default;
 
-		uint64 GetMaxSets() const noexcept { return mMaxSets; }
+		u64 GetMaxSets() const noexcept { return mMaxSets; }
 		const ArrayList<DescriptorPoolSize>& GetPoolSizes() const noexcept { return mPoolSizes; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::DescriptorPool; }
 		virtual void OnShutdown() noexcept override = 0;
 
 	private:
-		uint64 mMaxSets;
+		u64 mMaxSets;
 		ArrayList<DescriptorPoolSize> mPoolSizes;
 	};
 }

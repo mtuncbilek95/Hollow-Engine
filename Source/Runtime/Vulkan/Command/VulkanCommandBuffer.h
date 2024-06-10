@@ -27,10 +27,10 @@ namespace Hollow
 		virtual void BeginRenderPassImpl(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vector4f& clearColor, const Vector2f& depthStencil) override;
 		virtual void EndRenderPassImpl() override;
 		virtual void BindPipelineImpl(SharedPtr<Pipeline> pPipeline) override;
-		virtual void BindVertexBuffersImpl(SharedPtr<GraphicsBuffer> ppBuffer[], uint32 amount) override;
+		virtual void BindVertexBuffersImpl(SharedPtr<GraphicsBuffer> ppBuffer[], u32 amount) override;
 		virtual void BindIndexBufferImpl(SharedPtr<GraphicsBuffer> pBuffer, GraphicsIndexType indexType) override;
-		virtual void BindDescriptorsImpl(SharedPtr<DescriptorSet> ppSet[], uint32 amount) override;
-		virtual void DrawIndexedImpl(uint32 indexCount, uint32 indexOffset, uint32 vertexOffset, uint32 instanceOffset, uint32 instanceCount) override;
+		virtual void BindDescriptorsImpl(SharedPtr<DescriptorSet> ppSet[], u32 amount) override;
+		virtual void DrawIndexedImpl(u32 indexCount, u32 indexOffset, u32 vertexOffset, u32 instanceOffset, u32 instanceCount) override;
 		virtual void SetViewportsImpl(ViewportDesc pViewports[], byte count) override;
 		virtual void SetScissorsImpl(ScissorDesc pScissors[], byte count) override;
 		virtual void CopyBufferToBufferImpl(SharedPtr<GraphicsBuffer> pSourceBuffer, SharedPtr<GraphicsBuffer> pDestinationBuffer, BufferBufferCopyDesc& desc) override;

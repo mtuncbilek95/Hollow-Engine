@@ -8,6 +8,6 @@ namespace Hollow
 	struct RUNTIME_API DescriptorPoolSize
 	{
 		DescriptorType Type;
-		uint64 Count;
+		u64 Count;
 	};
 }

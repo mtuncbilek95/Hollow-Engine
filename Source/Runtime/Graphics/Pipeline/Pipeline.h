@@ -43,7 +43,7 @@ namespace Hollow
         ArrayList<SharedPtr<Shader>> mGraphicsShaders;
         ViewportDesc mViewport;
         ScissorDesc mScissor;
-		uint32 mColorAttachmentCount;
+		u32 mColorAttachmentCount;
 		ArrayList<TextureFormat> mColorAttachmentFormats;
 		TextureFormat mDepthAttachmentFormat;
 		TextureFormat mStencilAttachmentFormat;

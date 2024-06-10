@@ -6,12 +6,12 @@ namespace Hollow
 {
 	struct RUNTIME_API DescriptorSetCopyEntry
 	{
-		uint32 SourceBinding;
-		uint32 SourceArrayElement;
+		u32 SourceBinding;
+		u32 SourceArrayElement;
 
-		uint32 DestinationBinding;
-		uint32 DestinationArrayElement;
+		u32 DestinationBinding;
+		u32 DestinationArrayElement;
 
-		uint32 DescriptorCount;
+		u32 DescriptorCount;
 	};
 }

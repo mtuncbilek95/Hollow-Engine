@@ -6,7 +6,7 @@
 
 using namespace Hollow;
 
-int main(int argC, char** argV)
+i32 main(i32 argC, char** argV)
 {
 	PlatformAPI::GetInstanceAPI().InitializeArguments(argC, argV);
 

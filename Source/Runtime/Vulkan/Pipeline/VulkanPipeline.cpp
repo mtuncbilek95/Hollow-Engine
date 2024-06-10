@@ -35,7 +35,7 @@ namespace Hollow
 			binding.binding = bindIndex;
 			binding.inputRate = VulkanPipelineUtils::GetVkVertexInputRate(element.StepRate);
 
-			uint32 offset = 0;
+			u32 offset = 0;
 			for (byte attIndex = 0; attIndex < element.Elements.size(); attIndex++)
 			{
 				const auto& attribute = element.Elements[attIndex];
@@ -71,21 +71,21 @@ namespace Hollow
 		ArrayList<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 		VkPipelineDynamicStateCreateInfo dynamicState = {};
 		dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-		dynamicState.dynamicStateCount = static_cast<uint32>(dynamicStates.size());
+		dynamicState.dynamicStateCount = static_cast<u32>(dynamicStates.size());
 		dynamicState.pDynamicStates = dynamicStates.data();
 
 		// Create Viewport
 		VkViewport viewport{};
-		viewport.x = static_cast<float>(desc.Viewport.OffsetSize.x);
-		viewport.y = static_cast<float>(desc.Viewport.OffsetSize.y);
-		viewport.width = static_cast<float>(desc.Viewport.ViewportSize.x);
-		viewport.height = static_cast<float>(desc.Viewport.ViewportSize.y);
+		viewport.x = static_cast<f32>(desc.Viewport.OffsetSize.x);
+		viewport.y = static_cast<f32>(desc.Viewport.OffsetSize.y);
+		viewport.width = static_cast<f32>(desc.Viewport.ViewportSize.x);
+		viewport.height = static_cast<f32>(desc.Viewport.ViewportSize.y);
 		viewport.minDepth = desc.Viewport.DepthRange.x;
 		viewport.maxDepth = desc.Viewport.DepthRange.y;
 
 		// Create Scissor
 		VkRect2D scissor{};
-		scissor.offset = { static_cast<int>(desc.Scissor.OffsetSize.x), static_cast<int>(desc.Scissor.OffsetSize.y) };
+		scissor.offset = { static_cast<i32>(desc.Scissor.OffsetSize.x), static_cast<i32>(desc.Scissor.OffsetSize.y) };
 		scissor.extent = { desc.Scissor.ScissorSize.x, desc.Scissor.ScissorSize.y };
 
 		// Create ViewportState
@@ -166,7 +166,7 @@ namespace Hollow
 		// Descriptor Set Layouts
 		ArrayList<VkDescriptorSetLayout> layouts(desc.ResourceLayout.ResourceLayouts.size());
 
-		for (uint32 i = 0; i < desc.ResourceLayout.ResourceLayouts.size(); i++)
+		for (u32 i = 0; i < desc.ResourceLayout.ResourceLayouts.size(); i++)
 		{
 			layouts[i] = std::static_pointer_cast<VulkanDescriptorLayout>(desc.ResourceLayout.ResourceLayouts[i])->GetVkDescriptorLayout();
 		}
@@ -198,7 +198,7 @@ namespace Hollow
 		// Create Pipeline
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-		pipelineInfo.stageCount = static_cast<uint32>(shaderStages.size());
+		pipelineInfo.stageCount = static_cast<u32>(shaderStages.size());
 		pipelineInfo.pStages = shaderStages.data();
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &inputAssembly;

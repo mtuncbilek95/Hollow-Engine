@@ -7,7 +7,7 @@ namespace Hollow
 	{
 	}
 
-	MemoryBuffer::MemoryBuffer(void* pData, const uint64 size) : mBuffer(pData), mSize(size)
+	MemoryBuffer::MemoryBuffer(void* pData, const u64 size) : mBuffer(pData), mSize(size)
 	{
 	}
 
@@ -15,7 +15,7 @@ namespace Hollow
 	{
 	}
 
-	MemoryBuffer::MemoryBuffer(const SharedPtr<MemoryOwnedBuffer> pOwned) : mBuffer(pOwned->GetBuffer()), mSize(pOwned->GetSize())
+	MemoryBuffer::MemoryBuffer(const SharedPtr<MemoryOwnedBuffer> pOwned) : mBuffer(pOwned->GetData()), mSize(pOwned->GetSize())
 	{
 	}
 }

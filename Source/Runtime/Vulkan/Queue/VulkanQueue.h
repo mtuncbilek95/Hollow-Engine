@@ -13,12 +13,12 @@ namespace Hollow
 		~VulkanQueue() override = default;
 
 		VkQueue GetVkQueue() const { return mVkQueue; }
-		uint32 GetQueueFamilyIndex() const { return mQueueFamilyIndex; }
+		u32 GetQueueFamilyIndex() const { return mQueueFamilyIndex; }
 
 		virtual void OnShutdown() noexcept override;
 
 	private:
 		VkQueue mVkQueue;
-		uint32 mQueueFamilyIndex;
+		u32 mQueueFamilyIndex;
 	};
 }

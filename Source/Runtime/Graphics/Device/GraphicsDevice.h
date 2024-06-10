@@ -82,14 +82,14 @@ namespace Hollow
 		SharedPtr<DescriptorPool> CreateDescriptorPool(const DescriptorPoolDesc& desc);
 		SharedPtr<DescriptorLayout> CreateDescriptorLayout(const DescriptorLayoutDesc& desc);
 
-		void WaitForSemaphore(SharedPtr<Semaphore> ppSemaphores[], uint32 amount);
-		void WaitForFence(SharedPtr<Fence> ppFences[], uint32 amount);
-		void ResetFences(SharedPtr<Fence> ppFences[], uint32 amount);
+		void WaitForSemaphore(SharedPtr<Semaphore> ppSemaphores[], u32 amount);
+		void WaitForFence(SharedPtr<Fence> ppFences[], u32 amount);
+		void ResetFences(SharedPtr<Fence> ppFences[], u32 amount);
 		void UpdateBufferData(SharedPtr<GraphicsBuffer> pBuffer, BufferDataUpdateDesc& desc);
 		void WaitForIdle();
 		void WaitQueueIdle(SharedPtr<GraphicsQueue> pQueue);
-		void SubmitToQueue(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], uint32 amount, SharedPtr<Semaphore> ppWaitSemaphores[],
-			uint32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], uint32 signalSemaphoreCount, SharedPtr<Fence> pFence);
+		void SubmitToQueue(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], u32 amount, SharedPtr<Semaphore> ppWaitSemaphores[],
+			u32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], u32 signalSemaphoreCount, SharedPtr<Fence> pFence);
 		void CopyDescriptorSet(SharedPtr<DescriptorSet> pSrcSet, SharedPtr<DescriptorSet> pDstSet, DescriptorSetCopyDesc& desc);
 		void UpdateDescriptorSet(SharedPtr<DescriptorSet> pDstSet, DescriptorSetUpdateDesc& desc);
 
@@ -113,14 +113,14 @@ namespace Hollow
 		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc) = 0;
 		virtual SharedPtr<DescriptorLayout> CreateDescriptorLayoutImpl(const DescriptorLayoutDesc& desc) = 0;
 
-		virtual void WaitForSemaphoreImpl(SharedPtr<Semaphore> ppSemaphores[], uint32 amount) = 0;
-		virtual void WaitForFenceImpl(SharedPtr<Fence> ppFences[], uint32 amount) = 0;
-		virtual void ResetFencesImpl(SharedPtr<Fence> ppFences[], uint32 amount) = 0;
+		virtual void WaitForSemaphoreImpl(SharedPtr<Semaphore> ppSemaphores[], u32 amount) = 0;
+		virtual void WaitForFenceImpl(SharedPtr<Fence> ppFences[], u32 amount) = 0;
+		virtual void ResetFencesImpl(SharedPtr<Fence> ppFences[], u32 amount) = 0;
 		virtual void UpdateBufferDataImpl(SharedPtr<GraphicsBuffer> pBuffer, BufferDataUpdateDesc& desc) = 0;
 		virtual void WaitForIdleImpl() = 0;
 		virtual void WaitQueueIdleImpl(SharedPtr<GraphicsQueue> pQueue) = 0;
-		virtual void SubmitToQueueImpl(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], uint32 amount, SharedPtr<Semaphore> ppWaitSemaphores[],
-			uint32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], uint32 signalSemaphoreCount, SharedPtr<Fence> pFence) = 0;
+		virtual void SubmitToQueueImpl(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], u32 amount, SharedPtr<Semaphore> ppWaitSemaphores[],
+			u32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], u32 signalSemaphoreCount, SharedPtr<Fence> pFence) = 0;
 		virtual void CopyDescriptorSetImpl(SharedPtr<DescriptorSet> pSrcSet, SharedPtr<DescriptorSet> pDstSet, DescriptorSetCopyDesc& desc) = 0;
 		virtual void UpdateDescriptorSetImpl(SharedPtr<DescriptorSet> pDstSet, DescriptorSetUpdateDesc& desc) = 0;
 

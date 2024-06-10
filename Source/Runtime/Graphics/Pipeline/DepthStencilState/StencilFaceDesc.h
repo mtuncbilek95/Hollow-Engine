@@ -12,8 +12,8 @@ namespace Hollow
         StencilOperation PassOperation;
         StencilOperation DepthFailOperation;
         CompareOperation CompareOperation;
-        uint32 CompareMask;
-        uint32 WriteMask;
-        uint32 Reference;
+        u32 CompareMask;
+        u32 WriteMask;
+        u32 Reference;
     };
 }

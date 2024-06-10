@@ -13,8 +13,8 @@ namespace Hollow
 	 */
 	struct RUNTIME_API GraphicsBufferDesc
 	{
-		uint64 SubSizeInBytes;
-		uint64 SubResourceCount;
+		u64 SubSizeInBytes;
+		u64 SubResourceCount;
 		GraphicsBufferUsage Usage;
 		ShareMode ShareMode;
 		SharedPtr<GraphicsMemory> pMemory;

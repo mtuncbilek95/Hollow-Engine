@@ -22,13 +22,13 @@ namespace Hollow
 
 		String GetMonitorName() const { return mMonitorName; }
 		Vector2i GetMonitorResolution() const { return mMonitorResolution; }
-		uint16 GetRefreshRate() const { return mRefreshRate; }
+		u16 GetRefreshRate() const { return mRefreshRate; }
 		byte GetBitsPerPixel() const { return mBitsPerPixel; }
 
 	private:
 		String mMonitorName;
 		Vector2i mMonitorResolution;
-		uint16 mRefreshRate;
+		u16 mRefreshRate;
 		byte mBitsPerPixel;
 	};
 }

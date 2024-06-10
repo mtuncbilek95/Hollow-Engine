@@ -29,7 +29,7 @@ namespace Hollow
 
 			void FillQueues(VkDevice vkDevice)
 			{
-				for (uint32 i = 0; i < QueueCapacity; ++i)
+				for (u32 i = 0; i < QueueCapacity; ++i)
 				{
 					VkQueue pQueue;
 					vkGetDeviceQueue(vkDevice, FamilyIndex, i, &pQueue);
@@ -49,7 +49,7 @@ namespace Hollow
 
 		SharedPtr<Texture> CreateTextureForSwapchain(const TextureDesc& desc, VkImage image);
 
-		uint32 GetQueueFamilyIndex(GraphicsQueueType type) const;
+		u32 GetQueueFamilyIndex(GraphicsQueueType type) const;
 
 		VkDevice GetVkDevice() const { return mVkDevice; }
 		VkPhysicalDevice GetVkPhysicalDevice() const { return mVkPhysicalDevice; }
@@ -77,14 +77,14 @@ namespace Hollow
 		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc) override;
 		virtual SharedPtr<DescriptorLayout> CreateDescriptorLayoutImpl(const DescriptorLayoutDesc& desc) override;
 
-		virtual void WaitForSemaphoreImpl(SharedPtr<Semaphore> ppSemaphores[], uint32 amount) override;
-		virtual void WaitForFenceImpl(SharedPtr<Fence> ppFences[], uint32 amount) override;
-		virtual void ResetFencesImpl(SharedPtr<Fence> ppFences[], uint32 amount) override;
+		virtual void WaitForSemaphoreImpl(SharedPtr<Semaphore> ppSemaphores[], u32 amount) override;
+		virtual void WaitForFenceImpl(SharedPtr<Fence> ppFences[], u32 amount) override;
+		virtual void ResetFencesImpl(SharedPtr<Fence> ppFences[], u32 amount) override;
 		virtual void UpdateBufferDataImpl(SharedPtr<GraphicsBuffer> pBuffer, BufferDataUpdateDesc& desc) override;
 		virtual void WaitForIdleImpl() override;
 		virtual void WaitQueueIdleImpl(SharedPtr<GraphicsQueue> pQueue) override;
-		virtual void SubmitToQueueImpl(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], uint32 amount, SharedPtr<Semaphore> ppWaitSemaphores[],
-			uint32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], uint32 signalSemaphoreCount, SharedPtr<Fence> pFence) override;
+		virtual void SubmitToQueueImpl(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], u32 amount, SharedPtr<Semaphore> ppWaitSemaphores[],
+			u32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], u32 signalSemaphoreCount, SharedPtr<Fence> pFence) override;
 		virtual void CopyDescriptorSetImpl(SharedPtr<DescriptorSet> pSrcSet, SharedPtr<DescriptorSet> pDstSet, DescriptorSetCopyDesc& desc) override;
 		virtual void UpdateDescriptorSetImpl(SharedPtr<DescriptorSet> pDstSet, DescriptorSetUpdateDesc& desc) override;
 

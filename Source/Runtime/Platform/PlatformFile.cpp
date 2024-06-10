@@ -22,22 +22,22 @@ namespace Hollow
 		return PlatformDependency::Delete(path);
 	}
 
-	bool PlatformFile::Write(const String& path, const String& data, const uint64 offset)
+	bool PlatformFile::Write(const String& path, const String& data, const u64 offset)
 	{
 		return PlatformDependency::Write(path, data, offset);
 	}
 
-	bool PlatformFile::Write(const String& path, const MemoryBuffer& buffer, const uint64 offset)
+	bool PlatformFile::Write(const String& path, const MemoryBuffer& buffer, const u64 offset)
 	{
 		return PlatformDependency::Write(path, buffer, offset);
 	}
 
-	bool PlatformFile::Read(const String& path, String& contentOut, const uint64 startByte, const uint64 endByte)
+	bool PlatformFile::Read(const String& path, String& contentOut, const u64 startByte, const u64 endByte)
 	{
 		return PlatformDependency::Read(path, contentOut, startByte, endByte);
 	}
 
-	bool PlatformFile::Read(const String& path, MemoryBuffer& view, const uint64 startByte, const uint64 endByte)
+	bool PlatformFile::Read(const String& path, MemoryBuffer& view, const u64 startByte, const u64 endByte)
 	{
 		return PlatformDependency::Read(path, view, startByte, endByte);
 	}
@@ -57,7 +57,7 @@ namespace Hollow
 		return PlatformDependency::Rename(source, destination);
 	}
 
-	bool PlatformFile::GetSize(const String& path, uint64& sizeOut)
+	bool PlatformFile::GetSize(const String& path, u64& sizeOut)
 	{
 		return PlatformDependency::GetSize(path, sizeOut);
 	}

@@ -18,7 +18,7 @@ namespace Hollow
 
 		VkDescriptorPoolCreateInfo poolInfo = {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolInfo.poolSizeCount = static_cast<uint32>(poolSizes.size());
+		poolInfo.poolSizeCount = static_cast<u32>(poolSizes.size());
 		poolInfo.pPoolSizes = poolSizes.data();
 		poolInfo.maxSets = desc.MaxSets;
 		poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;

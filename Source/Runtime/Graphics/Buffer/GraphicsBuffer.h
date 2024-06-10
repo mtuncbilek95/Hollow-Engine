@@ -24,9 +24,9 @@ namespace Hollow
 
 		GraphicsBufferUsage GetBufferUsage() const { return mBufferUsage; }
 		ShareMode GetShareMode() const { return mShareMode; }
-		uint32 GetSubSizeInBytes() const { return mSubSizeInBytes; }
-		uint32 GetSubResourceCount() const { return mSubResourceCount; }
-		uint32 GetTotalSizeInBytes() const { return mTotalSizeInBytes; }
+		u32 GetSubSizeInBytes() const { return mSubSizeInBytes; }
+		u32 GetSubResourceCount() const { return mSubResourceCount; }
+		u32 GetTotalSizeInBytes() const { return mTotalSizeInBytes; }
 		SharedPtr<GraphicsMemory> GetMemory() const { return mMemory; }
 
 		// Inherited via GraphicsDeviceObject
@@ -37,9 +37,9 @@ namespace Hollow
 	private:
 		GraphicsBufferUsage mBufferUsage;
 		ShareMode mShareMode;
-		uint32 mSubSizeInBytes;
-		uint32 mSubResourceCount;
-		uint32 mTotalSizeInBytes;
+		u32 mSubSizeInBytes;
+		u32 mSubResourceCount;
+		u32 mTotalSizeInBytes;
 
 		SharedPtr<GraphicsMemory> mMemory;
 	};

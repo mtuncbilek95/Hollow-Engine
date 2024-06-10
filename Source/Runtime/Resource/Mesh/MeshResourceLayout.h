@@ -17,6 +17,6 @@ namespace Hollow
 	struct RUNTIME_API MeshResourceLayout
 	{
 		VertexData Vertices;
-		ArrayList<uint32> Indices;
+		ArrayList<u32> Indices;
 	};
 }

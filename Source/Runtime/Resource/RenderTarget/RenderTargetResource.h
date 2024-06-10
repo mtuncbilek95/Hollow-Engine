@@ -16,7 +16,7 @@ namespace Hollow
 		virtual ~RenderTargetResource() override = default;
 
 		ArrayList<SharedPtr<TextureBuffer>>& GetColorBuffers() { return mColorBuffers; }
-		SharedPtr<TextureBuffer> GetColorBuffer(uint32 index) { return mColorBuffers[index]; }
+		SharedPtr<TextureBuffer> GetColorBuffer(u32 index) { return mColorBuffers[index]; }
 		SharedPtr<TextureBuffer> GetDepthBuffer() { return mDepthBuffer; }
 		SharedPtr<TextureBuffer> GetStencilBuffer() { return mStencilBuffer; }
 

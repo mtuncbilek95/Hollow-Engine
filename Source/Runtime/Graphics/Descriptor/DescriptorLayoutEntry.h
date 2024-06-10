@@ -8,7 +8,7 @@ namespace Hollow
 {
 	struct RUNTIME_API DescriptorLayoutEntry
 	{
-		uint32 Binding; 
+		u32 Binding; 
 		DescriptorType Type;
 		ShaderStage ShaderStages;
 	};

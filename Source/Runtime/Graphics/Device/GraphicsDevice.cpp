@@ -173,17 +173,17 @@ namespace Hollow
 		return descriptorLayout;
 	}
 
-	void GraphicsDevice::WaitForSemaphore(SharedPtr<Semaphore> ppSemaphores[], uint32 amount)
+	void GraphicsDevice::WaitForSemaphore(SharedPtr<Semaphore> ppSemaphores[], u32 amount)
 	{
 		WaitForSemaphoreImpl(ppSemaphores, amount);
 	}
 
-	void GraphicsDevice::WaitForFence(SharedPtr<Fence> ppFences[], uint32 amount)
+	void GraphicsDevice::WaitForFence(SharedPtr<Fence> ppFences[], u32 amount)
 	{
 		WaitForFenceImpl(ppFences, amount);
 	}
 
-	void GraphicsDevice::ResetFences(SharedPtr<Fence> ppFences[], uint32 amount)
+	void GraphicsDevice::ResetFences(SharedPtr<Fence> ppFences[], u32 amount)
 	{
 		ResetFencesImpl(ppFences, amount);
 	}
@@ -203,9 +203,9 @@ namespace Hollow
 		WaitQueueIdleImpl(pQueue);
 	}
 
-	void GraphicsDevice::SubmitToQueue(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], uint32 amount, 
-		SharedPtr<Semaphore> ppWaitSemaphores[], uint32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], 
-		uint32 signalSemaphoreCount, SharedPtr<Fence> pFence)
+	void GraphicsDevice::SubmitToQueue(SharedPtr<GraphicsQueue> pQueue, SharedPtr<CommandBuffer> ppCommandBuffers[], u32 amount, 
+		SharedPtr<Semaphore> ppWaitSemaphores[], u32 waitSemaphoreCount, PipelineStageFlags stageFlags[], SharedPtr<Semaphore> ppSignalSemaphores[], 
+		u32 signalSemaphoreCount, SharedPtr<Fence> pFence)
 	{
 		SubmitToQueueImpl(pQueue, ppCommandBuffers, amount, ppWaitSemaphores, waitSemaphoreCount, stageFlags, ppSignalSemaphores, signalSemaphoreCount, pFence);
 	}

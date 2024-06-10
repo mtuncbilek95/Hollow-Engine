@@ -15,19 +15,19 @@ namespace Hollow
 		struct RUNTIME_API SubMemory
 		{
 			bool bOwned;
-			uint64 SizeInBytes;
+			u64 SizeInBytes;
 		};
 
 	public:
 		GraphicsMemory(const GraphicsMemoryDesc& desc, const SharedPtr<GraphicsDevice> device);
 		virtual ~GraphicsMemory() override = default;
 
-		uint64 AllocateSubMemory(uint64 sizeInBytes);
-		void FreeSubMemory(uint64 offset);
+		u64 AllocateSubMemory(u64 sizeInBytes);
+		void FreeSubMemory(u64 offset);
 
-		uint64 GetTotalSize() const { return mTotalSize; }
-		uint64 GetUsedSize() const { return mUsedSize; }
-		uint64 GetFreeSize() const { return mTotalSize - mUsedSize; }
+		u64 GetTotalSize() const { return mTotalSize; }
+		u64 GetUsedSize() const { return mUsedSize; }
+		u64 GetFreeSize() const { return mTotalSize - mUsedSize; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::GraphicsMemory; }
 
@@ -35,8 +35,8 @@ namespace Hollow
 
 	private:
 		GraphicsMemoryType mMemoryType;
-		uint64 mTotalSize;
-		uint64 mUsedSize;
+		u64 mTotalSize;
+		u64 mUsedSize;
 
 		ArrayList<SubMemory> mSubMemoryBlocks;
 	};

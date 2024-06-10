@@ -66,12 +66,12 @@ namespace Hollow
 		mTexture = mGraphicsDevice->CreateTexture(desc);
 
 		// For each arrayindex, create a mip chain
-		for (uint32 arrayIndex = 0; arrayIndex <desc.ArraySize; ++arrayIndex)
+		for (u32 arrayIndex = 0; arrayIndex <desc.ArraySize; ++arrayIndex)
 		{
 			ArrayList<MipData> mips;
 
 			// For each mip level, create a mip data
-			for (uint32 mipIndex = 0; mipIndex < desc.MipLevels; mipIndex++)
+			for (u32 mipIndex = 0; mipIndex < desc.MipLevels; mipIndex++)
 			{
 				MipData mipData = {};
 

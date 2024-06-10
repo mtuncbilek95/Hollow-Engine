@@ -22,7 +22,7 @@ namespace Hollow
 		DEVMODE resMode = {};
 		resMode.dmSize = sizeof(resMode);
 		resMode.dmDriverExtra = 0;
-		int modeNum = 0;
+		i32 modeNum = 0;
 		while (EnumDisplaySettings(NULL, modeNum, &resMode))
 		{
 			if (resMode.dmDisplayFrequency == devMode.dmDisplayFrequency && resMode.dmBitsPerPel == devMode.dmBitsPerPel && resMode.dmDisplayFixedOutput == devMode.dmDisplayFixedOutput)
@@ -66,7 +66,7 @@ namespace Hollow
 		DEVMODE resMode = {};
 		resMode.dmSize = sizeof(resMode);
 		resMode.dmDriverExtra = 0;
-		int modeNum = 0;
+		i32 modeNum = 0;
 		while (EnumDisplaySettings(monitorInfo.szDevice, modeNum, &resMode))
 		{
 			if (resMode.dmDisplayFrequency == devMode.dmDisplayFrequency && resMode.dmBitsPerPel == devMode.dmBitsPerPel && resMode.dmDisplayFixedOutput == devMode.dmDisplayFixedOutput)
@@ -97,7 +97,7 @@ namespace Hollow
 	{
 		ArrayList<SharedPtr<Monitor>> monitors;
 #if defined(HOLLOW_PLATFORM_WINDOWS)
-		uint32 index = 0;
+		u32 index = 0;
 		EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, (LPARAM)&monitors);
 
 		return monitors;

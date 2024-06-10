@@ -29,20 +29,20 @@ namespace Hollow
 		SamplerAddressMode GetVAddressMode() const { return mVAddressMode; }
 		SamplerAddressMode GetWAddressMode() const { return mWAddressMode; }
 		bool IsAnisotropyEnabled() const { return mAnisotropyEnabled; }
-		uint32 GetMaxAnisotropy() const { return mMaxAnisotropy; }
+		u32 GetMaxAnisotropy() const { return mMaxAnisotropy; }
 		SamplerBorderColor GetBorderColor() const { return mBorderColor; }
 		bool IsCompareEnabled() const { return mCompareEnabled; }
 		CompareOperation GetCompareOp() const { return mCompareOp; }
 		SamplerMapMode GetMapMode() const { return mMapMode; }
-		float GetMipLODBias() const { return mMipLODBias; }
-		float GetMinLOD() const { return mMinLOD; }
-		float GetMaxLOD() const { return mMaxLOD; }
+		f32 GetMipLODBias() const { return mMipLODBias; }
+		f32 GetMinLOD() const { return mMinLOD; }
+		f32 GetMaxLOD() const { return mMaxLOD; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Sampler; }
 		virtual void OnShutdown() noexcept override = 0;
 
 	protected:
-		void SetMaxAnisotropy(uint32 maxAnisotropy) { mMaxAnisotropy = maxAnisotropy; }
+		void SetMaxAnisotropy(u32 maxAnisotropy) { mMaxAnisotropy = maxAnisotropy; }
 
 	private:
 		SamplerFilter mMagFilter;
@@ -51,13 +51,13 @@ namespace Hollow
 		SamplerAddressMode mVAddressMode;
 		SamplerAddressMode mWAddressMode;
 		bool mAnisotropyEnabled;
-		uint32 mMaxAnisotropy;
+		u32 mMaxAnisotropy;
 		SamplerBorderColor mBorderColor;
 		bool mCompareEnabled;
 		CompareOperation mCompareOp;
 		SamplerMapMode mMapMode;
-		float mMipLODBias;
-		float mMinLOD;
-		float mMaxLOD;
+		f32 mMipLODBias;
+		f32 mMinLOD;
+		f32 mMaxLOD;
 	};
 }

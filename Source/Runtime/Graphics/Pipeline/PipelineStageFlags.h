@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-    enum class RUNTIME_API PipelineStageFlags : uint16
+    enum class RUNTIME_API PipelineStageFlags : u16
     {
         TopOfPipe = 1,
         VertexInput = 2,
@@ -24,5 +24,5 @@ namespace Hollow
 		AllCommands = 32768
     };
 
-    GENERATE_ENUM_FLAG(PipelineStageFlags, uint16);
+    GENERATE_ENUM_FLAG(PipelineStageFlags, u16);
 }

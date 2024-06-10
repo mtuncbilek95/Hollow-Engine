@@ -18,8 +18,8 @@ namespace Hollow
 		VkImage GetVkTexture() const { return mVkTexture; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
 
-		uint64 GetVkOffset() const { return mOffset; }
-		uint64 GetVkAlignedOffset() const { return mAlignedOffset; }
+		u64 GetVkOffset() const { return mOffset; }
+		u64 GetVkAlignedOffset() const { return mAlignedOffset; }
 
 		void OnShutdown() noexcept override;
 
@@ -27,7 +27,7 @@ namespace Hollow
 		VkImage mVkTexture;
 		VkDevice mVkDevice;
 
-		uint64 mOffset;
-		uint64 mAlignedOffset;
+		u64 mOffset;
+		u64 mAlignedOffset;
 	};
 }

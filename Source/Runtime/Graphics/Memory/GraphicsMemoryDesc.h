@@ -8,6 +8,6 @@ namespace Hollow
 	struct RUNTIME_API GraphicsMemoryDesc
 	{
 		GraphicsMemoryType MemoryType;
-		uint64 SizeInBytes;
+		u64 SizeInBytes;
 	};
 }

@@ -8,7 +8,7 @@ namespace Hollow
 	{
 	}
 
-	Guid::Guid(uint32 a, uint16 b, uint16 c, uint64 d) : mA(a), mB(b), mC(c), mD(d)
+	Guid::Guid(u32 a, u16 b, u16 c, u64 d) : mA(a), mB(b), mC(c), mD(d)
 	{
 	}
 
@@ -24,7 +24,7 @@ namespace Hollow
 	String Guid::ToString()
 	{
 		char buffer[64];
-		std::snprintf(buffer, sizeof(buffer), "%08x-%04x-%04x-%04x-%012llx", mA, mB, mC, (uint16)mD, mD >> 16);
+		std::snprintf(buffer, sizeof(buffer), "%08x-%04x-%04x-%04x-%012llx", mA, mB, mC, (u16)mD, mD >> 16);
 		return buffer;
 	}
 }

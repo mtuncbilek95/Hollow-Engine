@@ -62,7 +62,7 @@ namespace Hollow
 	{
 		ArrayList<VkRenderingAttachmentInfo> attachmentInfos;
 
-		for (uint32 i = 0; i < desc.ColorAttachments.size(); i++)
+		for (u32 i = 0; i < desc.ColorAttachments.size(); i++)
 		{
 			VkRenderingAttachmentInfo attachment = {};
 			attachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
@@ -90,7 +90,7 @@ namespace Hollow
 			depthAttachment.resolveImageLayout = desc.DepthAttachment.ResolveBuffer != nullptr ? VulkanTextureUtils::GetVkTextureMemoryLayout(desc.DepthAttachment.ResolveLayout) : VK_IMAGE_LAYOUT_UNDEFINED;
 			depthAttachment.loadOp = VulkanCoreUtils::GetVkAttachmentLoadOperation(desc.DepthAttachment.LoadOperation);
 			depthAttachment.storeOp = VulkanCoreUtils::GetVkAttachmentStoreOperation(desc.DepthAttachment.StoreOperation);
-			depthAttachment.clearValue.depthStencil = { desc.DepthAttachment.ClearDepthStencil.x, static_cast<uint32>(desc.DepthAttachment.ClearDepthStencil.y) };
+			depthAttachment.clearValue.depthStencil = { desc.DepthAttachment.ClearDepthStencil.x, static_cast<u32>(desc.DepthAttachment.ClearDepthStencil.y) };
 			depthAttachment.pNext = nullptr;
 		}
 
@@ -105,7 +105,7 @@ namespace Hollow
 			stencilAttachment.resolveImageLayout = desc.StencilAttachment.ResolveBuffer != nullptr ? VulkanTextureUtils::GetVkTextureMemoryLayout(desc.StencilAttachment.ResolveLayout) : VK_IMAGE_LAYOUT_UNDEFINED;
 			stencilAttachment.loadOp = VulkanCoreUtils::GetVkAttachmentLoadOperation(desc.StencilAttachment.LoadOperation);
 			stencilAttachment.storeOp = VulkanCoreUtils::GetVkAttachmentStoreOperation(desc.StencilAttachment.StoreOperation);
-			stencilAttachment.clearValue.depthStencil = { desc.StencilAttachment.ClearDepthStencil.x, static_cast<uint32>(desc.StencilAttachment.ClearDepthStencil.y) };
+			stencilAttachment.clearValue.depthStencil = { desc.StencilAttachment.ClearDepthStencil.x, static_cast<u32>(desc.StencilAttachment.ClearDepthStencil.y) };
 			stencilAttachment.pNext = nullptr;
 		}
 
@@ -143,7 +143,7 @@ namespace Hollow
 
 		VkClearValue clearValues[2];
 		clearValues[0].color = { clearColor.x, clearColor.y, clearColor.z, clearColor.w };
-		clearValues[1].depthStencil = { depthStencil.x, static_cast<uint32>(depthStencil.y) };
+		clearValues[1].depthStencil = { depthStencil.x, static_cast<u32>(depthStencil.y) };
 
 		renderPassInfo.clearValueCount = 2;
 		renderPassInfo.pClearValues = clearValues;
@@ -158,17 +158,17 @@ namespace Hollow
 
 	void VulkanCommandBuffer::BindPipelineImpl(SharedPtr<Pipeline> pPipeline)
 	{
-		uint32 imageIndex = GetOwnerDevice()->GetSwapchain()->GetCurrentFrameIndex();
+		u32 imageIndex = GetOwnerDevice()->GetSwapchain()->GetCurrentFrameIndex();
 		auto castedPipeline = std::static_pointer_cast<VulkanPipeline>(pPipeline);
 		vkCmdBindPipeline(mVkCommandBuffer, VulkanPipelineUtils::GetVkPipelineBindPoint(castedPipeline->GetBindPoint()), castedPipeline->GetVkPipeline());
 	}
 
-	void VulkanCommandBuffer::BindVertexBuffersImpl(SharedPtr<GraphicsBuffer> ppBuffer[], uint32 amount)
+	void VulkanCommandBuffer::BindVertexBuffersImpl(SharedPtr<GraphicsBuffer> ppBuffer[], u32 amount)
 	{
 		VkBuffer buffers[16];
 		VkDeviceSize offsets[16];
 
-		for (uint32 i = 0; i < amount; ++i)
+		for (u32 i = 0; i < amount; ++i)
 		{
 			auto pVulkanBuffer = std::static_pointer_cast<VulkanBuffer>(ppBuffer[i]);
 			buffers[i] = pVulkanBuffer->GetVkBuffer();
@@ -184,12 +184,12 @@ namespace Hollow
 		vkCmdBindIndexBuffer(mVkCommandBuffer, pVulkanBuffer->GetVkBuffer(), 0, VulkanCoreUtils::GetVkIndexType(indexType));
 	}
 
-	void VulkanCommandBuffer::BindDescriptorsImpl(SharedPtr<DescriptorSet> ppSet[], uint32 amount)
+	void VulkanCommandBuffer::BindDescriptorsImpl(SharedPtr<DescriptorSet> ppSet[], u32 amount)
 	{
 		auto pPipeline = std::static_pointer_cast<VulkanPipeline>(GetBoundPipeline());
 
 		VkDescriptorSet sets[16];
-		for (uint32 i = 0; i < amount; i++)
+		for (u32 i = 0; i < amount; i++)
 		{
 			sets[i] = std::static_pointer_cast<VulkanDescriptorSet>(ppSet[i])->GetVkDescriptorSet();
 		}
@@ -197,7 +197,7 @@ namespace Hollow
 		vkCmdBindDescriptorSets(mVkCommandBuffer, VulkanPipelineUtils::GetVkPipelineBindPoint(pPipeline->GetBindPoint()), pPipeline->GetVkPipelineLayout(), 0, amount, sets, 0, nullptr);
 	}
 
-	void VulkanCommandBuffer::DrawIndexedImpl(uint32 indexCount, uint32 indexOffset, uint32 vertexOffset, uint32 instanceOffset, uint32 instanceCount)
+	void VulkanCommandBuffer::DrawIndexedImpl(u32 indexCount, u32 indexOffset, u32 vertexOffset, u32 instanceOffset, u32 instanceCount)
 	{
 		vkCmdDrawIndexed(mVkCommandBuffer, indexCount, instanceCount, indexOffset, vertexOffset, instanceOffset);
 	}
@@ -223,7 +223,7 @@ namespace Hollow
 		VkRect2D scissors[32];
 		for (byte i = 0; i < count; i++)
 		{
-			scissors[i].offset = { static_cast<int>(pScissors[i].OffsetSize.x), static_cast<int>(pScissors[i].OffsetSize.y) };
+			scissors[i].offset = { static_cast<i32>(pScissors[i].OffsetSize.x), static_cast<i32>(pScissors[i].OffsetSize.y) };
 			scissors[i].extent = { pScissors[i].ScissorSize.x, pScissors[i].ScissorSize.y };
 		}
 

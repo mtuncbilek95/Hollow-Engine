@@ -53,7 +53,7 @@ namespace Hollow
 #endif
 
 		// Get the surface format count
-		uint32 formatCount = 0;
+		u32 formatCount = 0;
 		CORE_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(mVkPhysicalDevice, mVkSurface, &formatCount, nullptr) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to get surface formats");
 		CORE_ASSERT(formatCount > 0, "VulkanSwapchain", "No surface formats found");
@@ -88,7 +88,7 @@ namespace Hollow
 		}
 
 		// Get the present mode count
-		uint32 presentModeCount = 0;
+		u32 presentModeCount = 0;
 		CORE_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(mVkPhysicalDevice, mVkSurface, &presentModeCount, nullptr) == VK_SUCCESS,
 			"CreateSurfaceSwapchain", "Failed to get present modes");
 		CORE_ASSERT(presentModeCount > 0, "VulkanSwapchain", "No present modes found");
@@ -110,7 +110,7 @@ namespace Hollow
 
 		// Get the present queue family info and check if it supports present
 		auto pVkQueue = std::static_pointer_cast<VulkanQueue>(desc.pQueue);
-		uint32 presentQueueFamilyIndex = pVkQueue->GetQueueFamilyIndex();
+		u32 presentQueueFamilyIndex = pVkQueue->GetQueueFamilyIndex();
 		CORE_ASSERT(presentQueueFamilyIndex != UINT32_MAX, "VulkanSwapchain", "Failed to get present queue family index");
 		VkBool32 presentSupport = false;
 		CORE_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, presentQueueFamilyIndex, mVkSurface, &presentSupport) == VK_SUCCESS,
@@ -146,7 +146,7 @@ namespace Hollow
 		// Create the images without initializing them since we already have
 		// VkImage from the swapchain
 
-		uint32 imageCount = 0;
+		u32 imageCount = 0;
 		CORE_ASSERT(vkGetSwapchainImagesKHR(mVkDevice, mVkSwapchain, &imageCount, nullptr) == VK_SUCCESS, "VulkanSwapchain", "Failed to get swapchain images");
 		CORE_ASSERT(imageCount > 0, "VulkanSwapchain", "No swapchain images found");
 
@@ -154,7 +154,7 @@ namespace Hollow
 		CORE_ASSERT(vkGetSwapchainImagesKHR(mVkDevice, mVkSwapchain, &imageCount, images.data()) == VK_SUCCESS, "VulkanSwapchain", "Failed to get swapchain images");
 
 		// Nevertheless, we need to fill the VulkanTexture data
-		for (uint32 i = 0; i < imageCount; i++)
+		for (u32 i = 0; i < imageCount; i++)
 		{
 			TextureDesc textureDesc = {};
 			textureDesc.ArraySize = 1;
@@ -238,7 +238,7 @@ namespace Hollow
 #endif
 
 		// Get the surface format count
-		uint32 formatCount = 0;
+		u32 formatCount = 0;
 		CORE_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(mVkPhysicalDevice, mVkSurface, &formatCount, nullptr) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to get surface formats");
 		CORE_ASSERT(formatCount > 0, "VulkanSwapchain", "No surface formats found");
@@ -273,7 +273,7 @@ namespace Hollow
 		}
 
 		// Get the present mode count
-		uint32 presentModeCount = 0;
+		u32 presentModeCount = 0;
 		CORE_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(mVkPhysicalDevice, mVkSurface, &presentModeCount, nullptr) == VK_SUCCESS,
 			"CreateSurfaceSwapchain", "Failed to get present modes");
 		CORE_ASSERT(presentModeCount > 0, "VulkanSwapchain", "No present modes found");
@@ -295,7 +295,7 @@ namespace Hollow
 
 		// Get the present queue family info and check if it supports present
 		auto pVkQueue = std::static_pointer_cast<VulkanQueue>(GetPresentQueue());
-		uint32 presentQueueFamilyIndex = pVkQueue->GetQueueFamilyIndex();
+		u32 presentQueueFamilyIndex = pVkQueue->GetQueueFamilyIndex();
 		CORE_ASSERT(presentQueueFamilyIndex != UINT32_MAX, "VulkanSwapchain", "Failed to get present queue family index");
 		VkBool32 presentSupport = false;
 		CORE_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mVkPhysicalDevice, presentQueueFamilyIndex, mVkSurface, &presentSupport) == VK_SUCCESS,
@@ -331,7 +331,7 @@ namespace Hollow
 		// Create the images without initializing them since we already have
 		// VkImage from the swapchain
 
-		uint32 imageCount = 0;
+		u32 imageCount = 0;
 		CORE_ASSERT(vkGetSwapchainImagesKHR(mVkDevice, mVkSwapchain, &imageCount, nullptr) == VK_SUCCESS, "VulkanSwapchain", "Failed to get swapchain images");
 		CORE_ASSERT(imageCount > 0, "VulkanSwapchain", "No swapchain images found");
 
@@ -339,7 +339,7 @@ namespace Hollow
 		CORE_ASSERT(vkGetSwapchainImagesKHR(mVkDevice, mVkSwapchain, &imageCount, images.data()) == VK_SUCCESS, "VulkanSwapchain", "Failed to get swapchain images");
 
 		// Nevertheless, we need to fill the VulkanTexture data
-		for (uint32 i = 0; i < imageCount; i++)
+		for (u32 i = 0; i < imageCount; i++)
 		{
 			TextureDesc textureDesc = {};
 			textureDesc.ArraySize = 1;
@@ -375,7 +375,7 @@ namespace Hollow
 
 	void VulkanSwapchain::PresentImpl()
 	{
-		uint32 imageIndex = GetCurrentFrameIndex();
+		u32 imageIndex = GetCurrentFrameIndex();
 		VkSemaphore flightSemaphore = std::static_pointer_cast<VulkanSemaphore>(GetFlightSemaphore(imageIndex))->GetVkSemaphore();
 
 		// Present the image

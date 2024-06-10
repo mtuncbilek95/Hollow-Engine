@@ -8,7 +8,7 @@ namespace Hollow
 {
 	SharedPtr<TextureResourceLayout> TextureImporter::ImportTexture(String path)
 	{
-		int width, height, channels;
+		i32 width, height, channels;
 		byte* data = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 
 		auto layout = std::make_shared<TextureResourceLayout>();
