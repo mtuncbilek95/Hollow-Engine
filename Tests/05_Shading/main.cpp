@@ -23,7 +23,8 @@
 #include <Runtime/Graphics/Descriptor/DescriptorSet.h>
 #include <Runtime/Resource/Texture/TextureImporter.h>
 
-#define INSTANCE_COUNT 49
+#include <Runtime/Resource/Mesh/MeshResource.h>
+#include <Runtime/Resource/Mesh/MeshImporter.h>
 
 using namespace Hollow;
 
@@ -36,153 +37,72 @@ struct Transform
 
 struct ConstantBuffer
 {
-	MatrixSIMD Model[INSTANCE_COUNT];
+	MatrixSIMD Model;
 	MatrixSIMD View;
 	MatrixSIMD Projection;
 };
 
-struct Vertex
+Transform InstanceTransform = {
+	{0, 0, 0},
+	{0, -90, 180},
+	{1, 1, 1}
+};
+
+struct AmbientLight
 {
-	Vector3f Position;
 	Vector3f Color;
-	Vector2f TexCoord;
+	f32 AmbientIntensity;
 };
 
-const ArrayList<Vertex> vertices =
+struct DiffuseLight
 {
-	{{-0.5f, -0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}
+	Vector3f Direction;
+	Vector3f Color;
+	f32 DiffuseIntensity;
 };
 
-const ArrayList<u32> indices =
-{
-	3, 1, 0,
-	3, 2, 1,
-
-	4, 5, 7,
-	5, 6, 7,
-
-	11, 9, 8,
-	11, 10, 9,
-
-	12, 13, 15,
-	13, 14, 15,
-
-	16, 17, 19,
-	17, 18, 19,
-
-	23, 21, 20,
-	23, 22, 21
+AmbientLight TestLight = {
+	{1, 1, 1},
+	0.5f
 };
 
-ArrayList<Transform> InstanceTransforms(INSTANCE_COUNT);
+DiffuseLight TestDiffuse = {
+	{5, 5, 5},
+	{1, 0, 1},
+	0.2f
+};
 
 ConstantBuffer MVPData = {
-		{},
-		XMMatrixLookAtLH({0, 0, -7}, {0, 0 ,0}, {0, 1, 0}),
+		{ XMMatrixScaling(InstanceTransform.Scale.x, InstanceTransform.Scale.y, InstanceTransform.Scale.z) * 
+		XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransform.Rotation.y), XMConvertToRadians(InstanceTransform.Rotation.z), XMConvertToRadians(InstanceTransform.Rotation.x)) *
+			XMMatrixTranslation(InstanceTransform.Position.x, InstanceTransform.Position.y, InstanceTransform.Position.z) },
+		XMMatrixLookAtLH({0, -1, -2}, {0, 0 ,0}, {0, 1, 0}),
 		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<f32>(2560.f / 1440.f), 0.01f, 1000.f)
 };
 
 void UpdateTransforms()
 {
-	for (byte i = 0; i < INSTANCE_COUNT; i++)
-	{
-		if (i % 2 == 0)
-		{
-			InstanceTransforms[i].Rotation.x += 0.009f;
-			InstanceTransforms[i].Rotation.y += 0.023f;
-			InstanceTransforms[i].Rotation.z += 0.026f;
+	InstanceTransform.Rotation.z += 0.3f;
 
-		}
-		else
-		{
-			InstanceTransforms[i].Rotation.x -= 0.019f;
-			InstanceTransforms[i].Rotation.y -= 0.014f;
-			InstanceTransforms[i].Rotation.z -= 0.037f;
-		}
-
-
-		MVPData.Model[i] = XMMatrixScaling(InstanceTransforms[i].Scale.x, InstanceTransforms[i].Scale.y, InstanceTransforms[i].Scale.z) *
-			XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i].Rotation.y),
-				XMConvertToRadians(InstanceTransforms[i].Rotation.z),
-				XMConvertToRadians(InstanceTransforms[i].Rotation.x)) *
-			XMMatrixTranslation(InstanceTransforms[i].Position.x, InstanceTransforms[i].Position.y, InstanceTransforms[i].Position.z);
-	}
+	MVPData.Model = XMMatrixScaling(InstanceTransform.Scale.x, InstanceTransform.Scale.y, InstanceTransform.Scale.z) *
+		XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransform.Rotation.y),
+			XMConvertToRadians(InstanceTransform.Rotation.z),
+			XMConvertToRadians(InstanceTransform.Rotation.x)) *
+		XMMatrixTranslation(InstanceTransform.Position.x, InstanceTransform.Position.y, InstanceTransform.Position.z);
 }
 
-i32 main(i32 argC, char** argV)
+int main(int argC, char** argV)
 {
 	// Initialize the platform API
 	PlatformAPI::GetInstanceAPI().InitializeArguments(argC, argV);
 
-#pragma region Object Cacophony
-	// make them start at the right up corner and go left
-	i32 sideLength = i32(sqrt(INSTANCE_COUNT));
-	i32 numCols = sideLength;
-
-	f32 initialX = 1 - numCols;
-	f32 initialY = -numCols;
-
-	// Initialize the transforms
-	for (byte i = 0; i < i32(sqrt(INSTANCE_COUNT)); i++)
-	{
-		initialY += 1;
-
-		for (i32 j = 0; j < i32(sqrt(INSTANCE_COUNT)); j++)
-		{
-			f32 xPos = initialX + j;
-
-			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position = { xPos + j, initialY + i, (f32)sideLength - 1 };
-			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation = { 0, 0, 0 };
-			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale = { 1, 1, 1 };
-
-			MVPData.Model[i * i32(sqrt(INSTANCE_COUNT)) + j] = XMMatrixScaling(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.x, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.y, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.z) *
-				XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.y),
-					XMConvertToRadians(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.z),
-					XMConvertToRadians(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.x)) *
-				XMMatrixTranslation(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.x, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.y, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.z);
-		}
-	}
-
-	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/03_RenderTarget/Resources/TestTexture.png");
-#pragma endregion
-
 #pragma region Window and Graphics Initialization
-	// Get the primary monitor
-
 	// Create a window
 	Hollow::WindowDesc desc = {};
-	desc.WindowSize = { 2560, 1440 };
+	desc.WindowSize = { 1920, 1080 };
 	desc.WindowPosition = { 0, 0 };
 	desc.WindowTitle = "Hollow Engine";
-	desc.WindowMode = WindowMode::Fullscreen;
+	desc.WindowMode = WindowMode::Windowed;
 
 	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
 
@@ -217,13 +137,14 @@ i32 main(i32 argC, char** argV)
 #pragma region Pre-Allocated Memory
 	// ----------------- CREATE BUNDLE MEMORY -----------------
 
-	// Create bundle memory for pre-allocation
+	// Create bundle memory for pre-allocation on cpu
 	GraphicsMemoryDesc hostMemoryDesc = {};
 	hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
 	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
 
 	auto mHostMemory = mDevice->CreateGraphicsMemory(hostMemoryDesc);
 
+	// Create bundle memory for pre-allocation on gpu
 	GraphicsMemoryDesc deviceMemoryDesc = {};
 	deviceMemoryDesc.MemoryType = GraphicsMemoryType::DeviceLocal;
 	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
@@ -237,7 +158,7 @@ i32 main(i32 argC, char** argV)
 	MemoryBuffer vBuffer = {};
 	SharedPtr<MemoryOwnedBuffer> vShaderCode;
 	String errorMessage;
-	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/03_RenderTarget/Shaders/testVertex.vert", vBuffer);
+	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_Shading/Shaders/testVertex.vert", vBuffer);
 	ShaderDesc vertexShaderDesc = {};
 
 	if (ShaderCompiler::CompileShaderToSPIRV(vBuffer, "main", ShaderStage::Vertex, ShaderLanguage::GLSL, vShaderCode, errorMessage))
@@ -253,7 +174,7 @@ i32 main(i32 argC, char** argV)
 
 	MemoryBuffer fBuffer = {};
 	SharedPtr<MemoryOwnedBuffer> fShaderCode;
-	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/03_RenderTarget/Shaders/testFrag.frag", fBuffer);
+	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_Shading/Shaders/testFrag.frag", fBuffer);
 	ShaderDesc fragmentShaderDesc = {};
 
 	if (ShaderCompiler::CompileShaderToSPIRV(fBuffer, "main", ShaderStage::Fragment, ShaderLanguage::GLSL, fShaderCode, errorMessage))
@@ -334,6 +255,7 @@ i32 main(i32 argC, char** argV)
 
 	mCommandBuffer->BeginRecording();
 
+	// Send all color buffers to present layout from top of pipe
 	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
 	{
 		auto colorBuffer = mSwapchain->GetImage(i);
@@ -355,6 +277,7 @@ i32 main(i32 argC, char** argV)
 		mCommandBuffer->SetTextureBarrier(colorBuffer, colorTextureBarrier);
 	}
 
+	// Send all depth buffers to depth attachment layout from top of pipe
 	TextureBarrierUpdateDesc depthTextureBarrier = {};
 	depthTextureBarrier.MipIndex = 0;
 	depthTextureBarrier.ArrayIndex = 0;
@@ -388,18 +311,21 @@ i32 main(i32 argC, char** argV)
 	descriptorLayoutDesc.Entries = {
 		{0, DescriptorType::UniformBuffer, ShaderStage::Vertex},
 		{1, DescriptorType::Sampler, ShaderStage::Fragment},
-		{2, DescriptorType::SampledImage, ShaderStage::Fragment}
+		{2, DescriptorType::SampledImage, ShaderStage::Fragment},
+		{3, DescriptorType::SampledImage, ShaderStage::Fragment},
+		{4, DescriptorType::UniformBuffer, ShaderStage::Fragment},
+		{5, DescriptorType::UniformBuffer, ShaderStage::Fragment}
 	};
 
 	auto mDescriptorLayout = mDevice->CreateDescriptorLayout(descriptorLayoutDesc);
 
 	// Descriptor Pool
 	DescriptorPoolDesc descriptorPoolDesc = {};
-	descriptorPoolDesc.MaxSets = 10;
+	descriptorPoolDesc.MaxSets = 1000;
 	descriptorPoolDesc.PoolSizes = {
-		{DescriptorType::UniformBuffer, 1},
+		{DescriptorType::UniformBuffer, 10},
 		{DescriptorType::Sampler, 1},
-		{DescriptorType::SampledImage, 1},
+		{DescriptorType::SampledImage, 10},
 		{DescriptorType::StorageImage, 1},
 		{DescriptorType::StorageBuffer, 1},
 		{DescriptorType::UniformTexelBuffer, 1},
@@ -414,7 +340,8 @@ i32 main(i32 argC, char** argV)
 	descriptorSetDesc.pLayout = mDescriptorLayout;
 	descriptorSetDesc.pOwnerPool = mDescriptorPool;
 
-	auto mDescriptorSet = mDevice->CreateDescriptorSet(descriptorSetDesc);
+	auto mDescriptorSet1 = mDevice->CreateDescriptorSet(descriptorSetDesc);
+
 #pragma endregion
 
 #pragma region Pipeline Initialization
@@ -451,20 +378,35 @@ i32 main(i32 argC, char** argV)
 	inputElement1.Format = TextureFormat::RGB32_Float;
 	inputElement1.Semantic = InputElementSemantic::Position;
 
-	// Color InputElement
+	// Normal InputElement
 	InputElement inputElement2 = {};
 	inputElement2.Format = TextureFormat::RGB32_Float;
-	inputElement2.Semantic = InputElementSemantic::Color;
+	inputElement2.Semantic = InputElementSemantic::Normal;
+
+	// Tangent InputElement
+	InputElement inputElement3 = {};
+	inputElement3.Format = TextureFormat::RGB32_Float;
+	inputElement3.Semantic = InputElementSemantic::Tangent;
+	
+	// Binormal InputElement
+	InputElement inputElement4 = {};
+	inputElement4.Format = TextureFormat::RGB32_Float;
+	inputElement4.Semantic = InputElementSemantic::Binormal;
+
+	// Color InputElement
+	InputElement inputElement5 = {};
+	inputElement5.Format = TextureFormat::RGBA32_Float;
+	inputElement5.Semantic = InputElementSemantic::Color;
 
 	// TexCoord InputElement
-	InputElement inputElement3 = {};
-	inputElement3.Format = TextureFormat::RG32_Float;
-	inputElement3.Semantic = InputElementSemantic::TexCoord;
+	InputElement inputElement6 = {};
+	inputElement6.Format = TextureFormat::RG32_Float;
+	inputElement6.Semantic = InputElementSemantic::TexCoord;
 
 	// InputBinding
 	InputBinding inputBinding = {};
 	inputBinding.StepRate = InputBindingStepRate::Vertex;
-	inputBinding.Elements = { inputElement1, inputElement2, inputElement3 };
+	inputBinding.Elements = { inputElement1, inputElement2, inputElement3, inputElement4, inputElement5, inputElement6 };
 
 	// Create InputLayout
 	InputLayoutDesc inputLayout = {};
@@ -540,26 +482,25 @@ i32 main(i32 argC, char** argV)
 	auto mSampler = mDevice->CreateSampler(samplerDesc);
 #pragma endregion
 
+	// Create a mesh on cpu
+	auto mMeshData = MeshImporter::Import(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_Shading/Resource/DamagedHelmet.gltf");
+	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_Shading/Resource/Default_albedo.jpg");
+	auto normalMap = TextureImporter::ImportTexture(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/05_Shading/Resource/Default_normal.jpg");
+
+	auto mVertexSubSize = sizeof(VertexData);
+	auto mVertexCount = mMeshData.SubMeshes[0].Vertices.size();
+	auto mIndexSize = sizeof(u32);
+	auto mIndexCount = mMeshData.SubMeshes[0].Indices.size();
+
+	MemoryOwnedBuffer mVertices = MemoryOwnedBuffer(mMeshData.SubMeshes[0].Vertices.data(), mVertexCount * mVertexSubSize);
+	MemoryOwnedBuffer mIndices = MemoryOwnedBuffer(mMeshData.SubMeshes[0].Indices.data(), mIndexCount * mIndexSize);
+
 #pragma region Buffer Initialization
 	// ----------------- CREATE OBJECT BUFFER -----------------
 
-	GraphicsBufferDesc vertexBufferDesc = {};
-	vertexBufferDesc.SubResourceCount = vertices.size();
-	vertexBufferDesc.SubSizeInBytes = sizeof(Vertex);
-	vertexBufferDesc.Usage = GraphicsBufferUsage::Vertex | GraphicsBufferUsage::TransferDestination;
-	vertexBufferDesc.ShareMode = ShareMode::Exclusive;
-	vertexBufferDesc.pMemory = mDeviceMemory;
-
-	auto mVertexBuffer = mDevice->CreateGraphicsBuffer(vertexBufferDesc);
-
-	GraphicsBufferDesc indexBufferDesc = {};
-	indexBufferDesc.SubResourceCount = indices.size();
-	indexBufferDesc.SubSizeInBytes = sizeof(u32);
-	indexBufferDesc.Usage = GraphicsBufferUsage::Index | GraphicsBufferUsage::TransferDestination;
-	indexBufferDesc.ShareMode = ShareMode::Exclusive;
-	indexBufferDesc.pMemory = mDeviceMemory;
-
-	auto mIndexBuffer = mDevice->CreateGraphicsBuffer(indexBufferDesc);
+	auto mMesh = std::make_shared<MeshResource>();
+	mMesh->ConnectMemory(mHostMemory, mDeviceMemory, true);
+	mMesh->CreateMeshBuffers(mVertexSubSize, mVertexCount, mIndexSize, mIndexCount);
 
 	GraphicsBufferDesc uniformBufferDesc = {};
 	uniformBufferDesc.SubResourceCount = 1;
@@ -569,6 +510,24 @@ i32 main(i32 argC, char** argV)
 	uniformBufferDesc.pMemory = mDeviceMemory;
 
 	auto mUniformBuffer = mDevice->CreateGraphicsBuffer(uniformBufferDesc);
+
+	GraphicsBufferDesc objectBufferDesc = {};
+	objectBufferDesc.SubResourceCount = 1;
+	objectBufferDesc.SubSizeInBytes = sizeof(AmbientLight);
+	objectBufferDesc.Usage = GraphicsBufferUsage::Uniform | GraphicsBufferUsage::TransferDestination;
+	objectBufferDesc.ShareMode = ShareMode::Exclusive;
+	objectBufferDesc.pMemory = mDeviceMemory;
+
+	auto mUboFragment = mDevice->CreateGraphicsBuffer(objectBufferDesc);
+
+	GraphicsBufferDesc objectBufferDesc2 = {};
+	objectBufferDesc2.SubResourceCount = 1;
+	objectBufferDesc2.SubSizeInBytes = sizeof(DiffuseLight);
+	objectBufferDesc2.Usage = GraphicsBufferUsage::Uniform | GraphicsBufferUsage::TransferDestination;
+	objectBufferDesc2.ShareMode = ShareMode::Exclusive;
+	objectBufferDesc2.pMemory = mDeviceMemory;
+
+	auto mUboFragment2 = mDevice->CreateGraphicsBuffer(objectBufferDesc2);
 
 	TextureDesc textureDesc = {};
 	textureDesc.ArraySize = 1;
@@ -590,25 +549,27 @@ i32 main(i32 argC, char** argV)
 
 	auto mTextureView = mDevice->CreateTextureBuffer(textureViewDesc);
 
+	TextureDesc normalMapDesc = {};
+	normalMapDesc.ArraySize = 1;
+	normalMapDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
+	normalMapDesc.ImageSize = { static_cast<u32>(normalMap->ImageSize.x), static_cast<u32>(normalMap->ImageSize.y), 1 };
+	normalMapDesc.MipLevels = 1;
+	normalMapDesc.SampleCount = TextureSampleCount::Sample1;
+	normalMapDesc.Type = TextureType::Texture2D;
+	normalMapDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
+	normalMapDesc.pMemory = mDeviceMemory;
+
+	auto mNormalMap = mDevice->CreateTexture(normalMapDesc);
+
+	TextureBufferDesc normalMapViewDesc = {};
+	normalMapViewDesc.ArrayLayer = 0;
+	normalMapViewDesc.AspectFlags = TextureAspectFlags::ColorAspect;
+	normalMapViewDesc.MipLevel = 0;
+	normalMapViewDesc.pTexture = mNormalMap;
+
+	auto mNormalMapView = mDevice->CreateTextureBuffer(normalMapViewDesc);
+
 	// ----------------- CREATE STAGING BUFFER -----------------
-
-	GraphicsBufferDesc stagingVertexBufferDesc = {};
-	stagingVertexBufferDesc.SubResourceCount = vertices.size();
-	stagingVertexBufferDesc.SubSizeInBytes = sizeof(Vertex);
-	stagingVertexBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
-	stagingVertexBufferDesc.ShareMode = ShareMode::Exclusive;
-	stagingVertexBufferDesc.pMemory = mHostMemory;
-
-	auto mStagingVertexBuffer = mDevice->CreateGraphicsBuffer(stagingVertexBufferDesc);
-
-	GraphicsBufferDesc stagingIndexBufferDesc = {};
-	stagingIndexBufferDesc.SubResourceCount = indices.size();
-	stagingIndexBufferDesc.SubSizeInBytes = sizeof(u32);
-	stagingIndexBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
-	stagingIndexBufferDesc.ShareMode = ShareMode::Exclusive;
-	stagingIndexBufferDesc.pMemory = mHostMemory;
-
-	auto mStagingIndexBuffer = mDevice->CreateGraphicsBuffer(stagingIndexBufferDesc);
 
 	GraphicsBufferDesc stagingUniformBufferDesc = {};
 	stagingUniformBufferDesc.SubResourceCount = 1;
@@ -619,6 +580,24 @@ i32 main(i32 argC, char** argV)
 
 	auto mStagingUniformBuffer = mDevice->CreateGraphicsBuffer(stagingUniformBufferDesc);
 
+	GraphicsBufferDesc stagingUboFragmentBufferDesc = {};
+	stagingUboFragmentBufferDesc.SubResourceCount = 1;
+	stagingUboFragmentBufferDesc.SubSizeInBytes = sizeof(AmbientLight);
+	stagingUboFragmentBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
+	stagingUboFragmentBufferDesc.ShareMode = ShareMode::Exclusive;
+	stagingUboFragmentBufferDesc.pMemory = mHostMemory;
+
+	auto mStagingUboFragmentBuffer = mDevice->CreateGraphicsBuffer(stagingUboFragmentBufferDesc);
+
+	GraphicsBufferDesc stagingUboFragmentBufferDesc2 = {};
+	stagingUboFragmentBufferDesc2.SubResourceCount = 1;
+	stagingUboFragmentBufferDesc2.SubSizeInBytes = sizeof(DiffuseLight);
+	stagingUboFragmentBufferDesc2.Usage = GraphicsBufferUsage::TransferSource;
+	stagingUboFragmentBufferDesc2.ShareMode = ShareMode::Exclusive;
+	stagingUboFragmentBufferDesc2.pMemory = mHostMemory;
+
+	auto mStagingUboFragmentBuffer2 = mDevice->CreateGraphicsBuffer(stagingUboFragmentBufferDesc2);
+
 	GraphicsBufferDesc textureStagingBufferDesc = {};
 	textureStagingBufferDesc.ShareMode = ShareMode::Exclusive;
 	textureStagingBufferDesc.SubResourceCount = 1;
@@ -628,47 +607,50 @@ i32 main(i32 argC, char** argV)
 
 	auto mStagingTextureBuffer = mDevice->CreateGraphicsBuffer(textureStagingBufferDesc);
 
+	GraphicsBufferDesc normalMapStagingBufferDesc = {};
+	normalMapStagingBufferDesc.ShareMode = ShareMode::Exclusive;
+	normalMapStagingBufferDesc.SubResourceCount = 1;
+	normalMapStagingBufferDesc.SubSizeInBytes = normalMap->ImageData.GetSize();
+	normalMapStagingBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
+	normalMapStagingBufferDesc.pMemory = mHostMemory;
+
+	auto mStagingNormalMapBuffer = mDevice->CreateGraphicsBuffer(normalMapStagingBufferDesc);
+
 	// ----------------- UPDATE STAGING BUFFER -----------------
 
-	u64 vertexBufferSize = sizeof(Vertex) * vertices.size();
-	u64 indexBufferSize = sizeof(u32) * indices.size();
 	u64 uniformBufferSize = sizeof(ConstantBuffer);
-
-	BufferDataUpdateDesc vertexDataUpdateDesc = {};
-	vertexDataUpdateDesc.Memory = MemoryBuffer((void*)vertices.data(), vertexBufferSize);
-	vertexDataUpdateDesc.OffsetInBytes = 0;
-	mDevice->UpdateBufferData(mStagingVertexBuffer, vertexDataUpdateDesc);
-
-	BufferDataUpdateDesc indexDataUpdateDesc = {};
-	indexDataUpdateDesc.Memory = MemoryBuffer((void*)indices.data(), indexBufferSize);
-	indexDataUpdateDesc.OffsetInBytes = 0;
-	mDevice->UpdateBufferData(mStagingIndexBuffer, indexDataUpdateDesc);
 
 	BufferDataUpdateDesc uniformDataUpdateDesc = {};
 	uniformDataUpdateDesc.Memory = MemoryBuffer((void*)&MVPData, uniformBufferSize);
 	uniformDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 
+	BufferDataUpdateDesc uboFragmentDataUpdateDesc = {};
+	uboFragmentDataUpdateDesc.Memory = MemoryBuffer((void*)&TestLight, sizeof(AmbientLight));
+	uboFragmentDataUpdateDesc.OffsetInBytes = 0;
+	mDevice->UpdateBufferData(mStagingUboFragmentBuffer, uboFragmentDataUpdateDesc);
+
+	BufferDataUpdateDesc uboFragmentDataUpdateDesc2 = {};
+	uboFragmentDataUpdateDesc2.Memory = MemoryBuffer((void*)&TestDiffuse, sizeof(DiffuseLight));
+	uboFragmentDataUpdateDesc2.OffsetInBytes = 0;
+	mDevice->UpdateBufferData(mStagingUboFragmentBuffer2, uboFragmentDataUpdateDesc2);
+
 	BufferDataUpdateDesc textureDataUpdateDesc = {};
 	textureDataUpdateDesc.Memory = texture->ImageData;
 	textureDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingTextureBuffer, textureDataUpdateDesc);
 
+	BufferDataUpdateDesc normalMapDataUpdateDesc = {};
+	normalMapDataUpdateDesc.Memory = normalMap->ImageData;
+	normalMapDataUpdateDesc.OffsetInBytes = 0;
+	mDevice->UpdateBufferData(mStagingNormalMapBuffer, normalMapDataUpdateDesc);
+
 	// ----------------- COPY STAGING BUFFER TO OBJECT BUFFER -----------------
 
+	mMesh->UpdateVertexBuffer(mVertices, 0);
+	mMesh->UpdateIndexBuffer(mIndices, 0);
+
 	mCommandBuffer->BeginRecording();
-	BufferBufferCopyDesc vertexCopyDesc = {};
-	vertexCopyDesc.DestinationOffset = 0;
-	vertexCopyDesc.Size = vertexBufferSize;
-	vertexCopyDesc.SourceOffset = 0;
-	mCommandBuffer->CopyBufferToBuffer(mStagingVertexBuffer, mVertexBuffer, vertexCopyDesc);
-
-	BufferBufferCopyDesc indexCopyDesc = {};
-	indexCopyDesc.DestinationOffset = 0;
-	indexCopyDesc.Size = indexBufferSize;
-	indexCopyDesc.SourceOffset = 0;
-
-	mCommandBuffer->CopyBufferToBuffer(mStagingIndexBuffer, mIndexBuffer, indexCopyDesc);
 
 	BufferBufferCopyDesc uniformCopyDesc = {};
 	uniformCopyDesc.DestinationOffset = 0;
@@ -676,6 +658,13 @@ i32 main(i32 argC, char** argV)
 	uniformCopyDesc.SourceOffset = 0;
 
 	mCommandBuffer->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, uniformCopyDesc);
+
+	BufferBufferCopyDesc uboFragmentCopyDesc = {};
+	uboFragmentCopyDesc.DestinationOffset = 0;
+	uboFragmentCopyDesc.Size = sizeof(AmbientLight);
+	uboFragmentCopyDesc.SourceOffset = 0;
+
+	mCommandBuffer->CopyBufferToBuffer(mStagingUboFragmentBuffer, mUboFragment, uboFragmentCopyDesc);
 
 	// First, make sure that texture is ready to be written.
 	TextureBarrierUpdateDesc preTextureBarrier = {};
@@ -694,6 +683,7 @@ i32 main(i32 argC, char** argV)
 	preTextureBarrier.AspectMask = TextureAspectFlags::ColorAspect;
 
 	mCommandBuffer->SetTextureBarrier(mTexture, preTextureBarrier);
+	mCommandBuffer->SetTextureBarrier(mNormalMap, preTextureBarrier);
 
 	BufferTextureCopyDesc textureCopyDesc = {};
 	textureCopyDesc.BufferOffsetInBytes = 0;
@@ -702,6 +692,14 @@ i32 main(i32 argC, char** argV)
 	textureCopyDesc.TextureOffset = { 0,0,0 };
 	textureCopyDesc.TextureSize = textureDesc.ImageSize;
 	mCommandBuffer->CopyBufferToTexture(mStagingTextureBuffer, mTexture, textureCopyDesc);
+
+	BufferTextureCopyDesc normalMapCopyDesc = {};
+	normalMapCopyDesc.BufferOffsetInBytes = 0;
+	normalMapCopyDesc.TargetArrayIndex = 0;
+	normalMapCopyDesc.TargetMipIndex = 0;
+	normalMapCopyDesc.TextureOffset = { 0,0,0 };
+	normalMapCopyDesc.TextureSize = normalMapDesc.ImageSize;
+	mCommandBuffer->CopyBufferToTexture(mStagingNormalMapBuffer, mNormalMap, normalMapCopyDesc);
 
 	TextureBarrierUpdateDesc postTextureBarrier = {};
 	postTextureBarrier.MipIndex = 0;
@@ -719,13 +717,17 @@ i32 main(i32 argC, char** argV)
 	postTextureBarrier.AspectMask = TextureAspectFlags::ColorAspect;
 
 	mCommandBuffer->SetTextureBarrier(mTexture, postTextureBarrier);
+	mCommandBuffer->SetTextureBarrier(mNormalMap, postTextureBarrier);
 
 	DescriptorSetUpdateDesc descriptorUpdateDesc = {};
 	descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
 	descriptorUpdateDesc.Entries.push_back({ mSampler, DescriptorType::Sampler, 1, 0, 0, 1 });
 	descriptorUpdateDesc.Entries.push_back({ mTextureView, DescriptorType::SampledImage, 1, 0, 0, 2 });
+	descriptorUpdateDesc.Entries.push_back({ mNormalMapView, DescriptorType::SampledImage, 1, 0, 0, 3 });
+	descriptorUpdateDesc.Entries.push_back({ mUboFragment, DescriptorType::UniformBuffer, 1, 0, 0, 4 });
+	descriptorUpdateDesc.Entries.push_back({ mUboFragment2, DescriptorType::UniformBuffer, 1, 0, 0, 5 });
 
-	mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
+	mDevice->UpdateDescriptorSet(mDescriptorSet1, descriptorUpdateDesc);
 
 	mCommandBuffer->EndRecording();
 	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
@@ -760,7 +762,7 @@ i32 main(i32 argC, char** argV)
 		constantCopyDesc.Size = constantDataUpdateDesc.Memory.GetSize();
 		constantCopyDesc.SourceOffset = 0;
 		mCommandBuffers[imageIndex]->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, constantCopyDesc);
-		mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
+		mDevice->UpdateDescriptorSet(mDescriptorSet1, descriptorUpdateDesc);
 
 		TextureBarrierUpdateDesc preRenderBarrier = {};
 		preRenderBarrier.ArrayIndex = 0;
@@ -787,7 +789,7 @@ i32 main(i32 argC, char** argV)
 		passColorAttachmentDesc.TextureLayout = TextureMemoryLayout::ColorAttachment;
 		passColorAttachmentDesc.LoadOperation = AttachmentLoadOperation::Clear;
 		passColorAttachmentDesc.StoreOperation = AttachmentStoreOperation::Store;
-		passColorAttachmentDesc.ClearColor = { 0.1f, 0.2f, 0.3f, 1.0f };
+		passColorAttachmentDesc.ClearColor = { 0.1f, 0.02f, 0.03f, 1.0f };
 
 		DynamicPassAttachmentDesc passDepthAttachmentDesc = {};
 		passDepthAttachmentDesc.ImageBuffer = mRenderTarget->GetDepthBuffer();
@@ -809,11 +811,15 @@ i32 main(i32 argC, char** argV)
 		mCommandBuffers[imageIndex]->BindPipeline(mPipeline);
 		mCommandBuffers[imageIndex]->SetViewports(&viewport, 1);
 		mCommandBuffers[imageIndex]->SetScissors(&scissor, 1);
-		mCommandBuffers[imageIndex]->BindVertexBuffers(&mVertexBuffer, 1);
-		mCommandBuffers[imageIndex]->BindIndexBuffer(mIndexBuffer, GraphicsIndexType::Index32);
 
-		mCommandBuffers[imageIndex]->BindDescriptors(&mDescriptorSet, 1);
-		mCommandBuffers[imageIndex]->DrawIndexed(indices.size(), 0, 0, 0, INSTANCE_COUNT);
+		auto vBuffer = mMesh->GetMeshBuffer().VertexBuffer;
+		auto iBuffer = mMesh->GetMeshBuffer().IndexBuffer;
+
+		mCommandBuffers[imageIndex]->BindVertexBuffers(&vBuffer, 1);
+		mCommandBuffers[imageIndex]->BindIndexBuffer(iBuffer, GraphicsIndexType::Index32);
+
+		mCommandBuffers[imageIndex]->BindDescriptors(&mDescriptorSet1, 1);
+		mCommandBuffers[imageIndex]->DrawIndexed(mMeshData.SubMeshes[0].Indices.size(), 0, 0, 0, 1);
 		mCommandBuffers[imageIndex]->EndRendering();
 
 		TextureBarrierUpdateDesc postRenderBarrier = {};
@@ -849,6 +855,4 @@ i32 main(i32 argC, char** argV)
 	mDevice->WaitForIdle();
 	mDevice->OnShutdown();
 	mGraphicsInstance->OnShutdown();
-#pragma endregion
-	return 0;
 }

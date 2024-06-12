@@ -1,5 +1,4 @@
 #include <Runtime/Platform/PlatformAPI.h>
-#include <Runtime/Platform/PlatformMonitor.h>
 #include <Runtime/Platform/PlatformFile.h>
 #include <Runtime/Window/WindowManager.h>
 #include <Runtime/Graphics/API/GraphicsManager.h>
@@ -74,16 +73,12 @@ int main(int argC, char** argV)
 	PlatformAPI::GetInstanceAPI().InitializeArguments(argC, argV);
 
 #pragma region Window and Graphics Initialization
-	// Get the primary monitor
-	auto primaryMonitor = PlatformMonitor::GetPrimaryMonitor();
-
 	// Create a window
 	Hollow::WindowDesc desc = {};
 	desc.WindowSize = { 2560, 1440 };
 	desc.WindowPosition = { 0, 0 };
 	desc.WindowTitle = "Hollow Engine";
 	desc.WindowMode = WindowMode::Fullscreen;
-	desc.pMonitor = primaryMonitor;
 
 	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
 
@@ -118,13 +113,14 @@ int main(int argC, char** argV)
 #pragma region Pre-Allocated Memory
 	// ----------------- CREATE BUNDLE MEMORY -----------------
 
-	// Create bundle memory for pre-allocation
+	// Create bundle memory for pre-allocation on cpu
 	GraphicsMemoryDesc hostMemoryDesc = {};
 	hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
 	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
 
 	auto mHostMemory = mDevice->CreateGraphicsMemory(hostMemoryDesc);
 
+	// Create bundle memory for pre-allocation on gpu
 	GraphicsMemoryDesc deviceMemoryDesc = {};
 	deviceMemoryDesc.MemoryType = GraphicsMemoryType::DeviceLocal;
 	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
@@ -235,6 +231,7 @@ int main(int argC, char** argV)
 
 	mCommandBuffer->BeginRecording();
 
+	// Send all color buffers to present layout from top of pipe
 	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
 	{
 		auto colorBuffer = mSwapchain->GetImage(i);
@@ -256,6 +253,7 @@ int main(int argC, char** argV)
 		mCommandBuffer->SetTextureBarrier(colorBuffer, colorTextureBarrier);
 	}
 
+	// Send all depth buffers to depth attachment layout from top of pipe
 	TextureBarrierUpdateDesc depthTextureBarrier = {};
 	depthTextureBarrier.MipIndex = 0;
 	depthTextureBarrier.ArrayIndex = 0;
@@ -352,18 +350,22 @@ int main(int argC, char** argV)
 	inputElement1.Format = TextureFormat::RGB32_Float;
 	inputElement1.Semantic = InputElementSemantic::Position;
 
+	// Normal InputElement
 	InputElement inputElement2 = {};
 	inputElement2.Format = TextureFormat::RGB32_Float;
 	inputElement2.Semantic = InputElementSemantic::Normal;
 
+	// Tangent InputElement
 	InputElement inputElement3 = {};
 	inputElement3.Format = TextureFormat::RGB32_Float;
 	inputElement3.Semantic = InputElementSemantic::Tangent;
-
+	
+	// Binormal InputElement
 	InputElement inputElement4 = {};
 	inputElement4.Format = TextureFormat::RGB32_Float;
 	inputElement4.Semantic = InputElementSemantic::Binormal;
 
+	// Color InputElement
 	InputElement inputElement5 = {};
 	inputElement5.Format = TextureFormat::RGBA32_Float;
 	inputElement5.Semantic = InputElementSemantic::Color;
@@ -452,6 +454,7 @@ int main(int argC, char** argV)
 	auto mSampler = mDevice->CreateSampler(samplerDesc);
 #pragma endregion
 
+	// Create a mesh on cpu
 	auto mMeshData = MeshImporter::Import(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/04_MeshImport/Resource/VikingRoom.gltf");
 	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/04_MeshImport/Resource/VikingRoom_Albedo.png");
 
@@ -607,7 +610,7 @@ int main(int argC, char** argV)
 
 #pragma region Main Loop
 	mWindow->Show();
-	while (mWindow->IsVisible())
+	while (!mWindow->IsClosed())
 	{
 		mSwapchain->AcquireNextImage();
 

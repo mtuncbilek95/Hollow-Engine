@@ -1,17 +1,14 @@
 #pragma once
 
-#include <Runtime/Core/Definitions.h>
-#include <Runtime/Core/StdFix.h>
+#include <Runtime/Core/Core.h>
 
 namespace Hollow
 {
 	struct RUNTIME_API MonitorDesc
 	{
 		String MonitorName;
-		Vector2i MonitorResolution;
-		u16 RefreshRate;
-		byte BitsPerPixel;
-
-		ArrayList<Vector2i> SupportedResolutions;
+		Vector2u MonitorResolution;
+		Vector2i MonitorPosition;
+		bool IsPrimary;
 	};
 }

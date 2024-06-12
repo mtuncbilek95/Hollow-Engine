@@ -1,16 +1,15 @@
 #pragma once
 
-#include <Runtime/Core/Definitions.h>
-#include <Runtime/Core/StdFix.h>
+#include <Runtime/Core/Core.h>
 #include <Runtime/Monitor/Monitor.h>
 
 namespace Hollow
 {
-	class RUNTIME_API PlatformMonitor final
+	class PlatformMonitor
 	{
 	public:
-		static SharedPtr<Monitor> GetPrimaryMonitor();
-		static ArrayList<SharedPtr<Monitor>> GetAllMonitors();
+		static ArrayList<Monitor> GetAllMonitors();
+		static Monitor GetPrimaryMonitor();
 
 	public:
 		PlatformMonitor() = delete;

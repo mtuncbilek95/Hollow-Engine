@@ -1,8 +1,6 @@
 #pragma once
 
-#include <Runtime/Core/Definitions.h>
-#include <Runtime/Core/StdFix.h>
-
+#include <Runtime/Core/Core.h>
 #include <Runtime/Monitor/MonitorDesc.h>
 
 namespace Hollow
@@ -10,25 +8,22 @@ namespace Hollow
 	class RUNTIME_API Monitor
 	{
 	public:
-		static SharedPtr<Monitor> CreateMonitorInfo(const MonitorDesc& desc)
-		{
-			return std::make_shared<Monitor>(desc);
-		}
-
-	public:
-		Monitor(const MonitorDesc& desc) : mMonitorName(desc.MonitorName), mMonitorResolution(desc.MonitorResolution), 
-			mRefreshRate(desc.RefreshRate), mBitsPerPixel(desc.BitsPerPixel){}
+		Monitor() = default;
+		Monitor(const MonitorDesc& desc) : mMonitorName(desc.MonitorName), 
+			mMonitorResolution(desc.MonitorResolution), mMonitorPosition(desc.MonitorPosition),
+			mIsPrimary(desc.IsPrimary) 
+		{}
 		~Monitor() = default;
 
-		String GetMonitorName() const { return mMonitorName; }
-		Vector2i GetMonitorResolution() const { return mMonitorResolution; }
-		u16 GetRefreshRate() const { return mRefreshRate; }
-		byte GetBitsPerPixel() const { return mBitsPerPixel; }
+		const String& GetMonitorName() const { return mMonitorName; }
+		const Vector2u& GetMonitorResolution() const { return mMonitorResolution; }
+		const Vector2i& GetMonitorPosition() const { return mMonitorPosition; }
+		const bool IsPrimary() const { return mIsPrimary; }
 
 	private:
 		String mMonitorName;
-		Vector2i mMonitorResolution;
-		u16 mRefreshRate;
-		byte mBitsPerPixel;
+		Vector2u mMonitorResolution;
+		Vector2i mMonitorPosition;
+		bool mIsPrimary;
 	};
 }

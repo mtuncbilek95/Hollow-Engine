@@ -1,5 +1,4 @@
 #include <Runtime/Platform/PlatformAPI.h>
-#include <Runtime/Platform/PlatformMonitor.h>
 #include <Runtime/Platform/PlatformFile.h>
 #include <Runtime/Window/WindowManager.h>
 #include <Runtime/Graphics/API/GraphicsManager.h>
@@ -170,16 +169,12 @@ int main(int argC, char** argV)
 #pragma endregion
 
 #pragma region Window and Graphics Initialization
-	// Get the primary monitor
-	auto primaryMonitor = PlatformMonitor::GetPrimaryMonitor();
-
 	// Create a window
 	Hollow::WindowDesc desc = {};
 	desc.WindowSize = { 2560, 1440 };
 	desc.WindowPosition = { 0, 0 };
 	desc.WindowTitle = "Hollow Engine";
 	desc.WindowMode = WindowMode::Fullscreen;
-	desc.pMonitor = primaryMonitor;
 
 	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
 
@@ -755,7 +750,7 @@ int main(int argC, char** argV)
 
 #pragma region Main Loop
 	mWindow->Show();
-	while (mWindow->IsVisible())
+	while (!mWindow->IsClosed())
 	{
 		mSwapchain->AcquireNextImage();
 

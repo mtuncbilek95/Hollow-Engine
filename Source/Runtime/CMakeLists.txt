@@ -16,6 +16,7 @@ FetchContent_MakeAvailable(stbi)
 FetchContent_MakeAvailable(assimp)
 FetchContent_MakeAvailable(entt)
 FetchContent_MakeAvailable(spirv-reflect)
+FetchContent_MakeAvailable(glfw)
 # ------------------------------------------------------------
 
 # ---------------------- FILE ADDITION -----------------------
@@ -27,10 +28,12 @@ add_library(Runtime STATIC main.cpp ${SUBDIRECTORIES})
 # ------------------- INCLUDE DIRECTORIES --------------------
 target_include_directories(Runtime PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 
+if(glfw_POPULATED)
+	target_link_libraries(Runtime PUBLIC glfw)
+endif()
+
 if (stbi_POPULATED) 
     target_compile_definitions(Runtime PUBLIC STB_IMAGE_IMPLEMENTATION)
-    #target_compile_definitions(Runtime PUBLIC STB_TRUETYPE_IMPLEMENTATION)
-
     target_include_directories(Runtime PUBLIC ${stbi_SOURCE_DIR})
 endif ()
 

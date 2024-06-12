@@ -1,138 +1,114 @@
 #include "PlatformWindow.h"
 
-#if defined(HOLLOW_PLATFORM_WINDOWS)
-#include <Runtime/Win32/Win32Window.h>
-#endif
+#include <Runtime/Platform/PlatformMonitor.h>
+#include <Runtime/Graphics/API/GraphicsManager.h>
 
 namespace Hollow
 {
 	SharedPtr<PlatformWindow> PlatformWindow::InitializeWindow(const WindowDesc& desc)
 	{
-#if defined(HOLLOW_PLATFORM_WINDOWS)
-		return std::make_shared<Win32Window>(desc);
-#endif
-	}
-	PlatformWindow::PlatformWindow(const WindowDesc& desc) : Object(), mWindowSize(desc.WindowSize),
-		mWindowPosition(desc.WindowPosition), mWindowTitle(desc.WindowTitle), mWindowMode(desc.WindowMode), mVisible(false)
-	{
+		return std::make_shared<PlatformWindow>(desc);
 	}
 
-	void PlatformWindow::SetWindowSize(Vector2u newSize)
+	PlatformWindow::PlatformWindow(const WindowDesc& desc) : mWindowMode(desc.WindowMode), mWindowPosition({ 0,0 }), mWindowSize(desc.WindowSize),
+		mWindowTitle(desc.WindowTitle), mVisible(true), mGLFWHandle(nullptr)
 	{
-		SetWindowSizeImpl(newSize);
-		mWindowSize = newSize;
+		CORE_ASSERT(glfwInit(), "PlatformWindow", "Failed to initialize GLFW!");
+
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
+		mGLFWHandle = glfwCreateWindow((i32)mWindowSize.x, (i32)mWindowSize.y, mWindowTitle.c_str(), nullptr, nullptr);
+
+		CORE_ASSERT(mGLFWHandle, "PlatformWindow", "Failed to create GLFW window!");
+
+		glfwSetWindowUserPointer(mGLFWHandle, this);
+
+		Monitor primaryMonitor = PlatformMonitor::GetPrimaryMonitor();
+
+		if (mWindowMode == WindowMode::Windowed)
+		{
+			glfwSetWindowAttrib(mGLFWHandle, GLFW_DECORATED, GLFW_TRUE);
+			glfwSetWindowAttrib(mGLFWHandle, GLFW_RESIZABLE, GLFW_TRUE);
+			i32 centerX = primaryMonitor.GetMonitorPosition().x + (i32)primaryMonitor.GetMonitorResolution().x / 2 - (i32)mWindowSize.x / 2;
+			i32 centerY = primaryMonitor.GetMonitorPosition().y + (i32)primaryMonitor.GetMonitorResolution().y / 2 - (i32)mWindowSize.y / 2;
+
+			SetWindowPosition({ centerX, centerY });
+		}
+		else
+		{
+			glfwSetWindowAttrib(mGLFWHandle, GLFW_DECORATED, GLFW_FALSE);
+			glfwSetWindowAttrib(mGLFWHandle, GLFW_RESIZABLE, GLFW_FALSE);
+			SetWindowPosition(primaryMonitor.GetMonitorPosition());
+			SetWindowResolution(primaryMonitor.GetMonitorResolution());
+		}
+
+		glfwSetWindowPosCallback(mGLFWHandle, [](GLFWwindow* window, i32 x, i32 y)
+			{
+				PlatformWindow* platformWindow = static_cast<PlatformWindow*>(glfwGetWindowUserPointer(window));
+				platformWindow->mWindowPosition = { x, y };
+			});
+
+		glfwSetWindowSizeCallback(mGLFWHandle, [](GLFWwindow* window, i32 width, i32 height)
+			{
+				PlatformWindow* platformWindow = static_cast<PlatformWindow*>(glfwGetWindowUserPointer(window));
+				platformWindow->mWindowSize = { (u32)width, (u32)height };
+				GraphicsManager::GetInstanceAPI().GetDefaultDevice()->GetSwapchain()->Resize(platformWindow->mWindowSize);
+			});
 	}
 
-	void PlatformWindow::SetWindowTitle(const String& newTitle)
+	void PlatformWindow::OnShutdown()
 	{
-		SetWindowTitleImpl(newTitle);
-		mWindowTitle = newTitle;
-	}
-
-	void PlatformWindow::SetWindowMode(WindowMode newMode)
-	{
-		SetWindowModeImpl(newMode);
-		mWindowMode = newMode;
-	}
-
-	void PlatformWindow::SetWindowPosition(Vector2i newPosition)
-	{
-		SetWindowPositionImpl(newPosition);
-		mWindowPosition = newPosition;
+		glfwDestroyWindow(mGLFWHandle);
+		glfwTerminate();
 	}
 
 	void PlatformWindow::Show()
 	{
-		ShowImpl();
+		glfwShowWindow(mGLFWHandle);
 		mVisible = true;
 	}
 
 	void PlatformWindow::Hide()
 	{
-		HideImpl();
+		glfwHideWindow(mGLFWHandle);
 		mVisible = false;
 	}
 
 	void PlatformWindow::PollEvents()
 	{
-		mEventQueue.clear();
-		PollEventsImpl();
+		glfwPollEvents();
 	}
 
-	void PlatformWindow::OnShutdown()
+	void PlatformWindow::SetWindowResolution(const Vector2u& resolution)
 	{
+		glfwSetWindowSize(mGLFWHandle, (i32)resolution.x, (i32)resolution.y);
+		mWindowSize = resolution;
 	}
 
-	void PlatformWindow::TriggerWindowEvent(const WindowEventDesc& desc)
+	void PlatformWindow::SetWindowPosition(const Vector2i& position)
 	{
-		switch (desc.EventType)
-		{
-		case WindowEventType::None:
-		{
-			break;
-		}
-		case WindowEventType::WindowClosed:
-		{
-			OnWindowClose();
-			// Close the window
-			break;
-		}
-		case WindowEventType::WindowResized:
-		{
-			OnWindowResize(desc.WindowSize);
-			break;
-		}
-		case WindowEventType::WindowMoved:
-		{
-			OnWindowMove(desc.WindowPosition);
-			break;
-		}
-		case WindowEventType::WindowFocused:
-		{
-			// Focus the window
-			break;
-		}
-		case WindowEventType::WindowLostFocus:
-		{
-			// Lose focus of the window
-			break;
-		}
-		case WindowEventType::WindowMinimized:
-		{
-			// Minimize the window
-			break;
-		}
-		case WindowEventType::WindowMaximized:
-		{
-			// Maximize the window
-			break;
-		}
-		case WindowEventType::FileDropped:
-		{
-			// Drop a file
-			break;
-		}
-		default:
-			break;
-		}
-
-		mEventQueue.push_back(desc);
+		glfwSetWindowPos(mGLFWHandle, position.x, position.y);
+		mWindowPosition = position;
 	}
 
-	void PlatformWindow::OnWindowClose()
+	void PlatformWindow::SetWindowTitle(const String& title)
 	{
-		mVisible = false;
+		glfwSetWindowTitle(mGLFWHandle, title.c_str());
+		mWindowTitle = title;
 	}
 
-	void PlatformWindow::OnWindowResize(Vector2u newSize)
+	void PlatformWindow::SetWindowMode(const WindowMode& mode)
 	{
-		// Check if window is minimized or maximized
-		// Resize the swapchain according to everything
+		mWindowMode = mode;
 	}
 
-	void PlatformWindow::OnWindowMove(Vector2i newPosition)
+	void PlatformWindow::SetVisible(bool visible)
 	{
-		// Check if the window is switching between monitors
-		// If it is, update the monitor and the window position
+		if (visible)
+			Show();
+		else
+			Hide();
 	}
+
 }
