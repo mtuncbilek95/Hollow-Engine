@@ -53,7 +53,7 @@ ConstantBuffer MVPData = {
 		XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransform.Rotation.y), XMConvertToRadians(InstanceTransform.Rotation.z), XMConvertToRadians(InstanceTransform.Rotation.x)) *
 			XMMatrixTranslation(InstanceTransform.Position.x, InstanceTransform.Position.y, InstanceTransform.Position.z) },
 		XMMatrixLookAtLH({0, -1, -2}, {0, 0 ,0}, {0, 1, 0}),
-		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<f32>(2560.f / 1440.f), 0.01f, 1000.f)
+		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<f32>(1300.f / 1300.f), 0.01f, 1000.f)
 };
 
 void UpdateTransforms()
@@ -75,10 +75,10 @@ int main(int argC, char** argV)
 #pragma region Window and Graphics Initialization
 	// Create a window
 	Hollow::WindowDesc desc = {};
-	desc.WindowSize = { 2560, 1440 };
+	desc.WindowSize = { 1300, 1300 };
 	desc.WindowPosition = { 0, 0 };
-	desc.WindowTitle = "Hollow Engine";
-	desc.WindowMode = WindowMode::Fullscreen;
+	desc.WindowTitle = "Hollow - Mesh Importing";
+	desc.WindowMode = WindowMode::Windowed;
 
 	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
 
