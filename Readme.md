@@ -11,6 +11,7 @@
 3. Run the <b>GenerateProject.bat</b> file to generate the Visual Studio solution. <b>(W.I.P)</b>
 
 ## Features
+- [x] Graphics Abstraction Layer
 - [x] Vulkan Renderer
 - [ ] DirectX-12 Renderer
 - [x] Win32
