@@ -14,25 +14,36 @@
 - [x] Vulkan Renderer
 - [ ] DirectX-12 Renderer
 - [x] Win32
+- [x] GLFW
 - [ ] Linux
 - [ ] MacOS
-- [x] ResourceSystem <b>(W.I.P)</b>
-- [ ] Editor <b>(W.I.P)</b>
+- [x] ResourceSystem
+- [ ] Editor
 
 ## Dependencies
 - [x] Vulkan SDK
 - [ ] DirectX 12 SDK
 - [x] Assimp
 - [x] ImGui
-- [ ] EnTT
+- [x] EnTT
 - [ ] PhysX
 - [ ] FMod
 - [x] STBI
 - [ ] Nlohmann JSON
 
+## What have I done so far:
+- Independent Graphics API. Be able to support multiple APIs. Modifications can be done on only higher level to swap between apis.
+- Independent Platform. Be able to support multiple operating system libraries.
+- Resource Management for RenderTarget and Mesh.
+- Basic Assimp implementation. After shading is done,
+
 ## Tests
-- [x] Runtime Test
-- [x] Resource Management for RenderTarget
-- [x] Resource Management for Shader
-- [ ] Resource Management for Texture <b>(W.I.P)</b>
-- [ ] Resource Management for Mesh
+- [x] Instancing
+![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/2fe2fa5a-80fe-459a-a826-2bd75ec1bef2)
+- [x] Mesh Importing
+![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/478829b7-6e18-4c07-a822-1f36f174eaf2)
+
+- [ ] Shading & Basic Illumination <b>(W.I.P)</b>
+- [ ] Sponza Import
+- [ ] PBR Material
+- [ ] Basic Imgui Renderer
