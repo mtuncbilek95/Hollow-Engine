@@ -44,7 +44,9 @@
 - [x] Mesh Importing
 ![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/478829b7-6e18-4c07-a822-1f36f174eaf2)
 
-- [ ] Shading & Basic Illumination <b>(W.I.P)</b>
+- [x] Shading & Basic Illumination
+![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/38944789-14d4-43e5-9b63-c78f8e6517eb)
+
 - [ ] Sponza Import
 - [ ] PBR Material
 - [ ] Basic Imgui Renderer
