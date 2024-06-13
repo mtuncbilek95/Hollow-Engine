@@ -159,6 +159,9 @@ namespace Hollow
 		mCommandBuffer->EndRecording();
 
 		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+
+		mGraphicsDevice->WaitForFence(&mFence, 1);
+		mGraphicsDevice->ResetFences(&mFence, 1);
 	}
 
 	void TextureResource::OnShutdown() noexcept

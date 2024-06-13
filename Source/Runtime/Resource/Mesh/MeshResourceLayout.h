@@ -18,6 +18,8 @@ namespace Hollow
 	{
 		ArrayList<VertexData> Vertices;
 		ArrayList<u32> Indices;
+		u32 MeshIndex;
+		u32 MaterialIndex;
 	};
 
 	struct RUNTIME_API MeshResourceLayout

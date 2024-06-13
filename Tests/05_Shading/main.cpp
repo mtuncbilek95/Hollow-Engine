@@ -28,6 +28,8 @@
 
 using namespace Hollow;
 
+#pragma region "Initial Cacaphony"
+
 struct Transform
 {
 	Vector3f Position;
@@ -95,6 +97,8 @@ void UpdateTransforms()
 			XMConvertToRadians(InstanceTransform.Rotation.x)) *
 		XMMatrixTranslation(InstanceTransform.Position.x, InstanceTransform.Position.y, InstanceTransform.Position.z);
 }
+
+#pragma endregion
 
 int main(int argC, char** argV)
 {
@@ -328,14 +332,14 @@ int main(int argC, char** argV)
 	DescriptorPoolDesc descriptorPoolDesc = {};
 	descriptorPoolDesc.MaxSets = 1000;
 	descriptorPoolDesc.PoolSizes = {
-		{DescriptorType::UniformBuffer, 10},
+		{DescriptorType::UniformBuffer, 100},
 		{DescriptorType::Sampler, 1},
-		{DescriptorType::SampledImage, 10},
-		{DescriptorType::StorageImage, 1},
-		{DescriptorType::StorageBuffer, 1},
-		{DescriptorType::UniformTexelBuffer, 1},
-		{DescriptorType::StorageTexelBuffer, 1},
-		{DescriptorType::InputAttachment, 1}
+		{DescriptorType::SampledImage, 100},
+		{DescriptorType::StorageImage, 100},
+		{DescriptorType::StorageBuffer, 100},
+		{DescriptorType::UniformTexelBuffer, 100},
+		{DescriptorType::StorageTexelBuffer, 100},
+		{DescriptorType::InputAttachment, 100}
 	};
 
 	auto mDescriptorPool = mDevice->CreateDescriptorPool(descriptorPoolDesc);

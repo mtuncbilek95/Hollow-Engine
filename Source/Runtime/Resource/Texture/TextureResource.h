@@ -1,4 +1,4 @@
-#pragma once
+    #pragma once
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Resource/Core/ResourceSubObject.h>

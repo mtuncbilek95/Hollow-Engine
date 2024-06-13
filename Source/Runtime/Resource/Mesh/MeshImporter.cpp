@@ -6,6 +6,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <Runtime/Resource/Texture/TextureImporter.h>
+
 namespace Hollow
 {
 	MeshResourceLayout MeshImporter::Import(String path)
@@ -37,7 +39,7 @@ namespace Hollow
 			// Get the mesh from the scene via Assimp.
 			const aiMesh* mesh = scene->mMeshes[meshIndex];
 
-			if(!mesh->HasPositions() || !mesh->HasNormals() || !mesh->HasTextureCoords(0) || !mesh->HasTangentsAndBitangents())
+			if (!mesh->HasPositions() || !mesh->HasNormals() || !mesh->HasTextureCoords(0) || !mesh->HasTangentsAndBitangents())
 			{
 				CORE_LOG(HE_ERROR, "MeshImporter", "Failed to load mesh file with error: Mesh does not have required data");
 				return MeshResourceLayout();
@@ -70,10 +72,63 @@ namespace Hollow
 					subMeshLayout.Indices.push_back(face.mIndices[indexIndex]);
 			}
 
+			subMeshLayout.MaterialIndex = mesh->mMaterialIndex;
+			subMeshLayout.MeshIndex = meshIndex;
+
 			// Add the sub-mesh layout to the main layout.
 			mainLayout.SubMeshes.push_back(subMeshLayout);
 		}
 
 		return mainLayout;
+	}
+
+	MaterialResourceLayout MeshImporter::ImportMaterial(String path, const MeshResourceLayout& meshLayout)
+	{
+		if (!PlatformFile::Exists(path))
+		{
+			CORE_LOG(HE_ERROR, "MeshImporter", "Failed to load mesh file with error: File does not exist");
+			return MaterialResourceLayout();
+		}
+
+		// remove the file name from the path
+		String directory = path.substr(0, path.find_last_of('/'));
+		directory += "/";
+
+		Assimp::Importer assimpImporter;
+
+		const aiScene* scene = assimpImporter.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs |
+			aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+		{
+			CORE_LOG(HE_ERROR, "MeshImporter", "Failed to load mesh file with error: %s", assimpImporter.GetErrorString());
+			return MaterialResourceLayout();
+		}
+
+		MaterialResourceLayout materialLayout;
+
+		for (i32 materialIndex = 0; materialIndex < scene->mNumMaterials; materialIndex++)
+		{
+			aiMaterial* material = scene->mMaterials[materialIndex];
+			
+			// Get texture names from the material.
+			aiString textureName;
+			material->GetTexture(aiTextureType_BASE_COLOR, 0, &textureName);
+
+			// Get the texture path.
+			String texturePath = directory + textureName.C_Str();
+
+			SubMeshMaterial subMeshMaterial;
+
+			// Load the texture
+			auto texture = TextureImporter::ImportTexture(texturePath);
+
+			subMeshMaterial.BaseTextures.push_back(texture);
+			subMeshMaterial.MaterialIndex = materialIndex;
+
+			materialLayout.SubMeshMaterials.push_back(subMeshMaterial);
+		}
+
+		return materialLayout;
 	}
 }
