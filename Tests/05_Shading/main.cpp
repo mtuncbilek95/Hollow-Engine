@@ -45,7 +45,7 @@ struct ConstantBuffer
 Transform InstanceTransform = {
 	{0, 0, 0},
 	{0, -90, 180},
-	{1, 1, 1}
+	{1.f, 1.f, 1.f}
 };
 
 struct AmbientLight
@@ -56,20 +56,18 @@ struct AmbientLight
 
 struct DiffuseLight
 {
-	Vector3f Direction;
-	Vector3f Color;
-	f32 DiffuseIntensity;
+	Vector4f Direction;
+	Vector4f Color;
 };
 
 AmbientLight TestLight = {
-	{1, 1, 1},
-	0.5f
+	{1.f, 1.f, 1.f},
+	0.0f
 };
 
 DiffuseLight TestDiffuse = {
-	{5, 5, 5},
-	{1, 0, 1},
-	0.2f
+	{-6.f, -4.f, -3.f, 1.f},
+	{1.f, 0.5f, 1.f, 1.f}
 };
 
 ConstantBuffer MVPData = {
@@ -77,12 +75,19 @@ ConstantBuffer MVPData = {
 		XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransform.Rotation.y), XMConvertToRadians(InstanceTransform.Rotation.z), XMConvertToRadians(InstanceTransform.Rotation.x)) *
 			XMMatrixTranslation(InstanceTransform.Position.x, InstanceTransform.Position.y, InstanceTransform.Position.z) },
 		XMMatrixLookAtLH({0, -1, -2}, {0, 0 ,0}, {0, 1, 0}),
-		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<f32>(2560.f / 1440.f), 0.01f, 1000.f)
+		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<f32>(1920.f / 1080.f), 0.01f, 1000.f)
 };
 
 void UpdateTransforms()
 {
-	InstanceTransform.Rotation.z += 0.3f;
+	if(glfwGetKey(WindowManager::GetInstanceAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_A) == GLFW_PRESS)
+	{
+		InstanceTransform.Rotation.z += 0.3f;
+	}
+	if(glfwGetKey(WindowManager::GetInstanceAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_D) == GLFW_PRESS)
+	{
+		InstanceTransform.Rotation.z -= 0.3f;
+	}
 
 	MVPData.Model = XMMatrixScaling(InstanceTransform.Scale.x, InstanceTransform.Scale.y, InstanceTransform.Scale.z) *
 		XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransform.Rotation.y),
@@ -666,6 +671,13 @@ int main(int argC, char** argV)
 
 	mCommandBuffer->CopyBufferToBuffer(mStagingUboFragmentBuffer, mUboFragment, uboFragmentCopyDesc);
 
+	BufferBufferCopyDesc uboFragmentCopyDesc2 = {};
+	uboFragmentCopyDesc2.DestinationOffset = 0;
+	uboFragmentCopyDesc2.Size = sizeof(DiffuseLight);
+	uboFragmentCopyDesc2.SourceOffset = 0;
+
+	mCommandBuffer->CopyBufferToBuffer(mStagingUboFragmentBuffer2, mUboFragment2, uboFragmentCopyDesc2);
+
 	// First, make sure that texture is ready to be written.
 	TextureBarrierUpdateDesc preTextureBarrier = {};
 	preTextureBarrier.MipIndex = 0;
@@ -724,8 +736,8 @@ int main(int argC, char** argV)
 	descriptorUpdateDesc.Entries.push_back({ mSampler, DescriptorType::Sampler, 1, 0, 0, 1 });
 	descriptorUpdateDesc.Entries.push_back({ mTextureView, DescriptorType::SampledImage, 1, 0, 0, 2 });
 	descriptorUpdateDesc.Entries.push_back({ mNormalMapView, DescriptorType::SampledImage, 1, 0, 0, 3 });
-	descriptorUpdateDesc.Entries.push_back({ mUboFragment, DescriptorType::UniformBuffer, 1, 0, 0, 4 });
-	descriptorUpdateDesc.Entries.push_back({ mUboFragment2, DescriptorType::UniformBuffer, 1, 0, 0, 5 });
+	descriptorUpdateDesc.Entries.push_back({ mUboFragment, DescriptorType::UniformBuffer, 1, 0, 0, 4});
+	descriptorUpdateDesc.Entries.push_back({ mUboFragment2, DescriptorType::UniformBuffer, 1, 0, 0, 5});
 
 	mDevice->UpdateDescriptorSet(mDescriptorSet1, descriptorUpdateDesc);
 
@@ -752,6 +764,16 @@ int main(int argC, char** argV)
 		constantDataUpdateDesc.Memory = MemoryBuffer(&MVPData, sizeof(ConstantBuffer));
 		constantDataUpdateDesc.OffsetInBytes = 0;
 		mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
+
+		BufferDataUpdateDesc uboFragmentDataUpdateDesc = {};
+		uboFragmentDataUpdateDesc.Memory = MemoryBuffer(&TestLight, sizeof(AmbientLight));
+		uboFragmentDataUpdateDesc.OffsetInBytes = 0;
+		mDevice->UpdateBufferData(mStagingUboFragmentBuffer, uboFragmentDataUpdateDesc);
+
+		BufferDataUpdateDesc uboFragmentDataUpdateDesc2 = {};
+		uboFragmentDataUpdateDesc2.Memory = MemoryBuffer(&TestDiffuse, sizeof(DiffuseLight));
+		uboFragmentDataUpdateDesc2.OffsetInBytes = 0;
+		mDevice->UpdateBufferData(mStagingUboFragmentBuffer2, uboFragmentDataUpdateDesc2);
 
 		mWindow->PollEvents();
 
