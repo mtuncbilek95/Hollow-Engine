@@ -30,7 +30,7 @@ namespace Hollow
 		Vector3f mUp = { 0.0f, 1.0f, 0.0f };
 
 		bool mIsDirty = true;
-		Vector2u mViewportSize = { 1300, 1300 };
+		Vector2u mViewportSize;
 		f32 mAspectRatio = 0.0f;
 		f32 mFieldOfView = 0.0f;
 		f32 mNearPlane = 0.0f;

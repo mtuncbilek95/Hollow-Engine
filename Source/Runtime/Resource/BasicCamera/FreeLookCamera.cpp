@@ -4,11 +4,11 @@ namespace Hollow
 {
 	FreeLookCamera::FreeLookCamera() : BaseCamera()
 	{
-		mAspectRatio = (float)mViewportSize.x / (float)mViewportSize.y;
+		mAspectRatio = (f32)mViewportSize.x / (f32)mViewportSize.y;
 		mFieldOfView = 74.0f;
 		mNearPlane = 0.1f;
 		mFarPlane = 10000.0f;
-		mSpeed = 0.5f;
+		mSpeed = 1.f;
 
 		mSensitivity = 100.0f;
 		mPosition = { 0.0f, 0.0f, -5.0f };
@@ -18,14 +18,15 @@ namespace Hollow
 		mProjectionMatrix = XMMatrixIdentity();
 	}
 
-	void FreeLookCamera::Update(float deltaTime)
+	void FreeLookCamera::Update(f32 deltaTime)
 	{
+		mAspectRatio = (f32)mViewportSize.x / (f32)mViewportSize.y;
 		mViewportSize = WindowManager::GetInstanceAPI().GetDefaultWindow()->GetWindowResolution();
 		mViewMatrix = XMMatrixLookAtLH(XMLoadFloat3(&mPosition), XMLoadFloat3(&mOrientation) + XMLoadFloat3(&mPosition), XMLoadFloat3(&mUp));
 		mProjectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(mFieldOfView), mAspectRatio, mNearPlane, mFarPlane);
 	}
 
-	void FreeLookCamera::UpdateInput(float deltaTime)
+	void FreeLookCamera::UpdateInput(f32 deltaTime)
 	{
 		if (glfwGetMouseButton(mWindowHandle, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 		{
@@ -48,14 +49,14 @@ namespace Hollow
 				mPosition = { mPosition.x - rightFloat.x * mSpeed, mPosition.y - rightFloat.y * mSpeed, mPosition.z - rightFloat.z * mSpeed };
 			}
 			if (glfwGetKey(mWindowHandle, GLFW_KEY_SPACE) == GLFW_PRESS)
-				mPosition = { mPosition.x + mUp.x * mSpeed, mPosition.y + mUp.y * mSpeed, mPosition.z + mUp.z * mSpeed };
-			if (glfwGetKey(mWindowHandle, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 				mPosition = { mPosition.x - mUp.x * mSpeed, mPosition.y - mUp.y * mSpeed, mPosition.z - mUp.z * mSpeed };
+			if (glfwGetKey(mWindowHandle, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+				mPosition = { mPosition.x + mUp.x * mSpeed, mPosition.y + mUp.y * mSpeed, mPosition.z + mUp.z * mSpeed };
 
 			if (glfwGetKey(mWindowHandle, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-				mSpeed = 0.5f;
+				mSpeed = 2.0f;
 			else if (glfwGetKey(mWindowHandle, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
-				mSpeed = 0.1f;
+				mSpeed = 1.0f;
 
 			glfwSetInputMode(mWindowHandle, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
@@ -75,7 +76,7 @@ namespace Hollow
 			XMFLOAT3 tempAxis;
 			XMStoreFloat3(&tempAxis, XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&mOrientation), XMLoadFloat3(&mUp))));
 
-			XMFLOAT3 tempOrientation = RotateVector(mOrientation, -rotX, tempAxis);
+			XMFLOAT3 tempOrientation = RotateVector(mOrientation, rotX, tempAxis);
 
 			if (abs(XMVectorGetX(XMVector3AngleBetweenNormals(XMLoadFloat3(&tempOrientation), XMLoadFloat3(&mUp))) - XMConvertToRadians(90.0f)) <= XMConvertToRadians(85.0f))
 				mOrientation = tempOrientation;

@@ -82,10 +82,10 @@ int main(int argC, char** argV)
 #pragma region Window and Graphics Initialization
 	// Create a window
 	Hollow::WindowDesc desc = {};
-	desc.WindowSize = { 1300, 1300 };
+	desc.WindowSize = { 2560, 1440 };
 	desc.WindowPosition = { 0, 0 };
 	desc.WindowTitle = "Hollow - Sponza";
-	desc.WindowMode = WindowMode::Windowed;
+	desc.WindowMode = WindowMode::Fullscreen;
 
 	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
 	CameraManager::GetInstanceAPI().GetCamera()->GetHandle();
@@ -124,14 +124,14 @@ int main(int argC, char** argV)
 	// Create bundle memory for pre-allocation on cpu
 	GraphicsMemoryDesc hostMemoryDesc = {};
 	hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
-	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
+	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(2048);
 
 	auto mHostMemory = mDevice->CreateGraphicsMemory(hostMemoryDesc);
 
 	// Create bundle memory for pre-allocation on gpu
 	GraphicsMemoryDesc deviceMemoryDesc = {};
 	deviceMemoryDesc.MemoryType = GraphicsMemoryType::DeviceLocal;
-	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
+	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(2048);
 
 	auto mDeviceMemory = mDevice->CreateGraphicsMemory(deviceMemoryDesc);
 #pragma endregion
@@ -574,6 +574,9 @@ int main(int argC, char** argV)
 	mWindow->Show();
 	while (!mWindow->IsClosed())
 	{
+		mSwapchain->AcquireNextImage();
+		u32 imageIndex = mSwapchain->GetCurrentFrameIndex();
+
 		mWindow->PollEvents();
 
 		CameraManager::GetInstanceAPI().GetCamera()->UpdateInput(0.16f);
@@ -585,9 +588,6 @@ int main(int argC, char** argV)
 		constantDataUpdateDesc.OffsetInBytes = 0;
 		mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 
-		mSwapchain->AcquireNextImage();
-
-		u32 imageIndex = mSwapchain->GetCurrentFrameIndex();
 		auto perFence = mRuntimeFences[imageIndex];
 
 		mCommandBuffers[imageIndex]->BeginRecording();
