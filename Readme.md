@@ -45,6 +45,7 @@
 ![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/478829b7-6e18-4c07-a822-1f36f174eaf2)
 - [x] Shading & Basic Illumination
 ![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/4151e3d1-92ac-40ba-8aaa-e155ca1a06c5)
-- [ ] Sponza Import
+- [x] Sponza Import
+![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/571c0793-efb3-4b05-b82d-4d96932247a2)
 - [ ] PBR Material
 - [ ] Basic Imgui Renderer
