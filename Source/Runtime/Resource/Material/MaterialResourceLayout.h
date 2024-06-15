@@ -9,7 +9,7 @@ namespace Hollow
 	struct RUNTIME_API SubMeshMaterial
 	{
 		u32 MaterialIndex;
-		ArrayList<SharedPtr<TextureResourceLayout>> BaseTextures;
+		SharedPtr<TextureResourceLayout> BaseTexture;
 	};
 
 	struct RUNTIME_API MaterialResourceLayout

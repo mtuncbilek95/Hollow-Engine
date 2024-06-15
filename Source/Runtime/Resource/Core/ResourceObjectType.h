@@ -11,6 +11,7 @@ namespace Hollow
 		Shader,
 		Texture,
 		Font,
-		RenderTarget
+		RenderTarget,
+		Material
 	};
 }

@@ -14,25 +14,18 @@ namespace Hollow
 {
 	class RUNTIME_API TextureResource final : public ResourceSubObject
 	{
-		struct RUNTIME_API MipData
-		{
-			SharedPtr<TextureBuffer> MipTextureBuffer;
-			SharedPtr<GraphicsBuffer> MipStageBuffer;
-		};
-
 	public:
 		TextureResource();
 		virtual ~TextureResource() override = default;
 
-		SharedPtr<TextureBuffer> CreateResourceBuffer(const TextureAspectFlags flag, const byte mipLevel, const byte arrayLevel);
-		SharedPtr<Texture> GetTexture() const noexcept { return mTexture; }
+		SharedPtr<Texture> GetTexture() const { return mTexture; }
+		SharedPtr<TextureBuffer> GetTextureBuffer() const { return mTextureBuffer; }
 
-		void InitializeMipData(const SharedPtr<Texture> texture);
+		void ConnectMemory(const SharedPtr<GraphicsMemory>& hostMemory, const SharedPtr<GraphicsMemory>& deviceMemory, bool bPreAllocate = true);
+		void CreateTextureAndBuffer(const TextureDesc& desc);
 
-		void ConnectMemory(const SharedPtr<GraphicsMemory> hostMemory, const SharedPtr<GraphicsMemory> deviceMemory);
-		void CreateTextureData(const TextureDesc& desc, bool preAllocMips = false, bool preAllocData = false);
+		void UpdateTextureAndBuffer(MemoryBuffer& pBuffer, u32 offset);
 
-		void UpdateTextureData(const MemoryBuffer& data, const Vector3u& offset, const TextureMemoryLayout inputMemoryLayout, const GraphicsMemoryAccessFlags inputAccessFlags, const PipelineStageFlags inputPipelineFlags, const GraphicsQueueType inputQueueType, const byte mipLevel, const byte arrayLevel);
 		virtual void OnShutdown() noexcept override;
 		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Texture; }
 
@@ -41,8 +34,9 @@ namespace Hollow
 
 	private:
 		SharedPtr<GraphicsDevice> mGraphicsDevice;
-		ArrayList<ArrayList<MipData>> mMipData;
 		SharedPtr<Texture> mTexture;
+		SharedPtr<TextureBuffer> mTextureBuffer;
+		SharedPtr<GraphicsBuffer> mStageBuffer;
 
 		SharedPtr<CommandBuffer> mCommandBuffer;
 		SharedPtr<CommandPool> mCommandPool;
@@ -51,7 +45,7 @@ namespace Hollow
 		SharedPtr<GraphicsMemory> mHostMemory;
 		SharedPtr<GraphicsMemory> mDeviceMemory;
 
-		bool mMipDataInitialized;
+		bool mPreAllocate;
 		TextureDesc mDesc;
 	};
 }

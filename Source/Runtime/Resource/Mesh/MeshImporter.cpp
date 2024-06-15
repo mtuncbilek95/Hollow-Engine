@@ -107,24 +107,23 @@ namespace Hollow
 
 		MaterialResourceLayout materialLayout;
 
-		for (i32 materialIndex = 0; materialIndex < scene->mNumMaterials; materialIndex++)
+		for (i32 i = 0; i < scene->mNumMeshes; i++)
 		{
-			aiMaterial* material = scene->mMaterials[materialIndex];
-			
-			// Get texture names from the material.
-			aiString textureName;
-			material->GetTexture(aiTextureType_BASE_COLOR, 0, &textureName);
-
-			// Get the texture path.
-			String texturePath = directory + textureName.C_Str();
+			const aiMesh* mesh = scene->mMeshes[i];
 
 			SubMeshMaterial subMeshMaterial;
+			subMeshMaterial.MaterialIndex = mesh->mMaterialIndex;
 
-			// Load the texture
-			auto texture = TextureImporter::ImportTexture(texturePath);
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-			subMeshMaterial.BaseTextures.push_back(texture);
-			subMeshMaterial.MaterialIndex = materialIndex;
+			aiString materialName;
+			material->GetTexture(aiTextureType_BASE_COLOR, 0, &materialName);
+
+			String texturePath = directory + materialName.C_Str();
+
+			SharedPtr<TextureResourceLayout> textureLayout = TextureImporter::ImportTexture(texturePath);
+
+			subMeshMaterial.BaseTexture = textureLayout;
 
 			materialLayout.SubMeshMaterials.push_back(subMeshMaterial);
 		}

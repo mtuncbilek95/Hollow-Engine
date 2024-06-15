@@ -788,7 +788,6 @@ int main(int argC, char** argV)
 		constantCopyDesc.Size = constantDataUpdateDesc.Memory.GetSize();
 		constantCopyDesc.SourceOffset = 0;
 		mCommandBuffers[imageIndex]->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, constantCopyDesc);
-		mDevice->UpdateDescriptorSet(mDescriptorSet1, descriptorUpdateDesc);
 
 		TextureBarrierUpdateDesc preRenderBarrier = {};
 		preRenderBarrier.ArrayIndex = 0;
@@ -833,6 +832,8 @@ int main(int argC, char** argV)
 		passDesc.viewMask = 0;
 
 		mCommandBuffers[imageIndex]->BeginRendering(passDesc);
+
+		mDevice->UpdateDescriptorSet(mDescriptorSet1, descriptorUpdateDesc);
 
 		mCommandBuffers[imageIndex]->BindPipeline(mPipeline);
 		mCommandBuffers[imageIndex]->SetViewports(&viewport, 1);

@@ -10,30 +10,29 @@
 #include <Runtime/Graphics/Memory/GraphicsMemory.h>
 #include <Runtime/Graphics/Fence/Fence.h>
 
+#include <Runtime/Resource/Mesh/MeshResource.h>
+#include <Runtime/Resource/Material/MaterialResource.h>
+
+
 namespace Hollow
 {
-	class RUNTIME_API MaterialResource : public ResourceSubObject
-	{
-		struct RUNTIME_API MaterialResourceData
-		{
-			SharedPtr<Texture> BaseColorTexture;
-			SharedPtr<TextureBuffer> BaseColorTextureBuffer;
-
-			SharedPtr<GraphicsBuffer> BaseColorStageBuffer;
-		};
-
+	class RUNTIME_API SceneMesh : public ResourceSubObject
+	{ 
 	public:
-		MaterialResource() = default;
-		~MaterialResource() = default;
+		SceneMesh() = default;
+		virtual ~SceneMesh() override = default;
 
 		virtual void OnShutdown() noexcept override;
 
-		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Material; }
+		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Mesh; }
 
 	private:
 		void CreateInternalResources();
 
 	private:
+		ArrayList<MeshResource> mMeshResources;
+		ArrayList<MaterialResource> mMaterialResources;
+
 		SharedPtr<CommandBuffer> mCommandBuffer;
 		SharedPtr<CommandPool> mCommandPool;
 
@@ -42,5 +41,12 @@ namespace Hollow
 
 		bool mPreAllocate;
 		SharedPtr<Fence> mFence;
+
+		SharedPtr<GraphicsDevice> mGraphicsDevice;
+
+		SharedPtr<GraphicsBuffer> mUniformBuffer;
+		SharedPtr<GraphicsBuffer> mUniformBufferStaging;
+
+		SharedPtr<DescriptorSet> mDescriptorSet;
 	};
 }
