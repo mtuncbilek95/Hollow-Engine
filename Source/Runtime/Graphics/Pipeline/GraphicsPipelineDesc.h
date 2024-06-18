@@ -10,6 +10,7 @@
 #include <Runtime/Graphics/Pipeline/ResourceLayout/ResourceLayoutDesc.h>
 #include <Runtime/Graphics/Texture/TextureFormat.h>
 #include <Runtime/Graphics/Shader/Shader.h>
+#include <Runtime/Graphics/Pipeline/PushConstant/PushConstantDesc.h>
 #include <Runtime/Graphics/Core/ViewportDesc.h>
 #include <Runtime/Graphics/Core/ScissorDesc.h>
 
@@ -24,6 +25,7 @@ namespace Hollow
         RasterizerStateDesc RasterizerState;
         ResourceLayoutDesc ResourceLayout;
         ArrayList<SharedPtr<Shader>> GraphicsShaders;
+        PushConstantDesc PushConstants;
         ViewportDesc Viewport;
         ScissorDesc Scissor;
 		u32 ColorAttachmentCount;

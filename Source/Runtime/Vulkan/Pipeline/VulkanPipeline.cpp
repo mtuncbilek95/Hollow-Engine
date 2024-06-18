@@ -184,14 +184,25 @@ namespace Hollow
 		renderingInfo.pNext = nullptr;
 		renderingInfo.viewMask = 0;
 
+		ArrayList<VkPushConstantRange> pushConstants;
+
+		for(auto& pushConstant : desc.PushConstants.PushConstants)
+		{
+			VkPushConstantRange range = {};
+			range.stageFlags = VulkanShaderUtils::GetVkShaderStageBit(pushConstant.Stage);
+			range.offset = pushConstant.Offset;
+			range.size = pushConstant.Size;
+
+			pushConstants.push_back(range);
+		}
+
 		// Pipeline Layout Info
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = layouts.size(); // Optional
-		pipelineLayoutInfo.pSetLayouts = layouts.data(); // Optional
-		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
+		pipelineLayoutInfo.setLayoutCount = layouts.size();
+		pipelineLayoutInfo.pSetLayouts = layouts.data();
+		pipelineLayoutInfo.pushConstantRangeCount = pushConstants.size();
+		pipelineLayoutInfo.pPushConstantRanges = pushConstants.data();
 
 		CORE_ASSERT(vkCreatePipelineLayout(mVkDevice, &pipelineLayoutInfo, nullptr, &mVkPipelineLayout) == VK_SUCCESS, "PipelineLayout", "Failed to create pipeline layout!");
 
