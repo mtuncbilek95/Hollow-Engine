@@ -85,13 +85,13 @@ namespace Hollow
 
 	TextureResourceLayout ResourceImporter::ImportTexture(String path)
 	{
-		i32 width, height, channels;
-		byte* data = nullptr; //stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+		//i32 width, height, channels;
+		//byte* data = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 
 		TextureResourceLayout layout;
-		layout.ImageSize = Vector2i(width, height);
-		layout.ImageData = MemoryOwnedBuffer(data, width * height * 4);
-		layout.Channels = channels;
+		//layout.ImageSize = Vector2i(width, height);
+		//layout.ImageData = MemoryOwnedBuffer(data, width * height * 4);
+		//layout.Channels = channels;
 
 		return layout;
 	}

@@ -14,11 +14,9 @@ namespace Hollow
 		ShaderReflection() = default;
 		virtual ~ShaderReflection() override = default;
 
-		const ArrayList<ShaderIODescriptor>& GetInputDescriptors() const { return mInputDescriptors; }
-		const ArrayList<ShaderIODescriptor>& GetOutputDescriptors() const { return mOutputDescriptors; }
-		const ArrayList<ShaderDescriptorSet>& GetDescriptorData() const { return mBufferDescriptors; }
-
-		virtual void OnShutdown() override {}
+		const DArray<ShaderIODescriptor>& GetInputDescriptors() const { return mInputDescriptors; }
+		const DArray<ShaderIODescriptor>& GetOutputDescriptors() const { return mOutputDescriptors; }
+		const DArray<ShaderDescriptorSet>& GetDescriptorData() const { return mBufferDescriptors; }
 
 	private:
 		void AddInputDescriptor(const ShaderIODescriptor descriptor) { mInputDescriptors.push_back(descriptor); }
@@ -26,8 +24,8 @@ namespace Hollow
 		void AddDescriptorData(const ShaderDescriptorSet member) { mBufferDescriptors.push_back(member); }
 
 	private:
-		ArrayList<ShaderIODescriptor> mInputDescriptors;
-		ArrayList<ShaderIODescriptor> mOutputDescriptors;
-		ArrayList<ShaderDescriptorSet> mBufferDescriptors;
+		DArray<ShaderIODescriptor> mInputDescriptors;
+		DArray<ShaderIODescriptor> mOutputDescriptors;
+		DArray<ShaderDescriptorSet> mBufferDescriptors;
 	};
 }

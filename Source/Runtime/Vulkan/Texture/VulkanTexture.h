@@ -13,15 +13,13 @@ namespace Hollow
 	public:
 		VulkanTexture(const TextureDesc& desc, const SharedPtr<VulkanDevice> pDevice);
 		VulkanTexture(const TextureDesc& desc, VkImage image, SharedPtr<VulkanDevice> pDevice);
-		~VulkanTexture() override = default;
+		~VulkanTexture() override;
 
 		VkImage GetVkTexture() const { return mVkTexture; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
 
 		u64 GetVkOffset() const { return mOffset; }
 		u64 GetVkAlignedOffset() const { return mAlignedOffset; }
-
-		void OnShutdown() noexcept override;
 
 	private:
 		VkImage mVkTexture;

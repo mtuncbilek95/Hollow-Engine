@@ -101,6 +101,11 @@ namespace Hollow
 		SetCommonMemoryBarrierImpl(desc);
 	}
 
+	void CommandBuffer::PushConstants(MemoryBuffer buffer, u32 offset, ShaderStage stage)
+	{
+		PushConstantsImpl(buffer, offset, stage);
+	}
+
 	void CommandBuffer::DrawIndexed(u32 indexCount, u32 indexOffset, u32 vertexOffset, u32 instanceOffset, u32 instanceCount)
 	{
 		DrawIndexedImpl(indexCount, indexOffset, vertexOffset, instanceOffset, instanceCount);

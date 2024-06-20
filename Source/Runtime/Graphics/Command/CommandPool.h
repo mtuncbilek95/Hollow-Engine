@@ -21,8 +21,6 @@ namespace Hollow
 		// Inherited via GraphicsDeviceObject
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::CommandPool; }
 
-		virtual void OnShutdown() noexcept override = 0;
-
 	private:
 		CommandPoolType mPoolType;
 	};

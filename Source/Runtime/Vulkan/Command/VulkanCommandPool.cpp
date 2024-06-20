@@ -13,14 +13,12 @@ namespace Hollow
 		CORE_ASSERT(vkCreateCommandPool(mVkDevice, &poolInfo, nullptr, &mVkCommandPool) == VK_SUCCESS, "VulkanCommandPool", "Failed to create command pool");
 	}
 
-	void VulkanCommandPool::OnShutdown() noexcept
+	VulkanCommandPool::~VulkanCommandPool()
 	{
 		if (mVkCommandPool != VK_NULL_HANDLE)
 			vkDestroyCommandPool(mVkDevice, mVkCommandPool, nullptr);
 
 		mVkCommandPool = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
-
-		CORE_LOG(HE_INFO, "VulkanCommandPool", "Command pool has been destroyed");
 	}
 }

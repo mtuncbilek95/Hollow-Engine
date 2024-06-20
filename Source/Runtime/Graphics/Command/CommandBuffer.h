@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
+#include <Runtime/Memory/MemoryBuffer.h>
 #include <Runtime/Graphics/Device/GraphicsDeviceObject.h>
 #include <Runtime/Graphics/Command/CommandBufferDesc.h>
 #include <Runtime/Graphics/Core/DynamicPassDesc.h>
@@ -12,6 +13,7 @@
 #include <Runtime/Graphics/Core/TextureBarrierUpdateDesc.h>
 #include <Runtime/Graphics/Core/BufferMemoryBarrierUpdateDesc.h>
 #include <Runtime/Graphics/Core/CommonMemoryBarrierUpdateDesc.h>
+#include <Runtime/Graphics/Shader/ShaderStage.h>
 
 namespace Hollow
 {
@@ -54,6 +56,7 @@ namespace Hollow
 		void SetTextureBarrier(SharedPtr<Texture> pTexture, TextureBarrierUpdateDesc& desc);
 		void SetBufferMemoryBarrier(SharedPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrierUpdateDesc& desc);
 		void SetCommonMemoryBarrier(CommonMemoryBarrierUpdateDesc& desc);
+		void PushConstants(MemoryBuffer buffer, u32 offset, ShaderStage stage);
 
 		SharedPtr<CommandPool> GetOwnerPool() const noexcept { return mOwnerPool; }
 		SharedPtr<GraphicsBuffer> GetBoundIndexBuffer() const noexcept { return mBoundIndexBuffer; }
@@ -62,8 +65,6 @@ namespace Hollow
 
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::CommandBuffer; }
 
-		virtual void OnShutdown() noexcept override = 0;
-		
 	protected:
 		virtual void BeginRecordingImpl() = 0;
 		virtual void EndRecordingImpl() = 0;
@@ -84,6 +85,7 @@ namespace Hollow
 		virtual void SetTextureBarrierImpl(SharedPtr<Texture> pTexture, TextureBarrierUpdateDesc& desc) = 0;
 		virtual void SetBufferMemoryBarrierImpl(SharedPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrierUpdateDesc& desc) = 0;
 		virtual void SetCommonMemoryBarrierImpl(CommonMemoryBarrierUpdateDesc& desc) = 0;
+		virtual void PushConstantsImpl(MemoryBuffer buffer, u32 offset, ShaderStage stage) = 0;
 
 	private:
 		SharedPtr<CommandPool> mOwnerPool;

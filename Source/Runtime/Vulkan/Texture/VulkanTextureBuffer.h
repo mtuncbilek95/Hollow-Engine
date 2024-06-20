@@ -13,12 +13,10 @@ namespace Hollow
 	public:
 		VulkanTextureBuffer(const TextureBufferDesc& desc,const SharedPtr<VulkanDevice> pDevice);
 		VulkanTextureBuffer(const TextureBufferDesc& desc, VkImageView imageView, SharedPtr<VulkanDevice> pDevice);
-		~VulkanTextureBuffer() override = default;
+		~VulkanTextureBuffer() override;
 
 		VkImageView GetVkTextureBuffer() const { return mVkTextureView; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
-
-		void OnShutdown() noexcept override;
 
 	private:
 		VkImageView mVkTextureView;

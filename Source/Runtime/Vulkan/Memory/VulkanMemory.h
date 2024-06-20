@@ -12,12 +12,9 @@ namespace Hollow
 	{
 	public:
 		VulkanMemory(const GraphicsMemoryDesc& desc, const SharedPtr<VulkanDevice> pDevice);
-		~VulkanMemory() override = default;
+		~VulkanMemory() override;
 
 		VkDeviceMemory GetVkDeviceMemory() const noexcept { return mVkDeviceMemory; }
-
-		// Inherited via GraphicsMemory
-		void OnShutdown() noexcept override;
 
 	protected:
 		u32 FindMemoryType(GraphicsMemoryType type);

@@ -25,8 +25,6 @@ namespace Hollow
 
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::TextureBuffer; }
 
-		virtual void OnShutdown() noexcept override = 0;
-
 	private:
 		SharedPtr<Texture> mTexture;
 		TextureAspectFlags mAspectFlags;

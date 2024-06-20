@@ -8,10 +8,8 @@ namespace Hollow
 		mQueueFamilyIndex = pDevice->GetQueueFamilyIndex(desc.QueueType);
 	}
 
-	void VulkanQueue::OnShutdown() noexcept
+	VulkanQueue::~VulkanQueue()
 	{
 		mVkQueue = VK_NULL_HANDLE;
-
-		CORE_LOG(HE_INFO, "VulkanQueue", "Queue shutdown successfully");
 	}
 }

@@ -18,7 +18,6 @@ namespace Hollow
 		SharedPtr<Shader> GetShaderModule() const noexcept { return mShaderModule; }
 		SharedPtr<ShaderReflection> GetReflection() const noexcept { return mReflection; }
 
-		virtual void OnShutdown() noexcept override;
 		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Shader; }
 
 	private:

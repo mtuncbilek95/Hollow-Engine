@@ -13,7 +13,7 @@ namespace Hollow
 	VulkanPipeline::VulkanPipeline(const GraphicsPipelineDesc& desc, SharedPtr<VulkanDevice> pDevice) : Pipeline(desc, pDevice), mVkDevice(pDevice->GetVkDevice()), 
 		mVkPipeline(VK_NULL_HANDLE), mVkPipelineLayout(VK_NULL_HANDLE)
 	{
-		ArrayList<VkPipelineShaderStageCreateInfo> shaderStages;
+		DArray<VkPipelineShaderStageCreateInfo> shaderStages;
 		for (const auto& shader : desc.GraphicsShaders)
 		{
 			VkPipelineShaderStageCreateInfo stageInfo = {};
@@ -26,8 +26,8 @@ namespace Hollow
 		}
 
 		// Create Attribute Bindings
-		ArrayList<VkVertexInputBindingDescription> bindings;
-		ArrayList<VkVertexInputAttributeDescription> attributes;
+		DArray<VkVertexInputBindingDescription> bindings;
+		DArray<VkVertexInputAttributeDescription> attributes;
 		for (byte bindIndex = 0; bindIndex < desc.InputLayout.Bindings.size(); bindIndex++)
 		{
 			const auto& element = desc.InputLayout.Bindings[bindIndex];
@@ -68,7 +68,7 @@ namespace Hollow
 		vertexInputInfo.pVertexAttributeDescriptions = attributes.data();
 
 		// Create Dynamic State
-		ArrayList<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+		DArray<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 		VkPipelineDynamicStateCreateInfo dynamicState = {};
 		dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 		dynamicState.dynamicStateCount = static_cast<u32>(dynamicStates.size());
@@ -121,7 +121,7 @@ namespace Hollow
 		multisampling.alphaToOneEnable = VK_FALSE;
 
 		// Create ColorBlendAttachment
-		ArrayList<VkPipelineColorBlendAttachmentState> colorAttachments;
+		DArray<VkPipelineColorBlendAttachmentState> colorAttachments;
 
 		for (byte i = 0; i < desc.BlendState.Attachments.size(); i++)
 		{
@@ -164,14 +164,14 @@ namespace Hollow
 		depthStencil.maxDepthBounds = 1.0f; // Optional
 
 		// Descriptor Set Layouts
-		ArrayList<VkDescriptorSetLayout> layouts(desc.ResourceLayout.ResourceLayouts.size());
+		DArray<VkDescriptorSetLayout> layouts(desc.ResourceLayout.ResourceLayouts.size());
 
 		for (u32 i = 0; i < desc.ResourceLayout.ResourceLayouts.size(); i++)
 		{
 			layouts[i] = std::static_pointer_cast<VulkanDescriptorLayout>(desc.ResourceLayout.ResourceLayouts[i])->GetVkDescriptorLayout();
 		}
 
-		ArrayList<VkFormat> formats;
+		DArray<VkFormat> formats;
 		for(auto& format : desc.ColorAttachmentFormats)
 			formats.push_back(VulkanTextureUtils::GetVkTextureFormat(format));
 
@@ -184,12 +184,12 @@ namespace Hollow
 		renderingInfo.pNext = nullptr;
 		renderingInfo.viewMask = 0;
 
-		ArrayList<VkPushConstantRange> pushConstants;
+		DArray<VkPushConstantRange> pushConstants;
 
-		for(auto& pushConstant : desc.PushConstants.PushConstants)
+		for(PushConstantRange pushConstant : desc.PushConstants.PushConstantRanges)
 		{
 			VkPushConstantRange range = {};
-			range.stageFlags = VulkanShaderUtils::GetVkShaderStageBit(pushConstant.Stage);
+			range.stageFlags = VulkanShaderUtils::GetVkShaderStageSingle(pushConstant.Stage);
 			range.offset = pushConstant.Offset;
 			range.size = pushConstant.Size;
 
@@ -227,7 +227,7 @@ namespace Hollow
 		CORE_ASSERT(vkCreateGraphicsPipelines(mVkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &mVkPipeline) == VK_SUCCESS, "GraphicsPipeline", "Failed to create graphics pipeline!");
 	}
 
-	void VulkanPipeline::OnShutdown() noexcept
+	VulkanPipeline::~VulkanPipeline()
 	{
 		if (mVkPipeline != VK_NULL_HANDLE)
 			vkDestroyPipeline(mVkDevice, mVkPipeline, nullptr);

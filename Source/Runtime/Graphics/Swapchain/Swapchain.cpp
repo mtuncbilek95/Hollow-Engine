@@ -29,8 +29,8 @@ namespace Hollow
 
 		for (byte i = 0; i < mBufferCount; i++)
 		{
-			mImageBuffers[i]->OnShutdown();
-			mImages[i]->OnShutdown();
+			mImageBuffers[i].reset();
+			mImages[i].reset();
 		}
 
 		mImages.clear();

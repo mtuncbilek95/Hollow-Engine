@@ -69,7 +69,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32Directory::GetFiles(const String& path, ArrayList<String>& files)
+	bool Win32Directory::GetFiles(const String& path, DArray<String>& files)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		// Check if the directory exists
@@ -104,7 +104,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32Directory::GetDirectories(const String& path, ArrayList<String>& directories)
+	bool Win32Directory::GetDirectories(const String& path, DArray<String>& directories)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		// Check if the directory exists
@@ -140,7 +140,7 @@ namespace Hollow
 
 	}
 
-	bool Win32Directory::GetFilesWithExtension(const String& path, const String& extension, ArrayList<String>& files)
+	bool Win32Directory::GetFilesWithExtension(const String& path, const String& extension, DArray<String>& files)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		// Check if the directory exists

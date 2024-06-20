@@ -14,6 +14,6 @@ namespace Hollow
 
 	struct RUNTIME_API PushConstantDesc
 	{
-		ArrayList<PushConstantRange> PushConstants;
+		DArray<PushConstantRange> PushConstantRanges;
 	};
 }

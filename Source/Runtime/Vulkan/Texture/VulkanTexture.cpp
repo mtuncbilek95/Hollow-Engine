@@ -45,14 +45,12 @@ namespace Hollow
 	{
 	}
 
-	void VulkanTexture::OnShutdown() noexcept
+	VulkanTexture::~VulkanTexture()
 	{
 		if (mVkTexture != VK_NULL_HANDLE)
 			vkDestroyImage(mVkDevice, mVkTexture, nullptr);
 
 		mVkTexture = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
-
-		CORE_LOG(HE_INFO, "VulkanTexture", "Texture has been destroyed");
 	}
 }

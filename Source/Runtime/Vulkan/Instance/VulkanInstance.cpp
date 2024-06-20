@@ -62,7 +62,7 @@ namespace Hollow
 		};
 
 		// First request the extensions we want as false.
-		ArrayList<ExtensionEntry> requestedExtensions = {};
+		DArray<ExtensionEntry> requestedExtensions = {};
 		requestedExtensions.push_back({ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME , false });
 		requestedExtensions.push_back({ VK_KHR_SURFACE_EXTENSION_NAME, false });
 
@@ -82,7 +82,7 @@ namespace Hollow
 		CORE_ASSERT(extensionCount > 0, "VulkanInstance", "No instance extension properties found");
 
 		// Get the supported extensions
-		ArrayList<VkExtensionProperties> supportedExtensions(extensionCount);
+		DArray<VkExtensionProperties> supportedExtensions(extensionCount);
 		CORE_ASSERT(vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, supportedExtensions.data()) == VK_SUCCESS, "VulkanInstance",
 			"Failed to enumerate instance extension properties");
 
@@ -105,8 +105,8 @@ namespace Hollow
 		}
 
 		// Seperate the supported and unsupported extensions
-		ArrayList<const char*> supportedExtensionNames = {};
-		ArrayList<const char*> unsupportedExtensionNames = {};
+		DArray<const char*> supportedExtensionNames = {};
+		DArray<const char*> unsupportedExtensionNames = {};
 
 		for (auto& extension : requestedExtensions)
 		{
@@ -125,7 +125,7 @@ namespace Hollow
 			"Failed to enumerate instance layer properties");
 		CORE_ASSERT(supportedLayerCount > 0, "VulkanInstance", "No instance layer properties found");
 
-		ArrayList<VkLayerProperties> supportedLayers(supportedLayerCount);
+		DArray<VkLayerProperties> supportedLayers(supportedLayerCount);
 		CORE_ASSERT(vkEnumerateInstanceLayerProperties(&supportedLayerCount, supportedLayers.data()) == VK_SUCCESS, "VulkanInstance",
 			"Failed to enumerate instance layer properties");
 
@@ -135,7 +135,7 @@ namespace Hollow
 #endif
 
 		// Add needed layers
-		ArrayList<const char*> layerNames = {};
+		DArray<const char*> layerNames = {};
 #if defined(HOLLOW_DEBUG)
 		layerNames.push_back("VK_LAYER_KHRONOS_validation");
 		layerNames.push_back("VK_LAYER_LUNARG_screenshot");
@@ -181,7 +181,7 @@ namespace Hollow
 #endif
 	}
 
-	void VulkanInstance::OnShutdown()
+	VulkanInstance::~VulkanInstance()
 	{
 #if defined(HOLLOW_DEBUG)
 		debugMessengerDestroyProc(mVkInstance, mVkDebugMessenger, nullptr);
@@ -201,7 +201,7 @@ namespace Hollow
 		CORE_ASSERT(deviceCount > 0, "VulkanInstance", "No physical devices found");
 
 		// Get the physical devices
-		ArrayList<VkPhysicalDevice> devices(deviceCount);
+		DArray<VkPhysicalDevice> devices(deviceCount);
 		CORE_ASSERT(vkEnumeratePhysicalDevices(mVkInstance, &deviceCount, devices.data()) == VK_SUCCESS, "VulkanInstance", "Failed to enumerate physical devices");
 
 		// Fill the adapter list
@@ -224,7 +224,7 @@ namespace Hollow
 			vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 			CORE_ASSERT(queueFamilyCount > 0, "VulkanInstance", "No queue family properties found");
 
-			ArrayList<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
+			DArray<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
 			vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilyProperties.data());
 
 			// Fill the adapter

@@ -31,13 +31,11 @@ namespace Hollow
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::GraphicsMemory; }
 
-		virtual void OnShutdown() override = 0;
-
 	private:
 		GraphicsMemoryType mMemoryType;
 		u64 mTotalSize;
 		u64 mUsedSize;
 
-		ArrayList<SubMemory> mSubMemoryBlocks;
+		DArray<SubMemory> mSubMemoryBlocks;
 	};
 }

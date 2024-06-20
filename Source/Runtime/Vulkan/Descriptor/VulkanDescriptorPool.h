@@ -12,12 +12,10 @@ namespace Hollow
 	{
 	public:
 		VulkanDescriptorPool(const DescriptorPoolDesc& desc, const SharedPtr<VulkanDevice>& pDevice);
-		~VulkanDescriptorPool() override = default;
+		~VulkanDescriptorPool() override;
 
 		VkDescriptorPool GetVkDescriptorPool() const { return mVkDescriptorPool; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
-
-		void OnShutdown() noexcept override;
 
 	private:
 		VkDescriptorPool mVkDescriptorPool;

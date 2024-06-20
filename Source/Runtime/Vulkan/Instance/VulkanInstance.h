@@ -11,17 +11,16 @@ namespace Hollow
 	{
 	public:
 		VulkanInstance(const GraphicsInstanceDesc& desc);
-		~VulkanInstance() override = default;
+		~VulkanInstance() override;
 
 		VkInstance GetVkInstance() const { return mVkInstance; }
-		virtual void OnShutdown() override;
 
 	protected:
 		virtual void EnumerateAdaptersImpl() override;
 
 	private:
 		VkInstance mVkInstance;
-		ArrayList<const char*> mInstanceLayers;
+		DArray<const char*> mInstanceLayers;
 
 #if defined(HOLLOW_DEBUG)
 		VkDebugUtilsMessengerEXT mVkDebugMessenger;

@@ -11,7 +11,7 @@ namespace Hollow
 		Vector2i Offset;
 		u32 layerCount;
 		u32 viewMask;
-		ArrayList<DynamicPassAttachmentDesc> ColorAttachments;
+		DArray<DynamicPassAttachmentDesc> ColorAttachments;
 		DynamicPassAttachmentDesc DepthAttachment;
 		DynamicPassAttachmentDesc StencilAttachment;
 	};

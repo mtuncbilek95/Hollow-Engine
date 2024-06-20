@@ -12,15 +12,13 @@ namespace Hollow
 	{
 	public:
 		VulkanSwapchain(const SwapchainDesc& desc, SharedPtr<VulkanDevice> device);
-		~VulkanSwapchain() override = default;
+		~VulkanSwapchain() override;
 
 		VkSwapchainKHR GetVkSwapchain() const { return mVkSwapchain; }
 		VkSurfaceKHR GetVkSurface() const { return mVkSurface; }
 		VkPhysicalDevice GetVkPhysicalDevice() const { return mVkPhysicalDevice; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
 		VkInstance GetVkInstance() const { return mVkInstance; }
-
-		void OnShutdown() noexcept override;
 
 	protected:
 		virtual void ResizeImpl(const Vector2u& newSize) override;

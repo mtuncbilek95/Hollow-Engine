@@ -40,12 +40,12 @@ namespace Hollow
 			byte QueueCapacity;
 			byte FamilyIndex;
 			byte RequestedCount;
-			ArrayList<VkQueue> FreeQueues;
+			DArray<VkQueue> FreeQueues;
 		};
 
 	public:
 		VulkanDevice(const GraphicsDeviceDesc& desc);
-		~VulkanDevice() override = default;
+		~VulkanDevice() override;
 
 		SharedPtr<Texture> CreateTextureForSwapchain(const TextureDesc& desc, VkImage image);
 
@@ -54,8 +54,6 @@ namespace Hollow
 		VkDevice GetVkDevice() const { return mVkDevice; }
 		VkPhysicalDevice GetVkPhysicalDevice() const { return mVkPhysicalDevice; }
 		VkInstance GetVkInstance() const { return mVkInstance; }
-
-		void OnShutdown() override;
 
 	protected:
 		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc) override;

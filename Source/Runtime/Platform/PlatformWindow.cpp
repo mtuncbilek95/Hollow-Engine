@@ -53,11 +53,11 @@ namespace Hollow
 			{
 				PlatformWindow* platformWindow = static_cast<PlatformWindow*>(glfwGetWindowUserPointer(window));
 				platformWindow->mWindowSize = { (u32)width, (u32)height };
-				GraphicsManager::GetInstanceAPI().GetDefaultDevice()->GetSwapchain()->Resize(platformWindow->mWindowSize);
+				GraphicsManager::GetAPI().GetDefaultDevice()->GetSwapchain()->Resize(platformWindow->mWindowSize);
 			});
 	}
 
-	void PlatformWindow::OnShutdown()
+	PlatformWindow::~PlatformWindow()
 	{
 		glfwDestroyWindow(mGLFWHandle);
 		glfwTerminate();

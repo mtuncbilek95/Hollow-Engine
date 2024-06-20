@@ -34,7 +34,7 @@ namespace Hollow
 		CORE_ASSERT(vkCreateSampler(mVkDevice, &samplerInfo, nullptr, &mVkSampler) == VK_SUCCESS, "VulkanSampler", "Failed to create sampler!");
 	}
 
-	void VulkanSampler::OnShutdown() noexcept
+	VulkanSampler::~VulkanSampler()
 	{
 		if (mVkSampler != VK_NULL_HANDLE)
 		{

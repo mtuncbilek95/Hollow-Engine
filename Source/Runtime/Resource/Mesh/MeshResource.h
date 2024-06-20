@@ -44,8 +44,6 @@ namespace Hollow
 		void UpdateVertexBuffer(MemoryOwnedBuffer& pBuffer, u32 offset);
 		void UpdateIndexBuffer(MemoryOwnedBuffer& pBuffer, u32 offset);
 
-		virtual void OnShutdown() noexcept override;
-
 		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Mesh; }
 
 	private:

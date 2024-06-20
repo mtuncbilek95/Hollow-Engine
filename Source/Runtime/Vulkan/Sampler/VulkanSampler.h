@@ -12,13 +12,11 @@ namespace Hollow
 	{
 	public:
 		VulkanSampler(const SamplerDesc& desc, SharedPtr<VulkanDevice> pDevice);
-		~VulkanSampler() override = default;
+		~VulkanSampler() override;
 
 		VkSampler GetVkSampler() const { return mVkSampler; }
 		VkPhysicalDevice GetVkPhysicalDevice() const { return mVkPhysicalDevice; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
-
-		virtual void OnShutdown() noexcept override;
 
 	private:
 		VkDevice mVkDevice;

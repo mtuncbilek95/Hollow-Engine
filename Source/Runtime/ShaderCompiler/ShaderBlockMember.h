@@ -11,6 +11,6 @@ namespace Hollow
 		u32 AbsoluteOffset;
 		u32 Size;
 		u32 PaddedSize;
-		ArrayList<ShaderBlockMember> Members;
+		DArray<ShaderBlockMember> Members;
 	};
 }

@@ -10,12 +10,10 @@ namespace Hollow
 	{
 	public:
 		VulkanQueue(const GraphicsQueueDesc& desc, VkQueue reservedQueue, SharedPtr<VulkanDevice> pDevice);
-		~VulkanQueue() override = default;
+		~VulkanQueue() override;
 
 		VkQueue GetVkQueue() const { return mVkQueue; }
 		u32 GetQueueFamilyIndex() const { return mQueueFamilyIndex; }
-
-		virtual void OnShutdown() noexcept override;
 
 	private:
 		VkQueue mVkQueue;

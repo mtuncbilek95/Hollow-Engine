@@ -8,8 +8,8 @@ namespace Hollow
 {
 	struct RUNTIME_API RenderPassDesc
 	{
-		ArrayList<PassAttachmentDesc> ColorAttachments;
-		ArrayList<PassAttachmentDesc> InputAttachments;
+		DArray<PassAttachmentDesc> ColorAttachments;
+		DArray<PassAttachmentDesc> InputAttachments;
 		PassAttachmentDesc ResolveAttachment;
 		PassAttachmentDesc DepthStencilAttachment;
 		PipelineStageFlags PipelineStageFlags;

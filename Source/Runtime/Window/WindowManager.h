@@ -28,10 +28,10 @@ namespace Hollow
 		}
 
 		SharedPtr<PlatformWindow> GetDefaultWindow() { return mDefaultWindow; }
-		ArrayList<SharedPtr<PlatformWindow>>& GetExtraWindows() { return mExtraWindows; }
+		DArray<SharedPtr<PlatformWindow>>& GetExtraWindows() { return mExtraWindows; }
 
 	private:
 		SharedPtr<PlatformWindow> mDefaultWindow;
-		ArrayList<SharedPtr<PlatformWindow>> mExtraWindows;
+		DArray<SharedPtr<PlatformWindow>> mExtraWindows;
 	};
 }

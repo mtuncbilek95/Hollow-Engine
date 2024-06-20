@@ -6,7 +6,7 @@ namespace Hollow
 {
 	MeshResource::MeshResource() : ResourceSubObject(), mPreAllocate(false), mTotalVertexCount(0), mTotalIndexCount(0)
 	{
-		mGraphicsDevice = GraphicsManager::GetInstanceAPI().GetDefaultDevice();
+		mGraphicsDevice = GraphicsManager::GetAPI().GetDefaultDevice();
 		CreateInternalResources();
 	}
 
@@ -104,7 +104,7 @@ namespace Hollow
 
 		mCommandBuffer->EndRecording();
 
-		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
 
 		mGraphicsDevice->WaitForFence(&mFence, 1);
 		mGraphicsDevice->ResetFences(&mFence, 1);
@@ -140,14 +140,10 @@ namespace Hollow
 
 		mCommandBuffer->EndRecording();
 
-		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
 
 		mGraphicsDevice->WaitForFence(&mFence, 1);
 		mGraphicsDevice->ResetFences(&mFence, 1);
-	}
-
-	void MeshResource::OnShutdown() noexcept
-	{
 	}
 
 	void MeshResource::CreateInternalResources()

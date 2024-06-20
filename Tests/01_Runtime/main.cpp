@@ -37,9 +37,13 @@ struct Transform
 
 struct ConstantBuffer
 {
-	MatrixSIMD Model[INSTANCE_COUNT];
-	MatrixSIMD View;
-	MatrixSIMD Projection;
+	Matrix4f Model[INSTANCE_COUNT];
+};
+
+struct PushConstantData
+{
+	Matrix4f View;
+	Matrix4f Projection;
 };
 
 struct Vertex
@@ -49,7 +53,7 @@ struct Vertex
 	Vector2f TexCoord;
 };
 
-const ArrayList<Vertex> vertices =
+const DArray<Vertex> vertices =
 {
 	{{-0.5f, -0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
 	{{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
@@ -82,7 +86,7 @@ const ArrayList<Vertex> vertices =
 	{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}
 };
 
-const ArrayList<u32> indices =
+const DArray<u32> indices =
 {
 	3, 1, 0,
 	3, 2, 1,
@@ -103,38 +107,44 @@ const ArrayList<u32> indices =
 	23, 22, 21
 };
 
-ArrayList<Transform> InstanceTransforms(INSTANCE_COUNT);
+DArray<Transform> InstanceTransforms(INSTANCE_COUNT);
 
 ConstantBuffer MVPData = {
-		{},
-		XMMatrixLookAtLH({0, 0, -7}, {0, 0 ,0}, {0, 1, 0}),
-		XMMatrixPerspectiveFovLH(XMConvertToRadians(74), static_cast<f32>(1300.f / 1300.f), 0.01f, 1000.f)
+	{}
+};
+
+PushConstantData PushConstants =
+{
+	.View = Math::lookAtLH(Vec3f(0, 0, -7), Vec3f(0, 0 ,0), Vec3f(0, 1, 0)),
+	.Projection = Math::perspectiveLH(Math::radians(70.f), (1300.f / 1300.f), 0.01f, 1000.f)
 };
 
 void UpdateTransforms()
 {
 	for (byte i = 0; i < INSTANCE_COUNT; i++)
 	{
-		InstanceTransforms[i].Rotation.x += 0.01f;
+		InstanceTransforms[i].Rotation.x += Math::radians(0.01f);
 		if (i % 2 == 0)
-			InstanceTransforms[i].Rotation.y += 0.02f;
+			InstanceTransforms[i].Rotation.z += Math::radians(0.02f);
 		else
-			InstanceTransforms[i].Rotation.y -= 0.014f;
+			InstanceTransforms[i].Rotation.z -= Math::radians(0.014f);
 
-		InstanceTransforms[i].Rotation.z += 0.03f;
+		InstanceTransforms[i].Rotation.y += Math::radians(0.03f);
 
-		MVPData.Model[i] = XMMatrixScaling(InstanceTransforms[i].Scale.x, InstanceTransforms[i].Scale.y, InstanceTransforms[i].Scale.z) *
-			XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i].Rotation.y),
-				XMConvertToRadians(InstanceTransforms[i].Rotation.z),
-				XMConvertToRadians(InstanceTransforms[i].Rotation.x)) *
-			XMMatrixTranslation(InstanceTransforms[i].Position.x, InstanceTransforms[i].Position.y, InstanceTransforms[i].Position.z);
+		Mat4f scaleMatrix = Math::scale(Mat4f(1.0f), InstanceTransforms[i].Scale);
+		Mat4f rotationMatrix = Math::rotate(Mat4f(1.0f), InstanceTransforms[i].Rotation.x, Vec3f(1, 0, 0)) *
+			Math::rotate(Mat4f(1.0f), InstanceTransforms[i].Rotation.y, Vec3f(0, 1, 0)) *
+			Math::rotate(Mat4f(1.0f), InstanceTransforms[i].Rotation.z, Vec3f(0, 0, 1));
+		Mat4f translationMatrix = Math::translate(Mat4f(1.0f), InstanceTransforms[i].Position);
+
+		MVPData.Model[i] = translationMatrix * rotationMatrix * scaleMatrix;
 	}
 }
 
 int main(int argC, char** argV)
 {
 	// Initialize the platform API
-	PlatformAPI::GetInstanceAPI().InitializeArguments(argC, argV);
+	PlatformAPI::GetAPI().InitializeArguments(argC, argV);
 
 #pragma region Object Cacophony
 	// make them start at the right up corner and go left
@@ -157,15 +167,17 @@ int main(int argC, char** argV)
 			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation = { 0, 0, 0 };
 			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale = { 1, 1, 1 };
 
-			MVPData.Model[i * i32(sqrt(INSTANCE_COUNT)) + j] = XMMatrixScaling(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.x, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.y, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale.z) *
-				XMMatrixRotationRollPitchYaw(XMConvertToRadians(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.y),
-					XMConvertToRadians(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.z),
-					XMConvertToRadians(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.x)) *
-				XMMatrixTranslation(InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.x, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.y, InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position.z);
+			Mat4f scaleMatrix = Math::scale(Mat4f(1.0f), InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale);
+			Mat4f rotationMatrix = Math::rotate(Mat4f(1.0f), InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.x, Vec3f(1, 0, 0)) *
+				Math::rotate(Mat4f(1.0f), InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.y, Vec3f(0, 1, 0)) *
+				Math::rotate(Mat4f(1.0f), InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.z, Vec3f(0, 0, 1));
+			Mat4f translationMatrix = Math::translate(Mat4f(1.0f), InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position);
+
+			MVPData.Model[i * i32(sqrt(INSTANCE_COUNT)) + j] = translationMatrix * rotationMatrix * scaleMatrix;
 		}
 	}
 
-	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/TestTexture.png");
+	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/TestTexture.png");
 #pragma endregion
 
 #pragma region Window and Graphics Initialization
@@ -176,7 +188,7 @@ int main(int argC, char** argV)
 	desc.WindowTitle = "Hollow - Instancing";
 	desc.WindowMode = WindowMode::Windowed;
 
-	auto mWindow = WindowManager::GetInstanceAPI().InitializeWindow(desc);
+	auto mWindow = WindowManager::GetAPI().InitializeWindow(desc);
 
 	// Create a graphics instance
 	GraphicsInstanceDesc instanceDesc = {};
@@ -201,7 +213,7 @@ int main(int argC, char** argV)
 	swapchainDesc.SwapchainUsage = TextureUsage::ColorAttachment;
 	swapchainDesc.VSync = PresentMode::FullVSync;
 	swapchainDesc.SwapchainMode = ShareMode::Exclusive;
-	swapchainDesc.pQueue = GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue();
+	swapchainDesc.pQueue = GraphicsManager::GetAPI().GetDefaultPresentQueue();
 
 	auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
 #pragma endregion
@@ -212,13 +224,13 @@ int main(int argC, char** argV)
 	// Create bundle memory for pre-allocation
 	GraphicsMemoryDesc hostMemoryDesc = {};
 	hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
-	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
+	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(512);
 
 	auto mHostMemory = mDevice->CreateGraphicsMemory(hostMemoryDesc);
 
 	GraphicsMemoryDesc deviceMemoryDesc = {};
 	deviceMemoryDesc.MemoryType = GraphicsMemoryType::DeviceLocal;
-	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(1024);
+	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(512);
 
 	auto mDeviceMemory = mDevice->CreateGraphicsMemory(deviceMemoryDesc);
 #pragma endregion
@@ -227,9 +239,9 @@ int main(int argC, char** argV)
 	// ----------------- CREATE SHADERS -----------------
 
 	MemoryBuffer vBuffer = {};
-	SharedPtr<MemoryOwnedBuffer> vShaderCode;
+	MemoryOwnedBuffer vShaderCode;
 	String errorMessage;
-	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/01_Runtime/Shaders/testVertex.vert", vBuffer);
+	PlatformFile::Read(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/01_Runtime/Shaders/testVertex.vert", vBuffer);
 	ShaderDesc vertexShaderDesc = {};
 
 	if (ShaderCompiler::CompileShaderToSPIRV(vBuffer, "main", ShaderStage::Vertex, ShaderLanguage::GLSL, vShaderCode, errorMessage))
@@ -244,8 +256,8 @@ int main(int argC, char** argV)
 	auto mVertexShader = mDevice->CreateShader(vertexShaderDesc);
 
 	MemoryBuffer fBuffer = {};
-	SharedPtr<MemoryOwnedBuffer> fShaderCode;
-	PlatformFile::Read(PlatformAPI::GetInstanceAPI().GetEngineSourcePath() + "Tests/01_Runtime/Shaders/testFrag.frag", fBuffer);
+	MemoryOwnedBuffer fShaderCode;
+	PlatformFile::Read(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/01_Runtime/Shaders/testFrag.frag", fBuffer);
 	ShaderDesc fragmentShaderDesc = {};
 
 	if (ShaderCompiler::CompileShaderToSPIRV(fBuffer, "main", ShaderStage::Fragment, ShaderLanguage::GLSL, fShaderCode, errorMessage))
@@ -262,7 +274,7 @@ int main(int argC, char** argV)
 #pragma region Fence and Command Buffer Initialization
 	// ----------------- CREATE FENCE -----------------
 
-	ArrayList<SharedPtr<Fence>> mRuntimeFences;
+	DArray<SharedPtr<Fence>> mRuntimeFences;
 	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
 	{
 		mRuntimeFences.push_back(mDevice->CreateSyncFence({ false }));
@@ -284,7 +296,7 @@ int main(int argC, char** argV)
 
 	auto mCommandBuffer = mDevice->CreateCommandBuffer(commandBufferDesc);
 
-	ArrayList<SharedPtr<CommandBuffer>> mCommandBuffers;
+	DArray<SharedPtr<CommandBuffer>> mCommandBuffers;
 	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
 	{
 		mCommandBuffers.push_back(mDevice->CreateCommandBuffer(commandBufferDesc));
@@ -315,8 +327,8 @@ int main(int argC, char** argV)
 	auto mDepthTextureView = mDevice->CreateTextureBuffer(depthTextureViewDesc);
 
 	// ----------------- CREATE MULTISAMPLE TEXTURES FOR SWAPCHAIN -----------------
-	ArrayList<SharedPtr<Texture>> mColorTextures;
-	ArrayList<SharedPtr<TextureBuffer>> mColorTextureViews;
+	DArray<SharedPtr<Texture>> mColorTextures;
+	DArray<SharedPtr<TextureBuffer>> mColorTextureViews;
 
 	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
 	{
@@ -386,7 +398,7 @@ int main(int argC, char** argV)
 	mCommandBuffer->SetTextureBarrier(mDepthTexture, depthTextureBarrier);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
+	mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 
 	mDevice->WaitForFence(&mCompileFence, 1);
 	mDevice->ResetFences(&mCompileFence, 1);
@@ -510,6 +522,15 @@ int main(int argC, char** argV)
 	scissor.OffsetSize = { 0, 0 };
 	scissor.ScissorSize = mSwapchain->GetImageSize();
 
+	// Create PushConstantRange
+	PushConstantRange range1 = {};
+	range1.Offset = 0;
+	range1.Size = sizeof(PushConstantData);
+	range1.Stage = ShaderStage::Vertex;
+
+	PushConstantDesc pushConstant = {};
+	pushConstant.PushConstantRanges = { range1 };
+
 	// Create Pipeline
 	GraphicsPipelineDesc pipelineDesc = {};
 	pipelineDesc.BlendState = blendState;
@@ -521,6 +542,7 @@ int main(int argC, char** argV)
 	pipelineDesc.GraphicsShaders = { mVertexShader, mFragmentShader };
 	pipelineDesc.Viewport = viewport;
 	pipelineDesc.Scissor = scissor;
+	pipelineDesc.PushConstants = pushConstant;
 	pipelineDesc.ColorAttachmentCount = 1;
 	pipelineDesc.ColorAttachmentFormats = { TextureFormat::RGBA8_UNorm };
 	pipelineDesc.DepthAttachmentFormat = TextureFormat::D32_Float;
@@ -741,7 +763,7 @@ int main(int argC, char** argV)
 	mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
+	mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 
 	mDevice->WaitForFence(&mCompileFence, 1);
 	mDevice->ResetFences(&mCompileFence, 1);
@@ -757,6 +779,8 @@ int main(int argC, char** argV)
 		u32 imageIndex = mSwapchain->GetCurrentFrameIndex();
 		auto perFence = mRuntimeFences[imageIndex];
 
+		mCommandBuffers[imageIndex]->BeginRecording();
+
 		UpdateTransforms();
 
 		BufferDataUpdateDesc constantDataUpdateDesc;
@@ -765,8 +789,6 @@ int main(int argC, char** argV)
 		mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 
 		mWindow->PollEvents();
-
-		mCommandBuffers[imageIndex]->BeginRecording();
 
 		BufferBufferCopyDesc constantCopyDesc = {};
 		constantCopyDesc.DestinationOffset = 0;
@@ -826,6 +848,8 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->BindIndexBuffer(mIndexBuffer, GraphicsIndexType::Index32);
 
 		mCommandBuffers[imageIndex]->BindDescriptors(&mDescriptorSet, 1);
+		MemoryBuffer pushData = MemoryBuffer(&PushConstants, sizeof(PushConstantData));
+		mCommandBuffers[imageIndex]->PushConstants(pushData, 0, ShaderStage::Vertex);
 		mCommandBuffers[imageIndex]->DrawIndexed(indices.size(), 0, 0, 0, INSTANCE_COUNT);
 		mCommandBuffers[imageIndex]->EndRendering();
 
@@ -851,17 +875,16 @@ int main(int argC, char** argV)
 		auto signalSemaphore = mSwapchain->GetFlightSemaphore(imageIndex);
 		auto flag = PipelineStageFlags::ColorAttachmentOutput;
 
-		mDevice->SubmitToQueue(GraphicsManager::GetInstanceAPI().GetDefaultPresentQueue(), &mCommandBuffers[imageIndex], 1, &waitSemaphore, 1, &flag, &signalSemaphore, 1, perFence);
+		mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffers[imageIndex], 1, &waitSemaphore, 1, &flag, &signalSemaphore, 1, perFence);
 		mDevice->WaitForFence(&perFence, 1);
 		mDevice->ResetFences(&perFence, 1);
 
 		mSwapchain->Present();
 	}
-	mWindow->Hide();
 
 	mDevice->WaitForIdle();
-	mDevice->OnShutdown();
-	mGraphicsInstance->OnShutdown();
+	mWindow->Hide();
+
 #pragma endregion
 	return 0;
 }

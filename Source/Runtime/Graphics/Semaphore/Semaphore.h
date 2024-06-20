@@ -16,7 +16,5 @@ namespace Hollow
 		virtual ~Semaphore() override = default;
 
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Semaphore; }
-
-		virtual void OnShutdown() noexcept override = 0;
 	};
 }

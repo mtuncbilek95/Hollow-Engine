@@ -17,9 +17,6 @@ namespace Hollow
 		FORCEINLINE SharedPtr<GraphicsDevice> GetOwnerDevice() const { return mOwnerDevice; }
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept = 0;
 
-		virtual void OnShutdown() override = 0;
-	
-
 	private:
 		SharedPtr<GraphicsDevice> mOwnerDevice;
 	};

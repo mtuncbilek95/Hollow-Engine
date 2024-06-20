@@ -26,9 +26,7 @@ namespace Hollow
 
 	public:
 		PlatformWindow(const WindowDesc& desc);
-		virtual ~PlatformWindow() override = default;
-
-		virtual void OnShutdown() override;
+		virtual ~PlatformWindow() override;
 
 		void Show();
 		void Hide();

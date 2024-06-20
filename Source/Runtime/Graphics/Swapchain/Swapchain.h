@@ -33,19 +33,17 @@ namespace Hollow
 		u32 GetCurrentFrameIndex() const { return mCurrentFrameIndex; }
 		ShareMode GetShareMode() const { return mShareMode; }
 
-		const ArrayList<SharedPtr<Texture>>& GetImages() const { return mImages; }
+		const DArray<SharedPtr<Texture>>& GetImages() const { return mImages; }
 		SharedPtr<Texture> GetImage(u32 index) const { return mImages[index]; }
-		const ArrayList<SharedPtr<TextureBuffer>>& GetImageViews() const { return mImageBuffers; }
+		const DArray<SharedPtr<TextureBuffer>>& GetImageViews() const { return mImageBuffers; }
 		SharedPtr<TextureBuffer> GetImageView(u32 index) const { return mImageBuffers[index]; }
 
 		SharedPtr<Semaphore> GetImageSemaphore(u32 index) const { return mImageSemaphores[index]; }
-		ArrayList<SharedPtr<Semaphore>>& GetImageSemaphores() { return mImageSemaphores; }
+		DArray<SharedPtr<Semaphore>>& GetImageSemaphores() { return mImageSemaphores; }
 		SharedPtr<Semaphore> GetFlightSemaphore(u32 index) const { return mFlightSemaphores[index]; }
-		ArrayList<SharedPtr<Semaphore>>& GetFlightSemaphores() { return mFlightSemaphores; }
+		DArray<SharedPtr<Semaphore>>& GetFlightSemaphores() { return mFlightSemaphores; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::Swapchain; }
-
-		virtual void OnShutdown() noexcept override = 0;
 
 	protected:
 		void SetNewImageSize(const Vector2u newSize) { mImageSize = newSize; }
@@ -66,9 +64,9 @@ namespace Hollow
 		PresentMode mPresentMode;
 		ShareMode mShareMode;
 		u32 mCurrentFrameIndex;
-		ArrayList<SharedPtr<Texture>> mImages;
-		ArrayList<SharedPtr<TextureBuffer>> mImageBuffers;
-		ArrayList<SharedPtr<Semaphore>> mImageSemaphores;
-		ArrayList<SharedPtr<Semaphore>> mFlightSemaphores;
+		DArray<SharedPtr<Texture>> mImages;
+		DArray<SharedPtr<TextureBuffer>> mImageBuffers;
+		DArray<SharedPtr<Semaphore>> mImageSemaphores;
+		DArray<SharedPtr<Semaphore>> mFlightSemaphores;
 	};
 }

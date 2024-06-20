@@ -19,7 +19,6 @@ namespace Hollow
 		bool IsSignalled() const noexcept { return mSignalled; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Fence; }
-		virtual void OnShutdown() override = 0;
 
 	private:
 		bool mSignalled;

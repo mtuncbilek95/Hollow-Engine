@@ -18,7 +18,6 @@ namespace Hollow
 
 		FORCEINLINE SharedPtr<Object> GetSharedPtr() { return shared_from_this(); }
 		FORCEINLINE Guid GetResourceID() const { return mResourceID; }
-		virtual void OnShutdown() = 0;
 
 		virtual void ResetObject() {}
 

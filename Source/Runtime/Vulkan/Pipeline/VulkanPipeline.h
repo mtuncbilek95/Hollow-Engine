@@ -12,13 +12,10 @@ namespace Hollow
 	{
 	public:
 		VulkanPipeline(const GraphicsPipelineDesc& desc, SharedPtr<VulkanDevice> pDevice);
-		~VulkanPipeline() override = default;
+		~VulkanPipeline() override;
 
 		VkPipeline GetVkPipeline() const { return mVkPipeline; }
 		VkPipelineLayout GetVkPipelineLayout() const { return mVkPipelineLayout; }
-
-		// Inherited via Pipeline
-		void OnShutdown() noexcept override;
 
 	private:
 		VkPipeline mVkPipeline;

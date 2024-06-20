@@ -125,7 +125,7 @@ namespace Hollow
 		virtual void UpdateDescriptorSetImpl(SharedPtr<DescriptorSet> pDstSet, DescriptorSetUpdateDesc& desc) = 0;
 
 	protected:
-		ArrayList<SharedPtr<GraphicsDeviceObject>> mDeviceObjects;
+		DArray<SharedPtr<GraphicsDeviceObject>> mDeviceObjects;
 
 		SharedPtr<GraphicsInstance> mInstance;
 		SharedPtr<GraphicsAdapter> mAdapter;

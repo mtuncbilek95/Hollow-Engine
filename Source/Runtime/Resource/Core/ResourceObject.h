@@ -17,8 +17,6 @@ namespace Hollow
 		ResourceObject(const ResourceDescriptor& desc);
 		virtual ~ResourceObject() override = default;
 
-		virtual void OnShutdown() noexcept override = 0;
-
 	private:
 		SharedPtr<ResourceSubObject> mOwnedSubObject;
 	};

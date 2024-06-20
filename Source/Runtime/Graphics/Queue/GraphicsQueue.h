@@ -15,8 +15,6 @@ namespace Hollow
 		FORCEINLINE GraphicsQueueType GetQueueType() const noexcept { return mQueueType; }
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Queue; }
 
-		virtual void OnShutdown() noexcept override = 0;
-
 	private:
 		GraphicsQueueType mQueueType;
 	};

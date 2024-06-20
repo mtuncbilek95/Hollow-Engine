@@ -8,7 +8,7 @@ namespace Hollow
 	VulkanDescriptorLayout::VulkanDescriptorLayout(const DescriptorLayoutDesc& desc, const SharedPtr<VulkanDevice> pDevice) : DescriptorLayout(desc, pDevice), 
 		mVkDescriptorSetLayout(VK_NULL_HANDLE), mVkDevice(pDevice->GetVkDevice())
 	{
-		ArrayList<VkDescriptorSetLayoutBinding> bindings;
+		DArray<VkDescriptorSetLayoutBinding> bindings;
 
 		for (const DescriptorLayoutEntry& entry : desc.Entries)
 		{
@@ -32,7 +32,7 @@ namespace Hollow
 		CORE_ASSERT(vkCreateDescriptorSetLayout(mVkDevice, &layoutInfo, nullptr, &mVkDescriptorSetLayout) == VK_SUCCESS, "VulkanDescriptorLayout", "Failed to create descriptor set layout");
 	}
 
-	void VulkanDescriptorLayout::OnShutdown() noexcept
+	VulkanDescriptorLayout::~VulkanDescriptorLayout()
 	{
 		if (mVkDescriptorSetLayout != VK_NULL_HANDLE)
 		{

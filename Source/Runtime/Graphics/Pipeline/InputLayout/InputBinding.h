@@ -9,6 +9,6 @@ namespace Hollow
     struct RUNTIME_API InputBinding
     {
         InputBindingStepRate StepRate;
-        ArrayList<InputElement> Elements;
+        DArray<InputElement> Elements;
     };
 }

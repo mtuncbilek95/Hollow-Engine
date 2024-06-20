@@ -12,11 +12,9 @@ namespace Hollow
 	{
 	public:
 		VulkanShader(const ShaderDesc& desc, SharedPtr<VulkanDevice> device);
-		~VulkanShader() override = default;
+		~VulkanShader() override;
 
 		VkShaderModule GetVkShaderModule() const { return mVkShaderModule; }
-
-		void OnShutdown() noexcept override;
 
 	private:
 		VkShaderModule mVkShaderModule;

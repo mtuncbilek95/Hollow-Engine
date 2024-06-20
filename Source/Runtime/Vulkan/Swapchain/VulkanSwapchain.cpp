@@ -30,8 +30,8 @@ namespace Hollow
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-		surfaceInfo.hinstance = WindowManager::GetInstanceAPI().GetDefaultWindow()->GetInstanceHandle();
-		surfaceInfo.hwnd = WindowManager::GetInstanceAPI().GetDefaultWindow()->GetWindowHandle();
+		surfaceInfo.hinstance = WindowManager::GetAPI().GetDefaultWindow()->GetInstanceHandle();
+		surfaceInfo.hwnd = WindowManager::GetAPI().GetDefaultWindow()->GetWindowHandle();
 		surfaceInfo.pNext = nullptr;
 
 		CORE_ASSERT(vkCreateWin32SurfaceKHR(mVkInstance, &surfaceInfo, nullptr, &mVkSurface) == VK_SUCCESS, "VulkanSwapchain", "Failed to create surface");
@@ -58,7 +58,7 @@ namespace Hollow
 		CORE_ASSERT(formatCount > 0, "VulkanSwapchain", "No surface formats found");
 
 		// Get the surface formats
-		ArrayList<VkSurfaceFormatKHR> surfaceFormats(formatCount);
+		DArray<VkSurfaceFormatKHR> surfaceFormats(formatCount);
 		CORE_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(mVkPhysicalDevice, mVkSurface, &formatCount, surfaceFormats.data()) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to get surface formats");
 
@@ -93,7 +93,7 @@ namespace Hollow
 		CORE_ASSERT(presentModeCount > 0, "VulkanSwapchain", "No present modes found");
 
 		// Get the present modes
-		ArrayList<VkPresentModeKHR> presentModes(presentModeCount);
+		DArray<VkPresentModeKHR> presentModes(presentModeCount);
 		CORE_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(mVkPhysicalDevice, mVkSurface, &presentModeCount, presentModes.data()) == VK_SUCCESS,
 			"CreateSurfaceSwapchain", "Failed to get present modes");
 
@@ -149,7 +149,7 @@ namespace Hollow
 		CORE_ASSERT(vkGetSwapchainImagesKHR(mVkDevice, mVkSwapchain, &imageCount, nullptr) == VK_SUCCESS, "VulkanSwapchain", "Failed to get swapchain images");
 		CORE_ASSERT(imageCount > 0, "VulkanSwapchain", "No swapchain images found");
 
-		ArrayList<VkImage> images(imageCount);
+		DArray<VkImage> images(imageCount);
 		CORE_ASSERT(vkGetSwapchainImagesKHR(mVkDevice, mVkSwapchain, &imageCount, images.data()) == VK_SUCCESS, "VulkanSwapchain", "Failed to get swapchain images");
 
 		// Nevertheless, we need to fill the VulkanTexture data
@@ -179,17 +179,13 @@ namespace Hollow
 		}
 	}
 
-	void VulkanSwapchain::OnShutdown() noexcept
+	VulkanSwapchain::~VulkanSwapchain()
 	{
 		if (mVkSwapchain != VK_NULL_HANDLE)
-		{
 			vkDestroySwapchainKHR(mVkDevice, mVkSwapchain, nullptr);
-		}
 
 		if (mVkSurface != VK_NULL_HANDLE)
-		{
 			vkDestroySurfaceKHR(mVkInstance, mVkSurface, nullptr);
-		}
 
 		mVkSwapchain = VK_NULL_HANDLE;
 		mVkSurface = VK_NULL_HANDLE;
@@ -215,8 +211,8 @@ namespace Hollow
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-		surfaceInfo.hinstance = WindowManager::GetInstanceAPI().GetDefaultWindow()->GetInstanceHandle();
-		surfaceInfo.hwnd = WindowManager::GetInstanceAPI().GetDefaultWindow()->GetWindowHandle();
+		surfaceInfo.hinstance = WindowManager::GetAPI().GetDefaultWindow()->GetInstanceHandle();
+		surfaceInfo.hwnd = WindowManager::GetAPI().GetDefaultWindow()->GetWindowHandle();
 		surfaceInfo.pNext = nullptr;
 
 		CORE_ASSERT(vkCreateWin32SurfaceKHR(mVkInstance, &surfaceInfo, nullptr, &mVkSurface) == VK_SUCCESS, "VulkanSwapchain", "Failed to create surface");
@@ -243,7 +239,7 @@ namespace Hollow
 		CORE_ASSERT(formatCount > 0, "VulkanSwapchain", "No surface formats found");
 
 		// Get the surface formats
-		ArrayList<VkSurfaceFormatKHR> surfaceFormats(formatCount);
+		DArray<VkSurfaceFormatKHR> surfaceFormats(formatCount);
 		CORE_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(mVkPhysicalDevice, mVkSurface, &formatCount, surfaceFormats.data()) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to get surface formats");
 
@@ -278,7 +274,7 @@ namespace Hollow
 		CORE_ASSERT(presentModeCount > 0, "VulkanSwapchain", "No present modes found");
 
 		// Get the present modes
-		ArrayList<VkPresentModeKHR> presentModes(presentModeCount);
+		DArray<VkPresentModeKHR> presentModes(presentModeCount);
 		CORE_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(mVkPhysicalDevice, mVkSurface, &presentModeCount, presentModes.data()) == VK_SUCCESS,
 			"CreateSurfaceSwapchain", "Failed to get present modes");
 
@@ -334,7 +330,7 @@ namespace Hollow
 		CORE_ASSERT(vkGetSwapchainImagesKHR(mVkDevice, mVkSwapchain, &imageCount, nullptr) == VK_SUCCESS, "VulkanSwapchain", "Failed to get swapchain images");
 		CORE_ASSERT(imageCount > 0, "VulkanSwapchain", "No swapchain images found");
 
-		ArrayList<VkImage> images(imageCount);
+		DArray<VkImage> images(imageCount);
 		CORE_ASSERT(vkGetSwapchainImagesKHR(mVkDevice, mVkSwapchain, &imageCount, images.data()) == VK_SUCCESS, "VulkanSwapchain", "Failed to get swapchain images");
 
 		// Nevertheless, we need to fill the VulkanTexture data

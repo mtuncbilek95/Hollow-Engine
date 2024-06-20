@@ -14,6 +14,6 @@ namespace Hollow
 
 	struct RUNTIME_API MaterialResourceLayout
 	{
-		ArrayList<SubMeshMaterial> SubMeshMaterials;
+		DArray<SubMeshMaterial> SubMeshMaterials;
 	};
 }

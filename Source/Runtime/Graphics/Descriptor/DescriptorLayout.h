@@ -12,12 +12,11 @@ namespace Hollow
 		DescriptorLayout(const DescriptorLayoutDesc& desc, const SharedPtr<GraphicsDevice> device) : GraphicsDeviceObject(device), mEntries(desc.Entries) {}
 		virtual ~DescriptorLayout() override = default;
 
-		const ArrayList<DescriptorLayoutEntry>& GetEntries() const noexcept { return mEntries; }
+		const DArray<DescriptorLayoutEntry>& GetEntries() const noexcept { return mEntries; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::DescriptorLayout; }
-		virtual void OnShutdown() noexcept override = 0;
 
 	private:
-		ArrayList<DescriptorLayoutEntry> mEntries;
+		DArray<DescriptorLayoutEntry> mEntries;
 	};
 }

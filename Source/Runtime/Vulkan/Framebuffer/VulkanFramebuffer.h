@@ -17,7 +17,6 @@ namespace Hollow
 		VkFramebuffer GetVkFramebuffer() const noexcept { return mFramebuffer; }
 		VkDevice GetVkDevice() const noexcept { return mLogicalDevice; }
 
-		virtual void OnShutdown() override;
 	private:
 		VkFramebuffer mFramebuffer;
 		VkDevice mLogicalDevice;

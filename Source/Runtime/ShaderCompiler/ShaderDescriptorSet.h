@@ -8,6 +8,6 @@ namespace Hollow
 	struct RUNTIME_API ShaderDescriptorSet
 	{
 		u32 SetIndex;
-		ArrayList<ShaderDescriptorBinding> Bindings;
+		DArray<ShaderDescriptorBinding> Bindings;
 	};
 }

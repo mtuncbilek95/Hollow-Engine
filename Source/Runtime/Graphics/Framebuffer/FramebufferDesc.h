@@ -9,7 +9,7 @@ namespace Hollow
 	struct RUNTIME_API FramebufferDesc
 	{
 		SharedPtr<RenderPass> RPass;
-		ArrayList<SharedPtr<TextureBuffer>> Attachments;
+		DArray<SharedPtr<TextureBuffer>> Attachments;
 		Vector2u ImageSize;
 	};
 }

@@ -12,15 +12,13 @@ namespace Hollow
 	{
 	public:
 		VulkanBuffer(const GraphicsBufferDesc& desc,const SharedPtr<VulkanDevice> pDevice);
-		~VulkanBuffer() override = default;
+		~VulkanBuffer() override;
 
 		VkBuffer GetVkBuffer() const { return mVkBuffer; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
 
 		u64 GetVkOffset() const { return mOffset; }
 		u64 GetVkAlignedOffset() const { return mAlignedOffset; }
-
-		void OnShutdown() noexcept override;
 
 	private:
 		VkBuffer mVkBuffer;

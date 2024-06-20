@@ -11,7 +11,7 @@ namespace Hollow
 		MemoryBuffer();
 		MemoryBuffer(void* pData, const u64 size);
 		MemoryBuffer(const MemoryBuffer& other);
-		MemoryBuffer(const SharedPtr<MemoryOwnedBuffer> pOwned);
+		MemoryBuffer(const MemoryOwnedBuffer& pOwned);
 		~MemoryBuffer() = default;
 
 		MemoryBuffer& operator=(const MemoryBuffer& other) noexcept

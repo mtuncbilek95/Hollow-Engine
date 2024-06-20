@@ -9,34 +9,30 @@ namespace Hollow
 {
 	ShaderResource::ShaderResource() : ResourceSubObject()
 	{
-		mGraphicsDevice = GraphicsManager::GetInstanceAPI().GetDefaultDevice();
+		mGraphicsDevice = GraphicsManager::GetAPI().GetDefaultDevice();
 	}
 
 	void ShaderResource::CompileShader(const String path, const String shaderName, const String EntryPoint, const ShaderStage stage, const ShaderLanguage lang)
 	{
-		MemoryBuffer shaderBuffer = {};
-		SharedPtr<MemoryOwnedBuffer> shaderCode;
-		String errorMessage;
+		//MemoryBuffer shaderBuffer = {};
+		//MemoryOwnedBuffer shaderCode;
+		//String errorMessage;
 
-		CORE_ASSERT(PlatformFile::Read(path, shaderBuffer),
-			"ShaderResource", "Failed to read shader file");
+		//CORE_ASSERT(PlatformFile::Read(path, shaderBuffer),
+		//	"ShaderResource", "Failed to read shader file");
 
-		CORE_ASSERT(ShaderCompiler::CompileShaderToSPIRV(shaderBuffer, EntryPoint, stage, lang,
-			shaderCode, errorMessage), "ShaderResource", "Failed to compile shader to SPIRV");
+		//CORE_ASSERT(ShaderCompiler::CompileShaderToSPIRV(shaderBuffer, EntryPoint, stage, lang,
+		//	shaderCode, errorMessage), "ShaderResource", "Failed to compile shader to SPIRV");
 
-		ShaderDesc vertexShaderDesc = {};
-		vertexShaderDesc.ShaderName = shaderName;
-		vertexShaderDesc.Stage = stage;
-		vertexShaderDesc.EntryPoint = EntryPoint;
-		vertexShaderDesc.Language = lang;
-		vertexShaderDesc.ShaderCode = shaderCode;
+		//ShaderDesc vertexShaderDesc = {};
+		//vertexShaderDesc.ShaderName = shaderName;
+		//vertexShaderDesc.Stage = stage;
+		//vertexShaderDesc.EntryPoint = EntryPoint;
+		//vertexShaderDesc.Language = lang;
+		//vertexShaderDesc.ShaderCode = shaderCode;
 
-		mShaderModule = mGraphicsDevice->CreateShader(vertexShaderDesc);
+		//mShaderModule = mGraphicsDevice->CreateShader(vertexShaderDesc);
 
-		CORE_ASSERT(ShaderCompiler::ReflectShader(shaderCode, mReflection), "ShaderResource", "Failed to reflect shader");
-	}
-
-	void ShaderResource::OnShutdown() noexcept
-	{
+		//CORE_ASSERT(ShaderCompiler::ReflectShader(shaderCode, mReflection), "ShaderResource", "Failed to reflect shader");
 	}
 }

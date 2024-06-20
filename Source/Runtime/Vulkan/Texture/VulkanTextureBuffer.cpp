@@ -37,7 +37,7 @@ namespace Hollow
 		mVkDevice = pDevice->GetVkDevice();
 	}
 
-	void VulkanTextureBuffer::OnShutdown() noexcept
+	VulkanTextureBuffer::~VulkanTextureBuffer()
 	{
 		if (mVkTextureView != VK_NULL_HANDLE)
 			vkDestroyImageView(mVkDevice, mVkTextureView, nullptr);

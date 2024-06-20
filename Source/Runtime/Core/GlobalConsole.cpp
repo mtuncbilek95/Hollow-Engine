@@ -50,7 +50,38 @@ namespace Hollow
 			printf("\033[31m[%s]\033[39m -- ", title);
 			vprintf(message, args);
 
-			PlatformMessage::ShowMessage("Assertion Failed", message, Mb_OkCancel | Mb_IconError);
+			String msg; 
+
+			// Add args to msg
+			while (*message != '\0')
+			{
+				if (*message == '%')
+				{
+					message++;
+					if (*message == 'd')
+					{
+						int i = va_arg(args, int);
+						msg += std::to_string(i);
+					}
+					else if (*message == 'f')
+					{
+						double d = va_arg(args, double);
+						msg += std::to_string(d);
+					}
+					else if (*message == 's')
+					{
+						char* s = va_arg(args, char*);
+						msg += s;
+					}
+				}
+				else
+				{
+					msg += *message;
+				}
+				message++;
+			}
+
+			PlatformMessage::ShowMessage("Assertion Failed", msg.c_str(), Mb_Ok | Mb_IconError);
 
 			printf("\n");
 			va_end(args);

@@ -10,6 +10,6 @@ namespace Hollow
     {
         bool bLogicOperationEnabled;
         LogicOperation LogicOperation;
-        ArrayList<BlendStateAttachment> Attachments;
+        DArray<BlendStateAttachment> Attachments;
     };
 }

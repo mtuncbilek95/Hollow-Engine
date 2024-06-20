@@ -7,6 +7,6 @@ namespace Hollow
 {
     struct RUNTIME_API ResourceLayoutDesc
     {
-        ArrayList<SharedPtr<DescriptorLayout>> ResourceLayouts;
+        DArray<SharedPtr<DescriptorLayout>> ResourceLayouts;
     };
 }

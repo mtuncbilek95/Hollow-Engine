@@ -9,6 +9,6 @@ namespace Hollow
 	struct RUNTIME_API DescriptorPoolDesc
 	{
 		u64 MaxSets;
-		ArrayList<DescriptorPoolSize> PoolSizes;
+		DArray<DescriptorPoolSize> PoolSizes;
 	};
 }

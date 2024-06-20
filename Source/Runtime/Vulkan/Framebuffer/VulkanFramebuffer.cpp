@@ -9,7 +9,7 @@ namespace Hollow
 	{
 		mLogicalDevice = device->GetVkDevice();
 
-		ArrayList<VkImageView> attachments;
+		DArray<VkImageView> attachments;
 		for (auto& attachment : desc.Attachments)
 			attachments.push_back(std::static_pointer_cast<VulkanTextureBuffer>(attachment)->GetVkTextureBuffer());
 
@@ -26,10 +26,6 @@ namespace Hollow
 	}
 
 	VulkanFramebuffer::~VulkanFramebuffer()
-	{
-	}
-
-	void VulkanFramebuffer::OnShutdown()
 	{
 		vkDestroyFramebuffer(mLogicalDevice, mFramebuffer, nullptr);
 	}

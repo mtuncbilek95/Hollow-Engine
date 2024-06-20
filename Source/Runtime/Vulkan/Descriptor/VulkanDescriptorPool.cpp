@@ -5,7 +5,7 @@ namespace Hollow
 	VulkanDescriptorPool::VulkanDescriptorPool(const DescriptorPoolDesc& desc, const SharedPtr<VulkanDevice>& pDevice) : DescriptorPool(desc, pDevice), 
 		mVkDescriptorPool(VK_NULL_HANDLE), mVkDevice(pDevice->GetVkDevice())
 	{
-		ArrayList<VkDescriptorPoolSize> poolSizes;
+		DArray<VkDescriptorPoolSize> poolSizes;
 
 		for (auto& poolSize : desc.PoolSizes)
 		{
@@ -27,7 +27,7 @@ namespace Hollow
 		CORE_ASSERT(vkCreateDescriptorPool(mVkDevice, &poolInfo, nullptr, &mVkDescriptorPool) == VK_SUCCESS, "VulkanDescriptorPool", "Failed to create descriptor pool");
 	}
 
-	void VulkanDescriptorPool::OnShutdown() noexcept
+	VulkanDescriptorPool::~VulkanDescriptorPool()
 	{
 		if (mVkDescriptorPool != VK_NULL_HANDLE)
 		{

@@ -12,12 +12,10 @@ namespace Hollow
 	{
 	public:
 		VulkanDescriptorLayout(const DescriptorLayoutDesc& desc, const SharedPtr<VulkanDevice> pDevice);
-		~VulkanDescriptorLayout() override = default;
+		~VulkanDescriptorLayout() override;
 
 		VkDescriptorSetLayout GetVkDescriptorLayout() const { return mVkDescriptorSetLayout; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
-
-		void OnShutdown() noexcept override;
 
 	private:
 		VkDescriptorSetLayout mVkDescriptorSetLayout;

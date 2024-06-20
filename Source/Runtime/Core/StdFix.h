@@ -5,7 +5,7 @@ using String = std::string;
 
 #include <vector>
 template<typename T>
-using ArrayList = std::vector<T>;
+using DArray = std::vector<T>;
 
 #include <map>
 template<typename K, typename V>
@@ -27,26 +27,53 @@ using HashSet = std::unordered_set<T>;
 template<typename T>
 using SharedPtr = std::shared_ptr<T>;
 template<typename T>
-using UniquePtr = std::unique_ptr<T>;
+using OwnedPtr = std::unique_ptr<T>;
 template<typename T>
 using WeakPtr = std::weak_ptr<T>;
 
-#include <DirectXMath.h>
-using Vector2f = DirectX::XMFLOAT2;
-using Vector3f = DirectX::XMFLOAT3;
-using Vector4f = DirectX::XMFLOAT4;
-using Matrix4f = DirectX::XMFLOAT4X4;
-using Matrix3f = DirectX::XMFLOAT3X3;
+template<typename T, typename...Args>
+inline SharedPtr<T> MakeShared(Args&&...args)
+{
+	return std::make_shared<T>(std::forward<Args>(args)...);
+}
 
-using Vector2i = DirectX::XMINT2;
-using Vector3i = DirectX::XMINT3;
-using Vector4i = DirectX::XMINT4;
+template<typename T, typename...Args>
+inline OwnedPtr<T> MakeOwned(Args&&...args)
+{
+	return std::make_unique<T>(std::forward<Args>(args)...);
+}
 
-using Vector2u = DirectX::XMUINT2;
-using Vector3u = DirectX::XMUINT3;
-using Vector4u = DirectX::XMUINT4;
 
-using VectorSIMD = DirectX::XMVECTOR;
-using MatrixSIMD = DirectX::XMMATRIX;
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+using Vector2f = glm::vec2;
+using Vector3f = glm::vec3;
+using Vector4f = glm::vec4;
 
-using namespace DirectX;
+using Matrix4f = glm::mat4;
+using Matrix3f = glm::mat3;
+
+using Vector2i = glm::ivec2;
+using Vector3i = glm::ivec3;
+using Vector4i = glm::ivec4;
+
+using Vector2u = glm::uvec2;
+using Vector3u = glm::uvec3;
+using Vector4u = glm::uvec4;
+
+using Vec2f = Vector2f;
+using Vec3f = Vector3f;
+using Vec4f = Vector4f;
+
+using Mat4f = Matrix4f;
+using Mat3f = Matrix3f;
+
+using Vec2i = Vector2i;
+using Vec3i = Vector3i;
+using Vec4i = Vector4i;
+
+using Vec2u = Vector2u;
+using Vec3u = Vector3u;
+using Vec4u = Vector4u;
+
+namespace Math = glm;

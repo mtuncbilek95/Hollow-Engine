@@ -24,12 +24,12 @@ namespace Hollow
         MultisampleDesc Multisample;
         RasterizerStateDesc RasterizerState;
         ResourceLayoutDesc ResourceLayout;
-        ArrayList<SharedPtr<Shader>> GraphicsShaders;
+        DArray<SharedPtr<Shader>> GraphicsShaders;
         PushConstantDesc PushConstants;
         ViewportDesc Viewport;
         ScissorDesc Scissor;
 		u32 ColorAttachmentCount;
-		ArrayList<TextureFormat> ColorAttachmentFormats;
+		DArray<TextureFormat> ColorAttachmentFormats;
 		TextureFormat DepthAttachmentFormat;
 		TextureFormat StencilAttachmentFormat;
     };

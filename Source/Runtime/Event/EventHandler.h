@@ -34,6 +34,6 @@ namespace Hollow
 		}
 
 	private:
-		ArrayList<EventBlock<EventType>> mListeners;
+		DArray<EventBlock<EventType>> mListeners;
 	};
 }

@@ -24,15 +24,13 @@ namespace Hollow
         MultisampleDesc GetMultisample() const { return mMultisample; }
         RasterizerStateDesc GetRasterizerState() const { return mRasterizerState; }
         ResourceLayoutDesc GetResourceLayout() const { return mResourceLayout; }
-        ArrayList<SharedPtr<Shader>> GetGraphicsShaders() const { return mGraphicsShaders; }
+        DArray<SharedPtr<Shader>> GetGraphicsShaders() const { return mGraphicsShaders; }
         PushConstantDesc GetPushConstants() const { return mPushConstants; }
         ViewportDesc GetViewport() const { return mViewport; }
         ScissorDesc GetScissor() const { return mScissor; }
         PipelineBindPoint GetBindPoint() const { return mBindPoint; }
 
         FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::Pipeline; }
-
-        virtual void OnShutdown() noexcept override = 0;
 
 	private:
         BlendStateDesc mBlendState;
@@ -41,12 +39,12 @@ namespace Hollow
         MultisampleDesc mMultisample;
         RasterizerStateDesc mRasterizerState;
         ResourceLayoutDesc mResourceLayout;
-        ArrayList<SharedPtr<Shader>> mGraphicsShaders;
+        DArray<SharedPtr<Shader>> mGraphicsShaders;
         PushConstantDesc mPushConstants;
         ViewportDesc mViewport;
         ScissorDesc mScissor;
 		u32 mColorAttachmentCount;
-		ArrayList<TextureFormat> mColorAttachmentFormats;
+		DArray<TextureFormat> mColorAttachmentFormats;
 		TextureFormat mDepthAttachmentFormat;
 		TextureFormat mStencilAttachmentFormat;
 

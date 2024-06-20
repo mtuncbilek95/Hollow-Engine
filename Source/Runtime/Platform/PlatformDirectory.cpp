@@ -37,17 +37,17 @@ namespace Hollow
 		return PlatformDependency::Rename(source, destination);
 	}
 
-	bool PlatformDirectory::GetFiles(const String& path, ArrayList<String>& files)
+	bool PlatformDirectory::GetFiles(const String& path, DArray<String>& files)
 	{
 		return PlatformDependency::GetFiles(path, files);
 	}
 
-	bool PlatformDirectory::GetDirectories(const String& path, ArrayList<String>& directories)
+	bool PlatformDirectory::GetDirectories(const String& path, DArray<String>& directories)
 	{
 		return PlatformDependency::GetDirectories(path, directories);
 	}
 
-	bool PlatformDirectory::GetFilesWithExtension(const String& path, const String& extension, ArrayList<String>& files)
+	bool PlatformDirectory::GetFilesWithExtension(const String& path, const String& extension, DArray<String>& files)
 	{
 		return PlatformDependency::GetFilesWithExtension(path, extension, files);
 	}

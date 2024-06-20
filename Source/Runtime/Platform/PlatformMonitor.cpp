@@ -10,12 +10,12 @@
 
 namespace Hollow
 {
-	ArrayList<Monitor> PlatformMonitor::GetAllMonitors()
+	DArray<Monitor> PlatformMonitor::GetAllMonitors()
 	{
 		i32 monitorCount;
 		GLFWmonitor** monitorsAsGLFW = glfwGetMonitors(&monitorCount);
 
-		ArrayList<Monitor> monitors(monitorCount);
+		DArray<Monitor> monitors(monitorCount);
 
 		for (i32 i = 0; i < monitorCount; i++)
 		{

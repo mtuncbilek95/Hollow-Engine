@@ -39,7 +39,6 @@ namespace Hollow
 		f32 GetMaxLOD() const { return mMaxLOD; }
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Sampler; }
-		virtual void OnShutdown() noexcept override = 0;
 
 	protected:
 		void SetMaxAnisotropy(u32 maxAnisotropy) { mMaxAnisotropy = maxAnisotropy; }

@@ -14,12 +14,10 @@ namespace Hollow
 		CORE_ASSERT(vkCreateShaderModule(mVkDevice, &createInfo, nullptr, &mVkShaderModule) == VK_SUCCESS, "VulkanShader", "Failed to create shader module!");
 	}
 
-	void VulkanShader::OnShutdown() noexcept
+	VulkanShader::~VulkanShader()
 	{
 		vkDestroyShaderModule(mVkDevice, mVkShaderModule, nullptr);
 		mVkShaderModule = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
-
-		CORE_LOG(HE_INFO, "VulkanShader", "Shader shutdown successfully");
 	}
 }

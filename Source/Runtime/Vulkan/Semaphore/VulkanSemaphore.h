@@ -12,12 +12,10 @@ namespace Hollow
 	{
 	public:
 		VulkanSemaphore(const SharedPtr<VulkanDevice>& pDevice);
-		~VulkanSemaphore() override = default;
+		~VulkanSemaphore() override;
 
 		VkSemaphore GetVkSemaphore() const { return mVkSemaphore; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
-
-		virtual void OnShutdown() noexcept override;
 
 	private:
 		VkSemaphore mVkSemaphore;

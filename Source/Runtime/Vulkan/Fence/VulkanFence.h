@@ -12,12 +12,10 @@ namespace Hollow
 	{
 	public:
 		VulkanFence(const FenceDesc& desc, const SharedPtr<VulkanDevice> pDevice);
-		~VulkanFence() override = default;
+		~VulkanFence() override;
 
 		VkFence GetVkFence() { return mVkFence; }
 		VkDevice GetVkDevice() { return mVkDevice; }
-
-		void OnShutdown() noexcept override;
 
 	private:
 		VkFence mVkFence;

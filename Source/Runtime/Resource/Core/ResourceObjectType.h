@@ -8,10 +8,14 @@ namespace Hollow
 	{
 		Unknown,
 		Mesh,
-		Shader,
 		Texture,
+		Material,
+		Shader,
+		Scene,
+		Animation,
+		Audio,
 		Font,
-		RenderTarget,
-		Material
+		Script,
+		Count
 	};
 }

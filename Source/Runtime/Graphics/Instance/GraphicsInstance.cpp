@@ -45,7 +45,7 @@ namespace Hollow
 			break;
 		}
 
-		GraphicsManager::GetInstanceAPI().SetGraphicsDevice(mOwnedDevice);
+		GraphicsManager::GetAPI().SetGraphicsDevice(mOwnedDevice);
 		return mOwnedDevice;
 	}
 }

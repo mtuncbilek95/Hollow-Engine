@@ -14,17 +14,15 @@ namespace Hollow
 		virtual ~Framebuffer() override = default;
 
 		FORCEINLINE SharedPtr<RenderPass> GetRenderPass() const noexcept { return mRenderPass; }
-		FORCEINLINE const ArrayList<SharedPtr<TextureBuffer>>& GetAttachments() const noexcept { return mAttachments; }
+		FORCEINLINE const DArray<SharedPtr<TextureBuffer>>& GetAttachments() const noexcept { return mAttachments; }
 		FORCEINLINE SharedPtr<TextureBuffer> GetAttachment(u32 index) const noexcept { return mAttachments[index]; }
 		FORCEINLINE const Vector2u& GetImageSize() const noexcept { return mImageSize; }
 
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept { return GraphicsDeviceObjectType::Framebuffer; }
 
-		virtual void OnShutdown() override = 0;
-
 	private:
 		SharedPtr<RenderPass> mRenderPass;
-		ArrayList<SharedPtr<TextureBuffer>> mAttachments;
+		DArray<SharedPtr<TextureBuffer>> mAttachments;
 		Vector2u mImageSize;
 	};
 }

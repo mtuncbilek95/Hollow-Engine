@@ -17,8 +17,6 @@ namespace Hollow
 		VkRenderPass GetVkRenderPass() const noexcept { return mRenderPass; }
 		VkDevice GetVkDevice() const noexcept { return mLogicalDevice; }
 
-		virtual void OnShutdown() override;
-
 	private:
 		VkRenderPass mRenderPass;
 		VkDevice mLogicalDevice;

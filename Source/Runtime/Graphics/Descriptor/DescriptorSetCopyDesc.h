@@ -7,6 +7,6 @@ namespace Hollow
 {
 	struct RUNTIME_API DescriptorSetCopyDesc
 	{
-		ArrayList<DescriptorSetCopyEntry> Entries;
+		DArray<DescriptorSetCopyEntry> Entries;
 	};
 }

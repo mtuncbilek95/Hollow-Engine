@@ -9,6 +9,6 @@ namespace Hollow
     struct RUNTIME_API InputLayoutDesc
     {
         MeshTopology Topology;
-        ArrayList<InputBinding> Bindings;
+        DArray<InputBinding> Bindings;
     };
 }

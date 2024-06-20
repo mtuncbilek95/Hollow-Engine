@@ -4,6 +4,7 @@
 #include <Runtime/Vulkan/Core/VulkanCoreUtils.h>
 #include <Runtime/Vulkan/Memory/VulkanMemoryUtils.h>
 #include <Runtime/Vulkan/Texture/VulkanTextureUtils.h>
+#include <Runtime/Vulkan/Shader/VulkanShaderUtils.h>
 
 #include <Runtime/Vulkan/Command/VulkanCommandPool.h>
 #include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
@@ -30,7 +31,7 @@ namespace Hollow
 		CORE_ASSERT(vkAllocateCommandBuffers(pDevice->GetVkDevice(), &allocInfo, &mVkCommandBuffer) == VK_SUCCESS, "VulkanCommandBuffer", "Failed to allocate command buffer");
 	}
 
-	void VulkanCommandBuffer::OnShutdown() noexcept
+	VulkanCommandBuffer::~VulkanCommandBuffer()
 	{
 		auto pCommandPool = std::static_pointer_cast<VulkanCommandPool>(GetOwnerPool());
 		if (mVkCommandBuffer != VK_NULL_HANDLE)
@@ -38,8 +39,6 @@ namespace Hollow
 
 		mVkCommandBuffer = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
-
-		CORE_LOG(HE_INFO, "VulkanCommandBuffer", "Command buffer has been destroyed");
 	}
 
 	void VulkanCommandBuffer::BeginRecordingImpl()
@@ -60,7 +59,7 @@ namespace Hollow
 
 	void VulkanCommandBuffer::BeginRenderingImpl(const DynamicPassDesc& desc)
 	{
-		ArrayList<VkRenderingAttachmentInfo> attachmentInfos;
+		DArray<VkRenderingAttachmentInfo> attachmentInfos;
 
 		for (u32 i = 0; i < desc.ColorAttachments.size(); i++)
 		{
@@ -333,5 +332,11 @@ namespace Hollow
 		barrier.dstAccessMask = VulkanMemoryUtils::GetVkAccessFlags(desc.DestinationAccessMask);
 
 		vkCmdPipelineBarrier(mVkCommandBuffer, VulkanPipelineUtils::GetVkPipelineStageFlags(desc.SourceStageFlags), VulkanPipelineUtils::GetVkPipelineStageFlags(desc.DestinationStageFlags), 0, 1, &barrier, 0, nullptr, 0, nullptr);
+	}
+
+	void VulkanCommandBuffer::PushConstantsImpl(MemoryBuffer buffer, u32 offset, ShaderStage stage)
+	{
+		auto pPipeline = std::static_pointer_cast<VulkanPipeline>(GetBoundPipeline());
+		vkCmdPushConstants(mVkCommandBuffer, pPipeline->GetVkPipelineLayout(), VulkanShaderUtils::GetVkShaderStageSingle(stage), offset, buffer.GetSize(), buffer.GetData());
 	}
 }

@@ -19,9 +19,9 @@ namespace Hollow
 			return resource;
 		}
 
-		const ArrayList<SharedPtr<ResourceObject>>& GetResources() const { return mResources; }
+		const DArray<SharedPtr<ResourceObject>>& GetResources() const { return mResources; }
 
 	private:
-		ArrayList<SharedPtr<ResourceObject>> mResources;
+		DArray<SharedPtr<ResourceObject>> mResources;
 	};
 }

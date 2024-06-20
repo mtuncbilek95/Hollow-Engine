@@ -16,14 +16,12 @@ namespace Hollow
 		CORE_ASSERT(vkCreateFence(mVkDevice, &fenceCreateInfo, nullptr, &mVkFence) == VK_SUCCESS, "VulkanFence", "Failed to create fence");
 	}
 
-	void VulkanFence::OnShutdown() noexcept
+	VulkanFence::~VulkanFence()
 	{
 		if (mVkFence != VK_NULL_HANDLE)
 			vkDestroyFence(mVkDevice, mVkFence, nullptr);
 
 		mVkFence = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
-
-		CORE_LOG(HE_INFO, "VulkanFence", "Fence has been destroyed");
 	}
 }

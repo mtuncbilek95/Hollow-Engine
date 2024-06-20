@@ -24,7 +24,7 @@ namespace Hollow
 		mVkDescriptorLayout = layout;
 	}
 
-	void VulkanDescriptorSet::OnShutdown() noexcept
+	VulkanDescriptorSet::~VulkanDescriptorSet()
 	{
 		if (mVkDescriptorSet != VK_NULL_HANDLE)
 		{

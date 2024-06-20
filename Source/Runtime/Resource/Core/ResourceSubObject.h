@@ -16,7 +16,6 @@ namespace Hollow
 
 		SharedPtr<ResourceObject> GetOwnerResource() const { return mOwnerResource; }
 
-		virtual void OnShutdown() noexcept override = 0;
 		virtual ResourceObjectType GetObjectType() const noexcept = 0;
 
 	private:

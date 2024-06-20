@@ -16,14 +16,14 @@ namespace Hollow
 
 	struct RUNTIME_API SubMeshLayout
 	{
-		ArrayList<VertexData> Vertices;
-		ArrayList<u32> Indices;
+		DArray<VertexData> Vertices;
+		DArray<u32> Indices;
 		u32 MeshIndex;
 		u32 MaterialIndex;
 	};
 
 	struct RUNTIME_API MeshResourceLayout
 	{
-		ArrayList<SubMeshLayout> SubMeshes;
+		DArray<SubMeshLayout> SubMeshes;
 	};
 }

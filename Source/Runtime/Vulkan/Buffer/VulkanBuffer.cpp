@@ -32,14 +32,12 @@ namespace Hollow
 		mOffset = memoryOffset;
 	}
 
-	void VulkanBuffer::OnShutdown() noexcept
+	VulkanBuffer::~VulkanBuffer()
 	{
 		if (mVkBuffer != VK_NULL_HANDLE)
 			vkDestroyBuffer(mVkDevice, mVkBuffer, nullptr);
 
 		mVkBuffer = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
-
-		CORE_LOG(HE_INFO, "VulkanBuffer", "Buffer has been destroyed");
 	}
 }

@@ -12,12 +12,10 @@ namespace Hollow
 	{
 	public:
 		VulkanCommandBuffer(const CommandBufferDesc& desc, const SharedPtr<VulkanDevice> pDevice);
-		~VulkanCommandBuffer() override = default;
+		~VulkanCommandBuffer() override;
 
 		VkCommandBuffer GetVkCommandBuffer() const { return mVkCommandBuffer; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
-
-		void OnShutdown() noexcept override;
 
 	protected:
 		virtual void BeginRecordingImpl() override;
@@ -39,6 +37,7 @@ namespace Hollow
 		virtual void SetTextureBarrierImpl(SharedPtr<Texture> pTexture, TextureBarrierUpdateDesc& desc) override;
 		virtual void SetBufferMemoryBarrierImpl(SharedPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrierUpdateDesc& desc) override;
 		virtual void SetCommonMemoryBarrierImpl(CommonMemoryBarrierUpdateDesc& desc) override;
+		virtual void PushConstantsImpl(MemoryBuffer buffer, u32 offset, ShaderStage stage) override;
 
 	private:
 		VkCommandBuffer mVkCommandBuffer;

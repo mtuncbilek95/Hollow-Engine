@@ -42,7 +42,7 @@ namespace Hollow
 		CORE_ASSERT(deviceCount > 0, "VulkanDevice", "No physical devices found");
 
 		// Get the physical devices
-		ArrayList<VkPhysicalDevice> devices(deviceCount);
+		DArray<VkPhysicalDevice> devices(deviceCount);
 		vkEnumeratePhysicalDevices(mVkInstance, &deviceCount, devices.data());
 
 		// Find the related physical device according to the chosen device
@@ -75,7 +75,7 @@ namespace Hollow
 		CORE_ASSERT(queueFamilyCount > 0, "VulkanDevice", "No queue families found");
 
 		// Get the queue families
-		ArrayList<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+		DArray<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 		vkGetPhysicalDeviceQueueFamilyProperties(mVkPhysicalDevice, &queueFamilyCount, queueFamilies.data());
 
 		// Find the queue families for graphics, compute and transfer
@@ -111,7 +111,7 @@ namespace Hollow
 
 		// Queue priorities
 		f32 queuePriorities[] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
-		ArrayList<VkDeviceQueueCreateInfo> queueCreateInfos = {};
+		DArray<VkDeviceQueueCreateInfo> queueCreateInfos = {};
 
 		// Graphics Queue Create Info
 		VkDeviceQueueCreateInfo graphicsQueueCreateInfo = {};
@@ -141,14 +141,14 @@ namespace Hollow
 		queueCreateInfos.push_back(transferQueueCreateInfo);
 
 		// Device Extensions
-		ArrayList<const char*> deviceExtensions;
+		DArray<const char*> deviceExtensions;
 		deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 		deviceExtensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
 
 		//Check if the device supports the extensions
 		u32 extensionCount = 0;
 		vkEnumerateDeviceExtensionProperties(mVkPhysicalDevice, nullptr, &extensionCount, nullptr);
-		ArrayList<VkExtensionProperties> availableExtensions(extensionCount);
+		DArray<VkExtensionProperties> availableExtensions(extensionCount);
 		vkEnumerateDeviceExtensionProperties(mVkPhysicalDevice, nullptr, &extensionCount, availableExtensions.data());
 
 #if defined(HOLLOW_DEBUG)
@@ -209,6 +209,27 @@ namespace Hollow
 		}
 	}
 
+	VulkanDevice::~VulkanDevice()
+	{
+		for (i32 i = static_cast<i32>(mDeviceObjects.size()) - 1; i >= 0; --i)
+			mDeviceObjects[i].reset(); // Release the shared pointer
+
+		if (mOwnedSwapchain != nullptr)
+			mOwnedSwapchain.reset();
+
+		if (mVkDevice != VK_NULL_HANDLE)
+			vkDestroyDevice(mVkDevice, nullptr);
+
+		mVkInstance = VK_NULL_HANDLE;
+		mVkPhysicalDevice = VK_NULL_HANDLE;
+
+		mGraphicsQueueFamily.FamilyIndex = 255;
+		mComputeQueueFamily.FamilyIndex = 255;
+		mTransferQueueFamily.FamilyIndex = 255;
+
+		CORE_LOG(HE_INFO, "VulkanDevice", "Device shutdown");
+	}
+
 	SharedPtr<Texture> VulkanDevice::CreateTextureForSwapchain(const TextureDesc& desc, VkImage image)
 	{
 		auto device = std::static_pointer_cast<VulkanDevice>(GetSharedPtr());
@@ -228,33 +249,6 @@ namespace Hollow
 		default:
 			return 255;
 		}
-	}
-
-	void VulkanDevice::OnShutdown()
-	{
-		for (i32 i = static_cast<i32>(mDeviceObjects.size()) - 1; i >= 0; --i)
-		{
-			mDeviceObjects[i]->OnShutdown();
-			mDeviceObjects[i].reset(); // Release the shared pointer
-		}
-
-		if (mOwnedSwapchain != nullptr)
-		{
-			//mOwnedSwapchain->OnShutdown();
-			mOwnedSwapchain.reset();
-		}
-
-		if (mVkDevice != VK_NULL_HANDLE)
-			vkDestroyDevice(mVkDevice, nullptr);
-
-		mVkInstance = VK_NULL_HANDLE;
-		mVkPhysicalDevice = VK_NULL_HANDLE;
-
-		mGraphicsQueueFamily.FamilyIndex = 255;
-		mComputeQueueFamily.FamilyIndex = 255;
-		mTransferQueueFamily.FamilyIndex = 255;
-
-		CORE_LOG(HE_INFO, "VulkanDevice", "Device shutdown");
 	}
 
 	SharedPtr<Swapchain> VulkanDevice::CreateSwapchainImpl(const SwapchainDesc& desc)

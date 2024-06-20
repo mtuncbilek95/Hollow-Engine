@@ -8,7 +8,7 @@ namespace Hollow
 	VulkanRenderPass::VulkanRenderPass(const RenderPassDesc& desc, SharedPtr<VulkanDevice> device) : RenderPass(desc, device), mLogicalDevice(device->GetVkDevice())
 	{
 		// Color Attachments
-		ArrayList<VkAttachmentDescription> attachmentDescriptions;
+		DArray<VkAttachmentDescription> attachmentDescriptions;
 		for (auto& attachment : desc.ColorAttachments)
 		{
 			VkAttachmentDescription attachmentDescription = {};
@@ -25,7 +25,7 @@ namespace Hollow
 		}
 
 		// Input Attachments
-		ArrayList<VkAttachmentDescription> inputAttachmentDescriptions;
+		DArray<VkAttachmentDescription> inputAttachmentDescriptions;
 		for (auto& attachment : desc.InputAttachments)
 		{
 			VkAttachmentDescription attachmentDescription = {};
@@ -70,7 +70,7 @@ namespace Hollow
 		}
 
 		// Color Attachment Reference
-		ArrayList<VkAttachmentReference> colorAttachmentReference;
+		DArray<VkAttachmentReference> colorAttachmentReference;
 		for (uint32_t i = 0; i < desc.ColorAttachments.size(); i++)
 		{
 			VkAttachmentReference attachmentReference = {};
@@ -81,7 +81,7 @@ namespace Hollow
 		}
 
 		// Input Attachment Reference
-		ArrayList<VkAttachmentReference> inputAttachmentReference;
+		DArray<VkAttachmentReference> inputAttachmentReference;
 		for (uint32_t i = 0; i < desc.InputAttachments.size(); i++)
 		{
 			VkAttachmentReference attachmentReference = {};
@@ -128,7 +128,7 @@ namespace Hollow
 		subpassDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
 		// Gather total attachments
-		ArrayList< VkAttachmentDescription> totalAttachments = attachmentDescriptions;
+		DArray< VkAttachmentDescription> totalAttachments = attachmentDescriptions;
 		if (desc.bHasDepthStencilAttachment)
 			totalAttachments.push_back(depthStencilAttachmentDescription);
 		if (desc.bHasResolveAttachment)
@@ -149,10 +149,6 @@ namespace Hollow
 	}
 
 	VulkanRenderPass::~VulkanRenderPass()
-	{
-	}
-
-	void VulkanRenderPass::OnShutdown()
 	{
 		vkDestroyRenderPass(mLogicalDevice, mRenderPass, nullptr);
 	}

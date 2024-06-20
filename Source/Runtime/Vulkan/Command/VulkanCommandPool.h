@@ -12,12 +12,10 @@ namespace Hollow
 	{
 	public:
 		VulkanCommandPool(const CommandPoolDesc& desc, const SharedPtr<VulkanDevice> pDevice);
-		~VulkanCommandPool() override = default;
+		~VulkanCommandPool() override;
 
 		VkCommandPool GetVkCommandPool() const { return mVkCommandPool; }
 		VkDevice GetVkDevice() const { return mVkDevice; }
-
-		void OnShutdown() noexcept override;
 
 	private:
 		VkCommandPool mVkCommandPool;

@@ -15,7 +15,7 @@ namespace Hollow
 	{
 	}
 
-	MemoryBuffer::MemoryBuffer(const SharedPtr<MemoryOwnedBuffer> pOwned) : mBuffer(pOwned->GetData()), mSize(pOwned->GetSize())
+	MemoryBuffer::MemoryBuffer(const MemoryOwnedBuffer& pOwned) : mBuffer(pOwned.GetData()), mSize(pOwned.GetSize())
 	{
 	}
 }

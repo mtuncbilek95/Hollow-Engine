@@ -15,8 +15,6 @@ namespace Hollow
 
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::DescriptorSet; }
 
-		virtual void OnShutdown() noexcept override = 0;
-
 	private:
 		SharedPtr<DescriptorPool> mOwnerPool;
 		SharedPtr<DescriptorLayout> mLayout;

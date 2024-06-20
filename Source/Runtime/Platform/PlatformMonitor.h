@@ -8,7 +8,7 @@ namespace Hollow
 	class PlatformMonitor
 	{
 	public:
-		static ArrayList<Monitor> GetAllMonitors();
+		static DArray<Monitor> GetAllMonitors();
 		static Monitor GetPrimaryMonitor();
 
 	public:

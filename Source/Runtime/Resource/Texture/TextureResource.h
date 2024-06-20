@@ -26,7 +26,6 @@ namespace Hollow
 
 		void UpdateTextureAndBuffer(MemoryBuffer& pBuffer, u32 offset);
 
-		virtual void OnShutdown() noexcept override;
 		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Texture; }
 
 	private:

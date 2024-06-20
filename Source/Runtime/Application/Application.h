@@ -28,13 +28,11 @@ namespace Hollow
 		void RequestQuit() { mQuitRequested = true; }
 		void QuitReason(const String& reason);
 
-		virtual void OnShutdown() noexcept override = 0;
-
 	protected:
 		virtual void OnInitialize() noexcept = 0;
 
 	private:
-		ArrayList<SharedPtr<ApplicationModule>> mTotalModules;
+		DArray<SharedPtr<ApplicationModule>> mTotalModules;
 		HashMap<ApplicationModuleState, SharedPtr<ApplicationModule>> mHashModules;
 		bool mQuitRequested = false;
 	};

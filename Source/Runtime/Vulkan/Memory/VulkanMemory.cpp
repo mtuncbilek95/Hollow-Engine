@@ -16,7 +16,7 @@ namespace Hollow
 		CORE_ASSERT(vkAllocateMemory(mVkDevice, &allocInfo, nullptr, &mVkDeviceMemory) == VK_SUCCESS, "VulkanMemory", "Failed to allocate memory");
 	}
 
-	void VulkanMemory::OnShutdown() noexcept
+	VulkanMemory::~VulkanMemory()
 	{
 		if (mVkDeviceMemory != VK_NULL_HANDLE)
 			vkFreeMemory(mVkDevice, mVkDeviceMemory, nullptr);
@@ -24,8 +24,6 @@ namespace Hollow
 		mVkDeviceMemory = VK_NULL_HANDLE;
 		mVkDevice = VK_NULL_HANDLE;
 		mVkPhysicalDevice = VK_NULL_HANDLE;
-
-		CORE_LOG(HE_INFO, "VulkanMemory", "Memory has been destroyed");
 	}
 
 	u32 VulkanMemory::FindMemoryType(GraphicsMemoryType type)

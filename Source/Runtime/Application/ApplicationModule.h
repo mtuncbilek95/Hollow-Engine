@@ -22,8 +22,6 @@ namespace Hollow
 		virtual void Update() noexcept = 0;
 		virtual void Stop() noexcept = 0;
 
-		void OnShutdown() noexcept override = 0;
-
 	protected:
 		virtual bool OnInitialize() noexcept = 0;
 		virtual void OnPreUpdate() noexcept = 0;
