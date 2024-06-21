@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	MeshResource::MeshResource() : ResourceSubObject(), mPreAllocate(false), mTotalVertexCount(0), mTotalIndexCount(0)
+	MeshResource::MeshResource() : ResourceSubObject(), mPreAllocate(false)
 	{
 		mGraphicsDevice = GraphicsManager::GetAPI().GetDefaultDevice();
 		CreateInternalResources();
@@ -68,11 +68,9 @@ namespace Hollow
 		}
 
 		mMeshBuffer = meshData;
-		mTotalIndexCount = indexCount;
-		mTotalVertexCount = vertexCount;
 	}
 
-	void MeshResource::UpdateVertexBuffer(MemoryOwnedBuffer& pBuffer, u32 offset)
+	void MeshResource::UpdateVertexBuffer(const MemoryOwnedBuffer& pBuffer, u32 offset)
 	{
 		// If the memory is not pre-allocated, create a staging buffer
 		if(!mPreAllocate)
@@ -110,7 +108,7 @@ namespace Hollow
 		mGraphicsDevice->ResetFences(&mFence, 1);
 	}
 
-	void MeshResource::UpdateIndexBuffer(MemoryOwnedBuffer& pBuffer, u32 offset)
+	void MeshResource::UpdateIndexBuffer(const MemoryOwnedBuffer& pBuffer, u32 offset)
 	{
 		if (!mPreAllocate)
 		{

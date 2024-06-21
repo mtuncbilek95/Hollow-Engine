@@ -16,15 +16,15 @@ namespace Hollow
 
 			if (stages & ShaderStage::Vertex)
 				flags |= VK_SHADER_STAGE_VERTEX_BIT;
-			else if (stages & ShaderStage::Fragment)
+			if (stages & ShaderStage::Fragment)
 				flags |= VK_SHADER_STAGE_FRAGMENT_BIT;
-			else if (stages & ShaderStage::TesellationEval)
+			if (stages & ShaderStage::TesellationEval)
 				flags |= VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-			else if (stages & ShaderStage::TesellationControl)
+			if (stages & ShaderStage::TesellationControl)
 				flags |= VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-			else if (stages & ShaderStage::Geometry)
+			if (stages & ShaderStage::Geometry)
 				flags |= VK_SHADER_STAGE_GEOMETRY_BIT;
-			else if (stages & ShaderStage::Compute)
+			if (stages & ShaderStage::Compute)
 				flags |= VK_SHADER_STAGE_COMPUTE_BIT;
 
 			return flags;

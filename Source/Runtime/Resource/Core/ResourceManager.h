@@ -14,7 +14,7 @@ namespace Hollow
 
 		SharedPtr<ResourceObject> CreateResource(const ResourceDescriptor& desc)
 		{
-			SharedPtr<ResourceObject> resource = ResourceObject::CreateResource(desc);
+			SharedPtr<ResourceObject> resource = MakeShared<ResourceObject>(desc);
 			mResources.push_back(resource);
 			return resource;
 		}

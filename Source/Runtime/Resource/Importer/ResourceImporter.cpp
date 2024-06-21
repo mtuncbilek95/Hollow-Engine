@@ -1,8 +1,8 @@
 #include "ResourceImporter.h"
 
-//#if defined(STB_IMAGE_IMPLEMENTATION)
-//#include <stb_image.h>
-//#endif
+#if defined(STB_IMAGE_IMPLEMENTATION)
+#include <stb_image.h>
+#endif
 
 #include <Runtime/Platform/PlatformFile.h>
 
@@ -85,13 +85,13 @@ namespace Hollow
 
 	TextureResourceLayout ResourceImporter::ImportTexture(String path)
 	{
-		//i32 width, height, channels;
-		//byte* data = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+		i32 width, height, channels;
+		byte* data = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 
 		TextureResourceLayout layout;
-		//layout.ImageSize = Vector2i(width, height);
-		//layout.ImageData = MemoryOwnedBuffer(data, width * height * 4);
-		//layout.Channels = channels;
+		layout.ImageSize = Vector2i(width, height);
+		layout.ImageData = MemoryOwnedBuffer(data, width * height * STBI_rgb_alpha);
+		layout.Channels = channels;
 
 		return layout;
 	}

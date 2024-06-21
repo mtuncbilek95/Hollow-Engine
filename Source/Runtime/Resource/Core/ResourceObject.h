@@ -11,9 +11,6 @@ namespace Hollow
 	class RUNTIME_API ResourceObject : public Object
 	{
 	public:
-		static SharedPtr<ResourceObject> CreateResource(const ResourceDescriptor& desc);
-
-	public:
 		ResourceObject(const ResourceDescriptor& desc);
 		virtual ~ResourceObject() override = default;
 

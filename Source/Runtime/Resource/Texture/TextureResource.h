@@ -24,7 +24,7 @@ namespace Hollow
 		void ConnectMemory(const SharedPtr<GraphicsMemory>& hostMemory, const SharedPtr<GraphicsMemory>& deviceMemory, bool bPreAllocate = true);
 		void CreateTextureAndBuffer(const TextureDesc& desc);
 
-		void UpdateTextureAndBuffer(MemoryBuffer& pBuffer, u32 offset);
+		void UpdateTextureAndBuffer(MemoryBuffer pBuffer, u32 offset);
 
 		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Texture; }
 
@@ -33,6 +33,7 @@ namespace Hollow
 
 	private:
 		SharedPtr<GraphicsDevice> mGraphicsDevice;
+
 		SharedPtr<Texture> mTexture;
 		SharedPtr<TextureBuffer> mTextureBuffer;
 		SharedPtr<GraphicsBuffer> mStageBuffer;

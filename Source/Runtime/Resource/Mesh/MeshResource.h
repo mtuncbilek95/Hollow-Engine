@@ -41,8 +41,8 @@ namespace Hollow
 
 		void ConnectMemory(const SharedPtr<GraphicsMemory>& hostMemory, const SharedPtr<GraphicsMemory>& deviceMemory, bool bPreAllocate = true);
 		void CreateMeshBuffers(u32 perVertexSize, u32 resourceCount, u32 perIndexSize, u32 indexCount);
-		void UpdateVertexBuffer(MemoryOwnedBuffer& pBuffer, u32 offset);
-		void UpdateIndexBuffer(MemoryOwnedBuffer& pBuffer, u32 offset);
+		void UpdateVertexBuffer(const MemoryOwnedBuffer& pBuffer, u32 offset);
+		void UpdateIndexBuffer(const MemoryOwnedBuffer& pBuffer, u32 offset);
 
 		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Mesh; }
 
@@ -59,9 +59,6 @@ namespace Hollow
 		SharedPtr<GraphicsMemory> mDeviceMemory;
 
 		MeshResourceData mMeshBuffer;
-
-		u64 mTotalVertexCount;
-		u64 mTotalIndexCount;
 
 		bool mPreAllocate;
 		SharedPtr<Fence> mFence;
