@@ -1,0 +1,11 @@
+{
+    "Engine Properties": {
+        "Name": "HollowEngine",
+        "Version": "1.0.0",
+        "Editor RHI": "Vulkan"
+    },
+    "Project Properties": {
+        "Name" : "TestProject",
+        "DefaultScene" : "Maps/TestScene.hscene"
+    }
+}
