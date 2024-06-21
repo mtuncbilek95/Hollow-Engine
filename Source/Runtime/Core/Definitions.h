@@ -40,10 +40,10 @@ typedef double f64;
 #endif
 #endif
 
-#define MB_TO_BYTE(mb) (mb * 1024.0 * 1024.0)
-#define KB_TO_BYTE(kb) (kb * 1024.0)
-#define BYTE_TO_MB(bt) (bt / 1024.0 / 1024.0)
-#define BYTE_TO_KB(bt) (bt / 1024.0)
+#define MB_TO_BYTE(mb) (mb * 1024.0f * 1024.0f)
+#define KB_TO_BYTE(kb) (kb * 1024.0f)
+#define BYTE_TO_MB(bt) (bt / 1024.0f / 1024.0f)
+#define BYTE_TO_KB(bt) (bt / 1024.0f)
 
 #define GENERATE_ENUM_FLAG(EnumType, primitiveType) \
 FORCEINLINE static EnumType operator | (EnumType a, EnumType b) { return static_cast<EnumType>(static_cast<primitiveType>(a) | static_cast<primitiveType>(b)); } \

@@ -12,10 +12,19 @@ namespace Hollow
 	u64 GraphicsMemory::AllocateSubMemory(u64 sizeInBytes)
 	{
 		u64 sizeLeft = mTotalSize - mUsedSize;
-		if (sizeLeft < sizeInBytes)
+
+		if (mMemoryType == GraphicsMemoryType::DeviceLocal)
 		{
-			return uint64_max;
+			CORE_LOG(HE_INFO, "Device Local Memory", "Total Size: %.2f MB", BYTE_TO_MB(mTotalSize));
+			CORE_LOG(HE_INFO, "Device Local Memory", "Already Used Size: %.2f MB", BYTE_TO_MB(mUsedSize));
 		}
+		else
+		{
+			CORE_LOG(HE_INFO, "Host Visible Memory", "Total Size: %.2f MB", BYTE_TO_MB(mTotalSize));
+			CORE_LOG(HE_INFO, "Host Visible Memory", "Already Used Size: %.2f MB", BYTE_TO_MB(mUsedSize));
+		}
+
+		CORE_ASSERT(sizeLeft > sizeInBytes, "GraphicsMemory", "Not enough memory left");
 
 		u64 offset = 0;
 		for (u32 i = 0; i < mSubMemoryBlocks.size(); ++i)

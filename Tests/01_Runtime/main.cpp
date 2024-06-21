@@ -20,12 +20,13 @@
 #include <Runtime/Graphics/Descriptor/DescriptorLayout.h>
 #include <Runtime/Graphics/Descriptor/DescriptorPool.h>
 #include <Runtime/Graphics/Descriptor/DescriptorSet.h>
-#include <Runtime/Resource/Texture/TextureImporter.h>
+#include <Runtime/Resource/Importer/ResourceImporter.h>
 
-#include <chrono>
+#include <Runtime/Resource/Texture/TextureResource.h>
+#include <Runtime/Resource/Mesh/MeshResource.h>
 
-#define INSTANCE_COUNT 49
-
+#define INSTANCE_COUNT 81
+#define MSAA_SAMPLES 8
 using namespace Hollow;
 
 struct Transform
@@ -177,7 +178,7 @@ int main(int argC, char** argV)
 		}
 	}
 
-	auto texture = TextureImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/TestTexture.png");
+	auto texture = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/TestTexture.png");
 #pragma endregion
 
 #pragma region Window and Graphics Initialization
@@ -224,13 +225,13 @@ int main(int argC, char** argV)
 	// Create bundle memory for pre-allocation
 	GraphicsMemoryDesc hostMemoryDesc = {};
 	hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
-	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(512);
+	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(5);
 
 	auto mHostMemory = mDevice->CreateGraphicsMemory(hostMemoryDesc);
 
 	GraphicsMemoryDesc deviceMemoryDesc = {};
 	deviceMemoryDesc.MemoryType = GraphicsMemoryType::DeviceLocal;
-	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(512);
+	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(109);
 
 	auto mDeviceMemory = mDevice->CreateGraphicsMemory(deviceMemoryDesc);
 #pragma endregion
@@ -307,11 +308,11 @@ int main(int argC, char** argV)
 	// ----------------- CREATE DEPTH TEXTURE -----------------
 
 	TextureDesc depthTextureDesc = {};
-	depthTextureDesc.ArraySize = 4;
+	depthTextureDesc.ArraySize = 1;
 	depthTextureDesc.ImageFormat = TextureFormat::D32_Float;
 	depthTextureDesc.ImageSize = { mSwapchain->GetImageSize().x, mSwapchain->GetImageSize().y, 1 };
 	depthTextureDesc.MipLevels = 1;
-	depthTextureDesc.SampleCount = TextureSampleCount::Sample8;
+	depthTextureDesc.SampleCount = static_cast<TextureSampleCount>(MSAA_SAMPLES);
 	depthTextureDesc.Type = TextureType::Texture2DMS;
 	depthTextureDesc.Usage = TextureUsage::DepthStencilAttachment;
 	depthTextureDesc.pMemory = mDeviceMemory;
@@ -327,33 +328,28 @@ int main(int argC, char** argV)
 	auto mDepthTextureView = mDevice->CreateTextureBuffer(depthTextureViewDesc);
 
 	// ----------------- CREATE MULTISAMPLE TEXTURES FOR SWAPCHAIN -----------------
-	DArray<SharedPtr<Texture>> mColorTextures;
-	DArray<SharedPtr<TextureBuffer>> mColorTextureViews;
+	SharedPtr<Texture> mColorTexture;
+	SharedPtr<TextureBuffer> mColorTextureView;
 
-	for (byte i = 0; i < swapchainDesc.BufferCount; i++)
-	{
-		TextureDesc colorTextureDesc = {};
-		colorTextureDesc.ArraySize = 1;
-		colorTextureDesc.ImageFormat = swapchainDesc.SwapchainImageFormat;
-		colorTextureDesc.ImageSize = { mSwapchain->GetImageSize().x, mSwapchain->GetImageSize().y, 1 };
-		colorTextureDesc.MipLevels = 1;
-		colorTextureDesc.SampleCount = TextureSampleCount::Sample8;
-		colorTextureDesc.Type = TextureType::Texture2DMS;
-		colorTextureDesc.Usage = TextureUsage::ColorAttachment;
-		colorTextureDesc.pMemory = mDeviceMemory;
+	TextureDesc colorTextureDesc = {};
+	colorTextureDesc.ArraySize = 1;
+	colorTextureDesc.ImageFormat = swapchainDesc.SwapchainImageFormat;
+	colorTextureDesc.ImageSize = { mSwapchain->GetImageSize().x, mSwapchain->GetImageSize().y, 1 };
+	colorTextureDesc.MipLevels = 1;
+	colorTextureDesc.SampleCount = static_cast<TextureSampleCount>(MSAA_SAMPLES);
+	colorTextureDesc.Type = TextureType::Texture2DMS;
+	colorTextureDesc.Usage = TextureUsage::ColorAttachment;
+	colorTextureDesc.pMemory = mDeviceMemory;
 
-		auto mColorTexture = mDevice->CreateTexture(colorTextureDesc);
-		mColorTextures.push_back(mColorTexture);
+	mColorTexture = mDevice->CreateTexture(colorTextureDesc);
 
-		TextureBufferDesc colorTextureViewDesc = {};
-		colorTextureViewDesc.ArrayLayer = 0;
-		colorTextureViewDesc.AspectFlags = TextureAspectFlags::ColorAspect;
-		colorTextureViewDesc.MipLevel = 0;
-		colorTextureViewDesc.pTexture = mColorTexture;
+	TextureBufferDesc colorTextureViewDesc = {};
+	colorTextureViewDesc.ArrayLayer = 0;
+	colorTextureViewDesc.AspectFlags = TextureAspectFlags::ColorAspect;
+	colorTextureViewDesc.MipLevel = 0;
+	colorTextureViewDesc.pTexture = mColorTexture;
 
-		auto mColorTextureView = mDevice->CreateTextureBuffer(colorTextureViewDesc);
-		mColorTextureViews.push_back(mColorTextureView);
-	}
+	mColorTextureView = mDevice->CreateTextureBuffer(colorTextureViewDesc);
 
 	// ----------------- UPDATE DEPTH TEXTURE -----------------
 
@@ -379,6 +375,23 @@ int main(int argC, char** argV)
 
 		mCommandBuffer->SetTextureBarrier(colorBuffer, colorTextureBarrier);
 	}
+
+	TextureBarrierUpdateDesc msaaTextureBarrier = {};
+	msaaTextureBarrier.MipIndex = 0;
+	msaaTextureBarrier.ArrayIndex = 0;
+	msaaTextureBarrier.SourceAccessMask = GraphicsMemoryAccessFlags::Unknown;
+	msaaTextureBarrier.OldLayout = TextureMemoryLayout::Unknown;
+	msaaTextureBarrier.SourceQueue = GraphicsQueueType::Graphics;
+	msaaTextureBarrier.SourceStageFlags = PipelineStageFlags::TopOfPipe;
+
+	msaaTextureBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::ColorAttachmentWrite;
+	msaaTextureBarrier.NewLayout = TextureMemoryLayout::ColorAttachment;
+	msaaTextureBarrier.DestinationQueue = GraphicsQueueType::Graphics;
+	msaaTextureBarrier.DestinationStageFlags = PipelineStageFlags::ColorAttachmentOutput;
+
+	msaaTextureBarrier.AspectMask = TextureAspectFlags::ColorAspect;
+
+	mCommandBuffer->SetTextureBarrier(mColorTexture, msaaTextureBarrier);
 
 	TextureBarrierUpdateDesc depthTextureBarrier = {};
 	depthTextureBarrier.MipIndex = 0;
@@ -499,7 +512,7 @@ int main(int argC, char** argV)
 	// Create MultisampleDesc
 	MultisampleDesc multisample = {};
 	multisample.bSampleShadingEnabled = true;
-	multisample.Samples = TextureSampleCount::Sample8;
+	multisample.Samples = static_cast<TextureSampleCount>(MSAA_SAMPLES);
 
 	// Create RasterizerState
 	RasterizerStateDesc rasterizerState = {};
@@ -578,23 +591,24 @@ int main(int argC, char** argV)
 #pragma region Buffer Initialization
 	// ----------------- CREATE OBJECT BUFFER -----------------
 
-	GraphicsBufferDesc vertexBufferDesc = {};
-	vertexBufferDesc.SubResourceCount = vertices.size();
-	vertexBufferDesc.SubSizeInBytes = sizeof(Vertex);
-	vertexBufferDesc.Usage = GraphicsBufferUsage::Vertex | GraphicsBufferUsage::TransferDestination;
-	vertexBufferDesc.ShareMode = ShareMode::Exclusive;
-	vertexBufferDesc.pMemory = mDeviceMemory;
+	SharedPtr<MeshResource> meshRes = MakeShared<MeshResource>();
+	SharedPtr<TextureResource> texRes = MakeShared<TextureResource>();
 
-	auto mVertexBuffer = mDevice->CreateGraphicsBuffer(vertexBufferDesc);
+	meshRes->ConnectMemory(mHostMemory, mDeviceMemory);
+	texRes->ConnectMemory(mHostMemory, mDeviceMemory);
 
-	GraphicsBufferDesc indexBufferDesc = {};
-	indexBufferDesc.SubResourceCount = indices.size();
-	indexBufferDesc.SubSizeInBytes = sizeof(u32);
-	indexBufferDesc.Usage = GraphicsBufferUsage::Index | GraphicsBufferUsage::TransferDestination;
-	indexBufferDesc.ShareMode = ShareMode::Exclusive;
-	indexBufferDesc.pMemory = mDeviceMemory;
+	meshRes->CreateMeshBuffers(sizeof(Vertex), vertices.size(), sizeof(u32), indices.size());
 
-	auto mIndexBuffer = mDevice->CreateGraphicsBuffer(indexBufferDesc);
+	TextureDesc textureDesc = {};
+	textureDesc.ArraySize = 1;
+	textureDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
+	textureDesc.ImageSize = { static_cast<u32>(texture.ImageSize.x), static_cast<u32>(texture.ImageSize.y), 1 };
+	textureDesc.MipLevels = 1;
+	textureDesc.SampleCount = TextureSampleCount::Sample1;
+	textureDesc.Type = TextureType::Texture2D;
+	textureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
+	textureDesc.pMemory = mDeviceMemory;
+	texRes->CreateTextureAndBuffer(textureDesc);
 
 	GraphicsBufferDesc uniformBufferDesc = {};
 	uniformBufferDesc.SubResourceCount = 1;
@@ -605,45 +619,7 @@ int main(int argC, char** argV)
 
 	auto mUniformBuffer = mDevice->CreateGraphicsBuffer(uniformBufferDesc);
 
-	TextureDesc textureDesc = {};
-	textureDesc.ArraySize = 1;
-	textureDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
-	textureDesc.ImageSize = { static_cast<u32>(texture->ImageSize.x), static_cast<u32>(texture->ImageSize.y), 1 };
-	textureDesc.MipLevels = 1;
-	textureDesc.SampleCount = TextureSampleCount::Sample1;
-	textureDesc.Type = TextureType::Texture2D;
-	textureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
-	textureDesc.pMemory = mDeviceMemory;
-
-	auto mTexture = mDevice->CreateTexture(textureDesc);
-
-	TextureBufferDesc textureViewDesc = {};
-	textureViewDesc.ArrayLayer = 0;
-	textureViewDesc.AspectFlags = TextureAspectFlags::ColorAspect;
-	textureViewDesc.MipLevel = 0;
-	textureViewDesc.pTexture = mTexture;
-
-	auto mTextureView = mDevice->CreateTextureBuffer(textureViewDesc);
-
 	// ----------------- CREATE STAGING BUFFER -----------------
-
-	GraphicsBufferDesc stagingVertexBufferDesc = {};
-	stagingVertexBufferDesc.SubResourceCount = vertices.size();
-	stagingVertexBufferDesc.SubSizeInBytes = sizeof(Vertex);
-	stagingVertexBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
-	stagingVertexBufferDesc.ShareMode = ShareMode::Exclusive;
-	stagingVertexBufferDesc.pMemory = mHostMemory;
-
-	auto mStagingVertexBuffer = mDevice->CreateGraphicsBuffer(stagingVertexBufferDesc);
-
-	GraphicsBufferDesc stagingIndexBufferDesc = {};
-	stagingIndexBufferDesc.SubResourceCount = indices.size();
-	stagingIndexBufferDesc.SubSizeInBytes = sizeof(u32);
-	stagingIndexBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
-	stagingIndexBufferDesc.ShareMode = ShareMode::Exclusive;
-	stagingIndexBufferDesc.pMemory = mHostMemory;
-
-	auto mStagingIndexBuffer = mDevice->CreateGraphicsBuffer(stagingIndexBufferDesc);
 
 	GraphicsBufferDesc stagingUniformBufferDesc = {};
 	stagingUniformBufferDesc.SubResourceCount = 1;
@@ -654,111 +630,35 @@ int main(int argC, char** argV)
 
 	auto mStagingUniformBuffer = mDevice->CreateGraphicsBuffer(stagingUniformBufferDesc);
 
-	GraphicsBufferDesc textureStagingBufferDesc = {};
-	textureStagingBufferDesc.ShareMode = ShareMode::Exclusive;
-	textureStagingBufferDesc.SubResourceCount = 1;
-	textureStagingBufferDesc.SubSizeInBytes = texture->ImageData.GetSize();
-	textureStagingBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
-	textureStagingBufferDesc.pMemory = mHostMemory;
-
-	auto mStagingTextureBuffer = mDevice->CreateGraphicsBuffer(textureStagingBufferDesc);
-
 	// ----------------- UPDATE STAGING BUFFER -----------------
 
 	u64 vertexBufferSize = sizeof(Vertex) * vertices.size();
 	u64 indexBufferSize = sizeof(u32) * indices.size();
 	u64 uniformBufferSize = sizeof(ConstantBuffer);
 
-	BufferDataUpdateDesc vertexDataUpdateDesc = {};
-	vertexDataUpdateDesc.Memory = MemoryBuffer((void*)vertices.data(), vertexBufferSize);
-	vertexDataUpdateDesc.OffsetInBytes = 0;
-	mDevice->UpdateBufferData(mStagingVertexBuffer, vertexDataUpdateDesc);
-
-	BufferDataUpdateDesc indexDataUpdateDesc = {};
-	indexDataUpdateDesc.Memory = MemoryBuffer((void*)indices.data(), indexBufferSize);
-	indexDataUpdateDesc.OffsetInBytes = 0;
-	mDevice->UpdateBufferData(mStagingIndexBuffer, indexDataUpdateDesc);
+	meshRes->UpdateVertexBuffer({ (void*)vertices.data(), vertexBufferSize }, 0);
+	meshRes->UpdateIndexBuffer({ (void*)indices.data(), indexBufferSize }, 0);
+	texRes->UpdateTextureAndBuffer(texture.ImageData, 0);
 
 	BufferDataUpdateDesc uniformDataUpdateDesc = {};
 	uniformDataUpdateDesc.Memory = MemoryBuffer((void*)&MVPData, uniformBufferSize);
 	uniformDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 
-	BufferDataUpdateDesc textureDataUpdateDesc = {};
-	textureDataUpdateDesc.Memory = texture->ImageData;
-	textureDataUpdateDesc.OffsetInBytes = 0;
-	mDevice->UpdateBufferData(mStagingTextureBuffer, textureDataUpdateDesc);
-
 	// ----------------- COPY STAGING BUFFER TO OBJECT BUFFER -----------------
 
 	mCommandBuffer->BeginRecording();
-	BufferBufferCopyDesc vertexCopyDesc = {};
-	vertexCopyDesc.DestinationOffset = 0;
-	vertexCopyDesc.Size = vertexBufferSize;
-	vertexCopyDesc.SourceOffset = 0;
-	mCommandBuffer->CopyBufferToBuffer(mStagingVertexBuffer, mVertexBuffer, vertexCopyDesc);
-
-	BufferBufferCopyDesc indexCopyDesc = {};
-	indexCopyDesc.DestinationOffset = 0;
-	indexCopyDesc.Size = indexBufferSize;
-	indexCopyDesc.SourceOffset = 0;
-
-	mCommandBuffer->CopyBufferToBuffer(mStagingIndexBuffer, mIndexBuffer, indexCopyDesc);
 
 	BufferBufferCopyDesc uniformCopyDesc = {};
 	uniformCopyDesc.DestinationOffset = 0;
 	uniformCopyDesc.Size = uniformBufferSize;
 	uniformCopyDesc.SourceOffset = 0;
-
 	mCommandBuffer->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, uniformCopyDesc);
-
-	// First, make sure that texture is ready to be written.
-	TextureBarrierUpdateDesc preTextureBarrier = {};
-	preTextureBarrier.MipIndex = 0;
-	preTextureBarrier.ArrayIndex = 0;
-	preTextureBarrier.SourceAccessMask = GraphicsMemoryAccessFlags::Unknown;
-	preTextureBarrier.OldLayout = TextureMemoryLayout::Unknown;
-	preTextureBarrier.SourceQueue = GraphicsQueueType::Graphics;
-	preTextureBarrier.SourceStageFlags = PipelineStageFlags::TopOfPipe;
-
-	preTextureBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::TransferWrite;
-	preTextureBarrier.NewLayout = TextureMemoryLayout::TransferDestination;
-	preTextureBarrier.DestinationQueue = GraphicsQueueType::Graphics;
-	preTextureBarrier.DestinationStageFlags = PipelineStageFlags::Transfer;
-
-	preTextureBarrier.AspectMask = TextureAspectFlags::ColorAspect;
-
-	mCommandBuffer->SetTextureBarrier(mTexture, preTextureBarrier);
-
-	BufferTextureCopyDesc textureCopyDesc = {};
-	textureCopyDesc.BufferOffsetInBytes = 0;
-	textureCopyDesc.TargetArrayIndex = 0;
-	textureCopyDesc.TargetMipIndex = 0;
-	textureCopyDesc.TextureOffset = { 0,0,0 };
-	textureCopyDesc.TextureSize = textureDesc.ImageSize;
-	mCommandBuffer->CopyBufferToTexture(mStagingTextureBuffer, mTexture, textureCopyDesc);
-
-	TextureBarrierUpdateDesc postTextureBarrier = {};
-	postTextureBarrier.MipIndex = 0;
-	postTextureBarrier.ArrayIndex = 0;
-	postTextureBarrier.SourceAccessMask = GraphicsMemoryAccessFlags::TransferWrite;
-	postTextureBarrier.OldLayout = TextureMemoryLayout::TransferDestination;
-	postTextureBarrier.SourceQueue = GraphicsQueueType::Graphics;
-	postTextureBarrier.SourceStageFlags = PipelineStageFlags::Transfer;
-
-	postTextureBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::ShaderRead;
-	postTextureBarrier.NewLayout = TextureMemoryLayout::ShaderReadOnly;
-	postTextureBarrier.DestinationQueue = GraphicsQueueType::Graphics;
-	postTextureBarrier.DestinationStageFlags = PipelineStageFlags::FragmentShader;
-
-	postTextureBarrier.AspectMask = TextureAspectFlags::ColorAspect;
-
-	mCommandBuffer->SetTextureBarrier(mTexture, postTextureBarrier);
 
 	DescriptorSetUpdateDesc descriptorUpdateDesc = {};
 	descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
 	descriptorUpdateDesc.Entries.push_back({ mSampler, DescriptorType::Sampler, 1, 0, 0, 1 });
-	descriptorUpdateDesc.Entries.push_back({ mTextureView, DescriptorType::SampledImage, 1, 0, 0, 2 });
+	descriptorUpdateDesc.Entries.push_back({ texRes->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 2 });
 
 	mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
 
@@ -815,7 +715,7 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->SetTextureBarrier(mSwapchain->GetImage(imageIndex), preRenderBarrier);
 
 		DynamicPassAttachmentDesc passColorAttachmentDesc = {};
-		passColorAttachmentDesc.ImageBuffer = mColorTextureViews[imageIndex];
+		passColorAttachmentDesc.ImageBuffer = mColorTextureView;
 		passColorAttachmentDesc.ResolveLayout = TextureMemoryLayout::ColorAttachment;
 		passColorAttachmentDesc.ResolveBuffer = mSwapchain->GetImageView(imageIndex);
 		passColorAttachmentDesc.ResolveMode = ResolveModeFlags::Average;
@@ -844,12 +744,11 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->BindPipeline(mPipeline);
 		mCommandBuffers[imageIndex]->SetViewports(&viewport, 1);
 		mCommandBuffers[imageIndex]->SetScissors(&scissor, 1);
-		mCommandBuffers[imageIndex]->BindVertexBuffers(&mVertexBuffer, 1);
-		mCommandBuffers[imageIndex]->BindIndexBuffer(mIndexBuffer, GraphicsIndexType::Index32);
+		mCommandBuffers[imageIndex]->BindVertexBuffers(&meshRes->GetMeshBuffer().VertexBuffer, 1);
+		mCommandBuffers[imageIndex]->BindIndexBuffer(meshRes->GetMeshBuffer().IndexBuffer, GraphicsIndexType::Index32);
 
 		mCommandBuffers[imageIndex]->BindDescriptors(&mDescriptorSet, 1);
-		MemoryBuffer pushData = MemoryBuffer(&PushConstants, sizeof(PushConstantData));
-		mCommandBuffers[imageIndex]->PushConstants(pushData, 0, ShaderStage::Vertex);
+		mCommandBuffers[imageIndex]->PushConstants({ &PushConstants, sizeof(PushConstantData) }, 0, ShaderStage::Vertex);
 		mCommandBuffers[imageIndex]->DrawIndexed(indices.size(), 0, 0, 0, INSTANCE_COUNT);
 		mCommandBuffers[imageIndex]->EndRendering();
 

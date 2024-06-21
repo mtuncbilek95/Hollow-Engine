@@ -139,6 +139,7 @@ namespace Hollow
 #if defined(HOLLOW_DEBUG)
 		layerNames.push_back("VK_LAYER_KHRONOS_validation");
 		layerNames.push_back("VK_LAYER_LUNARG_screenshot");
+		layerNames.push_back("VK_LAYER_LUNARG_monitor");
 #endif
 
 		VkApplicationInfo appInfo = {};
@@ -261,6 +262,7 @@ namespace Hollow
 			CORE_LOG(HE_WARNING, "Adapter Device Name", "%s", adapterDesc->ProductName.c_str());
 			CORE_LOG(HE_INFO, "Device ID", "%d ", adapterDesc->DeviceId);
 			CORE_LOG(HE_VERBOSE, "Total Score", "%d", adapterDesc->AdapterScore);
+			
 
 			AddAdapter(adapterDesc);
 		}
