@@ -7,9 +7,9 @@ namespace Hollow
 	struct RUNTIME_API VertexData
 	{
 		Vector3f Position;
-		Vector3f Normal;
-		Vector3f Tangent;
-		Vector3f Bitangent;
+		//Vector3f Normal;
+		//Vector3f Tangent;
+		//Vector3f Bitangent;
 		Vector4f Color;
 		Vector2f UV;
 	};

@@ -14,6 +14,7 @@
 
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
 #include <Runtime/Vulkan/Semaphore/VulkanSemaphore.h>
+#include <Runtime/Vulkan/Fence/VulkanFence.h>
 
 namespace Hollow
 {
@@ -133,6 +134,7 @@ namespace Hollow
 		swapchainInfo.queueFamilyIndexCount = 1;
 		swapchainInfo.preTransform = surfaceCapabilities.currentTransform;
 		swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+		swapchainInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 		swapchainInfo.presentMode = VulkanSwapchainUtils::GetVkPresentMode(desc.VSync);
 		swapchainInfo.clipped = VK_FALSE;
 		swapchainInfo.oldSwapchain = VK_NULL_HANDLE;
@@ -360,11 +362,11 @@ namespace Hollow
 		}
 	}
 
-	void VulkanSwapchain::AcquireNextImageImpl()
+	void VulkanSwapchain::AcquireNextImageImpl(SharedPtr<Fence> fence)
 	{
-		auto imageSemaphore = std::static_pointer_cast<VulkanSemaphore>(GetImageSemaphore(mCurrentFrameIndex));
+		auto vkfence = std::static_pointer_cast<VulkanFence>(fence);
 
-		CORE_ASSERT(vkAcquireNextImageKHR(mVkDevice, mVkSwapchain, uint64_max, imageSemaphore->GetVkSemaphore(), VK_NULL_HANDLE, &mCurrentFrameIndex) == VK_SUCCESS, "VulkanSwapchain",
+		CORE_ASSERT(vkAcquireNextImageKHR(mVkDevice, mVkSwapchain, uint64_max, VK_NULL_HANDLE, vkfence->GetVkFence(), &mCurrentFrameIndex) == VK_SUCCESS, "VulkanSwapchain",
 			"Failed to acquire next image");
 	}
 
@@ -377,8 +379,8 @@ namespace Hollow
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		presentInfo.pNext = nullptr;
-		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = &flightSemaphore;
+		presentInfo.waitSemaphoreCount = 0;
+		presentInfo.pWaitSemaphores = nullptr;
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = &mVkSwapchain;
 		presentInfo.pImageIndices = &imageIndex;

@@ -22,7 +22,7 @@ namespace Hollow
 
 	protected:
 		virtual void ResizeImpl(const Vector2u& newSize) override;
-		virtual void AcquireNextImageImpl() override;
+		virtual void AcquireNextImageImpl(SharedPtr<Fence> fence) override;
 		virtual void PresentImpl() override;
 
 	private:

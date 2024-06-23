@@ -25,121 +25,99 @@
 #include <Runtime/Resource/Texture/TextureResource.h>
 #include <Runtime/Resource/Mesh/MeshResource.h>
 
-#define INSTANCE_COUNT 81
+#define CO_FACTOR .5f
 #define MSAA_SAMPLES 8
 using namespace Hollow;
 
 struct Transform
 {
-	Vector3f Position;
-	Vector3f Rotation;
-	Vector3f Scale;
+	Vec3f Position;
+	Vec3f Rotation;
+	Vec3f Scale;
+};
+
+struct Camera
+{
+	Vec3f Position;
+	Vec3f Up;
+	Vec3f Right;
+	Vec3f Forward;
 };
 
 struct ConstantBuffer
 {
-	Matrix4f Model[INSTANCE_COUNT];
+	Matrix4f Model;
 };
 
-struct PushConstantData
+Transform InstanceTransform
 {
-	Matrix4f View;
-	Matrix4f Projection;
+	.Position = Vec3f(0, 0, 0),
+	.Rotation = Vec3f(0, 0, 0),
+	.Scale = Vec3f(1, 1, 1)
 };
 
-struct Vertex
-{
-	Vector3f Position;
-	Vector3f Color;
-	Vector2f TexCoord;
+Camera MainCamera = {
+	.Position = Vec3f(0, 2, -0.5),
+	.Up = Vec3f(0, -1, 0),
+	.Right = Vec3f(1, 0, 0),
+	.Forward = Vec3f(0, 0, 1)
 };
-
-const DArray<Vertex> vertices =
-{
-	{{-0.5f, -0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-
-	{{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-	{{-0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}
-};
-
-const DArray<u32> indices =
-{
-	3, 1, 0,
-	3, 2, 1,
-
-	4, 5, 7,
-	5, 6, 7,
-
-	11, 9, 8,
-	11, 10, 9,
-
-	12, 13, 15,
-	13, 14, 15,
-
-	16, 17, 19,
-	17, 18, 19,
-
-	23, 21, 20,
-	23, 22, 21
-};
-
-DArray<Transform> InstanceTransforms(INSTANCE_COUNT);
 
 ConstantBuffer MVPData = {
-	{}
+	.Model = Mat4f(1)
 };
 
-PushConstantData PushConstants =
+struct SupportBuffer
 {
-	.View = Math::lookAtLH(Vec3f(0, 0, -7), Vec3f(0, 0 ,0), Vec3f(0, 1, 0)),
-	.Projection = Math::perspectiveLH(Math::radians(70.f), (1300.f / 1300.f), 0.01f, 1000.f)
+	Mat4f View;
+	Mat4f Projection;
+};
+
+SupportBuffer SupportData = {
+	.View = Mat4f(1),
+	.Projection = Mat4f(1)
 };
 
 void UpdateTransforms()
 {
-	for (byte i = 0; i < INSTANCE_COUNT; i++)
+
+	Mat4f model = Mat4f(1.0f);
+	model = Math::translate(model, InstanceTransform.Position);
+	model = Math::rotate(model, InstanceTransform.Rotation.x, Vec3f(1, 0, 0));
+	model = Math::rotate(model, InstanceTransform.Rotation.y, Vec3f(0, 1, 0));
+	model = Math::rotate(model, InstanceTransform.Rotation.z, Vec3f(0, 0, 1));
+	model = Math::scale(model, InstanceTransform.Scale);
+
+	if (glfwGetKey(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_W) == GLFW_PRESS)
+		MainCamera.Position += MainCamera.Forward * CO_FACTOR;
+	if (glfwGetKey(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_S) == GLFW_PRESS)
+		MainCamera.Position -= MainCamera.Forward * CO_FACTOR;
+	if (glfwGetKey(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_A) == GLFW_PRESS)
+		MainCamera.Position -= glm::cross({ 0,1,0 }, MainCamera.Forward) * CO_FACTOR;
+	if (glfwGetKey(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_D) == GLFW_PRESS)
+		MainCamera.Position += glm::cross({ 0,1,0 }, MainCamera.Forward) * CO_FACTOR;
+	if (glfwGetKey(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
+		MainCamera.Position -= MainCamera.Up * CO_FACTOR;
+	if (glfwGetKey(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		MainCamera.Position += MainCamera.Up * CO_FACTOR;
+
+	if (glfwGetKey(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		InstanceTransforms[i].Rotation.x += Math::radians(0.01f);
-		if (i % 2 == 0)
-			InstanceTransforms[i].Rotation.z += Math::radians(0.02f);
-		else
-			InstanceTransforms[i].Rotation.z -= Math::radians(0.014f);
-
-		InstanceTransforms[i].Rotation.y += Math::radians(0.03f);
-
-		Mat4f scaleMatrix = Math::scale(Mat4f(1.0f), InstanceTransforms[i].Scale);
-		Mat4f rotationMatrix = Math::rotate(Mat4f(1.0f), InstanceTransforms[i].Rotation.x, Vec3f(1, 0, 0)) *
-			Math::rotate(Mat4f(1.0f), InstanceTransforms[i].Rotation.y, Vec3f(0, 1, 0)) *
-			Math::rotate(Mat4f(1.0f), InstanceTransforms[i].Rotation.z, Vec3f(0, 0, 1));
-		Mat4f translationMatrix = Math::translate(Mat4f(1.0f), InstanceTransforms[i].Position);
-
-		MVPData.Model[i] = translationMatrix * rotationMatrix * scaleMatrix;
+		Mat4f rotMatrix(1);
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(-0.8f), glm::vec3(0, 1, 0));
+		MainCamera.Forward = glm::vec3(rotMatrix * glm::vec4(MainCamera.Forward, 1.0));
 	}
+	if (glfwGetKey(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_E) == GLFW_PRESS)
+	{
+		Mat4f rotMatrix(1);
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(0.8f), glm::vec3(0, 1, 0));
+		MainCamera.Forward = glm::vec3(rotMatrix * glm::vec4(MainCamera.Forward, 1.0));
+	}
+
+	SupportData.View = Math::lookAt(MainCamera.Position, MainCamera.Position + MainCamera.Forward, MainCamera.Up);
+	SupportData.Projection = Math::perspective(Math::radians(70.f), (1300.f / 1300.f), 0.1f, 100.f);
+
+	MVPData.Model = Math::transpose(SupportData.Projection * SupportData.View * model);
 }
 
 int main(int argC, char** argV)
@@ -148,37 +126,26 @@ int main(int argC, char** argV)
 	PlatformAPI::GetAPI().InitializeArguments(argC, argV);
 
 #pragma region Object Cacophony
-	// make them start at the right up corner and go left
-	i32 sideLength = i32(sqrt(INSTANCE_COUNT));
-	i32 numCols = sideLength;
 
-	f32 initialX = 1 - numCols;
-	f32 initialY = -numCols;
+	Mat4f rotMatrix(1);
+	rotMatrix = glm::rotate(rotMatrix, glm::radians(-90.f), glm::vec3(0, 1, 0));
+	MainCamera.Forward = glm::vec3(rotMatrix * glm::vec4(MainCamera.Forward, 1.0));
 
-	// Initialize the transforms
-	for (byte i = 0; i < i32(sqrt(INSTANCE_COUNT)); i++)
-	{
-		initialY += 1;
+	SupportData.View = Math::lookAt(MainCamera.Position, MainCamera.Position + MainCamera.Forward, MainCamera.Up);
+	SupportData.Projection = Math::perspective(Math::radians(70.f), (1300.f / 1300.f), 0.1f, 100.f);
 
-		for (i32 j = 0; j < i32(sqrt(INSTANCE_COUNT)); j++)
-		{
-			f32 xPos = initialX + j;
+	Mat4f model = Mat4f(1.0f);
+	model = Math::translate(model, InstanceTransform.Position);
+	model = Math::rotate(model, InstanceTransform.Rotation.x, Vec3f(1, 0, 0));
+	model = Math::rotate(model, InstanceTransform.Rotation.y, Vec3f(0, 1, 0));
+	model = Math::rotate(model, InstanceTransform.Rotation.z, Vec3f(0, 0, 1));
+	model = Math::scale(model, InstanceTransform.Scale);
 
-			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position = { xPos + j, initialY + i, (f32)sideLength - 1 };
-			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation = { 0, 0, 0 };
-			InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale = { 1, 1, 1 };
+	MVPData.Model = Math::transpose(SupportData.Projection * SupportData.View * model);
 
-			Mat4f scaleMatrix = Math::scale(Mat4f(1.0f), InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Scale);
-			Mat4f rotationMatrix = Math::rotate(Mat4f(1.0f), InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.x, Vec3f(1, 0, 0)) *
-				Math::rotate(Mat4f(1.0f), InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.y, Vec3f(0, 1, 0)) *
-				Math::rotate(Mat4f(1.0f), InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Rotation.z, Vec3f(0, 0, 1));
-			Mat4f translationMatrix = Math::translate(Mat4f(1.0f), InstanceTransforms[i * i32(sqrt(INSTANCE_COUNT)) + j].Position);
+	auto meshLayout = ResourceImporter::ImportMesh(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/Sponza/Sponza.gltf");
+	auto materialLayout = ResourceImporter::ImportMaterial(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/Sponza/Sponza.gltf");
 
-			MVPData.Model[i * i32(sqrt(INSTANCE_COUNT)) + j] = translationMatrix * rotationMatrix * scaleMatrix;
-		}
-	}
-
-	auto texture = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/TestTexture.png");
 #pragma endregion
 
 #pragma region Window and Graphics Initialization
@@ -225,13 +192,13 @@ int main(int argC, char** argV)
 	// Create bundle memory for pre-allocation
 	GraphicsMemoryDesc hostMemoryDesc = {};
 	hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
-	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(5);
+	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(110);
 
 	auto mHostMemory = mDevice->CreateGraphicsMemory(hostMemoryDesc);
 
 	GraphicsMemoryDesc deviceMemoryDesc = {};
 	deviceMemoryDesc.MemoryType = GraphicsMemoryType::DeviceLocal;
-	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(109);
+	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(220);
 
 	auto mDeviceMemory = mDevice->CreateGraphicsMemory(deviceMemoryDesc);
 #pragma endregion
@@ -433,26 +400,32 @@ int main(int argC, char** argV)
 
 	// Descriptor Pool
 	DescriptorPoolDesc descriptorPoolDesc = {};
-	descriptorPoolDesc.MaxSets = 10;
+	descriptorPoolDesc.MaxSets = 1000;
 	descriptorPoolDesc.PoolSizes = {
-		{DescriptorType::UniformBuffer, 1},
-		{DescriptorType::Sampler, 1},
-		{DescriptorType::SampledImage, 1},
-		{DescriptorType::StorageImage, 1},
-		{DescriptorType::StorageBuffer, 1},
-		{DescriptorType::UniformTexelBuffer, 1},
-		{DescriptorType::StorageTexelBuffer, 1},
-		{DescriptorType::InputAttachment, 1}
+		{DescriptorType::UniformBuffer, 1000},
+		{DescriptorType::Sampler, 1000},
+		{DescriptorType::SampledImage, 1000},
+		{DescriptorType::StorageImage, 1000},
+		{DescriptorType::StorageBuffer, 1000},
+		{DescriptorType::UniformTexelBuffer, 1000},
+		{DescriptorType::StorageTexelBuffer, 1000},
+		{DescriptorType::InputAttachment, 1000}
 	};
 
 	auto mDescriptorPool = mDevice->CreateDescriptorPool(descriptorPoolDesc);
 
-	// Descriptor Set
-	DescriptorSetDesc descriptorSetDesc = {};
-	descriptorSetDesc.pLayout = mDescriptorLayout;
-	descriptorSetDesc.pOwnerPool = mDescriptorPool;
+	DArray<SharedPtr<DescriptorSet>> mDescriptorSets;
 
-	auto mDescriptorSet = mDevice->CreateDescriptorSet(descriptorSetDesc);
+	for (i32 i = 0; i < meshLayout.SubMeshes.size(); i++)
+	{
+		// Descriptor Set
+		DescriptorSetDesc descriptorSetDesc = {};
+		descriptorSetDesc.pLayout = mDescriptorLayout;
+		descriptorSetDesc.pOwnerPool = mDescriptorPool;
+
+		auto dSet = mDevice->CreateDescriptorSet(descriptorSetDesc);
+		mDescriptorSets.push_back(dSet);
+	}
 #pragma endregion
 
 #pragma region Pipeline Initialization
@@ -460,9 +433,9 @@ int main(int argC, char** argV)
 
 	// BlendStateAttachment	
 	BlendStateAttachment blendAttachment = {};
-	blendAttachment.bEnabled = true;
-	blendAttachment.ColorOperation = BlendOperation::Add;
-	blendAttachment.AlphaOperation = BlendOperation::Add;
+	blendAttachment.bEnabled = false;
+	blendAttachment.ColorOperation = BlendOperation::Max;
+	blendAttachment.AlphaOperation = BlendOperation::Max;
 	blendAttachment.SourceColorFactor = BlendFactor::One;
 	blendAttachment.DestinationColorFactor = BlendFactor::Zero;
 	blendAttachment.SourceAlphaFactor = BlendFactor::One;
@@ -471,8 +444,8 @@ int main(int argC, char** argV)
 
 	// Create BlendState
 	BlendStateDesc blendState = {};
-	blendState.bLogicOperationEnabled = true;
-	blendState.LogicOperation = LogicOperation::Copy;
+	blendState.bLogicOperationEnabled = false;
+	blendState.LogicOperation = LogicOperation::Clear;
 	blendState.Attachments = { blendAttachment };
 
 	// Create DepthStencilState
@@ -491,7 +464,7 @@ int main(int argC, char** argV)
 
 	// Color InputElement
 	InputElement inputElement2 = {};
-	inputElement2.Format = TextureFormat::RGB32_Float;
+	inputElement2.Format = TextureFormat::RGBA32_Float;
 	inputElement2.Semantic = InputElementSemantic::Color;
 
 	// TexCoord InputElement
@@ -535,15 +508,6 @@ int main(int argC, char** argV)
 	scissor.OffsetSize = { 0, 0 };
 	scissor.ScissorSize = mSwapchain->GetImageSize();
 
-	// Create PushConstantRange
-	PushConstantRange range1 = {};
-	range1.Offset = 0;
-	range1.Size = sizeof(PushConstantData);
-	range1.Stage = ShaderStage::Vertex;
-
-	PushConstantDesc pushConstant = {};
-	pushConstant.PushConstantRanges = { range1 };
-
 	// Create Pipeline
 	GraphicsPipelineDesc pipelineDesc = {};
 	pipelineDesc.BlendState = blendState;
@@ -555,7 +519,6 @@ int main(int argC, char** argV)
 	pipelineDesc.GraphicsShaders = { mVertexShader, mFragmentShader };
 	pipelineDesc.Viewport = viewport;
 	pipelineDesc.Scissor = scissor;
-	pipelineDesc.PushConstants = pushConstant;
 	pipelineDesc.ColorAttachmentCount = 1;
 	pipelineDesc.ColorAttachmentFormats = { TextureFormat::RGBA8_UNorm };
 	pipelineDesc.DepthAttachmentFormat = TextureFormat::D32_Float;
@@ -591,24 +554,44 @@ int main(int argC, char** argV)
 #pragma region Buffer Initialization
 	// ----------------- CREATE OBJECT BUFFER -----------------
 
-	SharedPtr<MeshResource> meshRes = MakeShared<MeshResource>();
-	SharedPtr<TextureResource> texRes = MakeShared<TextureResource>();
+	DArray<SharedPtr<MeshResource>> mMeshResources;
+	HashMap<u32, SharedPtr<TextureResource>> mTextureResources;
 
-	meshRes->ConnectMemory(mHostMemory, mDeviceMemory);
-	texRes->ConnectMemory(mHostMemory, mDeviceMemory);
+	for (auto& mesh : meshLayout.SubMeshes)
+	{
+		auto meshRes = MakeShared<MeshResource>();
 
-	meshRes->CreateMeshBuffers(sizeof(Vertex), vertices.size(), sizeof(u32), indices.size());
+		meshRes->ConnectMemory(mHostMemory, mDeviceMemory, true);
+		meshRes->CreateMeshBuffers(sizeof(VertexData), mesh.Vertices.size(), sizeof(u32), mesh.Indices.size());
 
-	TextureDesc textureDesc = {};
-	textureDesc.ArraySize = 1;
-	textureDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
-	textureDesc.ImageSize = { static_cast<u32>(texture.ImageSize.x), static_cast<u32>(texture.ImageSize.y), 1 };
-	textureDesc.MipLevels = 1;
-	textureDesc.SampleCount = TextureSampleCount::Sample1;
-	textureDesc.Type = TextureType::Texture2D;
-	textureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
-	textureDesc.pMemory = mDeviceMemory;
-	texRes->CreateTextureAndBuffer(textureDesc);
+		MemoryOwnedBuffer vertexBuffer = MemoryOwnedBuffer(mesh.Vertices.data(), mesh.Vertices.size() * sizeof(VertexData));
+		MemoryOwnedBuffer indexBuffer = MemoryOwnedBuffer(mesh.Indices.data(), mesh.Indices.size() * sizeof(u32));
+		meshRes->UpdateVertexBuffer(vertexBuffer, 0);
+		meshRes->UpdateIndexBuffer(indexBuffer, 0);
+
+		mMeshResources.push_back(meshRes);
+	}
+
+	for (auto& material : materialLayout.SubMeshMaterials)
+	{
+		auto texRes = MakeShared<TextureResource>();
+		texRes->ConnectMemory(mHostMemory, mDeviceMemory, true);
+
+		TextureDesc textureDesc = {};
+		textureDesc.ArraySize = 1;
+		textureDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
+		textureDesc.ImageSize = { static_cast<u32>(material.BaseTexture.ImageSize.x), static_cast<u32>(material.BaseTexture.ImageSize.y), 1 };
+		textureDesc.MipLevels = 1;
+		textureDesc.SampleCount = TextureSampleCount::Sample1;
+		textureDesc.Type = TextureType::Texture2D;
+		textureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
+		textureDesc.pMemory = mDeviceMemory;
+
+		texRes->CreateTextureAndBuffer(textureDesc);
+		texRes->UpdateTextureAndBuffer(material.BaseTexture.ImageData, 0);
+
+		mTextureResources[material.MaterialIndex] = texRes;
+	}
 
 	GraphicsBufferDesc uniformBufferDesc = {};
 	uniformBufferDesc.SubResourceCount = 1;
@@ -632,13 +615,7 @@ int main(int argC, char** argV)
 
 	// ----------------- UPDATE STAGING BUFFER -----------------
 
-	u64 vertexBufferSize = sizeof(Vertex) * vertices.size();
-	u64 indexBufferSize = sizeof(u32) * indices.size();
 	u64 uniformBufferSize = sizeof(ConstantBuffer);
-
-	meshRes->UpdateVertexBuffer({ (void*)vertices.data(), vertexBufferSize }, 0);
-	meshRes->UpdateIndexBuffer({ (void*)indices.data(), indexBufferSize }, 0);
-	texRes->UpdateTextureAndBuffer(texture.ImageData, 0);
 
 	BufferDataUpdateDesc uniformDataUpdateDesc = {};
 	uniformDataUpdateDesc.Memory = MemoryBuffer((void*)&MVPData, uniformBufferSize);
@@ -655,12 +632,15 @@ int main(int argC, char** argV)
 	uniformCopyDesc.SourceOffset = 0;
 	mCommandBuffer->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, uniformCopyDesc);
 
-	DescriptorSetUpdateDesc descriptorUpdateDesc = {};
-	descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
-	descriptorUpdateDesc.Entries.push_back({ mSampler, DescriptorType::Sampler, 1, 0, 0, 1 });
-	descriptorUpdateDesc.Entries.push_back({ texRes->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 2 });
+	for (i32 i = 0; i < mDescriptorSets.size(); i++)
+	{
+		DescriptorSetUpdateDesc descriptorUpdateDesc = {};
+		descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
+		descriptorUpdateDesc.Entries.push_back({ mSampler, DescriptorType::Sampler, 1, 0, 0, 1 });
+		descriptorUpdateDesc.Entries.push_back({ mTextureResources[meshLayout.SubMeshes[i].MaterialIndex]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 2 });
 
-	mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
+		mDevice->UpdateDescriptorSet(mDescriptorSets[i], descriptorUpdateDesc);
+	}
 
 	mCommandBuffer->EndRecording();
 	mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
@@ -670,32 +650,35 @@ int main(int argC, char** argV)
 
 #pragma endregion
 
+	CORE_LOG(HE_VERBOSE, "Allocated Memory for CPU", " %.2f MB", BYTE_TO_MB(mHostMemory->GetUsedSize()));
+	CORE_LOG(HE_VERBOSE, "Allocated Memory for GPU", " %.2f MB", BYTE_TO_MB(mDeviceMemory->GetUsedSize()));
+
 #pragma region Main Loop
 	mWindow->Show();
 	while (!mWindow->IsClosed())
 	{
-		mSwapchain->AcquireNextImage();
+		mWindow->PollEvents();
+		UpdateTransforms();
+		
+		mSwapchain->AcquireNextImage(mCompileFence);
+		mDevice->WaitForFence(&mCompileFence, 1);
+		mDevice->ResetFences(&mCompileFence, 1);
 
 		u32 imageIndex = mSwapchain->GetCurrentFrameIndex();
 		auto perFence = mRuntimeFences[imageIndex];
-
-		mCommandBuffers[imageIndex]->BeginRecording();
-
-		UpdateTransforms();
 
 		BufferDataUpdateDesc constantDataUpdateDesc;
 		constantDataUpdateDesc.Memory = MemoryBuffer(&MVPData, sizeof(ConstantBuffer));
 		constantDataUpdateDesc.OffsetInBytes = 0;
 		mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 
-		mWindow->PollEvents();
+		mCommandBuffers[imageIndex]->BeginRecording();
 
-		BufferBufferCopyDesc constantCopyDesc = {};
-		constantCopyDesc.DestinationOffset = 0;
-		constantCopyDesc.Size = constantDataUpdateDesc.Memory.GetSize();
-		constantCopyDesc.SourceOffset = 0;
-		mCommandBuffers[imageIndex]->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, constantCopyDesc);
-		mDevice->UpdateDescriptorSet(mDescriptorSet, descriptorUpdateDesc);
+		BufferBufferCopyDesc uniformCopyDesc = {};
+		uniformCopyDesc.DestinationOffset = 0;
+		uniformCopyDesc.Size = uniformBufferSize;
+		uniformCopyDesc.SourceOffset = 0;
+		mCommandBuffers[imageIndex]->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, uniformCopyDesc);
 
 		TextureBarrierUpdateDesc preRenderBarrier = {};
 		preRenderBarrier.ArrayIndex = 0;
@@ -742,14 +725,29 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->BeginRendering(passDesc);
 
 		mCommandBuffers[imageIndex]->BindPipeline(mPipeline);
-		mCommandBuffers[imageIndex]->SetViewports(&viewport, 1);
-		mCommandBuffers[imageIndex]->SetScissors(&scissor, 1);
-		mCommandBuffers[imageIndex]->BindVertexBuffers(&meshRes->GetMeshBuffer().VertexBuffer, 1);
-		mCommandBuffers[imageIndex]->BindIndexBuffer(meshRes->GetMeshBuffer().IndexBuffer, GraphicsIndexType::Index32);
+		//mCommandBuffers[imageIndex]->SetViewports(&viewport, 1);
+		//mCommandBuffers[imageIndex]->SetScissors(&scissor, 1);
 
-		mCommandBuffers[imageIndex]->BindDescriptors(&mDescriptorSet, 1);
-		mCommandBuffers[imageIndex]->PushConstants({ &PushConstants, sizeof(PushConstantData) }, 0, ShaderStage::Vertex);
-		mCommandBuffers[imageIndex]->DrawIndexed(indices.size(), 0, 0, 0, INSTANCE_COUNT);
+		i32 index = 0;
+		for (auto& meshRes : mMeshResources)
+		{
+			mCommandBuffers[imageIndex]->BindVertexBuffers(&meshRes->GetMeshBuffer().VertexBuffer, 1);
+			mCommandBuffers[imageIndex]->BindIndexBuffer(meshRes->GetMeshBuffer().IndexBuffer, GraphicsIndexType::Index32);
+
+			auto descriptorSet = mDescriptorSets[index];
+
+			DescriptorSetUpdateDesc descriptorUpdateDesc = {};
+			descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
+			descriptorUpdateDesc.Entries.push_back({ mSampler, DescriptorType::Sampler, 1, 0, 0, 1 });
+			descriptorUpdateDesc.Entries.push_back({ mTextureResources[meshLayout.SubMeshes[index].MaterialIndex]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 2 });
+
+			mDevice->UpdateDescriptorSet(descriptorSet, descriptorUpdateDesc);
+
+			mCommandBuffers[imageIndex]->BindDescriptors(&descriptorSet, 1);
+			mCommandBuffers[imageIndex]->DrawIndexed(meshLayout.SubMeshes[index].Indices.size(), 0, 0, 0, 1);
+			index++;
+		}
+
 		mCommandBuffers[imageIndex]->EndRendering();
 
 		TextureBarrierUpdateDesc postRenderBarrier = {};
@@ -774,7 +772,7 @@ int main(int argC, char** argV)
 		auto signalSemaphore = mSwapchain->GetFlightSemaphore(imageIndex);
 		auto flag = PipelineStageFlags::ColorAttachmentOutput;
 
-		mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffers[imageIndex], 1, &waitSemaphore, 1, &flag, &signalSemaphore, 1, perFence);
+		mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffers[imageIndex], 1, nullptr, 0, &flag, nullptr, 0, perFence);
 		mDevice->WaitForFence(&perFence, 1);
 		mDevice->ResetFences(&perFence, 1);
 

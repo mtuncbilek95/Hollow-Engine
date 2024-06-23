@@ -70,7 +70,7 @@ namespace Hollow
 		mMeshBuffer = meshData;
 	}
 
-	void MeshResource::UpdateVertexBuffer(const MemoryOwnedBuffer& pBuffer, u32 offset)
+	void MeshResource::UpdateVertexBuffer(const MemoryOwnedBuffer pBuffer, u32 offset)
 	{
 		// If the memory is not pre-allocated, create a staging buffer
 		if(!mPreAllocate)
@@ -108,7 +108,7 @@ namespace Hollow
 		mGraphicsDevice->ResetFences(&mFence, 1);
 	}
 
-	void MeshResource::UpdateIndexBuffer(const MemoryOwnedBuffer& pBuffer, u32 offset)
+	void MeshResource::UpdateIndexBuffer(const MemoryOwnedBuffer pBuffer, u32 offset)
 	{
 		if (!mPreAllocate)
 		{

@@ -2,6 +2,11 @@
 
 ## Guide-Book
 
+### IMPORTANT NOTE
+Since the design needs manual memory management at the moment, if you want to change the window size or you want to import another mesh, please make sure that you 
+change the mDeviceMemory and the mHostMemory. Otherwise, the program will create artifacts. My advice is to define memory as 1024MB for each of them.
+
+### Introduction
 - P.S: Code base is designed to run on Visual Studio 2022 or later versions with CMake features.
 
 1. Download latest Vulkan SDK from [Download Link from LunarG](https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe).

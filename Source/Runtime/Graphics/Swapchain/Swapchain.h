@@ -21,7 +21,7 @@ namespace Hollow
 		virtual ~Swapchain() override = default;
 
 		void Resize(const Vector2u& newSize);
-		void AcquireNextImage();
+		void AcquireNextImage(SharedPtr<Fence> fence);
 		void Present();
 
 		Vector2u GetImageSize() const { return mImageSize; }
@@ -52,7 +52,7 @@ namespace Hollow
 		void AddTextureBuffer(SharedPtr<TextureBuffer> pTextureView);
 
 		virtual void ResizeImpl(const Vector2u& newSize) = 0;
-		virtual void AcquireNextImageImpl() = 0;
+		virtual void AcquireNextImageImpl(SharedPtr<Fence> fence) = 0;
 		virtual void PresentImpl() = 0;
 
 	private:

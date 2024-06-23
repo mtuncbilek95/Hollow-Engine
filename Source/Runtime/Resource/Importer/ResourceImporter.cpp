@@ -23,7 +23,7 @@ namespace Hollow
 		Assimp::Importer assimpImporter;
 
 		const aiScene* scene = assimpImporter.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs |
-			aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+			aiProcess_CalcTangentSpace | aiProcess_GenNormals);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -53,10 +53,10 @@ namespace Hollow
 				VertexData vertexData;
 
 				// Get the vertex data from the mesh via Assimp.
-				vertexData.Position = Vector3f(mesh->mVertices[vertexIndex].x, mesh->mVertices[vertexIndex].y, mesh->mVertices[vertexIndex].z);
-				vertexData.Normal = Vector3f(mesh->mNormals[vertexIndex].x, mesh->mNormals[vertexIndex].y, mesh->mNormals[vertexIndex].z);
-				vertexData.Tangent = Vector3f(mesh->mTangents[vertexIndex].x, mesh->mTangents[vertexIndex].y, mesh->mTangents[vertexIndex].z);
-				vertexData.Bitangent = Vector3f(mesh->mBitangents[vertexIndex].x, mesh->mBitangents[vertexIndex].y, mesh->mBitangents[vertexIndex].z);
+				vertexData.Position = Vector3f(mesh->mVertices[vertexIndex].x / 70.f, mesh->mVertices[vertexIndex].y / 70.f, mesh->mVertices[vertexIndex].z / 70.f);
+				//vertexData.Normal = Vector3f(mesh->mNormals[vertexIndex].x, mesh->mNormals[vertexIndex].y, mesh->mNormals[vertexIndex].z);
+				//vertexData.Tangent = Vector3f(mesh->mTangents[vertexIndex].x, mesh->mTangents[vertexIndex].y, mesh->mTangents[vertexIndex].z);
+				//vertexData.Bitangent = Vector3f(mesh->mBitangents[vertexIndex].x, mesh->mBitangents[vertexIndex].y, mesh->mBitangents[vertexIndex].z);
 				vertexData.UV = Vector2f(mesh->mTextureCoords[0][vertexIndex].x, mesh->mTextureCoords[0][vertexIndex].y);
 				vertexData.Color = Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
 
@@ -107,7 +107,7 @@ namespace Hollow
 		Assimp::Importer assimpImporter;
 
 		const aiScene* scene = assimpImporter.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs |
-			aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+			aiProcess_CalcTangentSpace | aiProcess_GenNormals);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -132,13 +132,15 @@ namespace Hollow
 				aiString textureName;
 				material->GetTexture(aiTextureType_BASE_COLOR, 0, &textureName);
 
-				refreshPath += textureName.C_Str();
+				if (textureName.length > 0)
+				{
+					String texturePath = refreshPath + textureName.C_Str();
 
-				TextureResourceLayout textureLayout = ImportTexture(refreshPath);
-				subMeshMaterial.BaseTexture;
-				subMeshMaterial.MaterialIndex = i;
+					subMeshMaterial.BaseTexture = ImportTexture(texturePath);
+					subMeshMaterial.MaterialIndex = i;
 
-				mainLayout.SubMeshMaterials.push_back(subMeshMaterial);
+					mainLayout.SubMeshMaterials.push_back(subMeshMaterial);
+				}
 			}
 		}
 

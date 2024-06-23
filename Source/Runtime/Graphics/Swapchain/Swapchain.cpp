@@ -40,9 +40,9 @@ namespace Hollow
 		ResizeImpl(newSize);
 	}
 
-	void Swapchain::AcquireNextImage()
+	void Swapchain::AcquireNextImage(SharedPtr<Fence> fence)
 	{
-		AcquireNextImageImpl();
+		AcquireNextImageImpl(fence);
 	}
 
 	void Swapchain::Present()
