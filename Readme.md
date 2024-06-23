@@ -5,6 +5,7 @@
 ### IMPORTANT NOTE
 Since the design needs manual memory management at the moment, if you want to change the window size or you want to import another mesh, please make sure that you 
 change the mDeviceMemory and the mHostMemory. Otherwise, the program will create artifacts. My advice is to define memory as 1024MB for each of them.
+![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/c279df00-cac8-46d5-aab2-66c22dea34bb)
 
 ### Introduction
 - P.S: Code base is designed to run on Visual Studio 2022 or later versions with CMake features.
