@@ -9,6 +9,8 @@ add_executable(01_Runtime main.cpp ${SUBDIRECTORIES})
 # ------------------- INCLUDE DIRECTORIES --------------------
 target_include_directories(01_Runtime PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 
+target_include_directories(01_Runtime PRIVATE "${CMAKE_SOURCE_DIR}/Tests/01_Runtime")
+
 # --------------------- LINK DIRECTORIES ----------------------
 target_link_libraries(01_Runtime PRIVATE Runtime)
 # ------------------------------------------------------------

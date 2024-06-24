@@ -24,10 +24,10 @@
 
 #include <Runtime/Resource/Texture/TextureResource.h>
 #include <Runtime/Resource/Mesh/MeshResource.h>
-
-#define CO_FACTOR .5f
-#define MSAA_SAMPLES 8
 using namespace Hollow;
+
+#define CO_FACTOR .2f
+#define MSAA_SAMPLES 8
 
 struct Transform
 {
@@ -35,7 +35,6 @@ struct Transform
 	Vec3f Rotation;
 	Vec3f Scale;
 };
-
 struct Camera
 {
 	Vec3f Position;
@@ -43,44 +42,61 @@ struct Camera
 	Vec3f Right;
 	Vec3f Forward;
 };
-
 struct ConstantBuffer
 {
-	Matrix4f Model;
+	Mat4f Model;
 };
-
-Transform InstanceTransform
-{
-	.Position = Vec3f(0, 0, 0),
-	.Rotation = Vec3f(0, 0, 0),
-	.Scale = Vec3f(1, 1, 1)
-};
-
-Camera MainCamera = {
-	.Position = Vec3f(0, 2, -0.5),
-	.Up = Vec3f(0, -1, 0),
-	.Right = Vec3f(1, 0, 0),
-	.Forward = Vec3f(0, 0, 1)
-};
-
-ConstantBuffer MVPData = {
-	.Model = Mat4f(1)
-};
-
-struct SupportBuffer
+struct PushConstant
 {
 	Mat4f View;
 	Mat4f Projection;
 };
 
-SupportBuffer SupportData = {
+Transform InstanceTransform{
+	.Position = Vec3f(0, 0, 0),
+	.Rotation = Vec3f(0, 0, 0),
+	.Scale = Vec3f(1, 1, 1)
+};
+Camera MainCamera = {
+	.Position = Vec3f(0, 2, 0),
+	.Up = Vec3f(0, -1, 0),
+	.Right = Vec3f(1, 0, 0),
+	.Forward = Vec3f(0, 0, 1)
+};
+ConstantBuffer MVPData = {
+	.Model = Mat4f(1)
+};
+PushConstant PushData = {
 	.View = Mat4f(1),
 	.Projection = Mat4f(1)
 };
 
+#include <Lights/AmbientLight.h>
+
+AmbientLight MainAmbient = {
+	.Color = Vec4f(1, 1, 1, 1),
+	.Intensity = 0.2f
+};
+
+DiffuseLight MainDiffuseLight = {
+	.Position = Vec4f(MainCamera.Position.x, MainCamera.Position.y, MainCamera.Position.z, 1),
+	.Color = Vec4f(1, 1, 1, 1),
+	.Intensity = 0.0f
+};
+
+struct Lights
+{
+	AmbientLight Ambient;
+	DiffuseLight Diffuse;
+};
+
+Lights MainLights = {
+	.Ambient = MainAmbient,
+	.Diffuse = MainDiffuseLight
+};
+
 void UpdateTransforms()
 {
-
 	Mat4f model = Mat4f(1.0f);
 	model = Math::translate(model, InstanceTransform.Position);
 	model = Math::rotate(model, InstanceTransform.Rotation.x, Vec3f(1, 0, 0));
@@ -104,20 +120,29 @@ void UpdateTransforms()
 	if (glfwGetKey(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_Q) == GLFW_PRESS)
 	{
 		Mat4f rotMatrix(1);
-		rotMatrix = glm::rotate(rotMatrix, glm::radians(-0.8f), glm::vec3(0, 1, 0));
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(-1.2f), glm::vec3(0, 1, 0));
 		MainCamera.Forward = glm::vec3(rotMatrix * glm::vec4(MainCamera.Forward, 1.0));
 	}
 	if (glfwGetKey(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_KEY_E) == GLFW_PRESS)
 	{
 		Mat4f rotMatrix(1);
-		rotMatrix = glm::rotate(rotMatrix, glm::radians(0.8f), glm::vec3(0, 1, 0));
+		rotMatrix = glm::rotate(rotMatrix, glm::radians(1.2f), glm::vec3(0, 1, 0));
 		MainCamera.Forward = glm::vec3(rotMatrix * glm::vec4(MainCamera.Forward, 1.0));
 	}
 
-	SupportData.View = Math::lookAt(MainCamera.Position, MainCamera.Position + MainCamera.Forward, MainCamera.Up);
-	SupportData.Projection = Math::perspective(Math::radians(70.f), (1300.f / 1300.f), 0.1f, 100.f);
+	PushData.View = Math::lookAt(MainCamera.Position, MainCamera.Position + MainCamera.Forward, MainCamera.Up);
+	PushData.Projection = Math::perspective(Math::radians(70.f), ((float)WindowManager::GetAPI().GetDefaultWindow()->GetWindowResolution().x / (float)WindowManager::GetAPI().GetDefaultWindow()->GetWindowResolution().y), 0.1f, 100.f);
 
-	MVPData.Model = Math::transpose(SupportData.Projection * SupportData.View * model);
+	MVPData.Model = model;
+
+	MainLights.Diffuse.Position = Vec4f(MainCamera.Position.x, MainCamera.Position.y, MainCamera.Position.z, 1);
+
+	if (glfwGetMouseButton(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
+		MainLights.Diffuse.Intensity += 0.01f;
+	if (glfwGetMouseButton(WindowManager::GetAPI().GetDefaultWindow()->GetGLFWHandle(), GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
+		MainLights.Diffuse.Intensity -= 0.01f;
+
+	MainLights.Diffuse.Intensity = std::clamp(MainLights.Diffuse.Intensity, 0.0f, 1.0f);
 }
 
 int main(int argC, char** argV)
@@ -131,9 +156,6 @@ int main(int argC, char** argV)
 	rotMatrix = glm::rotate(rotMatrix, glm::radians(-90.f), glm::vec3(0, 1, 0));
 	MainCamera.Forward = glm::vec3(rotMatrix * glm::vec4(MainCamera.Forward, 1.0));
 
-	SupportData.View = Math::lookAt(MainCamera.Position, MainCamera.Position + MainCamera.Forward, MainCamera.Up);
-	SupportData.Projection = Math::perspective(Math::radians(70.f), (1300.f / 1300.f), 0.1f, 100.f);
-
 	Mat4f model = Mat4f(1.0f);
 	model = Math::translate(model, InstanceTransform.Position);
 	model = Math::rotate(model, InstanceTransform.Rotation.x, Vec3f(1, 0, 0));
@@ -141,10 +163,10 @@ int main(int argC, char** argV)
 	model = Math::rotate(model, InstanceTransform.Rotation.z, Vec3f(0, 0, 1));
 	model = Math::scale(model, InstanceTransform.Scale);
 
-	MVPData.Model = Math::transpose(SupportData.Projection * SupportData.View * model);
+	MVPData.Model = model;
 
-	auto meshLayout = ResourceImporter::ImportMesh(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/Sponza/Sponza.gltf");
-	auto materialLayout = ResourceImporter::ImportMaterial(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/01_Runtime/Resources/Sponza/Sponza.gltf");
+	auto meshLayout = ResourceImporter::ImportMesh(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Objects/Sponza/Sponza.gltf");
+	auto materialLayout = ResourceImporter::ImportMaterial(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Objects/Sponza/Sponza.gltf");
 
 #pragma endregion
 
@@ -153,7 +175,7 @@ int main(int argC, char** argV)
 	Hollow::WindowDesc desc = {};
 	desc.WindowSize = { 1300, 1300 };
 	desc.WindowPosition = { 0, 0 };
-	desc.WindowTitle = "Hollow - Instancing";
+	desc.WindowTitle = "Hollow - Sponza";
 	desc.WindowMode = WindowMode::Windowed;
 
 	auto mWindow = WindowManager::GetAPI().InitializeWindow(desc);
@@ -192,13 +214,13 @@ int main(int argC, char** argV)
 	// Create bundle memory for pre-allocation
 	GraphicsMemoryDesc hostMemoryDesc = {};
 	hostMemoryDesc.MemoryType = GraphicsMemoryType::HostVisible;
-	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(110);
+	hostMemoryDesc.SizeInBytes = MB_TO_BYTE(210);
 
 	auto mHostMemory = mDevice->CreateGraphicsMemory(hostMemoryDesc);
 
 	GraphicsMemoryDesc deviceMemoryDesc = {};
 	deviceMemoryDesc.MemoryType = GraphicsMemoryType::DeviceLocal;
-	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(220);
+	deviceMemoryDesc.SizeInBytes = MB_TO_BYTE(450);
 
 	auto mDeviceMemory = mDevice->CreateGraphicsMemory(deviceMemoryDesc);
 #pragma endregion
@@ -393,7 +415,8 @@ int main(int argC, char** argV)
 	descriptorLayoutDesc.Entries = {
 		{0, DescriptorType::UniformBuffer, ShaderStage::Vertex},
 		{1, DescriptorType::Sampler, ShaderStage::Fragment},
-		{2, DescriptorType::SampledImage, ShaderStage::Fragment}
+		{2, DescriptorType::SampledImage, ShaderStage::Fragment},
+		{3, DescriptorType::SampledImage, ShaderStage::Fragment}
 	};
 
 	auto mDescriptorLayout = mDevice->CreateDescriptorLayout(descriptorLayoutDesc);
@@ -426,6 +449,22 @@ int main(int argC, char** argV)
 		auto dSet = mDevice->CreateDescriptorSet(descriptorSetDesc);
 		mDescriptorSets.push_back(dSet);
 	}
+
+	// Light Descriptor Layout
+	DescriptorLayoutDesc lightDescriptorLayoutDesc = {};
+	lightDescriptorLayoutDesc.Entries = {
+		{0, DescriptorType::StorageBuffer, ShaderStage::Fragment}
+	};
+
+	auto mLightDescriptorLayout = mDevice->CreateDescriptorLayout(lightDescriptorLayoutDesc);
+
+	// Light Descriptor Set
+	DescriptorSetDesc lightDescriptorSetDesc = {};
+	lightDescriptorSetDesc.pLayout = mLightDescriptorLayout;
+	lightDescriptorSetDesc.pOwnerPool = mDescriptorPool;
+
+	auto mLightDescriptorSet = mDevice->CreateDescriptorSet(lightDescriptorSetDesc);
+
 #pragma endregion
 
 #pragma region Pipeline Initialization
@@ -433,11 +472,11 @@ int main(int argC, char** argV)
 
 	// BlendStateAttachment	
 	BlendStateAttachment blendAttachment = {};
-	blendAttachment.bEnabled = false;
-	blendAttachment.ColorOperation = BlendOperation::Max;
-	blendAttachment.AlphaOperation = BlendOperation::Max;
-	blendAttachment.SourceColorFactor = BlendFactor::One;
-	blendAttachment.DestinationColorFactor = BlendFactor::Zero;
+	blendAttachment.bEnabled = true;
+	blendAttachment.ColorOperation = BlendOperation::Add;
+	blendAttachment.AlphaOperation = BlendOperation::Add;
+	blendAttachment.SourceColorFactor = BlendFactor::SrcAlpha;
+	blendAttachment.DestinationColorFactor = BlendFactor::OneMinusSrcAlpha;
 	blendAttachment.SourceAlphaFactor = BlendFactor::One;
 	blendAttachment.DestinationAlphaFactor = BlendFactor::Zero;
 	blendAttachment.WriteMask = BlendColorWriteMask::All;
@@ -445,7 +484,7 @@ int main(int argC, char** argV)
 	// Create BlendState
 	BlendStateDesc blendState = {};
 	blendState.bLogicOperationEnabled = false;
-	blendState.LogicOperation = LogicOperation::Clear;
+	blendState.LogicOperation = LogicOperation::Copy;
 	blendState.Attachments = { blendAttachment };
 
 	// Create DepthStencilState
@@ -464,18 +503,33 @@ int main(int argC, char** argV)
 
 	// Color InputElement
 	InputElement inputElement2 = {};
-	inputElement2.Format = TextureFormat::RGBA32_Float;
-	inputElement2.Semantic = InputElementSemantic::Color;
+	inputElement2.Format = TextureFormat::RGB32_Float;
+	inputElement2.Semantic = InputElementSemantic::Normal;
 
-	// TexCoord InputElement
+	// Tangent InputElement
 	InputElement inputElement3 = {};
-	inputElement3.Format = TextureFormat::RG32_Float;
-	inputElement3.Semantic = InputElementSemantic::TexCoord;
+	inputElement3.Format = TextureFormat::RGB32_Float;
+	inputElement3.Semantic = InputElementSemantic::Tangent;
+
+	// BiTangent InputElement
+	InputElement inputElement4 = {};
+	inputElement4.Format = TextureFormat::RGB32_Float;
+	inputElement4.Semantic = InputElementSemantic::BiTangent;
+
+	// Color InputElement
+	InputElement inputElement5 = {};
+	inputElement5.Format = TextureFormat::RGBA32_Float;
+	inputElement5.Semantic = InputElementSemantic::Color;
+
+	// UV InputElement
+	InputElement inputElement6 = {};
+	inputElement6.Format = TextureFormat::RG32_Float;
+	inputElement6.Semantic = InputElementSemantic::TexCoord;
 
 	// InputBinding
 	InputBinding inputBinding = {};
 	inputBinding.StepRate = InputBindingStepRate::Vertex;
-	inputBinding.Elements = { inputElement1, inputElement2, inputElement3 };
+	inputBinding.Elements = { inputElement1, inputElement2, inputElement3, inputElement4, inputElement5, inputElement6 };
 
 	// Create InputLayout
 	InputLayoutDesc inputLayout = {};
@@ -508,6 +562,15 @@ int main(int argC, char** argV)
 	scissor.OffsetSize = { 0, 0 };
 	scissor.ScissorSize = mSwapchain->GetImageSize();
 
+	// Push Constant
+	PushConstantRange pushConstantRange = {};
+	pushConstantRange.Stage = ShaderStage::Vertex;
+	pushConstantRange.Size = sizeof(PushConstant);
+	pushConstantRange.Offset = 0;
+
+	PushConstantDesc pushConstant = {};
+	pushConstant.PushConstantRanges = { pushConstantRange };
+
 	// Create Pipeline
 	GraphicsPipelineDesc pipelineDesc = {};
 	pipelineDesc.BlendState = blendState;
@@ -515,10 +578,11 @@ int main(int argC, char** argV)
 	pipelineDesc.InputLayout = inputLayout;
 	pipelineDesc.Multisample = multisample;
 	pipelineDesc.RasterizerState = rasterizerState;
-	pipelineDesc.ResourceLayout.ResourceLayouts = { mDescriptorLayout };
+	pipelineDesc.ResourceLayout.ResourceLayouts = { mDescriptorLayout, mLightDescriptorLayout };
 	pipelineDesc.GraphicsShaders = { mVertexShader, mFragmentShader };
 	pipelineDesc.Viewport = viewport;
 	pipelineDesc.Scissor = scissor;
+	pipelineDesc.PushConstants = pushConstant;
 	pipelineDesc.ColorAttachmentCount = 1;
 	pipelineDesc.ColorAttachmentFormats = { TextureFormat::RGBA8_UNorm };
 	pipelineDesc.DepthAttachmentFormat = TextureFormat::D32_Float;
@@ -554,8 +618,9 @@ int main(int argC, char** argV)
 #pragma region Buffer Initialization
 	// ----------------- CREATE OBJECT BUFFER -----------------
 
-	DArray<SharedPtr<MeshResource>> mMeshResources;
-	HashMap<u32, SharedPtr<TextureResource>> mTextureResources;
+	DArray<Pair<u32, SharedPtr<MeshResource>>> mMeshResources;
+	HashMap<u32, SharedPtr<TextureResource>> mBaseTextureResources;
+	HashMap<u32, SharedPtr<TextureResource>> mNormalTextureResources;
 
 	for (auto& mesh : meshLayout.SubMeshes)
 	{
@@ -569,29 +634,64 @@ int main(int argC, char** argV)
 		meshRes->UpdateVertexBuffer(vertexBuffer, 0);
 		meshRes->UpdateIndexBuffer(indexBuffer, 0);
 
-		mMeshResources.push_back(meshRes);
+		mMeshResources.push_back({ mesh.MaterialIndex, meshRes });
 	}
 
+	// Delete the mesh layout as it is no longer needed
+	meshLayout.SubMeshes.clear();
+	meshLayout.SubMeshes.shrink_to_fit();
+
+	// For all the materials
 	for (auto& material : materialLayout.SubMeshMaterials)
 	{
-		auto texRes = MakeShared<TextureResource>();
-		texRes->ConnectMemory(mHostMemory, mDeviceMemory, true);
+		// If there is a base texture
+		if (material.BaseTexture.ImageData.GetData() != nullptr || material.BaseTexture.ImageData.GetSize() > 0)
+		{
+			auto texRes = MakeShared<TextureResource>();
+			texRes->ConnectMemory(mHostMemory, mDeviceMemory, true);
 
-		TextureDesc textureDesc = {};
-		textureDesc.ArraySize = 1;
-		textureDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
-		textureDesc.ImageSize = { static_cast<u32>(material.BaseTexture.ImageSize.x), static_cast<u32>(material.BaseTexture.ImageSize.y), 1 };
-		textureDesc.MipLevels = 1;
-		textureDesc.SampleCount = TextureSampleCount::Sample1;
-		textureDesc.Type = TextureType::Texture2D;
-		textureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
-		textureDesc.pMemory = mDeviceMemory;
+			TextureDesc textureDesc = {};
+			textureDesc.ArraySize = 1;
+			textureDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
+			textureDesc.ImageSize = { static_cast<u32>(material.BaseTexture.ImageSize.x), static_cast<u32>(material.BaseTexture.ImageSize.y), 1 };
+			textureDesc.MipLevels = 1;
+			textureDesc.SampleCount = TextureSampleCount::Sample1;
+			textureDesc.Type = TextureType::Texture2D;
+			textureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
+			textureDesc.pMemory = mDeviceMemory;
 
-		texRes->CreateTextureAndBuffer(textureDesc);
-		texRes->UpdateTextureAndBuffer(material.BaseTexture.ImageData, 0);
+			texRes->CreateTextureAndBuffer(textureDesc);
+			texRes->UpdateTextureAndBuffer(material.BaseTexture.ImageData, 0);
 
-		mTextureResources[material.MaterialIndex] = texRes;
+			mBaseTextureResources[material.MaterialIndex] = texRes;
+		}
+
+		// If there is a normal texture
+		if (material.NormalTexture.ImageData.GetData() != nullptr || material.NormalTexture.ImageData.GetSize() > 0)
+		{
+			auto normRes = MakeShared<TextureResource>();
+			normRes->ConnectMemory(mHostMemory, mDeviceMemory, true);
+
+			TextureDesc textureDesc = {};
+			textureDesc.ArraySize = 1;
+			textureDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
+			textureDesc.ImageSize = { static_cast<u32>(material.NormalTexture.ImageSize.x), static_cast<u32>(material.NormalTexture.ImageSize.y), 1 };
+			textureDesc.MipLevels = 1;
+			textureDesc.SampleCount = TextureSampleCount::Sample1;
+			textureDesc.Type = TextureType::Texture2D;
+			textureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
+			textureDesc.pMemory = mDeviceMemory;
+
+			normRes->CreateTextureAndBuffer(textureDesc);
+			normRes->UpdateTextureAndBuffer(material.NormalTexture.ImageData, 0);
+
+			mNormalTextureResources[material.MaterialIndex] = normRes;
+		}
 	}
+
+	// Delete the material layout as it is no longer needed
+	materialLayout.SubMeshMaterials.clear();
+	materialLayout.SubMeshMaterials.shrink_to_fit();
 
 	GraphicsBufferDesc uniformBufferDesc = {};
 	uniformBufferDesc.SubResourceCount = 1;
@@ -601,6 +701,16 @@ int main(int argC, char** argV)
 	uniformBufferDesc.pMemory = mDeviceMemory;
 
 	auto mUniformBuffer = mDevice->CreateGraphicsBuffer(uniformBufferDesc);
+
+	// Light buffer
+	GraphicsBufferDesc lightBufferDesc = {};
+	lightBufferDesc.SubResourceCount = 1;
+	lightBufferDesc.SubSizeInBytes = sizeof(Lights);
+	lightBufferDesc.Usage = GraphicsBufferUsage::Storage | GraphicsBufferUsage::TransferDestination;
+	lightBufferDesc.ShareMode = ShareMode::Exclusive;
+	lightBufferDesc.pMemory = mDeviceMemory;
+
+	auto mLightBuffer = mDevice->CreateGraphicsBuffer(lightBufferDesc);
 
 	// ----------------- CREATE STAGING BUFFER -----------------
 
@@ -613,6 +723,15 @@ int main(int argC, char** argV)
 
 	auto mStagingUniformBuffer = mDevice->CreateGraphicsBuffer(stagingUniformBufferDesc);
 
+	GraphicsBufferDesc stagingLightBufferDesc = {};
+	stagingLightBufferDesc.SubResourceCount = 1;
+	stagingLightBufferDesc.SubSizeInBytes = sizeof(Lights);
+	stagingLightBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
+	stagingLightBufferDesc.ShareMode = ShareMode::Exclusive;
+	stagingLightBufferDesc.pMemory = mHostMemory;
+
+	auto mStagingLightBuffer = mDevice->CreateGraphicsBuffer(stagingLightBufferDesc);
+
 	// ----------------- UPDATE STAGING BUFFER -----------------
 
 	u64 uniformBufferSize = sizeof(ConstantBuffer);
@@ -621,6 +740,13 @@ int main(int argC, char** argV)
 	uniformDataUpdateDesc.Memory = MemoryBuffer((void*)&MVPData, uniformBufferSize);
 	uniformDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
+
+	u64 lightBufferSize = sizeof(Lights);
+
+	BufferDataUpdateDesc lightDataUpdateDesc = {};
+	lightDataUpdateDesc.Memory = MemoryBuffer((void*)&MainLights, lightBufferSize);
+	lightDataUpdateDesc.OffsetInBytes = 0;
+	mDevice->UpdateBufferData(mStagingLightBuffer, lightDataUpdateDesc);
 
 	// ----------------- COPY STAGING BUFFER TO OBJECT BUFFER -----------------
 
@@ -632,15 +758,31 @@ int main(int argC, char** argV)
 	uniformCopyDesc.SourceOffset = 0;
 	mCommandBuffer->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, uniformCopyDesc);
 
+	BufferBufferCopyDesc lightCopyDesc = {};
+	lightCopyDesc.DestinationOffset = 0;
+	lightCopyDesc.Size = lightBufferSize;
+	lightCopyDesc.SourceOffset = 0;
+	mCommandBuffer->CopyBufferToBuffer(mStagingLightBuffer, mLightBuffer, lightCopyDesc);
+
 	for (i32 i = 0; i < mDescriptorSets.size(); i++)
 	{
 		DescriptorSetUpdateDesc descriptorUpdateDesc = {};
 		descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
 		descriptorUpdateDesc.Entries.push_back({ mSampler, DescriptorType::Sampler, 1, 0, 0, 1 });
-		descriptorUpdateDesc.Entries.push_back({ mTextureResources[meshLayout.SubMeshes[i].MaterialIndex]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 2 });
+		descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[mMeshResources[i].first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 2 });
+
+		if (mNormalTextureResources.find(mMeshResources[i].first) != mNormalTextureResources.end())
+			descriptorUpdateDesc.Entries.push_back({ mNormalTextureResources[mMeshResources[i].first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 3 });
+		else
+			descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[mMeshResources[i].first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 3 });
 
 		mDevice->UpdateDescriptorSet(mDescriptorSets[i], descriptorUpdateDesc);
 	}
+
+	DescriptorSetUpdateDesc lightDescriptorUpdateDesc = {};
+	lightDescriptorUpdateDesc.Entries.push_back({ mLightBuffer, DescriptorType::StorageBuffer, 1, 0, 0, 0 });
+
+	mDevice->UpdateDescriptorSet(mLightDescriptorSet, lightDescriptorUpdateDesc);
 
 	mCommandBuffer->EndRecording();
 	mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
@@ -650,7 +792,9 @@ int main(int argC, char** argV)
 
 #pragma endregion
 
+	CORE_LOG(HE_VERBOSE, "Demanded Memory for CPU", " %.2f MB", BYTE_TO_MB(mHostMemory->GetTotalSize()));
 	CORE_LOG(HE_VERBOSE, "Allocated Memory for CPU", " %.2f MB", BYTE_TO_MB(mHostMemory->GetUsedSize()));
+	CORE_LOG(HE_VERBOSE, "Demanded Memory for GPU", " %.2f MB", BYTE_TO_MB(mDeviceMemory->GetTotalSize()));
 	CORE_LOG(HE_VERBOSE, "Allocated Memory for GPU", " %.2f MB", BYTE_TO_MB(mDeviceMemory->GetUsedSize()));
 
 #pragma region Main Loop
@@ -659,7 +803,7 @@ int main(int argC, char** argV)
 	{
 		mWindow->PollEvents();
 		UpdateTransforms();
-		
+
 		mSwapchain->AcquireNextImage(mCompileFence);
 		mDevice->WaitForFence(&mCompileFence, 1);
 		mDevice->ResetFences(&mCompileFence, 1);
@@ -672,6 +816,11 @@ int main(int argC, char** argV)
 		constantDataUpdateDesc.OffsetInBytes = 0;
 		mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 
+		BufferDataUpdateDesc lightDataUpdateDesc;
+		lightDataUpdateDesc.Memory = MemoryBuffer(&MainLights, sizeof(Lights));
+		lightDataUpdateDesc.OffsetInBytes = 0;
+		mDevice->UpdateBufferData(mStagingLightBuffer, lightDataUpdateDesc);
+
 		mCommandBuffers[imageIndex]->BeginRecording();
 
 		BufferBufferCopyDesc uniformCopyDesc = {};
@@ -679,6 +828,14 @@ int main(int argC, char** argV)
 		uniformCopyDesc.Size = uniformBufferSize;
 		uniformCopyDesc.SourceOffset = 0;
 		mCommandBuffers[imageIndex]->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, uniformCopyDesc);
+
+		BufferBufferCopyDesc lightCopyDesc = {};
+		lightCopyDesc.DestinationOffset = 0;
+		lightCopyDesc.Size = lightBufferSize;
+		lightCopyDesc.SourceOffset = 0;
+		mCommandBuffers[imageIndex]->CopyBufferToBuffer(mStagingLightBuffer, mLightBuffer, lightCopyDesc);
+
+		mDevice->UpdateDescriptorSet(mLightDescriptorSet, lightDescriptorUpdateDesc);
 
 		TextureBarrierUpdateDesc preRenderBarrier = {};
 		preRenderBarrier.ArrayIndex = 0;
@@ -725,26 +882,34 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->BeginRendering(passDesc);
 
 		mCommandBuffers[imageIndex]->BindPipeline(mPipeline);
-		//mCommandBuffers[imageIndex]->SetViewports(&viewport, 1);
-		//mCommandBuffers[imageIndex]->SetScissors(&scissor, 1);
+		mCommandBuffers[imageIndex]->SetViewports(&viewport, 1);
+		mCommandBuffers[imageIndex]->SetScissors(&scissor, 1);
 
 		i32 index = 0;
 		for (auto& meshRes : mMeshResources)
 		{
-			mCommandBuffers[imageIndex]->BindVertexBuffers(&meshRes->GetMeshBuffer().VertexBuffer, 1);
-			mCommandBuffers[imageIndex]->BindIndexBuffer(meshRes->GetMeshBuffer().IndexBuffer, GraphicsIndexType::Index32);
+			mCommandBuffers[imageIndex]->BindVertexBuffers(&meshRes.second->GetMeshBuffer().VertexBuffer, 1);
+			mCommandBuffers[imageIndex]->BindIndexBuffer(meshRes.second->GetMeshBuffer().IndexBuffer, GraphicsIndexType::Index32);
 
 			auto descriptorSet = mDescriptorSets[index];
 
 			DescriptorSetUpdateDesc descriptorUpdateDesc = {};
 			descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
 			descriptorUpdateDesc.Entries.push_back({ mSampler, DescriptorType::Sampler, 1, 0, 0, 1 });
-			descriptorUpdateDesc.Entries.push_back({ mTextureResources[meshLayout.SubMeshes[index].MaterialIndex]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 2 });
+			descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[meshRes.first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 2 });
+
+			if (mNormalTextureResources.find(mMeshResources[index].first) != mNormalTextureResources.end())
+				descriptorUpdateDesc.Entries.push_back({ mNormalTextureResources[mMeshResources[index].first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 3 });
+			else
+				descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[mMeshResources[index].first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 3 });
 
 			mDevice->UpdateDescriptorSet(descriptorSet, descriptorUpdateDesc);
 
-			mCommandBuffers[imageIndex]->BindDescriptors(&descriptorSet, 1);
-			mCommandBuffers[imageIndex]->DrawIndexed(meshLayout.SubMeshes[index].Indices.size(), 0, 0, 0, 1);
+			mCommandBuffers[imageIndex]->BindDescriptors(&descriptorSet, 1, 0);
+			mCommandBuffers[imageIndex]->BindDescriptors(&mLightDescriptorSet, 1, 1);
+
+			mCommandBuffers[imageIndex]->PushConstants({ &PushData, sizeof(PushConstant) }, 0, ShaderStage::Vertex);
+			mCommandBuffers[imageIndex]->DrawIndexed(meshRes.second->GetIndexLength(), 0, 0, 0, 1);
 			index++;
 		}
 
@@ -768,10 +933,7 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->SetTextureBarrier(mSwapchain->GetImage(imageIndex), postRenderBarrier);
 		mCommandBuffers[imageIndex]->EndRecording();
 
-		auto waitSemaphore = mSwapchain->GetImageSemaphore(imageIndex);
-		auto signalSemaphore = mSwapchain->GetFlightSemaphore(imageIndex);
 		auto flag = PipelineStageFlags::ColorAttachmentOutput;
-
 		mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffers[imageIndex], 1, nullptr, 0, &flag, nullptr, 0, perFence);
 		mDevice->WaitForFence(&perFence, 1);
 		mDevice->ResetFences(&perFence, 1);
