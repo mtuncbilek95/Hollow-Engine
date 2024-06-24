@@ -18,7 +18,7 @@ namespace Hollow
 		TextureMemoryLayout ResolveLayout;
 		AttachmentLoadOperation LoadOperation;
 		AttachmentStoreOperation StoreOperation;
-		Vector4f ClearColor;
-		Vector2f ClearDepthStencil;
+		Vec4f ClearColor;
+		Vec2f ClearDepthStencil;
 	};
 }

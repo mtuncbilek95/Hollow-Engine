@@ -22,7 +22,7 @@ namespace Hollow
 		}
 	}
 
-	void Swapchain::Resize(const Vector2u& newSize)
+	void Swapchain::Resize(const Vec2u& newSize)
 	{
 		GetOwnerDevice()->WaitQueueIdle(GetPresentQueue());
 		GetOwnerDevice()->WaitForIdle();

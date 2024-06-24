@@ -6,7 +6,7 @@ namespace Hollow
 {
 	struct RUNTIME_API ScissorDesc
 	{
-		Vector2u ScissorSize;
-		Vector2u OffsetSize;
+		Vec2u ScissorSize;
+		Vec2u OffsetSize;
 	};
 }

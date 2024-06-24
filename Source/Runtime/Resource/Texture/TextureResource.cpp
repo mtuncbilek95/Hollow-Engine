@@ -43,7 +43,7 @@ namespace Hollow
 		}
 	}
 
-	void TextureResource::UpdateTextureAndBuffer(MemoryBuffer pBuffer, u32 offset)
+	void TextureResource::UpdateTextureAndBuffer(MemoryOwnedBuffer pBuffer, u32 offset)
 	{
 		BufferDataUpdateDesc textureDataUpdateDesc = {};
 		textureDataUpdateDesc.Memory = pBuffer;

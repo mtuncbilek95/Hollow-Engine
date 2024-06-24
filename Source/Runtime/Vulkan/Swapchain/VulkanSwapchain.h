@@ -21,7 +21,7 @@ namespace Hollow
 		VkInstance GetVkInstance() const { return mVkInstance; }
 
 	protected:
-		virtual void ResizeImpl(const Vector2u& newSize) override;
+		virtual void ResizeImpl(const Vec2u& newSize) override;
 		virtual void AcquireNextImageImpl(SharedPtr<Fence> fence) override;
 		virtual void PresentImpl() override;
 

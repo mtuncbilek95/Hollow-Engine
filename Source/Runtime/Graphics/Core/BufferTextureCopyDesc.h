@@ -11,8 +11,8 @@ namespace Hollow
 	struct RUNTIME_API BufferTextureCopyDesc
 	{
 		u64 BufferOffsetInBytes;
-		Vector3i TextureOffset;
-		Vector3u TextureSize;
+		Vec3i TextureOffset;
+		Vec3u TextureSize;
 		byte TargetArrayIndex;
 		byte TargetMipIndex;
 	};

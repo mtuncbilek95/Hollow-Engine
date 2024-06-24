@@ -8,8 +8,8 @@ namespace Hollow
 {
 	struct RUNTIME_API WindowDesc
 	{
-		Vector2u WindowSize;
-		Vector2i WindowPosition;
+		Vec2u WindowSize;
+		Vec2i WindowPosition;
 		String WindowTitle;
 		WindowMode WindowMode;
 	};

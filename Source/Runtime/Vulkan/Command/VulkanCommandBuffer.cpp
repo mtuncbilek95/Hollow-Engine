@@ -128,7 +128,7 @@ namespace Hollow
 		vkCmdEndRendering(mVkCommandBuffer);
 	}
 
-	void VulkanCommandBuffer::BeginRenderPassImpl(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vector4f& clearColor, const Vector2f& depthStencil)
+	void VulkanCommandBuffer::BeginRenderPassImpl(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vec4f& clearColor, const Vec2f& depthStencil)
 	{
 		VkRenderPass rPass = std::static_pointer_cast<VulkanRenderPass>(pRenderPass)->GetVkRenderPass();
 		VkFramebuffer rFramebuffer = std::static_pointer_cast<VulkanFramebuffer>(pFramebuffer)->GetVkFramebuffer();
@@ -183,7 +183,7 @@ namespace Hollow
 		vkCmdBindIndexBuffer(mVkCommandBuffer, pVulkanBuffer->GetVkBuffer(), 0, VulkanCoreUtils::GetVkIndexType(indexType));
 	}
 
-	void VulkanCommandBuffer::BindDescriptorsImpl(SharedPtr<DescriptorSet> ppSet[], u32 amount)
+	void VulkanCommandBuffer::BindDescriptorsImpl(SharedPtr<DescriptorSet> ppSet[], u32 amount, u32 setIndex)
 	{
 		auto pPipeline = std::static_pointer_cast<VulkanPipeline>(GetBoundPipeline());
 
@@ -193,7 +193,7 @@ namespace Hollow
 			sets[i] = std::static_pointer_cast<VulkanDescriptorSet>(ppSet[i])->GetVkDescriptorSet();
 		}
 
-		vkCmdBindDescriptorSets(mVkCommandBuffer, VulkanPipelineUtils::GetVkPipelineBindPoint(pPipeline->GetBindPoint()), pPipeline->GetVkPipelineLayout(), 0, amount, sets, 0, nullptr);
+		vkCmdBindDescriptorSets(mVkCommandBuffer, VulkanPipelineUtils::GetVkPipelineBindPoint(pPipeline->GetBindPoint()), pPipeline->GetVkPipelineLayout(), setIndex, amount, sets, 0, nullptr);
 	}
 
 	void VulkanCommandBuffer::DrawIndexedImpl(u32 indexCount, u32 indexOffset, u32 vertexOffset, u32 instanceOffset, u32 instanceCount)

@@ -16,13 +16,13 @@ namespace Hollow
 		FORCEINLINE SharedPtr<RenderPass> GetRenderPass() const noexcept { return mRenderPass; }
 		FORCEINLINE const DArray<SharedPtr<TextureBuffer>>& GetAttachments() const noexcept { return mAttachments; }
 		FORCEINLINE SharedPtr<TextureBuffer> GetAttachment(u32 index) const noexcept { return mAttachments[index]; }
-		FORCEINLINE const Vector2u& GetImageSize() const noexcept { return mImageSize; }
+		FORCEINLINE const Vec2u& GetImageSize() const noexcept { return mImageSize; }
 
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept { return GraphicsDeviceObjectType::Framebuffer; }
 
 	private:
 		SharedPtr<RenderPass> mRenderPass;
 		DArray<SharedPtr<TextureBuffer>> mAttachments;
-		Vector2u mImageSize;
+		Vec2u mImageSize;
 	};
 }

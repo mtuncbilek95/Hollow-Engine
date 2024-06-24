@@ -28,8 +28,8 @@ namespace Hollow
 
 			MonitorDesc desc = {};
 			desc.MonitorName = name;
-			desc.MonitorResolution = Vector2u((u32)videoMode->width, (u32)videoMode->height);
-			desc.MonitorPosition = Vector2i(monitorX, monitorY);
+			desc.MonitorResolution = Vec2u((u32)videoMode->width, (u32)videoMode->height);
+			desc.MonitorPosition = Vec2i(monitorX, monitorY);
 			desc.IsPrimary = i == 0;
 
 			monitors.push_back(Monitor(desc));
@@ -51,8 +51,8 @@ namespace Hollow
 
 		MonitorDesc desc = {};
 		desc.MonitorName = name;
-		desc.MonitorResolution = Vector2u((u32)videoMode->width, (u32)videoMode->height);
-		desc.MonitorPosition = Vector2i(monitorX, monitorY);
+		desc.MonitorResolution = Vec2u((u32)videoMode->width, (u32)videoMode->height);
+		desc.MonitorPosition = Vec2i(monitorX, monitorY);
 		desc.IsPrimary = true;
 
 		return Monitor(desc);

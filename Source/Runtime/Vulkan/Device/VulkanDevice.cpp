@@ -25,9 +25,9 @@
 
 struct Vertex
 {
-	Vector3f Position;
-	Vector3f Color;
-	Vector2f TexCoord;
+	Vec3f Position;
+	Vec3f Color;
+	Vec2f TexCoord;
 };
 
 namespace Hollow

@@ -11,7 +11,7 @@ namespace Hollow
 {
 	struct RUNTIME_API TextureDesc
 	{
-		Vector3u ImageSize;
+		Vec3u ImageSize;
 		byte ArraySize;
 		byte MipLevels;
 		TextureFormat ImageFormat;

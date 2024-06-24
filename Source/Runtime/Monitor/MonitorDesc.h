@@ -7,8 +7,8 @@ namespace Hollow
 	struct RUNTIME_API MonitorDesc
 	{
 		String MonitorName;
-		Vector2u MonitorResolution;
-		Vector2i MonitorPosition;
+		Vec2u MonitorResolution;
+		Vec2i MonitorPosition;
 		bool IsPrimary;
 	};
 }

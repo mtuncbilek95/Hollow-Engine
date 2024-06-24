@@ -7,8 +7,8 @@ namespace Hollow
 {
 	struct RUNTIME_API DynamicPassDesc
 	{
-		Vector2u Extent;
-		Vector2i Offset;
+		Vec2u Extent;
+		Vec2i Offset;
 		u32 layerCount;
 		u32 viewMask;
 		DArray<DynamicPassAttachmentDesc> ColorAttachments;

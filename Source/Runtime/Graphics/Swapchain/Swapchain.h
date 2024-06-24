@@ -20,11 +20,11 @@ namespace Hollow
 		Swapchain(const SwapchainDesc& desc, const SharedPtr<GraphicsDevice> pDevice);
 		virtual ~Swapchain() override = default;
 
-		void Resize(const Vector2u& newSize);
+		void Resize(const Vec2u& newSize);
 		void AcquireNextImage(SharedPtr<Fence> fence);
 		void Present();
 
-		Vector2u GetImageSize() const { return mImageSize; }
+		Vec2u GetImageSize() const { return mImageSize; }
 		TextureFormat GetSwapchainFormat() const { return mSwapchainFormat; }
 		TextureUsage GetSwapchainUsage() const { return mSwapchainUsage; }
 		PresentMode GetPresentMode() const { return mPresentMode; }
@@ -46,18 +46,18 @@ namespace Hollow
 		FORCEINLINE GraphicsDeviceObjectType GetObjectType() const noexcept final { return GraphicsDeviceObjectType::Swapchain; }
 
 	protected:
-		void SetNewImageSize(const Vector2u newSize) { mImageSize = newSize; }
+		void SetNewImageSize(const Vec2u newSize) { mImageSize = newSize; }
 
 		void AddTexture(SharedPtr<Texture> pTexture);
 		void AddTextureBuffer(SharedPtr<TextureBuffer> pTextureView);
 
-		virtual void ResizeImpl(const Vector2u& newSize) = 0;
+		virtual void ResizeImpl(const Vec2u& newSize) = 0;
 		virtual void AcquireNextImageImpl(SharedPtr<Fence> fence) = 0;
 		virtual void PresentImpl() = 0;
 
 	private:
 		byte mBufferCount;
-		Vector2u mImageSize;
+		Vec2u mImageSize;
 		TextureFormat mSwapchainFormat;
 		TextureUsage mSwapchainUsage;
 		SharedPtr<GraphicsQueue> mGraphicsQueue;

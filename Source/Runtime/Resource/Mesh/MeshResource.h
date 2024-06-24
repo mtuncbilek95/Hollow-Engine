@@ -43,6 +43,7 @@ namespace Hollow
 		void CreateMeshBuffers(u32 perVertexSize, u32 resourceCount, u32 perIndexSize, u32 indexCount);
 		void UpdateVertexBuffer(const MemoryOwnedBuffer pBuffer, u32 offset);
 		void UpdateIndexBuffer(const MemoryOwnedBuffer pBuffer, u32 offset);
+		u64 GetIndexLength() const { return mDrawIndexLength; }
 
 		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Mesh; }
 
@@ -62,5 +63,7 @@ namespace Hollow
 
 		bool mPreAllocate;
 		SharedPtr<Fence> mFence;
+
+		u64 mDrawIndexLength;
 	};
 }

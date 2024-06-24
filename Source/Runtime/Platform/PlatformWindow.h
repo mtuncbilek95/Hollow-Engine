@@ -33,8 +33,8 @@ namespace Hollow
 
 		void PollEvents();
 
-		const Vector2u& GetWindowResolution() const { return mWindowSize; }
-		const Vector2i& GetWindowPosition() const { return mWindowPosition; }
+		const Vec2u& GetWindowResolution() const { return mWindowSize; }
+		const Vec2i& GetWindowPosition() const { return mWindowPosition; }
 		const String& GetWindowTitle() const { return mWindowTitle; }
 		const WindowMode& GetWindowMode() const { return mWindowMode; }
 		const bool IsVisible() const { return mVisible; }
@@ -49,15 +49,15 @@ namespace Hollow
 
 		GLFWwindow* GetGLFWHandle() const { return mGLFWHandle; }
 
-		void SetWindowResolution(const Vector2u& resolution);
-		void SetWindowPosition(const Vector2i& position);
+		void SetWindowResolution(const Vec2u& resolution);
+		void SetWindowPosition(const Vec2i& position);
 		void SetWindowTitle(const String& title);
 		void SetWindowMode(const WindowMode& mode);
 		void SetVisible(bool visible);
 
 	private:
-		Vector2u mWindowSize;
-		Vector2i mWindowPosition;
+		Vec2u mWindowSize;
+		Vec2i mWindowPosition;
 		String mWindowTitle;
 		WindowMode mWindowMode;
 		bool mVisible;

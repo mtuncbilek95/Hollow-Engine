@@ -16,14 +16,14 @@ namespace Hollow
 		~Monitor() = default;
 
 		const String& GetMonitorName() const { return mMonitorName; }
-		const Vector2u& GetMonitorResolution() const { return mMonitorResolution; }
-		const Vector2i& GetMonitorPosition() const { return mMonitorPosition; }
+		const Vec2u& GetMonitorResolution() const { return mMonitorResolution; }
+		const Vec2i& GetMonitorPosition() const { return mMonitorPosition; }
 		const bool IsPrimary() const { return mIsPrimary; }
 
 	private:
 		String mMonitorName;
-		Vector2u mMonitorResolution;
-		Vector2i mMonitorPosition;
+		Vec2u mMonitorResolution;
+		Vec2i mMonitorPosition;
 		bool mIsPrimary;
 	};
 }

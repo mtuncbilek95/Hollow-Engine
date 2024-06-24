@@ -6,8 +6,8 @@ namespace Hollow
 {
 	struct RUNTIME_API ViewportDesc
 	{
-		Vector2u ViewportSize;
-		Vector2u OffsetSize;
-		Vector2f DepthRange;
+		Vec2u ViewportSize;
+		Vec2u OffsetSize;
+		Vec2f DepthRange;
 	};
 }

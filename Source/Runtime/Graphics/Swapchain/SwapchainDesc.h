@@ -13,7 +13,7 @@ namespace Hollow
 	class CommandPool;
 	struct RUNTIME_API SwapchainDesc
 	{
-		Vector2u ImageSize;
+		Vec2u ImageSize;
 		TextureFormat SwapchainImageFormat;
 		TextureUsage SwapchainUsage;
 		PresentMode VSync;

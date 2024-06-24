@@ -9,7 +9,7 @@ namespace Hollow
         Position,
         Normal,
         Tangent,
-        Binormal,
+        BiTangent,
         Color,
         TexCoord
     };

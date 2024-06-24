@@ -68,11 +68,11 @@ namespace Hollow
 		vertexInputInfo.pVertexAttributeDescriptions = attributes.data();
 
 		// Create Dynamic State
-		//DArray<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
-		//VkPipelineDynamicStateCreateInfo dynamicState = {};
-		//dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-		//dynamicState.dynamicStateCount = static_cast<u32>(dynamicStates.size());
-		//dynamicState.pDynamicStates = dynamicStates.data();
+		DArray<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+		VkPipelineDynamicStateCreateInfo dynamicState = {};
+		dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		dynamicState.dynamicStateCount = static_cast<u32>(dynamicStates.size());
+		dynamicState.pDynamicStates = dynamicStates.data();
 
 		// Create Viewport
 		VkViewport viewport{};
@@ -218,7 +218,7 @@ namespace Hollow
 		pipelineInfo.pMultisampleState = &multisampling;
 		pipelineInfo.pDepthStencilState = &depthStencil;
 		pipelineInfo.pColorBlendState = &colorBlending;
-		pipelineInfo.pDynamicState = nullptr;
+		pipelineInfo.pDynamicState = &dynamicState;
 		pipelineInfo.layout = mVkPipelineLayout;
 		pipelineInfo.renderPass = nullptr;
 		pipelineInfo.subpass = 0;

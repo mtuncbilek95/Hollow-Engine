@@ -6,12 +6,12 @@ namespace Hollow
 {
 	struct RUNTIME_API VertexData
 	{
-		Vector3f Position;
-		//Vector3f Normal;
-		//Vector3f Tangent;
-		//Vector3f Bitangent;
-		Vector4f Color;
-		Vector2f UV;
+		Vec3f Position;
+		Vec3f Normal;
+		Vec3f Tangent;
+		Vec3f Bitangent;
+		Vec4f Color;
+		Vec2f UV;
 	};
 
 	struct RUNTIME_API SubMeshLayout

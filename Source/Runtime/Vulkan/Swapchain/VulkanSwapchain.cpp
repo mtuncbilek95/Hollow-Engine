@@ -198,7 +198,7 @@ namespace Hollow
 		CORE_LOG(HE_INFO, "VulkanSwapchain", "Swapchain shutdown successfully");
 	}
 
-	void VulkanSwapchain::ResizeImpl(const Vector2u& newSize)
+	void VulkanSwapchain::ResizeImpl(const Vec2u& newSize)
 	{
 		auto device = std::static_pointer_cast<VulkanDevice>(GetOwnerDevice());
 

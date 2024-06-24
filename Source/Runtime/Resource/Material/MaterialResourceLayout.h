@@ -10,6 +10,7 @@ namespace Hollow
 	{
 		u32 MaterialIndex;
 		TextureResourceLayout BaseTexture;
+		TextureResourceLayout NormalTexture;
 	};
 
 	struct RUNTIME_API MaterialResourceLayout

@@ -142,6 +142,8 @@ namespace Hollow
 
 		mGraphicsDevice->WaitForFence(&mFence, 1);
 		mGraphicsDevice->ResetFences(&mFence, 1);
+
+		mDrawIndexLength = pBuffer.GetSize() / sizeof(u32);
 	}
 
 	void MeshResource::CreateInternalResources()

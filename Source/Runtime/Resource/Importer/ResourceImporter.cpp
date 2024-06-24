@@ -4,11 +4,13 @@
 #include <stb_image.h>
 #endif
 
+#include <Runtime/Platform/PlatformAPI.h>
 #include <Runtime/Platform/PlatformFile.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/cimport.h>
 
 namespace Hollow
 {
@@ -53,12 +55,12 @@ namespace Hollow
 				VertexData vertexData;
 
 				// Get the vertex data from the mesh via Assimp.
-				vertexData.Position = Vector3f(mesh->mVertices[vertexIndex].x / 70.f, mesh->mVertices[vertexIndex].y / 70.f, mesh->mVertices[vertexIndex].z / 70.f);
-				//vertexData.Normal = Vector3f(mesh->mNormals[vertexIndex].x, mesh->mNormals[vertexIndex].y, mesh->mNormals[vertexIndex].z);
-				//vertexData.Tangent = Vector3f(mesh->mTangents[vertexIndex].x, mesh->mTangents[vertexIndex].y, mesh->mTangents[vertexIndex].z);
-				//vertexData.Bitangent = Vector3f(mesh->mBitangents[vertexIndex].x, mesh->mBitangents[vertexIndex].y, mesh->mBitangents[vertexIndex].z);
-				vertexData.UV = Vector2f(mesh->mTextureCoords[0][vertexIndex].x, mesh->mTextureCoords[0][vertexIndex].y);
-				vertexData.Color = Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+				vertexData.Position = Vec3f(mesh->mVertices[vertexIndex].x / 70.f, mesh->mVertices[vertexIndex].y / 70.f, mesh->mVertices[vertexIndex].z / 70.f);
+				vertexData.Normal = Vec3f(mesh->mNormals[vertexIndex].x, mesh->mNormals[vertexIndex].y, mesh->mNormals[vertexIndex].z);
+				vertexData.Tangent = Vec3f(mesh->mTangents[vertexIndex].x, mesh->mTangents[vertexIndex].y, mesh->mTangents[vertexIndex].z);
+				vertexData.Bitangent = Vec3f(mesh->mBitangents[vertexIndex].x, mesh->mBitangents[vertexIndex].y, mesh->mBitangents[vertexIndex].z);
+				vertexData.UV = Vec2f(mesh->mTextureCoords[0][vertexIndex].x, mesh->mTextureCoords[0][vertexIndex].y);
+				vertexData.Color = Vec4f(0.5f, 0.5f, 0.5f, 1.0f);
 
 				// Add the vertex data to the layout.
 				subMeshLayout.Vertices.push_back(vertexData);
@@ -79,7 +81,7 @@ namespace Hollow
 			// Add the sub-mesh layout to the main layout.
 			mainLayout.SubMeshes.push_back(subMeshLayout);
 		}
-
+		assimpImporter.FreeScene();
 		return mainLayout;
 	}
 
@@ -89,7 +91,7 @@ namespace Hollow
 		byte* data = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 
 		TextureResourceLayout layout;
-		layout.ImageSize = Vector2i(width, height);
+		layout.ImageSize = Vec2i(width, height);
 		layout.ImageData = MemoryOwnedBuffer(data, width * height * STBI_rgb_alpha);
 		layout.Channels = channels;
 
@@ -129,21 +131,36 @@ namespace Hollow
 
 				aiMaterial* material = scene->mMaterials[i];
 
-				aiString textureName;
-				material->GetTexture(aiTextureType_BASE_COLOR, 0, &textureName);
-
-				if (textureName.length > 0)
+				if(material->GetTextureCount(aiTextureType_BASE_COLOR) > 0)
 				{
+					// BASE COLOR TEXTURE IMPORT
+					aiString textureName;
+					material->GetTexture(aiTextureType_BASE_COLOR, 0, &textureName);
+
 					String texturePath = refreshPath + textureName.C_Str();
 
-					subMeshMaterial.BaseTexture = ImportTexture(texturePath);
-					subMeshMaterial.MaterialIndex = i;
-
-					mainLayout.SubMeshMaterials.push_back(subMeshMaterial);
+					if (textureName.length > 0)
+						subMeshMaterial.BaseTexture = ImportTexture(texturePath);
 				}
+				
+				if (material->GetTextureCount(aiTextureType_NORMALS) > 0)
+				{
+					// NORMAL TEXTURE IMPORT
+					aiString normalTextureName;
+					material->GetTexture(aiTextureType_NORMALS, 0, &normalTextureName);
+
+					String normalTexturePath = refreshPath + normalTextureName.C_Str();
+
+					if (normalTextureName.length > 0)
+						subMeshMaterial.NormalTexture = ImportTexture(normalTexturePath);
+				}
+
+				subMeshMaterial.MaterialIndex = i;
+				mainLayout.SubMeshMaterials.push_back(subMeshMaterial);
 			}
 		}
 
+		assimpImporter.FreeScene();
 		return mainLayout;
 	}
 }

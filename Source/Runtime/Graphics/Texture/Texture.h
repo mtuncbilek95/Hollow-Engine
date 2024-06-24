@@ -19,7 +19,7 @@ namespace Hollow
 		{}
 		~Texture() override = default;
 
-		FORCEINLINE Vector3u GetImageSize() const noexcept { return mImageSize; }
+		FORCEINLINE Vec3u GetImageSize() const noexcept { return mImageSize; }
 		FORCEINLINE byte GetArraySize() const noexcept { return mArraySize; }
 		FORCEINLINE byte GetMipLevels() const noexcept { return mMipLevels; }
 		FORCEINLINE TextureFormat GetImageFormat() const noexcept { return mImageFormat; }
@@ -32,7 +32,7 @@ namespace Hollow
 		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final { return GraphicsDeviceObjectType::Texture; }
 
 	private:
-		Vector3u mImageSize;
+		Vec3u mImageSize;
 		byte mArraySize;
 		byte mMipLevels;
 		TextureFormat mImageFormat;

@@ -10,6 +10,6 @@ namespace Hollow
 	{
 		SharedPtr<RenderPass> RPass;
 		DArray<SharedPtr<TextureBuffer>> Attachments;
-		Vector2u ImageSize;
+		Vec2u ImageSize;
 	};
 }

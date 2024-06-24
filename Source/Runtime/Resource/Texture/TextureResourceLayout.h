@@ -7,7 +7,7 @@ namespace Hollow
 {
 	struct RUNTIME_API TextureResourceLayout
 	{
-		Vector2i ImageSize;
+		Vec2i ImageSize;
 		MemoryOwnedBuffer ImageData;
 		i32 Channels;
 	};

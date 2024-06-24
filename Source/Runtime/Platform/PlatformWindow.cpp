@@ -80,13 +80,13 @@ namespace Hollow
 		glfwPollEvents();
 	}
 
-	void PlatformWindow::SetWindowResolution(const Vector2u& resolution)
+	void PlatformWindow::SetWindowResolution(const Vec2u& resolution)
 	{
 		glfwSetWindowSize(mGLFWHandle, (i32)resolution.x, (i32)resolution.y);
 		mWindowSize = resolution;
 	}
 
-	void PlatformWindow::SetWindowPosition(const Vector2i& position)
+	void PlatformWindow::SetWindowPosition(const Vec2i& position)
 	{
 		glfwSetWindowPos(mGLFWHandle, position.x, position.y);
 		mWindowPosition = position;

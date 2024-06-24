@@ -27,7 +27,7 @@ namespace Hollow
 		EndRenderingImpl();
 	}
 
-	void CommandBuffer::BeginRenderPass(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vector4f& clearColor, const Vector2f& depthStencil)
+	void CommandBuffer::BeginRenderPass(SharedPtr<RenderPass> pRenderPass, SharedPtr<Framebuffer> pFramebuffer, const Vec4f& clearColor, const Vec2f& depthStencil)
 	{
 		BeginRenderPassImpl(pRenderPass, pFramebuffer, clearColor, depthStencil);
 		mBoundRenderPass = pRenderPass;
@@ -56,9 +56,9 @@ namespace Hollow
 		mBoundIndexBuffer = pBuffer;
 	}
 
-	void CommandBuffer::BindDescriptors(SharedPtr<DescriptorSet> ppSet[], u32 amount)
+	void CommandBuffer::BindDescriptors(SharedPtr<DescriptorSet> ppSet[], u32 amount, u32 setIndex)
 	{
-		BindDescriptorsImpl(ppSet, amount);
+		BindDescriptorsImpl(ppSet, amount, setIndex);
 	}
 
 	void CommandBuffer::SetViewports(ViewportDesc pViewports[], byte count)
