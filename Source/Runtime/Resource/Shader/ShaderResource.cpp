@@ -9,7 +9,7 @@ namespace Hollow
 {
 	ShaderResource::ShaderResource() : ResourceSubObject()
 	{
-		mGraphicsDevice = GraphicsManager::GetAPI().GetDefaultDevice();
+		mGraphicsDevice = GraphicsManager::GetAPI().GetDefDevice();
 	}
 
 	void ShaderResource::CompileShader(const String path, const String shaderName, const String EntryPoint, const ShaderStage stage, const ShaderLanguage lang)

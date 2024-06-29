@@ -10,6 +10,7 @@ namespace Hollow
 		Mesh,
 		Texture,
 		Material,
+		RenderTarget,
 		Shader,
 		Scene,
 		Animation,

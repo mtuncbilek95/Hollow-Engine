@@ -7,7 +7,7 @@ namespace Hollow
 {
 	TextureResource::TextureResource() : ResourceSubObject()
 	{
-		mGraphicsDevice = GraphicsManager::GetAPI().GetDefaultDevice();
+		mGraphicsDevice = GraphicsManager::GetAPI().GetDefDevice();
 		CreateInternalResources();
 	}
 
@@ -94,7 +94,7 @@ namespace Hollow
 		mCommandBuffer->SetTextureBarrier(mTexture, postTextureBarrier);
 
 		mCommandBuffer->EndRecording();
-		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
+		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetAPI().GetPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
 
 		mGraphicsDevice->WaitForFence(&mFence, 1);
 		mGraphicsDevice->ResetFences(&mFence, 1);
