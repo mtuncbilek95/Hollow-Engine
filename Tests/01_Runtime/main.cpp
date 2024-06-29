@@ -203,7 +203,7 @@ int main(int argC, char** argV)
 	swapchainDesc.SwapchainUsage = TextureUsage::ColorAttachment;
 	swapchainDesc.VSync = PresentMode::FullVSync;
 	swapchainDesc.SwapchainMode = ShareMode::Exclusive;
-	swapchainDesc.pQueue = GraphicsManager::GetAPI().GetDefaultPresentQueue();
+	swapchainDesc.pQueue = GraphicsManager::GetAPI().GetPresentQueue();
 
 	auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
 #pragma endregion
@@ -400,7 +400,7 @@ int main(int argC, char** argV)
 	mCommandBuffer->SetTextureBarrier(mDepthTexture, depthTextureBarrier);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
+	mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 
 	mDevice->WaitForFence(&mCompileFence, 1);
 	mDevice->ResetFences(&mCompileFence, 1);
@@ -785,7 +785,7 @@ int main(int argC, char** argV)
 	mDevice->UpdateDescriptorSet(mLightDescriptorSet, lightDescriptorUpdateDesc);
 
 	mCommandBuffer->EndRecording();
-	mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
+	mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 
 	mDevice->WaitForFence(&mCompileFence, 1);
 	mDevice->ResetFences(&mCompileFence, 1);
@@ -934,7 +934,7 @@ int main(int argC, char** argV)
 		mCommandBuffers[imageIndex]->EndRecording();
 
 		auto flag = PipelineStageFlags::ColorAttachmentOutput;
-		mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetDefaultPresentQueue(), &mCommandBuffers[imageIndex], 1, nullptr, 0, &flag, nullptr, 0, perFence);
+		mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetPresentQueue(), &mCommandBuffers[imageIndex], 1, nullptr, 0, &flag, nullptr, 0, perFence);
 		mDevice->WaitForFence(&perFence, 1);
 		mDevice->ResetFences(&perFence, 1);
 
