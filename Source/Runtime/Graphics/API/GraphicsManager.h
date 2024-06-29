@@ -25,6 +25,7 @@ namespace Hollow
 		SharedPtr<GraphicsMemory> GetHostMemory() const noexcept { return mHostMemory; }
 		SharedPtr<GraphicsMemory> GetDeviceMemory() const noexcept { return mDeviceMemory; }
 
+		void SetMsaaSamples(const int samples) noexcept { mMsaaSamples = samples; }
 		int GetMsaaSamples() const noexcept { return mMsaaSamples; }
 
 	private:

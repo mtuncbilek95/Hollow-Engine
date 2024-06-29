@@ -1,10 +1,8 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
-#include <Runtime/Graphics/Texture/TextureFormat.h>
-#include <Runtime/Graphics/Texture/TextureType.h>
-#include <Runtime/Graphics/Texture/TextureSampleCount.h>
-#include <Runtime/Graphics/Texture/TextureUsage.h>
+#include <Runtime/Graphics/Texture/Texture.h>
+#include <Runtime/Graphics/Texture/TextureBuffer.h>
 
 namespace Hollow
 {
@@ -16,7 +14,11 @@ namespace Hollow
 		TextureSampleCount SampleCount;
 		TextureUsage ColorUsage;
 		TextureUsage DepthUsage;
-
+		u32 ColorAttachmentCount;
 		Vec2u ImageSize;
+
+		DArray<SharedPtr<Texture>> pColorTextures;
+		DArray<SharedPtr<TextureBuffer>> pColorTextureBuffers;
+		bool HasDepthTexture;
 	};
 }

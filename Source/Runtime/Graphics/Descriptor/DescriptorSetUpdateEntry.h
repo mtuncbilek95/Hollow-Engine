@@ -9,6 +9,7 @@ namespace Hollow
 	struct RUNTIME_API DescriptorSetUpdateEntry
 	{
 		SharedPtr<GraphicsDeviceObject> pResource;
+		SharedPtr<GraphicsDeviceObject> pSampler;
 		DescriptorType Type;
 		u32 Count;
 		u32 ArrayElement;

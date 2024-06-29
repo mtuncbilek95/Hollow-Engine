@@ -3,14 +3,15 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Object/Object.h>
 #include <Runtime/Object/ManagerAPI.h>
+#include <Runtime/Platform/PlatformWindow.h>
 
 namespace Hollow
 {
-	class RUNTIME_API FreeLookCamera : public Object, ManagerAPI<FreeLookCamera>
+	class RUNTIME_API FreeLookCamera : public ManagerAPI<FreeLookCamera>
 	{
 	public:
 		FreeLookCamera();
-		~FreeLookCamera();
+		~FreeLookCamera() = default;
 
 		void Update();
 
@@ -23,6 +24,9 @@ namespace Hollow
 
 		Vec2u GetCameraSize() const { return mCameraSize; }
 
+		Mat4f GetViewMatrix() { return glm::lookAt(mPosition, mPosition + mOrientation, mUp); }
+		Mat4f GetProjectionMatrix() { return glm::perspective(glm::radians(70.0f), (float)mCameraSize.x / (float)mCameraSize.y, 0.1f, 1000.0f); }
+
 	private:
 		Vec3f mPosition;
 		Vec3f mOrientation;
@@ -32,7 +36,8 @@ namespace Hollow
 		float mSensitivity;
 
 		Vec2u mCameraSize;
-
 		bool mFirstMouse;
+
+		GLFWwindow* mWindow;
 	};
 }

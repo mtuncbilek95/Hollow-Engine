@@ -18,14 +18,15 @@ namespace Hollow
 	class RUNTIME_API RenderTarget : public ResourceSubObject
 	{
 	public:
-		RenderTarget();
 		RenderTarget(const RenderTargetDesc& desc);
 		virtual ~RenderTarget() override = default;
 
-		SharedPtr<Texture> GetColorTexture() const { return mColorTexture; }
+		DArray<SharedPtr<Texture>> GetColorTextures() const { return mColorTextures; }
+		SharedPtr<Texture> GetColorTexture(u32 index) const { return mColorTextures[index]; }
 		SharedPtr<Texture> GetDepthTexture() const { return mDepthTexture; }
 
-		SharedPtr<TextureBuffer> GetColorBuffer() const { return mColorBuffer; }
+		DArray<SharedPtr<TextureBuffer>> GetColorBuffers() const { return mColorBuffers; }
+		SharedPtr<TextureBuffer> GetColorBuffer(u32 index) const { return mColorBuffers[index]; }
 		SharedPtr<TextureBuffer> GetDepthBuffer() const { return mDepthBuffer; }
 		
 		virtual ResourceObjectType GetObjectType() const noexcept override { return ResourceObjectType::RenderTarget; }
@@ -35,7 +36,7 @@ namespace Hollow
 		 Everytime a new layout is set, current layout will be updated. So each time a new layout is set, the previous layout will be updated.
 		 There is one job to do, which is to define the next layout for barrier.
 		 */
-		void NewLayoutForColor(const RenderTargetBarrier desc);
+		void NewLayoutForColor(const RenderTargetBarrier desc, u32 texIndex);
 		/* 
 		 Every buffer starts with the unkown layout at top of pipe. This function help with the transition. 
 		 Everytime a new layout is set, current layout will be updated. So each time a new layout is set, the previous layout will be updated.
@@ -47,10 +48,10 @@ namespace Hollow
 		void CreateInternalResources();
 
 	private:
-		SharedPtr<Texture> mColorTexture;
+		DArray<SharedPtr<Texture>> mColorTextures;
 		SharedPtr<Texture> mDepthTexture;
 
-		SharedPtr<TextureBuffer> mColorBuffer;
+		DArray<SharedPtr<TextureBuffer>> mColorBuffers;
 		SharedPtr<TextureBuffer> mDepthBuffer;
 
 		SharedPtr<GraphicsDevice> mGraphicsDevice;
@@ -70,7 +71,7 @@ namespace Hollow
 
 		Vec2u mImageSize;
 
-		RenderTargetBarrier mColorBarrier;
+		DArray<RenderTargetBarrier> mColorBarriers;
 		RenderTargetBarrier mDepthBarrier;
 	};
 }

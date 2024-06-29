@@ -557,7 +557,17 @@ namespace Hollow
 			}
 			case DescriptorType::CombinedImageSampler:
 			{
-				// Add code for handling CombinedImageSampler descriptor type
+				auto pView = std::static_pointer_cast<VulkanTextureBuffer>(desc.Entries[i].pResource);
+				auto pSampler = std::static_pointer_cast<VulkanSampler>(desc.Entries[i].pSampler);
+
+				VkDescriptorImageInfo imageInfo = {};
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = pView->GetVkTextureBuffer();
+				imageInfo.sampler = pSampler->GetVkSampler();
+				writeImageInformations[imageIndex] = imageInfo;
+				writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				imageIndex++;
 				break;
 			}
 			case DescriptorType::SampledImage:
@@ -576,7 +586,16 @@ namespace Hollow
 			}
 			case DescriptorType::StorageImage:
 			{
-				// Add code for handling StorageImage descriptor type
+				auto pView = std::static_pointer_cast<VulkanTextureBuffer>(desc.Entries[i].pResource);
+
+				VkDescriptorImageInfo imageInfo = {};
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+				imageInfo.imageView = pView->GetVkTextureBuffer();
+				imageInfo.sampler = VK_NULL_HANDLE;
+				writeImageInformations[imageIndex] = imageInfo;
+				writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+				imageIndex++;
 				break;
 			}
 			case DescriptorType::UniformTexelBuffer:
@@ -619,7 +638,16 @@ namespace Hollow
 			}
 			case DescriptorType::UniformBufferDynamic:
 			{
-				// Add code for handling UniformBufferDynamic descriptor type
+				auto pBuffer = std::static_pointer_cast<VulkanBuffer>(desc.Entries[i].pResource);
+
+				VkDescriptorBufferInfo bufferInfo = {};
+				bufferInfo.buffer = pBuffer->GetVkBuffer();
+				bufferInfo.offset = desc.Entries[i].BufferOffset;
+				bufferInfo.range = pBuffer->GetTotalSizeInBytes();
+				writeBufferInformations[bufferIndex] = bufferInfo;
+				writeInfo.pBufferInfo = &writeBufferInformations[bufferIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+				bufferIndex++;
 				break;
 			}
 			case DescriptorType::StorageBufferDynamic:

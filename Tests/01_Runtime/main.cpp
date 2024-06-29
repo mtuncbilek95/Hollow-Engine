@@ -767,20 +767,20 @@ int main(int argC, char** argV)
 	for (i32 i = 0; i < mDescriptorSets.size(); i++)
 	{
 		DescriptorSetUpdateDesc descriptorUpdateDesc = {};
-		descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
-		descriptorUpdateDesc.Entries.push_back({ mSampler, DescriptorType::Sampler, 1, 0, 0, 1 });
-		descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[mMeshResources[i].first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 2 });
+		descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, nullptr, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
+		descriptorUpdateDesc.Entries.push_back({ mSampler, nullptr, DescriptorType::Sampler, 1, 0, 0, 1 });
+		descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[mMeshResources[i].first]->GetTextureBuffer(), nullptr, DescriptorType::SampledImage, 1, 0, 0, 2 });
 
 		if (mNormalTextureResources.find(mMeshResources[i].first) != mNormalTextureResources.end())
-			descriptorUpdateDesc.Entries.push_back({ mNormalTextureResources[mMeshResources[i].first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 3 });
+			descriptorUpdateDesc.Entries.push_back({ mNormalTextureResources[mMeshResources[i].first]->GetTextureBuffer(), nullptr, DescriptorType::SampledImage, 1, 0, 0, 3 });
 		else
-			descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[mMeshResources[i].first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 3 });
+			descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[mMeshResources[i].first]->GetTextureBuffer(), nullptr, DescriptorType::SampledImage, 1, 0, 0, 3 });
 
 		mDevice->UpdateDescriptorSet(mDescriptorSets[i], descriptorUpdateDesc);
 	}
 
 	DescriptorSetUpdateDesc lightDescriptorUpdateDesc = {};
-	lightDescriptorUpdateDesc.Entries.push_back({ mLightBuffer, DescriptorType::StorageBuffer, 1, 0, 0, 0 });
+	lightDescriptorUpdateDesc.Entries.push_back({ mLightBuffer, nullptr, DescriptorType::StorageBuffer, 1, 0, 0, 0 });
 
 	mDevice->UpdateDescriptorSet(mLightDescriptorSet, lightDescriptorUpdateDesc);
 
@@ -894,14 +894,14 @@ int main(int argC, char** argV)
 			auto descriptorSet = mDescriptorSets[index];
 
 			DescriptorSetUpdateDesc descriptorUpdateDesc = {};
-			descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
-			descriptorUpdateDesc.Entries.push_back({ mSampler, DescriptorType::Sampler, 1, 0, 0, 1 });
-			descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[meshRes.first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 2 });
+			descriptorUpdateDesc.Entries.push_back({ mUniformBuffer, nullptr, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
+			descriptorUpdateDesc.Entries.push_back({ mSampler, nullptr, DescriptorType::Sampler, 1, 0, 0, 1 });
+			descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[meshRes.first]->GetTextureBuffer(), nullptr, DescriptorType::SampledImage, 1, 0, 0, 2 });
 
 			if (mNormalTextureResources.find(mMeshResources[index].first) != mNormalTextureResources.end())
-				descriptorUpdateDesc.Entries.push_back({ mNormalTextureResources[mMeshResources[index].first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 3 });
+				descriptorUpdateDesc.Entries.push_back({ mNormalTextureResources[mMeshResources[index].first]->GetTextureBuffer(), nullptr, DescriptorType::SampledImage, 1, 0, 0, 3 });
 			else
-				descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[mMeshResources[index].first]->GetTextureBuffer(), DescriptorType::SampledImage, 1, 0, 0, 3 });
+				descriptorUpdateDesc.Entries.push_back({ mBaseTextureResources[mMeshResources[index].first]->GetTextureBuffer(), nullptr, DescriptorType::SampledImage, 1, 0, 0, 3 });
 
 			mDevice->UpdateDescriptorSet(descriptorSet, descriptorUpdateDesc);
 

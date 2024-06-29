@@ -55,7 +55,7 @@ namespace Hollow
 				VertexData vertexData;
 
 				// Get the vertex data from the mesh via Assimp.
-				vertexData.Position = Vec3f(mesh->mVertices[vertexIndex].x / 70.f, mesh->mVertices[vertexIndex].y / 70.f, mesh->mVertices[vertexIndex].z / 70.f);
+				vertexData.Position = Vec3f(mesh->mVertices[vertexIndex].x, mesh->mVertices[vertexIndex].y, mesh->mVertices[vertexIndex].z);
 				vertexData.Normal = Vec3f(mesh->mNormals[vertexIndex].x, mesh->mNormals[vertexIndex].y, mesh->mNormals[vertexIndex].z);
 				vertexData.Tangent = Vec3f(mesh->mTangents[vertexIndex].x, mesh->mTangents[vertexIndex].y, mesh->mTangents[vertexIndex].z);
 				vertexData.Bitangent = Vec3f(mesh->mBitangents[vertexIndex].x, mesh->mBitangents[vertexIndex].y, mesh->mBitangents[vertexIndex].z);

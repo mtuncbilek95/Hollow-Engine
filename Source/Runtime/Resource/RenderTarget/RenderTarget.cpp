@@ -5,135 +5,106 @@
 
 namespace Hollow
 {
-	RenderTarget::RenderTarget() : ResourceSubObject()
-	{
-		CreateInternalResources();
-
-		TextureDesc colorTextureDesc = {};
-		colorTextureDesc.ArraySize = 1;
-		colorTextureDesc.ImageFormat = mGraphicsDevice->GetSwapchain()->GetSwapchainFormat();
-		colorTextureDesc.ImageSize = { mGraphicsDevice->GetSwapchain()->GetImageSize().x, mGraphicsDevice->GetSwapchain()->GetImageSize().y, 1 };
-		colorTextureDesc.MipLevels = 1;
-		colorTextureDesc.SampleCount = static_cast<TextureSampleCount>(GraphicsManager::GetAPI().GetMsaaSamples());
-		colorTextureDesc.Type = (int)colorTextureDesc.SampleCount > 1 ? TextureType::Texture2DMS : TextureType::Texture2D;
-		colorTextureDesc.Usage = TextureUsage::ColorAttachment;
-		colorTextureDesc.pMemory = mDeviceMemory;
-
-		mColorTexture = mGraphicsDevice->CreateTexture(colorTextureDesc);
-
-		TextureBufferDesc colorBufferDesc = {};
-		colorBufferDesc.pTexture = mColorTexture;
-		colorBufferDesc.ArrayLayer = 0;
-		colorBufferDesc.AspectFlags = TextureAspectFlags::ColorAspect;
-		colorBufferDesc.MipLevel = 0;
-
-		mColorBuffer = mGraphicsDevice->CreateTextureBuffer(colorBufferDesc);
-
-		TextureDesc depthTextureDesc = {};
-		depthTextureDesc.ArraySize = 1;
-		depthTextureDesc.ImageFormat = TextureFormat::D32_Float;
-		depthTextureDesc.ImageSize = { mGraphicsDevice->GetSwapchain()->GetImageSize().x, mGraphicsDevice->GetSwapchain()->GetImageSize().y, 1 };
-		depthTextureDesc.MipLevels = 1;
-		depthTextureDesc.SampleCount = static_cast<TextureSampleCount>(GraphicsManager::GetAPI().GetMsaaSamples());
-		depthTextureDesc.Type = (int)depthTextureDesc.SampleCount > 1 ? TextureType::Texture2DMS : TextureType::Texture2D;
-		depthTextureDesc.Usage = TextureUsage::DepthStencilAttachment;
-		depthTextureDesc.pMemory = mDeviceMemory;
-
-		mDepthTexture = mGraphicsDevice->CreateTexture(depthTextureDesc);
-
-		TextureBufferDesc depthBufferDesc = {};
-		depthBufferDesc.pTexture = mDepthTexture;
-		depthBufferDesc.ArrayLayer = 0;
-		depthBufferDesc.AspectFlags = TextureAspectFlags::DepthAspect;
-		depthBufferDesc.MipLevel = 0;
-
-		mDepthBuffer = mGraphicsDevice->CreateTextureBuffer(depthBufferDesc);
-
-		mColorBarrier = {};
-		mColorBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::Unknown;
-		mColorBarrier.DestinationQueue = GraphicsQueueType::Graphics;
-		mColorBarrier.NewLayout = TextureMemoryLayout::Unknown;
-		mColorBarrier.DestinationStageFlags = PipelineStageFlags::TopOfPipe;
-		mColorBarrier.AspectMask = TextureAspectFlags::ColorAspect;
-
-		mDepthBarrier = {};
-		mDepthBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::Unknown;
-		mDepthBarrier.DestinationQueue = GraphicsQueueType::Graphics;
-		mDepthBarrier.NewLayout = TextureMemoryLayout::Unknown;
-		mDepthBarrier.DestinationStageFlags = PipelineStageFlags::TopOfPipe;
-		mDepthBarrier.AspectMask = TextureAspectFlags::DepthAspect;
-	}
-
-	RenderTarget::RenderTarget(const RenderTargetDesc& desc) : ResourceSubObject(), mColorFormat(desc.ColorFormat), 
-		mDepthFormat(desc.DepthFormat), mTargetType(desc.TargetType), mSampleCount(desc.SampleCount), mColorUsage(desc.ColorUsage), 
+	RenderTarget::RenderTarget(const RenderTargetDesc& desc) : ResourceSubObject(), mColorFormat(desc.ColorFormat),
+		mDepthFormat(desc.DepthFormat), mTargetType(desc.TargetType), mSampleCount(desc.SampleCount), mColorUsage(desc.ColorUsage),
 		mDepthUsage(desc.DepthUsage), mImageSize(desc.ImageSize)
 	{
 		CreateInternalResources();
 
-		TextureDesc colorTextureDesc = {};
-		colorTextureDesc.ArraySize = 1;
-		colorTextureDesc.ImageFormat = desc.ColorFormat;
-		colorTextureDesc.ImageSize = { desc.ImageSize.x, desc.ImageSize.y, 1 };
-		colorTextureDesc.MipLevels = 1;
-		colorTextureDesc.SampleCount = desc.SampleCount;
-		colorTextureDesc.Type = desc.TargetType;
-		colorTextureDesc.Usage = desc.ColorUsage;
-		colorTextureDesc.pMemory = mDeviceMemory;
+		if (desc.ColorAttachmentCount > 0)
+		{
+			for (u32 i = 0; i < desc.ColorAttachmentCount; i++)
+			{
+				TextureDesc colorTextureDesc = {};
+				colorTextureDesc.ArraySize = 1;
+				colorTextureDesc.ImageFormat = desc.ColorFormat;
+				colorTextureDesc.ImageSize = { desc.ImageSize.x, desc.ImageSize.y, 1 };
+				colorTextureDesc.MipLevels = 1;
+				colorTextureDesc.SampleCount = desc.SampleCount;
+				colorTextureDesc.Type = desc.TargetType;
+				colorTextureDesc.Usage = desc.ColorUsage;
+				colorTextureDesc.pMemory = mDeviceMemory;
 
-		mColorTexture = mGraphicsDevice->CreateTexture(colorTextureDesc);
+				mColorTextures.push_back(mGraphicsDevice->CreateTexture(colorTextureDesc));
 
-		TextureBufferDesc colorBufferDesc = {};
-		colorBufferDesc.pTexture = mColorTexture;
-		colorBufferDesc.ArrayLayer = 0;
-		colorBufferDesc.AspectFlags = TextureAspectFlags::ColorAspect;
-		colorBufferDesc.MipLevel = 0;
+				TextureBufferDesc colorBufferDesc = {};
+				colorBufferDesc.pTexture = mColorTextures[0];
+				colorBufferDesc.ArrayLayer = 0;
+				colorBufferDesc.AspectFlags = TextureAspectFlags::ColorAspect;
+				colorBufferDesc.MipLevel = 0;
 
-		mColorBuffer = mGraphicsDevice->CreateTextureBuffer(colorBufferDesc);
+				mColorBuffers.push_back(mGraphicsDevice->CreateTextureBuffer(colorBufferDesc));
 
-		TextureDesc depthTextureDesc = {};
-		depthTextureDesc.ArraySize = 1;
-		depthTextureDesc.ImageFormat = desc.DepthFormat;
-		depthTextureDesc.ImageSize = { desc.ImageSize.x, desc.ImageSize.y, 1 };
-		depthTextureDesc.MipLevels = 1;
-		depthTextureDesc.SampleCount = desc.SampleCount;
-		depthTextureDesc.Type = desc.TargetType;
-		depthTextureDesc.Usage = desc.DepthUsage;
-		depthTextureDesc.pMemory = mDeviceMemory;
+				RenderTargetBarrier colorBarrier = {};
+				colorBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::Unknown;
+				colorBarrier.DestinationQueue = GraphicsQueueType::Graphics;
+				colorBarrier.NewLayout = TextureMemoryLayout::Unknown;
+				colorBarrier.DestinationStageFlags = PipelineStageFlags::TopOfPipe;
+				colorBarrier.AspectMask = TextureAspectFlags::ColorAspect;
 
-		mDepthTexture = mGraphicsDevice->CreateTexture(depthTextureDesc);
+				mColorBarriers.push_back(colorBarrier);
+			}
 
-		TextureBufferDesc depthBufferDesc = {};
-		depthBufferDesc.pTexture = mDepthTexture;
-		depthBufferDesc.ArrayLayer = 0;
-		depthBufferDesc.AspectFlags = TextureAspectFlags::DepthAspect;
-		depthBufferDesc.MipLevel = 0;
+			if (desc.HasDepthTexture)
+			{
+				TextureDesc depthTextureDesc = {};
+				depthTextureDesc.ArraySize = 1;
+				depthTextureDesc.ImageFormat = desc.DepthFormat;
+				depthTextureDesc.ImageSize = { desc.ImageSize.x, desc.ImageSize.y, 1 };
+				depthTextureDesc.MipLevels = 1;
+				depthTextureDesc.SampleCount = desc.SampleCount;
+				depthTextureDesc.Type = desc.TargetType;
+				depthTextureDesc.Usage = desc.DepthUsage;
+				depthTextureDesc.pMemory = mDeviceMemory;
 
-		mDepthBuffer = mGraphicsDevice->CreateTextureBuffer(depthBufferDesc);
+				mDepthTexture = mGraphicsDevice->CreateTexture(depthTextureDesc);
 
-		mColorBarrier = {};
-		mColorBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::Unknown;
-		mColorBarrier.DestinationQueue = GraphicsQueueType::Graphics;
-		mColorBarrier.NewLayout = TextureMemoryLayout::Unknown;
-		mColorBarrier.DestinationStageFlags = PipelineStageFlags::TopOfPipe;
-		mColorBarrier.AspectMask = TextureAspectFlags::ColorAspect;
+				TextureBufferDesc depthBufferDesc = {};
+				depthBufferDesc.pTexture = mDepthTexture;
+				depthBufferDesc.ArrayLayer = 0;
+				depthBufferDesc.AspectFlags = TextureAspectFlags::DepthAspect;
+				depthBufferDesc.MipLevel = 0;
 
-		mDepthBarrier = {};
-		mDepthBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::Unknown;
-		mDepthBarrier.DestinationQueue = GraphicsQueueType::Graphics;
-		mDepthBarrier.NewLayout = TextureMemoryLayout::Unknown;
-		mDepthBarrier.DestinationStageFlags = PipelineStageFlags::TopOfPipe;
-		mDepthBarrier.AspectMask = TextureAspectFlags::DepthAspect;
+				mDepthBuffer = mGraphicsDevice->CreateTextureBuffer(depthBufferDesc);
+
+				RenderTargetBarrier depthBarrier = {};
+				depthBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::Unknown;
+				depthBarrier.DestinationQueue = GraphicsQueueType::Graphics;
+				depthBarrier.NewLayout = TextureMemoryLayout::Unknown;
+				depthBarrier.DestinationStageFlags = PipelineStageFlags::TopOfPipe;
+				depthBarrier.AspectMask = TextureAspectFlags::DepthAspect;
+
+				mDepthBarrier = depthBarrier;
+			}
+		}
+		else
+		{
+			mColorTextures = desc.pColorTextures;
+			mColorBuffers = desc.pColorTextureBuffers;
+
+			for (i32 i = 0; i < mColorTextures.size(); i++)
+			{
+				RenderTargetBarrier colorBarrier = {};
+				colorBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::Unknown;
+				colorBarrier.DestinationQueue = GraphicsQueueType::Graphics;
+				colorBarrier.NewLayout = TextureMemoryLayout::Unknown;
+				colorBarrier.DestinationStageFlags = PipelineStageFlags::TopOfPipe;
+				colorBarrier.AspectMask = TextureAspectFlags::ColorAspect;
+
+				mColorBarriers.push_back(colorBarrier);
+			}
+		}
 	}
 
-	void RenderTarget::NewLayoutForColor(const RenderTargetBarrier desc)
+	void RenderTarget::NewLayoutForColor(const RenderTargetBarrier desc, u32 texIndex)
 	{
 		TextureBarrierUpdateDesc colorBarrier = {};
 		colorBarrier.MipIndex = 0;
 		colorBarrier.ArrayIndex = 0;
-		colorBarrier.SourceAccessMask = mColorBarrier.DestinationAccessMask;
-		colorBarrier.SourceQueue = mColorBarrier.DestinationQueue;
-		colorBarrier.OldLayout = mColorBarrier.NewLayout;
-		colorBarrier.SourceStageFlags = mColorBarrier.DestinationStageFlags;
+		colorBarrier.SourceAccessMask = mColorBarriers[texIndex].DestinationAccessMask;
+		colorBarrier.SourceQueue = mColorBarriers[texIndex].DestinationQueue;
+		colorBarrier.OldLayout = mColorBarriers[texIndex].NewLayout;
+		colorBarrier.SourceStageFlags = mColorBarriers[texIndex].DestinationStageFlags;
 
 		colorBarrier.DestinationAccessMask = desc.DestinationAccessMask;
 		colorBarrier.DestinationQueue = desc.DestinationQueue;
@@ -143,7 +114,7 @@ namespace Hollow
 		colorBarrier.AspectMask = desc.AspectMask;
 
 		mCommandBuffer->BeginRecording();
-		mCommandBuffer->SetTextureBarrier(mColorTexture, colorBarrier);
+		mCommandBuffer->SetTextureBarrier(mColorTextures[texIndex], colorBarrier);
 		mCommandBuffer->EndRecording();
 
 		mGraphicsDevice->SubmitToQueue(GraphicsManager::GetAPI().GetPresentQueue(), &mCommandBuffer, 1, nullptr, 0, nullptr, nullptr, 0, mFence);
@@ -151,7 +122,7 @@ namespace Hollow
 		mGraphicsDevice->WaitForFence(&mFence, 1);
 		mGraphicsDevice->ResetFences(&mFence, 1);
 
-		mColorBarrier = desc;
+		mColorBarriers[texIndex] = desc;
 	}
 
 	void RenderTarget::NewLayoutForDepth(const RenderTargetBarrier desc)

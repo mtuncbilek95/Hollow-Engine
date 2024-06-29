@@ -1,6 +1,5 @@
 #version 460
-
-#include "Lights/Lights.glsl"
+#include "Lights.glsl"
 #include "Common.glsl"
 
 layout(location = 0) in vec4 fragColor;
