@@ -53,5 +53,7 @@ change the mDeviceMemory and the mHostMemory. Otherwise, the program will create
 ![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/4151e3d1-92ac-40ba-8aaa-e155ca1a06c5)
 - [x] Sponza Import
 ![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/571c0793-efb3-4b05-b82d-4d96932247a2)
+- [x] Sponza Diffuse Light
+![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/88eb8afd-6a66-495c-89e5-1c19686b94fc)
 - [ ] PBR Material
 - [ ] Basic Imgui Renderer
