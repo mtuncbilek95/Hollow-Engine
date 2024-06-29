@@ -15,16 +15,17 @@ namespace Hollow
 
 		// The budget memories are in megabytes
 		void SetMemoryBudget(const u64 hostMemoryBudget, const u64 deviceMemoryBudget) noexcept;
-		void SetResourceBudget(const u64 resourceCount, const u64 setCount) noexcept;
 
-		SharedPtr<GraphicsDevice> GetDefaultDevice() const noexcept { return mGraphicsDevice; }
+		SharedPtr<GraphicsDevice> GetDefDevice() const noexcept { return mGraphicsDevice; }
 
-		SharedPtr<GraphicsQueue> GetDefaultPresentQueue() const noexcept { return mPresentQueue; }
-		SharedPtr<GraphicsQueue> GetDefaultComputeQueue() const noexcept { return mComputeQueue; }
-		SharedPtr<GraphicsQueue> GetDefaultTransferQueue() const noexcept { return mTransferQueue; }
+		SharedPtr<GraphicsQueue> GetPresentQueue() const noexcept { return mPresentQueue; }
+		SharedPtr<GraphicsQueue> GetComputeQueue() const noexcept { return mComputeQueue; }
+		SharedPtr<GraphicsQueue> GetTransferQueue() const noexcept { return mTransferQueue; }
 
-		SharedPtr<GraphicsMemory> GetDefaultHostMemory() const noexcept { return mHostMemory; }
-		SharedPtr<GraphicsMemory> GetDefaultDeviceMemory() const noexcept { return mDeviceMemory; }
+		SharedPtr<GraphicsMemory> GetHostMemory() const noexcept { return mHostMemory; }
+		SharedPtr<GraphicsMemory> GetDeviceMemory() const noexcept { return mDeviceMemory; }
+
+		int GetMsaaSamples() const noexcept { return mMsaaSamples; }
 
 	private:
 		void SetGraphicsDevice(SharedPtr<GraphicsDevice> device);
@@ -39,6 +40,6 @@ namespace Hollow
 		SharedPtr<GraphicsMemory> mHostMemory;
 		SharedPtr<GraphicsMemory> mDeviceMemory;
 
-		SharedPtr<DescriptorPool> mDescriptorPool;
+		int mMsaaSamples = 1;
 	};
 }

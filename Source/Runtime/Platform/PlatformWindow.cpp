@@ -53,7 +53,7 @@ namespace Hollow
 			{
 				PlatformWindow* platformWindow = static_cast<PlatformWindow*>(glfwGetWindowUserPointer(window));
 				platformWindow->mWindowSize = { (u32)width, (u32)height };
-				GraphicsManager::GetAPI().GetDefaultDevice()->GetSwapchain()->Resize(platformWindow->mWindowSize);
+				GraphicsManager::GetAPI().GetDefDevice()->GetSwapchain()->Resize(platformWindow->mWindowSize);
 			});
 	}
 

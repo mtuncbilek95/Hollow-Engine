@@ -15,25 +15,6 @@ namespace Hollow
 		mDeviceMemory = mGraphicsDevice->CreateGraphicsMemory(deviceMemoryDesc);
 	}
 
-	void GraphicsManager::SetResourceBudget(const u64 resourceCount, const u64 setCount) noexcept
-	{
-		DescriptorPoolDesc poolDesc = {};
-		poolDesc.PoolSizes =
-		{
-			{DescriptorType::Sampler, resourceCount },
-			{DescriptorType::UniformBuffer, resourceCount },
-			{DescriptorType::SampledImage, resourceCount },
-			{DescriptorType::StorageImage, resourceCount },
-			{DescriptorType::StorageBuffer, resourceCount },
-			{DescriptorType::UniformTexelBuffer, resourceCount },
-			{DescriptorType::StorageTexelBuffer, resourceCount },
-			{DescriptorType::InputAttachment, resourceCount }
-		};
-
-		poolDesc.MaxSets = setCount;
-		mDescriptorPool = mGraphicsDevice->CreateDescriptorPool(poolDesc);
-	}
-
 	void GraphicsManager::SetGraphicsDevice(SharedPtr<GraphicsDevice> device)
 	{
 		if (!mGraphicsDevice)

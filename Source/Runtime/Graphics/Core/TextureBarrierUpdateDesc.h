@@ -27,8 +27,6 @@ namespace Hollow
 		PipelineStageFlags DestinationStageFlags;
 		GraphicsQueueType DestinationQueue;
 
-		SharedPtr<Texture> pTexture;
-
 		TextureAspectFlags AspectMask;
 		u32 MipIndex;
 		u32 ArrayIndex;
