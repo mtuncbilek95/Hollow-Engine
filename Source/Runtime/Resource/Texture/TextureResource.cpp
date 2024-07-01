@@ -18,12 +18,13 @@ namespace Hollow
 		mPreAllocate = bPreAllocate;
 	}
 
-	void TextureResource::CreateTextureAndBuffer(const TextureDesc& desc)
+	void TextureResource::CreateTextureAndBuffer(const TextureDesc& desc, const TextureType viewType)
 	{
 		mTexture = mGraphicsDevice->CreateTexture(desc);
 
 		TextureBufferDesc bufferDesc = {};
 		bufferDesc.pTexture = mTexture;
+		bufferDesc.Type = viewType;
 		bufferDesc.ArrayLayer = 0;
 		bufferDesc.AspectFlags = TextureAspectFlags::ColorAspect;
 		bufferDesc.MipLevel = 0;

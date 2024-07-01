@@ -39,9 +39,9 @@ namespace Hollow
 			if (glfwGetKey(mWindow, GLFW_KEY_D) == GLFW_PRESS)
 				mPosition += mSpeed * Math::normalize(Math::cross(mOrientation, mUp));
 			if (glfwGetKey(mWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
-				mPosition += mSpeed * mUp;
-			if (glfwGetKey(mWindow, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 				mPosition += mSpeed * -mUp;
+			if (glfwGetKey(mWindow, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+				mPosition += mSpeed * mUp;
 			if (glfwGetKey(mWindow, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				mSpeed = 0.4f;
 			else if (glfwGetKey(mWindow, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)

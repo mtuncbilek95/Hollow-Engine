@@ -5,6 +5,7 @@
 #include <Runtime/Graphics/Texture/TextureUsage.h>
 #include <Runtime/Graphics/Texture/TextureSampleCount.h>
 #include <Runtime/Graphics/Texture/TextureType.h>
+#include <Runtime/Graphics/Texture/TextureCreateFlags.h>
 #include <Runtime/Graphics/Memory/GraphicsMemory.h>
 
 namespace Hollow
@@ -18,6 +19,7 @@ namespace Hollow
 		TextureUsage Usage;
 		TextureSampleCount SampleCount;
 		TextureType Type;
+		TextureCreateFlags Flags;
 
 		SharedPtr<GraphicsMemory> pMemory;
 	};

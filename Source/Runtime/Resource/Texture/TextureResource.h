@@ -22,7 +22,7 @@ namespace Hollow
 		SharedPtr<TextureBuffer> GetTextureBuffer() const { return mTextureBuffer; }
 
 		void ConnectMemory(const SharedPtr<GraphicsMemory>& hostMemory, const SharedPtr<GraphicsMemory>& deviceMemory, bool bPreAllocate = true);
-		void CreateTextureAndBuffer(const TextureDesc& desc);
+		void CreateTextureAndBuffer(const TextureDesc& desc, const TextureType viewType);
 
 		void UpdateTextureAndBuffer(MemoryOwnedBuffer pBuffer, u32 offset);
 

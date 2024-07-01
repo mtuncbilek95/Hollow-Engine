@@ -13,9 +13,9 @@ namespace Hollow
 	class RUNTIME_API Texture : public GraphicsDeviceObject
 	{
 	public:
-		Texture(const TextureDesc& desc, SharedPtr<GraphicsDevice> device) : GraphicsDeviceObject(device), mImageSize(desc.ImageSize), 
-			mArraySize(desc.ArraySize), mMipLevels(desc.MipLevels), mImageFormat(desc.ImageFormat), mUsage(desc.Usage), 
-			mSampleCount(desc.SampleCount), mType(desc.Type), mMemory(desc.pMemory)
+		Texture(const TextureDesc& desc, SharedPtr<GraphicsDevice> device) : GraphicsDeviceObject(device), mImageSize(desc.ImageSize),
+			mArraySize(desc.ArraySize), mMipLevels(desc.MipLevels), mImageFormat(desc.ImageFormat), mUsage(desc.Usage),
+			mSampleCount(desc.SampleCount), mType(desc.Type), mFlags(desc.Flags), mMemory(desc.pMemory)
 		{}
 		~Texture() override = default;
 
@@ -39,6 +39,7 @@ namespace Hollow
 		TextureUsage mUsage;
 		TextureSampleCount mSampleCount;
 		TextureType mType;
+		TextureCreateFlags mFlags;
 
 		SharedPtr<GraphicsMemory> mMemory;
 	};

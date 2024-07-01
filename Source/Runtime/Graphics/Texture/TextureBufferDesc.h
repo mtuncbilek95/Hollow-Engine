@@ -10,6 +10,7 @@ namespace Hollow
 	{
 		SharedPtr<Texture> pTexture;
 		TextureAspectFlags AspectFlags;
+		TextureType Type;
 		byte MipLevel;
 		byte ArrayLayer;
 	};

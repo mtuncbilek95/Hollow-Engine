@@ -660,7 +660,7 @@ int main(int argC, char** argV)
 			textureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
 			textureDesc.pMemory = mDeviceMemory;
 
-			texRes->CreateTextureAndBuffer(textureDesc);
+			texRes->CreateTextureAndBuffer(textureDesc, TextureType::Texture2D);
 			texRes->UpdateTextureAndBuffer(material.BaseTexture.ImageData, 0);
 
 			mBaseTextureResources[material.MaterialIndex] = texRes;
@@ -682,7 +682,7 @@ int main(int argC, char** argV)
 			textureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
 			textureDesc.pMemory = mDeviceMemory;
 
-			normRes->CreateTextureAndBuffer(textureDesc);
+			normRes->CreateTextureAndBuffer(textureDesc, TextureType::Texture2D);
 			normRes->UpdateTextureAndBuffer(material.NormalTexture.ImageData, 0);
 
 			mNormalTextureResources[material.MaterialIndex] = normRes;

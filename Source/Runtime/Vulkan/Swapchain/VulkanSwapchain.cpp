@@ -175,6 +175,7 @@ namespace Hollow
 			viewDesc.ArrayLayer = 0;
 			viewDesc.MipLevel = 0;
 			viewDesc.AspectFlags = TextureAspectFlags::ColorAspect;
+			viewDesc.Type = TextureType::Texture2D;
 
 			auto pTextureView = device->CreateTextureBuffer(viewDesc);
 			AddTextureBuffer(pTextureView);

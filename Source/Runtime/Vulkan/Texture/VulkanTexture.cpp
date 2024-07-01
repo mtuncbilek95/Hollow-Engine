@@ -22,7 +22,7 @@ namespace Hollow
 		imageInfo.usage = VulkanTextureUtils::GetVkTextureUsageFlags(desc.Usage);
 		imageInfo.samples = VulkanTextureUtils::GetVkSampleCount(desc.SampleCount);
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		imageInfo.flags = 0;
+		imageInfo.flags = VulkanTextureUtils::GetVkImageCreateFlags(desc.Flags);
 
 		CORE_ASSERT(vkCreateImage(mVkDevice, &imageInfo, nullptr, &mVkTexture) == VK_SUCCESS, "VulkanTexture", "Failed to create image");
 

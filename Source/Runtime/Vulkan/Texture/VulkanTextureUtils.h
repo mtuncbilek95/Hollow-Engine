@@ -186,6 +186,40 @@ namespace Hollow
 			}
 		}
 
+		static VkImageCreateFlags GetVkImageCreateFlags(TextureCreateFlags flags)
+		{
+			VkImageCreateFlags vkFlags = VkImageCreateFlags();
+
+			if(flags & TextureCreateFlags::None)
+				return 0;
+			if (flags & TextureCreateFlags::SparseBinding)
+				vkFlags |= VK_IMAGE_CREATE_SPARSE_BINDING_BIT;
+			if (flags & TextureCreateFlags::SparseResidency)
+				vkFlags |= VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT;
+			if (flags & TextureCreateFlags::SparseAliased)
+				vkFlags |= VK_IMAGE_CREATE_SPARSE_ALIASED_BIT;
+			if (flags & TextureCreateFlags::MutableFormat)
+				vkFlags |= VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT;
+			if (flags & TextureCreateFlags::CubeMap)
+				vkFlags |= VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+			if (flags & TextureCreateFlags::Array2D)
+				vkFlags |= VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT;
+			if (flags & TextureCreateFlags::SplitInstanceBindRegions)
+				vkFlags |= VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT;
+			if (flags & TextureCreateFlags::BlockTexelView)
+				vkFlags |= VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT;
+			if (flags & TextureCreateFlags::ExtendedUsage)
+				vkFlags |= VK_IMAGE_CREATE_EXTENDED_USAGE_BIT;
+			if (flags & TextureCreateFlags::Disjoint)
+				vkFlags |= VK_IMAGE_CREATE_DISJOINT_BIT;
+			if (flags & TextureCreateFlags::Alias)
+				vkFlags |= VK_IMAGE_CREATE_ALIAS_BIT;
+			if (flags & TextureCreateFlags::Protected)
+				vkFlags |= VK_IMAGE_CREATE_PROTECTED_BIT;
+
+			return vkFlags;
+		}
+
 	private:
 		VulkanTextureUtils() = delete;
 		~VulkanTextureUtils() = delete;

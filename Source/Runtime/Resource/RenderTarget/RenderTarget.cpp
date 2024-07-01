@@ -32,6 +32,7 @@ namespace Hollow
 				colorBufferDesc.ArrayLayer = 0;
 				colorBufferDesc.AspectFlags = TextureAspectFlags::ColorAspect;
 				colorBufferDesc.MipLevel = 0;
+				colorBufferDesc.Type = desc.TargetType;
 
 				mColorBuffers.push_back(mGraphicsDevice->CreateTextureBuffer(colorBufferDesc));
 
@@ -63,6 +64,7 @@ namespace Hollow
 				depthBufferDesc.pTexture = mDepthTexture;
 				depthBufferDesc.ArrayLayer = 0;
 				depthBufferDesc.AspectFlags = TextureAspectFlags::DepthAspect;
+				depthBufferDesc.Type = desc.TargetType;
 				depthBufferDesc.MipLevel = 0;
 
 				mDepthBuffer = mGraphicsDevice->CreateTextureBuffer(depthBufferDesc);

@@ -206,6 +206,17 @@ i32 main(i32 argC, char** argV)
 	baseFragmentDSDesc.pLayout = mBaseFragmentDSL;
 	baseFragmentDSDesc.pOwnerPool = mBaseDescriptorPool;
 	auto mBaseFragmentDS = mDevice->CreateDescriptorSet(baseFragmentDSDesc);
+
+	DescriptorLayoutDesc baseCamFragDSLDesc = {};
+	baseCamFragDSLDesc.Entries = {
+		{0, DescriptorType::UniformBuffer, ShaderStage::Fragment}
+	};
+	auto mBaseCamFragDSL = mDevice->CreateDescriptorLayout(baseCamFragDSLDesc);
+
+	DescriptorSetDesc baseCamFragDSDesc = {};
+	baseCamFragDSDesc.pLayout = mBaseCamFragDSL;
+	baseCamFragDSDesc.pOwnerPool = mBaseDescriptorPool;
+	auto mBaseCamFragDS = mDevice->CreateDescriptorSet(baseCamFragDSDesc);
 #pragma endregion
 
 #pragma region Pipeline Creation
@@ -317,7 +328,7 @@ i32 main(i32 argC, char** argV)
 	pipelineDesc.InputLayout = inputLayout;
 	pipelineDesc.Multisample = multisample;
 	pipelineDesc.RasterizerState = rasterizerState;
-	pipelineDesc.ResourceLayout.ResourceLayouts = { mBaseVertexDSL, mBaseFragmentDSL };
+	pipelineDesc.ResourceLayout.ResourceLayouts = { mBaseVertexDSL, mBaseFragmentDSL, mBaseCamFragDSL };
 	pipelineDesc.GraphicsShaders = { mVertexShader, mFragmentShader };
 	pipelineDesc.Viewport = viewport;
 	pipelineDesc.Scissor = scissor;
@@ -395,23 +406,23 @@ i32 main(i32 argC, char** argV)
 		textureDesc.Type = TextureType::Texture2D;
 		textureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
 		textureDesc.pMemory = GraphicsManager::GetAPI().GetDeviceMemory();
-		mBaseTextureResource->CreateTextureAndBuffer(textureDesc);
+		mBaseTextureResource->CreateTextureAndBuffer(textureDesc, TextureType::Texture2D);
 		mBaseTextureResource->UpdateTextureAndBuffer(mAlbedo.ImageData, 0);
 
 		textureDesc.ImageSize = { static_cast<u32>(mNormal.ImageSize.x), static_cast<u32>(mNormal.ImageSize.y), 1 };
-		mNormalTextureResource->CreateTextureAndBuffer(textureDesc);
+		mNormalTextureResource->CreateTextureAndBuffer(textureDesc, TextureType::Texture2D);
 		mNormalTextureResource->UpdateTextureAndBuffer(mNormal.ImageData, 0);
 
 		textureDesc.ImageSize = { static_cast<u32>(mMetallic.ImageSize.x), static_cast<u32>(mMetallic.ImageSize.y), 1 };
-		mMetallicTextureResource->CreateTextureAndBuffer(textureDesc);
+		mMetallicTextureResource->CreateTextureAndBuffer(textureDesc, TextureType::Texture2D);
 		mMetallicTextureResource->UpdateTextureAndBuffer(mMetallic.ImageData, 0);
 
 		textureDesc.ImageSize = { static_cast<u32>(mAO.ImageSize.x), static_cast<u32>(mAO.ImageSize.y), 1 };
-		mAOTextureResource->CreateTextureAndBuffer(textureDesc);
+		mAOTextureResource->CreateTextureAndBuffer(textureDesc, TextureType::Texture2D);
 		mAOTextureResource->UpdateTextureAndBuffer(mAO.ImageData, 0);
 
 		textureDesc.ImageSize = { static_cast<u32>(mEmissive.ImageSize.x), static_cast<u32>(mEmissive.ImageSize.y), 1 };
-		mEmissiveTextureResource->CreateTextureAndBuffer(textureDesc);
+		mEmissiveTextureResource->CreateTextureAndBuffer(textureDesc, TextureType::Texture2D);
 		mEmissiveTextureResource->UpdateTextureAndBuffer(mEmissive.ImageData, 0);
 	}
 #pragma endregion
@@ -434,6 +445,24 @@ i32 main(i32 argC, char** argV)
 	stagingUniformBufferDesc.pMemory = GraphicsManager::GetAPI().GetHostMemory();
 
 	auto mStagingUniformBuffer = mDevice->CreateGraphicsBuffer(stagingUniformBufferDesc);
+
+	GraphicsBufferDesc camUniformBufferDesc = {};
+	camUniformBufferDesc.SubResourceCount = 1;
+	camUniformBufferDesc.SubSizeInBytes = sizeof(Vec3f);
+	camUniformBufferDesc.Usage = GraphicsBufferUsage::Uniform | GraphicsBufferUsage::TransferDestination;
+	camUniformBufferDesc.ShareMode = ShareMode::Exclusive;
+	camUniformBufferDesc.pMemory = GraphicsManager::GetAPI().GetDeviceMemory();
+
+	auto mCamUniformBuffer = mDevice->CreateGraphicsBuffer(camUniformBufferDesc);
+
+	GraphicsBufferDesc stagingCamUniformBufferDesc = {};
+	stagingCamUniformBufferDesc.SubResourceCount = 1;
+	stagingCamUniformBufferDesc.SubSizeInBytes = sizeof(Vec3f);
+	stagingCamUniformBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
+	stagingCamUniformBufferDesc.ShareMode = ShareMode::Exclusive;
+	stagingCamUniformBufferDesc.pMemory = GraphicsManager::GetAPI().GetHostMemory();
+
+	auto mStagingCamUniformBuffer = mDevice->CreateGraphicsBuffer(stagingCamUniformBufferDesc);
 #pragma endregion
 
 #pragma region Update Moving Data
@@ -444,6 +473,12 @@ i32 main(i32 argC, char** argV)
 	uniformDataUpdateDesc.OffsetInBytes = 0;
 	mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 
+	BufferDataUpdateDesc camUniformDataUpdateDesc = {};
+	Vec3f camPos = FreeLookCamera::GetAPI().GetPosition();
+	camUniformDataUpdateDesc.Memory = MemoryBuffer(&camPos, sizeof(Vec3f));
+	camUniformDataUpdateDesc.OffsetInBytes = 0;
+	mDevice->UpdateBufferData(mStagingCamUniformBuffer, camUniformDataUpdateDesc);
+
 	mCompileCmd->BeginRecording();
 
 	BufferBufferCopyDesc uniformCopyDesc = {};
@@ -451,6 +486,12 @@ i32 main(i32 argC, char** argV)
 	uniformCopyDesc.Size = uniformBufferSize;
 	uniformCopyDesc.SourceOffset = 0;
 	mCompileCmd->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, uniformCopyDesc);
+
+	BufferBufferCopyDesc camUniformCopyDesc = {};
+	camUniformCopyDesc.DestinationOffset = 0;
+	camUniformCopyDesc.Size = sizeof(Vec3f);
+	camUniformCopyDesc.SourceOffset = 0;
+	mCompileCmd->CopyBufferToBuffer(mStagingCamUniformBuffer, mCamUniformBuffer, camUniformCopyDesc);
 
 	DescriptorSetUpdateDesc vertexDSUpdate = {};
 	vertexDSUpdate.Entries.push_back({ mUniformBuffer, nullptr, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
@@ -463,6 +504,10 @@ i32 main(i32 argC, char** argV)
 	fragmentDSUpdate.Entries.push_back({ mAOTextureResource->GetTextureBuffer(), mSampler, DescriptorType::CombinedImageSampler, 1, 0, 0, 3 });
 	fragmentDSUpdate.Entries.push_back({ mEmissiveTextureResource->GetTextureBuffer(), mSampler, DescriptorType::CombinedImageSampler, 1, 0, 0, 4 });
 	mDevice->UpdateDescriptorSet(mBaseFragmentDS, fragmentDSUpdate);
+
+	DescriptorSetUpdateDesc camFragmentDSUpdate = {};
+	camFragmentDSUpdate.Entries.push_back({ mCamUniformBuffer, nullptr, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
+	mDevice->UpdateDescriptorSet(mBaseCamFragDS, camFragmentDSUpdate);
 
 	mCompileCmd->EndRecording();
 	mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetPresentQueue(), &mCompileCmd, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
@@ -494,6 +539,12 @@ i32 main(i32 argC, char** argV)
 		constantDataUpdateDesc.OffsetInBytes = 0;
 		mDevice->UpdateBufferData(mStagingUniformBuffer, uniformDataUpdateDesc);
 
+		Vec3f camPos = FreeLookCamera::GetAPI().GetPosition();
+		BufferDataUpdateDesc camConstantDataUpdateDesc;
+		camConstantDataUpdateDesc.Memory = MemoryBuffer(&camPos, sizeof(Vec3f));
+		camConstantDataUpdateDesc.OffsetInBytes = 0;
+		mDevice->UpdateBufferData(mStagingCamUniformBuffer, camUniformDataUpdateDesc);
+
 		mRuntimeCmd[imageIndex]->BeginRecording();
 
 		BufferBufferCopyDesc uniformCopyDesc = {};
@@ -501,6 +552,12 @@ i32 main(i32 argC, char** argV)
 		uniformCopyDesc.Size = uniformBufferSize;
 		uniformCopyDesc.SourceOffset = 0;
 		mRuntimeCmd[imageIndex]->CopyBufferToBuffer(mStagingUniformBuffer, mUniformBuffer, uniformCopyDesc);
+
+		BufferBufferCopyDesc camUniformCopyDesc = {};
+		camUniformCopyDesc.DestinationOffset = 0;
+		camUniformCopyDesc.Size = sizeof(Vec3f);
+		camUniformCopyDesc.SourceOffset = 0;
+		mRuntimeCmd[imageIndex]->CopyBufferToBuffer(mStagingCamUniformBuffer, mCamUniformBuffer, camUniformCopyDesc);
 
 		RenderTargetBarrier presentPreBarrier = {};
 		presentPreBarrier.DestinationAccessMask = GraphicsMemoryAccessFlags::ColorAttachmentWrite;
@@ -549,8 +606,13 @@ i32 main(i32 argC, char** argV)
 		vertexDSUpdate.Entries.push_back({ mUniformBuffer, nullptr, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
 		mDevice->UpdateDescriptorSet(mBaseVertexDS, vertexDSUpdate);
 
+		DescriptorSetUpdateDesc camFragmentDSUpdate = {};
+		camFragmentDSUpdate.Entries.push_back({ mCamUniformBuffer, nullptr, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
+		mDevice->UpdateDescriptorSet(mBaseCamFragDS, camFragmentDSUpdate);
+
 		mRuntimeCmd[imageIndex]->BindDescriptors(&mBaseVertexDS, 1, 0);
 		mRuntimeCmd[imageIndex]->BindDescriptors(&mBaseFragmentDS, 1, 1);
+		mRuntimeCmd[imageIndex]->BindDescriptors(&mBaseCamFragDS, 1, 2);
 		mRuntimeCmd[imageIndex]->PushConstants({ &BasePushConstant, sizeof(PushConstant) }, 0, ShaderStage::Vertex);
 
 		mRuntimeCmd[imageIndex]->DrawIndexed(mMeshResource->GetIndexLength(), 0, 0, 0, 1);
@@ -571,6 +633,10 @@ i32 main(i32 argC, char** argV)
 		presentPostBarrier.AspectMask = TextureAspectFlags::ColorAspect;
 
 		mPresentRenderTarget->NewLayoutForColor(presentPostBarrier, imageIndex);
+
+		// I have my bloom effect on my RGBA16 texture
+		// I need to convert it to RGBA8 to present it to the screen
+		// I will use it to present it to the screen
 
 		mSwapchain->Present();
 	}
