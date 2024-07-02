@@ -1,24 +1,24 @@
-#include "TextureResource.h"
+#include "SkyboxResource.h"
 
 #include <Runtime/Graphics/Texture/TextureUtils.h>
 #include <Runtime/Graphics/API/GraphicsManager.h>
 
 namespace Hollow
 {
-	TextureResource::TextureResource() : ResourceSubObject()
+	SkyboxResource::SkyboxResource()
 	{
 		mGraphicsDevice = GraphicsManager::GetAPI().GetDefDevice();
 		CreateInternalResources();
 	}
 
-	void TextureResource::ConnectMemory(const SharedPtr<GraphicsMemory>& hostMemory, const SharedPtr<GraphicsMemory>& deviceMemory, bool bPreAllocate)
+	void SkyboxResource::ConnectMemory(const SharedPtr<GraphicsMemory>& hostMemory, const SharedPtr<GraphicsMemory>& deviceMemory, bool bPreAllocate)
 	{
 		mHostMemory = hostMemory;
 		mDeviceMemory = deviceMemory;
 		mPreAllocate = bPreAllocate;
 	}
 
-	void TextureResource::CreateTextureAndBuffer(const TextureDesc& desc, const TextureType viewType)
+	void SkyboxResource::CreateTextureAndBuffer(const TextureDesc& desc, const TextureType viewType)
 	{
 		mTexture = mGraphicsDevice->CreateTexture(desc);
 
@@ -46,7 +46,7 @@ namespace Hollow
 		}
 	}
 
-	void TextureResource::UpdateTextureAndBuffer(MemoryOwnedBuffer pBuffer, u32 offset)
+	void SkyboxResource::UpdateTextureAndBuffer(MemoryOwnedBuffer pBuffer, u32 offset)
 	{
 		BufferDataUpdateDesc textureDataUpdateDesc = {};
 		textureDataUpdateDesc.Memory = pBuffer;
@@ -103,7 +103,7 @@ namespace Hollow
 		mGraphicsDevice->ResetFences(&mFence, 1);
 	}
 
-	void TextureResource::CreateInternalResources()
+	void SkyboxResource::CreateInternalResources()
 	{
 		CommandPoolDesc poolDesc = { CommandPoolType::Graphics };
 		mCommandPool = mGraphicsDevice->CreateCommandPool(poolDesc);
@@ -115,4 +115,3 @@ namespace Hollow
 		mFence = mGraphicsDevice->CreateSyncFence(fenceDesc);
 	}
 }
-

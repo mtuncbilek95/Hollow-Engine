@@ -173,7 +173,9 @@ namespace Hollow
 			TextureBufferDesc viewDesc = {};
 			viewDesc.pTexture = pTexture;
 			viewDesc.ArrayLayer = 0;
+			viewDesc.ArrayCount = 1;
 			viewDesc.MipLevel = 0;
+			viewDesc.MipCount = 1;
 			viewDesc.AspectFlags = TextureAspectFlags::ColorAspect;
 			viewDesc.Type = TextureType::Texture2D;
 

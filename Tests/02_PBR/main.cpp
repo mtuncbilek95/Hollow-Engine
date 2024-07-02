@@ -512,6 +512,33 @@ i32 main(i32 argC, char** argV)
 	auto mSampler = mDevice->CreateSampler(samplerDesc);
 #pragma endregion
 
+#pragma region Skybox Texture Creation
+	HashMap<String, TextureResourceLayout> skyboxImages;
+	skyboxImages["Right"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Right.jpg");
+	skyboxImages["Left"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Left.jpg");
+	skyboxImages["Top"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Top.jpg");
+	skyboxImages["Bottom"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Bottom.jpg");
+	skyboxImages["Front"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Front.jpg");
+	skyboxImages["Back"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Back.jpg");
+
+	auto mSkyboxResource = MakeShared<SkyboxResource>();
+	mSkyboxResource->ConnectMemory(GraphicsManager::GetAPI().GetHostMemory(), GraphicsManager::GetAPI().GetDeviceMemory(), true);
+
+	TextureDesc skyboxTextureDesc = {};
+	skyboxTextureDesc.ArraySize = 6;
+	skyboxTextureDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
+	skyboxTextureDesc.ImageSize = { static_cast<u32>(skyboxImages["Right"].ImageSize.x), static_cast<u32>(skyboxImages["Right"].ImageSize.y), 1 };
+	skyboxTextureDesc.MipLevels = 1;
+	skyboxTextureDesc.SampleCount = TextureSampleCount::Sample1;
+	skyboxTextureDesc.Type = TextureType::Texture2D;
+	skyboxTextureDesc.Usage = TextureUsage::TransferDestination | TextureUsage::Sampled;
+	skyboxTextureDesc.Flags = TextureCreateFlags::CubeMap;
+	skyboxTextureDesc.pMemory = GraphicsManager::GetAPI().GetDeviceMemory();
+	mSkyboxResource->ConnectMemory(GraphicsManager::GetAPI().GetHostMemory(), GraphicsManager::GetAPI().GetDeviceMemory(), true);
+	mSkyboxResource->CreateTextureAndBuffer(skyboxTextureDesc, TextureType::TextureCube);
+
+#pragma endregion
+
 #pragma region Mesh Creation
 	auto mMeshLayout = ResourceImporter::ImportMesh(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Objects/DamagedHelmet/DamagedHelmet.gltf");
 
@@ -577,7 +604,16 @@ i32 main(i32 argC, char** argV)
 		mEmissiveTextureResource->UpdateTextureAndBuffer(mEmissive.ImageData, 0);
 	}
 
-	auto mSkyboxMeshLayout = ResourceImporter::ImportSkybox(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Objects/Skybox/Skybox.gltf");
+	auto mSkyboxMeshLayout = ResourceImporter::ImportSkybox(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Objects/Cube/Cube.gltf");
+
+	auto mSkyboxMeshResource = MakeShared<MeshResource>();
+	mSkyboxMeshResource->ConnectMemory(GraphicsManager::GetAPI().GetHostMemory(), GraphicsManager::GetAPI().GetDeviceMemory(), true);
+	mSkyboxMeshResource->CreateMeshBuffers(sizeof(SkyboxVertex), mSkyboxMeshLayout.Layout.Vertices.size(), sizeof(u32), mSkyboxMeshLayout.Layout.Indices.size());
+	MemoryOwnedBuffer skyboxVertexBuffer = MemoryOwnedBuffer(mSkyboxMeshLayout.Layout.Vertices.data(), mSkyboxMeshLayout.Layout.Vertices.size() * sizeof(SkyboxVertex));
+	MemoryOwnedBuffer skyboxIndexBuffer = MemoryOwnedBuffer(mSkyboxMeshLayout.Layout.Indices.data(), mSkyboxMeshLayout.Layout.Indices.size() * sizeof(u32));
+	mSkyboxMeshResource->UpdateVertexBuffer(skyboxVertexBuffer, 0);
+	mSkyboxMeshResource->UpdateIndexBuffer(skyboxIndexBuffer, 0);
+
 #pragma endregion
 
 #pragma region Uniform Creation

@@ -25,6 +25,7 @@
 #include <Runtime/Resource/RenderTarget/RenderTarget.h>
 #include <Runtime/Resource/Texture/TextureResource.h>
 #include <Runtime/Resource/Mesh/MeshResource.h>
+#include <Runtime/Resource/Skybox/SkyboxResource.h>
 
 #include <Runtime/World/Transform/Transform.h>
 #include <Runtime/World/Camera/FreeLookCamera.h>

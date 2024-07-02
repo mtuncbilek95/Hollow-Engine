@@ -12,6 +12,8 @@ namespace Hollow
 		TextureAspectFlags AspectFlags;
 		TextureType Type;
 		byte MipLevel;
+		byte MipCount;
 		byte ArrayLayer;
+		byte ArrayCount;
 	};
 }

@@ -9,9 +9,11 @@ namespace Hollow
 		Texture1D,
 		Texture2D,
 		Texture3D,
+		TextureCube,
 
 		Texture1DMS,
 		Texture2DMS,
-		Texture3DMS
+		Texture3DMS,
+		TextureCubeMS
 	};
 }

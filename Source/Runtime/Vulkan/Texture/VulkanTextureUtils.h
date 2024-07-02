@@ -102,7 +102,7 @@ namespace Hollow
 				aspectFlags |= VK_IMAGE_ASPECT_DEPTH_BIT;
 			if (flags & TextureAspectFlags::StencilAspect)
 				aspectFlags |= VK_IMAGE_ASPECT_STENCIL_BIT;
-			if(flags & TextureAspectFlags::MetaAspect)
+			if (flags & TextureAspectFlags::MetaAspect)
 				aspectFlags |= VK_IMAGE_ASPECT_METADATA_BIT;
 
 			return aspectFlags;
@@ -149,13 +149,15 @@ namespace Hollow
 		{
 			switch (type)
 			{
-			case TextureType::Texture1D:	return VK_IMAGE_VIEW_TYPE_1D;
-			case TextureType::Texture2D:	return VK_IMAGE_VIEW_TYPE_2D;
-			case TextureType::Texture3D:	return VK_IMAGE_VIEW_TYPE_3D;
-			case TextureType::Texture1DMS:	return VK_IMAGE_VIEW_TYPE_1D_ARRAY;
-			case TextureType::Texture2DMS:	return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-			case TextureType::Texture3DMS:	return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
-			default:						return VK_IMAGE_VIEW_TYPE_2D;
+			case TextureType::Texture1D:		return VK_IMAGE_VIEW_TYPE_1D;
+			case TextureType::Texture2D:		return VK_IMAGE_VIEW_TYPE_2D;
+			case TextureType::Texture3D:		return VK_IMAGE_VIEW_TYPE_3D;
+			case TextureType::TextureCube:		return VK_IMAGE_VIEW_TYPE_CUBE;
+			case TextureType::Texture1DMS:		return VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+			case TextureType::Texture2DMS:		return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+			case TextureType::Texture3DMS:		return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
+			case TextureType::TextureCubeMS:	return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
+			default:							return VK_IMAGE_VIEW_TYPE_2D;
 			}
 		}
 
@@ -190,7 +192,7 @@ namespace Hollow
 		{
 			VkImageCreateFlags vkFlags = VkImageCreateFlags();
 
-			if(flags & TextureCreateFlags::None)
+			if (flags & TextureCreateFlags::None)
 				return 0;
 			if (flags & TextureCreateFlags::SparseBinding)
 				vkFlags |= VK_IMAGE_CREATE_SPARSE_BINDING_BIT;
