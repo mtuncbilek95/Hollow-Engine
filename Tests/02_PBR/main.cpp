@@ -54,8 +54,8 @@ i32 main(i32 argC, char** argV)
 	MemoryOwnedBuffer vShaderCode;
 	String errorMessage;
 	PlatformFile::Read(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/02_PBR/Shaders/PBRVertex.vert", vBuffer);
-	ShaderDesc vertexShaderDesc = {};
 
+	ShaderDesc vertexShaderDesc = {};
 	if (ShaderCompiler::CompileShaderToSPIRV(vBuffer, "main", ShaderStage::Vertex, ShaderLanguage::GLSL, vShaderCode, errorMessage))
 	{
 		vertexShaderDesc.ShaderName = "PBRVertex";
@@ -64,14 +64,13 @@ i32 main(i32 argC, char** argV)
 		vertexShaderDesc.Language = ShaderLanguage::GLSL;
 		vertexShaderDesc.ShaderCode = vShaderCode;
 	}
-
 	auto mVertexShader = mDevice->CreateShader(vertexShaderDesc);
 
 	MemoryBuffer fBuffer = {};
 	MemoryOwnedBuffer fShaderCode;
 	PlatformFile::Read(PlatformAPI::GetAPI().GetEngineSourcePath() + "Tests/02_PBR/Shaders/PBRFrag.frag", fBuffer);
-	ShaderDesc fragmentShaderDesc = {};
 
+	ShaderDesc fragmentShaderDesc = {};
 	if (ShaderCompiler::CompileShaderToSPIRV(fBuffer, "main", ShaderStage::Fragment, ShaderLanguage::GLSL, fShaderCode, errorMessage))
 	{
 		fragmentShaderDesc.ShaderName = "PBRFragment";
@@ -80,8 +79,38 @@ i32 main(i32 argC, char** argV)
 		fragmentShaderDesc.Language = ShaderLanguage::GLSL;
 		fragmentShaderDesc.ShaderCode = fShaderCode;
 	}
-
 	auto mFragmentShader = mDevice->CreateShader(fragmentShaderDesc);
+
+	MemoryBuffer skyboxVBuffer = {};
+	MemoryOwnedBuffer skyboxVShaderCode;
+	PlatformFile::Read(PlatformAPI::GetAPI().GetEngineSourcePath() + "Source/Shaders/Skybox/SkyboxVertex.vert", skyboxVBuffer);
+
+	ShaderDesc skyboxVertexShaderDesc = {};
+	if (ShaderCompiler::CompileShaderToSPIRV(skyboxVBuffer, "main", ShaderStage::Vertex, ShaderLanguage::GLSL, skyboxVShaderCode, errorMessage))
+	{
+		skyboxVertexShaderDesc.ShaderName = "SkyboxVertex";
+		skyboxVertexShaderDesc.Stage = ShaderStage::Vertex;
+		skyboxVertexShaderDesc.EntryPoint = "main";
+		skyboxVertexShaderDesc.Language = ShaderLanguage::GLSL;
+		skyboxVertexShaderDesc.ShaderCode = skyboxVShaderCode;
+	}
+	auto mSkyboxVertexShader = mDevice->CreateShader(skyboxVertexShaderDesc);
+
+	MemoryBuffer skyboxFBuffer = {};
+	MemoryOwnedBuffer skyboxFShaderCode;
+	PlatformFile::Read(PlatformAPI::GetAPI().GetEngineSourcePath() + "Source/Shaders/Skybox/SkyboxFrag.frag", skyboxFBuffer);
+
+	ShaderDesc skyboxFragmentShaderDesc = {};
+	if (ShaderCompiler::CompileShaderToSPIRV(skyboxFBuffer, "main", ShaderStage::Fragment, ShaderLanguage::GLSL, skyboxFShaderCode, errorMessage))
+	{
+		skyboxFragmentShaderDesc.ShaderName = "SkyboxFragment";
+		skyboxFragmentShaderDesc.Stage = ShaderStage::Fragment;
+		skyboxFragmentShaderDesc.EntryPoint = "main";
+		skyboxFragmentShaderDesc.Language = ShaderLanguage::GLSL;
+		skyboxFragmentShaderDesc.ShaderCode = skyboxFShaderCode;
+	}
+	auto mSkyboxFragmentShader = mDevice->CreateShader(skyboxFragmentShaderDesc);
+
 #pragma endregion
 
 #pragma region Fence Creation
@@ -217,6 +246,31 @@ i32 main(i32 argC, char** argV)
 	baseCamFragDSDesc.pLayout = mBaseCamFragDSL;
 	baseCamFragDSDesc.pOwnerPool = mBaseDescriptorPool;
 	auto mBaseCamFragDS = mDevice->CreateDescriptorSet(baseCamFragDSDesc);
+
+	DescriptorLayoutDesc skyboxDSLDesc = {};
+	skyboxDSLDesc.Entries = {
+		{0, DescriptorType::CombinedImageSampler, ShaderStage::Fragment}
+	};
+	auto mSkyboxDSL = mDevice->CreateDescriptorLayout(skyboxDSLDesc);
+
+	DescriptorPoolDesc skyboxDescriptorPoolDesc = {};
+	skyboxDescriptorPoolDesc.MaxSets = 10;
+	skyboxDescriptorPoolDesc.PoolSizes = {
+		{DescriptorType::UniformBuffer, 10},
+		{DescriptorType::Sampler, 10},
+		{DescriptorType::SampledImage, 10},
+		{DescriptorType::StorageImage, 10},
+		{DescriptorType::StorageBuffer, 10},
+		{DescriptorType::UniformTexelBuffer, 10},
+		{DescriptorType::StorageTexelBuffer, 10},
+		{DescriptorType::InputAttachment, 10}
+	};
+	auto mSkyboxDescriptorPool = mDevice->CreateDescriptorPool(skyboxDescriptorPoolDesc);
+
+	DescriptorSetDesc skyboxDSDesc = {};
+	skyboxDSDesc.pLayout = mSkyboxDSL;
+	skyboxDSDesc.pOwnerPool = mSkyboxDescriptorPool;
+	auto mSkyboxDS = mDevice->CreateDescriptorSet(skyboxDSDesc);
 #pragma endregion
 
 #pragma region Pipeline Creation
@@ -341,6 +395,103 @@ i32 main(i32 argC, char** argV)
 	auto mPipeline = mDevice->CreateGraphicsPipeline(pipelineDesc);
 #pragma endregion
 
+#pragma region Skybox Pipeline Creation
+	// BlendStateAttachment	
+	BlendStateAttachment skyboxBlendAttachment = {};
+	skyboxBlendAttachment.bEnabled = false;
+	skyboxBlendAttachment.ColorOperation = BlendOperation::Add;
+	skyboxBlendAttachment.AlphaOperation = BlendOperation::Add;
+	skyboxBlendAttachment.SourceColorFactor = BlendFactor::SrcAlpha;
+	skyboxBlendAttachment.DestinationColorFactor = BlendFactor::OneMinusSrcAlpha;
+	skyboxBlendAttachment.SourceAlphaFactor = BlendFactor::One;
+	skyboxBlendAttachment.DestinationAlphaFactor = BlendFactor::Zero;
+	skyboxBlendAttachment.WriteMask = BlendColorWriteMask::All;
+
+	// Create BlendState
+	BlendStateDesc skyboxBlendState = {};
+	skyboxBlendState.bLogicOperationEnabled = false;
+	skyboxBlendState.LogicOperation = LogicOperation::Copy;
+	skyboxBlendState.Attachments = { skyboxBlendAttachment };
+
+	// Create DepthStencilState
+	DepthStencilStateDesc skyboxDepthStencilState = {};
+	skyboxDepthStencilState.bDepthTestEnabled = false;
+	skyboxDepthStencilState.bDepthWriteEnabled = false;
+	skyboxDepthStencilState.bStencilTestEnabled = false;
+	skyboxDepthStencilState.DepthTestOperation = CompareOperation::Less;
+	skyboxDepthStencilState.StencilBackFace = {};
+	skyboxDepthStencilState.StencilFrontFace = {};
+
+	// Position InputElement
+	InputElement skyboxInputElement1 = {};
+	skyboxInputElement1.Format = TextureFormat::RGB32_Float;
+	skyboxInputElement1.Semantic = InputElementSemantic::Position;
+
+	// InputBinding
+	InputBinding skyboxInputBinding = {};
+	skyboxInputBinding.StepRate = InputBindingStepRate::Vertex;
+	skyboxInputBinding.Elements = { skyboxInputElement1 };
+
+	// Create InputLayout
+	InputLayoutDesc skyboxInputLayout = {};
+	skyboxInputLayout.Bindings = { skyboxInputBinding };
+	skyboxInputLayout.Topology = MeshTopology::TriangleList;
+
+	// Create MultisampleDesc
+	MultisampleDesc skyboxMultisample = {};
+	skyboxMultisample.bSampleShadingEnabled = GraphicsManager::GetAPI().GetMsaaSamples() > 1 ? true : false;
+	skyboxMultisample.Samples = static_cast<TextureSampleCount>(GraphicsManager::GetAPI().GetMsaaSamples());
+
+	// Create RasterizerState
+	RasterizerStateDesc skyboxRasterizerState = {};
+	skyboxRasterizerState.bDepthBiasEnabled = false;
+	skyboxRasterizerState.bFrontCounterClockwise = false;
+	skyboxRasterizerState.CullFlags = FaceCullMode::Front;
+	skyboxRasterizerState.FillMode = PolygonMode::Fill;
+	skyboxRasterizerState.DepthBiasClamp = 0.0f;
+	skyboxRasterizerState.DepthBiasFactor = 0.0f;
+	skyboxRasterizerState.DepthBiasSlope = 0.0f;
+
+	// Create Viewport
+	ViewportDesc skyboxViewport = {};
+	skyboxViewport.DepthRange = { 0.0f, 1.0f };
+	skyboxViewport.OffsetSize = { 0, 0 };
+	skyboxViewport.ViewportSize = mSwapchain->GetImageSize();
+
+	// Create Scissor
+	ScissorDesc skyboxScissor = {};
+	skyboxScissor.OffsetSize = { 0, 0 };
+	skyboxScissor.ScissorSize = mSwapchain->GetImageSize();
+
+	// Push Constant
+	PushConstantRange skyBoxPCR = {};
+	skyBoxPCR.Stage = ShaderStage::Vertex;
+	skyBoxPCR.Size = sizeof(PushConstant);
+	skyBoxPCR.Offset = 0;
+
+	PushConstantDesc skyboxPushConstant = {};
+	skyboxPushConstant.PushConstantRanges = { skyBoxPCR };
+
+	// Create Pipeline
+	GraphicsPipelineDesc skyboxPipelineDesc = {};
+	skyboxPipelineDesc.BlendState = skyboxBlendState;
+	skyboxPipelineDesc.DepthStencilState = skyboxDepthStencilState;
+	skyboxPipelineDesc.InputLayout = skyboxInputLayout;
+	skyboxPipelineDesc.Multisample = skyboxMultisample;
+	skyboxPipelineDesc.RasterizerState = skyboxRasterizerState;
+	skyboxPipelineDesc.ResourceLayout.ResourceLayouts = { mSkyboxDSL };
+	skyboxPipelineDesc.GraphicsShaders = { mSkyboxVertexShader, mSkyboxFragmentShader };
+	skyboxPipelineDesc.Viewport = skyboxViewport;
+	skyboxPipelineDesc.Scissor = skyboxScissor;
+	skyboxPipelineDesc.PushConstants = skyboxPushConstant;
+	skyboxPipelineDesc.ColorAttachmentCount = 1;
+	skyboxPipelineDesc.ColorAttachmentFormats = { TextureFormat::RGBA8_UNorm };
+	skyboxPipelineDesc.DepthAttachmentFormat =  TextureFormat::Unknown;
+	skyboxPipelineDesc.StencilAttachmentFormat = TextureFormat::Unknown;
+
+	auto mSkyboxPipeline = mDevice->CreateGraphicsPipeline(skyboxPipelineDesc);
+#pragma endregion
+
 #pragma region Sampler Creation
 	SamplerDesc samplerDesc = {};
 	samplerDesc.bAnisotropyEnabled = true;
@@ -425,6 +576,8 @@ i32 main(i32 argC, char** argV)
 		mEmissiveTextureResource->CreateTextureAndBuffer(textureDesc, TextureType::Texture2D);
 		mEmissiveTextureResource->UpdateTextureAndBuffer(mEmissive.ImageData, 0);
 	}
+
+	auto mSkyboxMeshLayout = ResourceImporter::ImportSkybox(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Objects/Skybox/Skybox.gltf");
 #pragma endregion
 
 #pragma region Uniform Creation

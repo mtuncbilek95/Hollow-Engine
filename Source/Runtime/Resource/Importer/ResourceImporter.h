@@ -2,8 +2,10 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Resource/Mesh/MeshResourceLayout.h>
+#include <Runtime/Resource/Mesh/SkyboxLayout.h>
 #include <Runtime/Resource/Texture/TextureResourceLayout.h>
 #include <Runtime/Resource/Material/MaterialResourceLayout.h>
+
 
 namespace Hollow
 {
@@ -11,6 +13,7 @@ namespace Hollow
 	{
 	public:
 		static MeshResourceLayout ImportMesh(String path);
+		static SkyboxResourceLayout ImportSkybox(String path);
 		static TextureResourceLayout ImportTexture(String path);
 		static MaterialResourceLayout ImportMaterial(String path);
 
