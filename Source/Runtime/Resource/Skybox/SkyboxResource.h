@@ -10,6 +10,8 @@
 #include <Runtime/Graphics/Command/CommandBuffer.h>
 #include <Runtime/Graphics/Command/CommandPool.h>
 
+#include <Runtime/Resource/Mesh/SkyboxLayout.h>
+
 namespace Hollow
 {
 	class RUNTIME_API SkyboxResource : public ResourceSubObject
@@ -24,7 +26,7 @@ namespace Hollow
 		void ConnectMemory(const SharedPtr<GraphicsMemory>& hostMemory, const SharedPtr<GraphicsMemory>& deviceMemory, bool bPreAllocate = true);
 		void CreateTextureAndBuffer(const TextureDesc& desc, const TextureType viewType);
 
-		void UpdateTextureAndBuffer(MemoryOwnedBuffer pBuffer, u32 offset);
+		void UpdateTextureAndBuffer(SkyboxResourceLayout pBuffer, u32 offset);
 
 		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Texture; }
 

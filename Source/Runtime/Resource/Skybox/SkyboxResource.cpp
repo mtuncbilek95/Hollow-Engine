@@ -46,10 +46,10 @@ namespace Hollow
 		}
 	}
 
-	void SkyboxResource::UpdateTextureAndBuffer(MemoryOwnedBuffer pBuffer, u32 offset)
+	void SkyboxResource::UpdateTextureAndBuffer(SkyboxResourceLayout pBuffer, u32 offset)
 	{
 		BufferDataUpdateDesc textureDataUpdateDesc = {};
-		textureDataUpdateDesc.Memory = pBuffer;
+		textureDataUpdateDesc.Memory;
 		textureDataUpdateDesc.OffsetInBytes = 0;
 		mGraphicsDevice->UpdateBufferData(mStageBuffer, textureDataUpdateDesc);
 
