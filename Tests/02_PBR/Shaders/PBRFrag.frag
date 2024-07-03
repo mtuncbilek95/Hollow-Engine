@@ -23,6 +23,8 @@ layout(set = 2, binding = 0) uniform UniformBufferObject
 	vec3 camPos;
 } ubo;
 
+layout(set = 3, binding = 0) uniform samplerCube irradianceMap;
+
 const vec3 lightPos = vec3(3.0, 3.0, -5.0);
 const vec3 lightColor = vec3(0.8, 0.8, 1.0);
 const float lightPow = 100.0;

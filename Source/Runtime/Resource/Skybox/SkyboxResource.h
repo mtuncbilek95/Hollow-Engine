@@ -10,7 +10,7 @@
 #include <Runtime/Graphics/Command/CommandBuffer.h>
 #include <Runtime/Graphics/Command/CommandPool.h>
 
-#include <Runtime/Resource/Mesh/SkyboxLayout.h>
+#include <Runtime/Resource/Texture/TextureResourceLayout.h>
 
 namespace Hollow
 {
@@ -26,7 +26,7 @@ namespace Hollow
 		void ConnectMemory(const SharedPtr<GraphicsMemory>& hostMemory, const SharedPtr<GraphicsMemory>& deviceMemory, bool bPreAllocate = true);
 		void CreateTextureAndBuffer(const TextureDesc& desc, const TextureType viewType);
 
-		void UpdateTextureAndBuffer(SkyboxResourceLayout pBuffer, u32 offset);
+		void UpdateTextureAndBuffer(DArray<TextureResourceLayout> pBuffer, u32 offset);
 
 		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Texture; }
 

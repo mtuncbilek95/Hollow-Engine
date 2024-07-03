@@ -54,6 +54,12 @@ namespace Hollow
 		.Projection = Mat4f(1.f)
 	};
 
+	PushConstant SkyboxPushConstant
+	{
+		.View = Mat4f(1.f),
+		.Projection = Mat4f(1.f)
+	};
+
 	Transform ObjectTransform
 	{
 		.Position = Vec3f(0.f),
@@ -76,5 +82,8 @@ namespace Hollow
 
 		BasePushConstant.View = FreeLookCamera::GetAPI().GetViewMatrix();
 		BasePushConstant.Projection = FreeLookCamera::GetAPI().GetProjectionMatrix();
+
+		SkyboxPushConstant.View = Mat4f(Mat3f(FreeLookCamera::GetAPI().GetViewMatrix()));
+		SkyboxPushConstant.Projection = FreeLookCamera::GetAPI().GetProjectionMatrix();
 	}
 }

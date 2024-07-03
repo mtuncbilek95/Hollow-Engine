@@ -486,7 +486,7 @@ i32 main(i32 argC, char** argV)
 	skyboxPipelineDesc.PushConstants = skyboxPushConstant;
 	skyboxPipelineDesc.ColorAttachmentCount = 1;
 	skyboxPipelineDesc.ColorAttachmentFormats = { TextureFormat::RGBA8_UNorm };
-	skyboxPipelineDesc.DepthAttachmentFormat =  TextureFormat::Unknown;
+	skyboxPipelineDesc.DepthAttachmentFormat =  TextureFormat::D32_Float;
 	skyboxPipelineDesc.StencilAttachmentFormat = TextureFormat::Unknown;
 
 	auto mSkyboxPipeline = mDevice->CreateGraphicsPipeline(skyboxPipelineDesc);
@@ -510,16 +510,34 @@ i32 main(i32 argC, char** argV)
 	samplerDesc.WAddressMode = SamplerAddressMode::Repeat;
 
 	auto mSampler = mDevice->CreateSampler(samplerDesc);
+
+	SamplerDesc skyboxSamplerDesc = {};
+	skyboxSamplerDesc.bAnisotropyEnabled = false;
+	skyboxSamplerDesc.bCompareEnabled = false;
+	skyboxSamplerDesc.BorderColor = SamplerBorderColor::OpaqueWhite;
+	skyboxSamplerDesc.CompareOp = CompareOperation::Always;
+	skyboxSamplerDesc.MapMode = SamplerMapMode::Linear;
+	skyboxSamplerDesc.MaxAnisotropy = 1.0f;
+	skyboxSamplerDesc.MaxLOD = 1.0f;
+	skyboxSamplerDesc.MagFilter = SamplerFilter::Linear;
+	skyboxSamplerDesc.MinFilter = SamplerFilter::Linear;
+	skyboxSamplerDesc.MinLOD = 0.0f;
+	skyboxSamplerDesc.MipLODBias = 0.0f;
+	skyboxSamplerDesc.UAddressMode = SamplerAddressMode::ClampToEdge;
+	skyboxSamplerDesc.VAddressMode = SamplerAddressMode::ClampToEdge;
+	skyboxSamplerDesc.WAddressMode = SamplerAddressMode::ClampToEdge;
+
+	auto mSkyboxSampler = mDevice->CreateSampler(skyboxSamplerDesc);
 #pragma endregion
 
 #pragma region Skybox Texture Creation
-	HashMap<String, TextureResourceLayout> skyboxImages;
-	skyboxImages["Right"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Right.jpg");
-	skyboxImages["Left"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Left.jpg");
-	skyboxImages["Top"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Top.jpg");
-	skyboxImages["Bottom"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Bottom.jpg");
-	skyboxImages["Front"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Front.jpg");
-	skyboxImages["Back"] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Back.jpg");
+	DArray<TextureResourceLayout> skyboxImages(6);
+	skyboxImages[0] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Right.jpg");
+	skyboxImages[1] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Left.jpg");
+	skyboxImages[2] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Top.jpg");
+	skyboxImages[3] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Bottom.jpg");
+	skyboxImages[4] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Front.jpg");
+	skyboxImages[5] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Back.jpg");
 
 	auto mSkyboxResource = MakeShared<SkyboxResource>();
 	mSkyboxResource->ConnectMemory(GraphicsManager::GetAPI().GetHostMemory(), GraphicsManager::GetAPI().GetDeviceMemory(), true);
@@ -527,7 +545,7 @@ i32 main(i32 argC, char** argV)
 	TextureDesc skyboxTextureDesc = {};
 	skyboxTextureDesc.ArraySize = 6;
 	skyboxTextureDesc.ImageFormat = TextureFormat::RGBA8_UNorm;
-	skyboxTextureDesc.ImageSize = { static_cast<u32>(skyboxImages["Right"].ImageSize.x), static_cast<u32>(skyboxImages["Right"].ImageSize.y), 1 };
+	skyboxTextureDesc.ImageSize = { static_cast<u32>(skyboxImages[0].ImageSize.x), static_cast<u32>(skyboxImages[0].ImageSize.y), 1 };
 	skyboxTextureDesc.MipLevels = 1;
 	skyboxTextureDesc.SampleCount = TextureSampleCount::Sample1;
 	skyboxTextureDesc.Type = TextureType::Texture2D;
@@ -536,7 +554,7 @@ i32 main(i32 argC, char** argV)
 	skyboxTextureDesc.pMemory = GraphicsManager::GetAPI().GetDeviceMemory();
 	mSkyboxResource->ConnectMemory(GraphicsManager::GetAPI().GetHostMemory(), GraphicsManager::GetAPI().GetDeviceMemory(), true);
 	mSkyboxResource->CreateTextureAndBuffer(skyboxTextureDesc, TextureType::TextureCube);
-
+	mSkyboxResource->UpdateTextureAndBuffer(skyboxImages, 0);
 #pragma endregion
 
 #pragma region Mesh Creation
@@ -698,6 +716,10 @@ i32 main(i32 argC, char** argV)
 	camFragmentDSUpdate.Entries.push_back({ mCamUniformBuffer, nullptr, DescriptorType::UniformBuffer, 1, 0, 0, 0 });
 	mDevice->UpdateDescriptorSet(mBaseCamFragDS, camFragmentDSUpdate);
 
+	DescriptorSetUpdateDesc skyboxDSUpdate = {};
+	skyboxDSUpdate.Entries.push_back({ mSkyboxResource->GetTextureBuffer(), mSkyboxSampler, DescriptorType::CombinedImageSampler, 1, 0, 0, 0 });
+	mDevice->UpdateDescriptorSet(mSkyboxDS, skyboxDSUpdate);
+
 	mCompileCmd->EndRecording();
 	mDevice->SubmitToQueue(GraphicsManager::GetAPI().GetPresentQueue(), &mCompileCmd, 1, nullptr, 0, nullptr, nullptr, 0, mCompileFence);
 	mDevice->WaitForFence(&mCompileFence, 1);
@@ -783,6 +805,17 @@ i32 main(i32 argC, char** argV)
 		passDesc.viewMask = 0;
 
 		mRuntimeCmd[imageIndex]->BeginRendering(passDesc);
+
+		mRuntimeCmd[imageIndex]->BindPipeline(mSkyboxPipeline);
+		mRuntimeCmd[imageIndex]->SetViewports(&viewport, 1);
+		mRuntimeCmd[imageIndex]->SetScissors(&scissor, 1);
+
+		mRuntimeCmd[imageIndex]->BindVertexBuffers(&mSkyboxMeshResource->GetMeshBuffer().VertexBuffer, 1);
+		mRuntimeCmd[imageIndex]->BindIndexBuffer(mSkyboxMeshResource->GetMeshBuffer().IndexBuffer, GraphicsIndexType::Index32);
+
+		mRuntimeCmd[imageIndex]->BindDescriptors(&mSkyboxDS, 1, 0);
+		mRuntimeCmd[imageIndex]->PushConstants({ &SkyboxPushConstant, sizeof(PushConstant) }, 0, ShaderStage::Vertex);
+		mRuntimeCmd[imageIndex]->DrawIndexed(mSkyboxMeshResource->GetIndexLength(), 0, 0, 0, 1);
 
 		mRuntimeCmd[imageIndex]->BindPipeline(mPipeline);
 		mRuntimeCmd[imageIndex]->SetViewports(&viewport, 1);

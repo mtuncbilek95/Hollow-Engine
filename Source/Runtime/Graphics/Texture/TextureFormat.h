@@ -29,6 +29,7 @@ namespace Hollow
         RGBA8_UInt,
         RGBA8_Norm,
         RGBA8_Int,
+        RGBA8_SRGB,
 
         RG16_Float,
         RG16_UNorm,

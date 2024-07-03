@@ -26,6 +26,7 @@ namespace Hollow
 		samplerInfo.borderColor = VulkanSamplerUtils::GetVkBorderColor(desc.BorderColor);
 		samplerInfo.compareEnable = desc.bCompareEnabled;
 		samplerInfo.compareOp = VulkanCoreUtils::GetVkCompareOperation(desc.CompareOp);
+		samplerInfo.unnormalizedCoordinates = VK_FALSE;
 		samplerInfo.mipmapMode = VulkanSamplerUtils::GetVkMipmapMode(desc.MapMode);
 		samplerInfo.mipLodBias = desc.MipLODBias;
 		samplerInfo.minLod = desc.MinLOD;

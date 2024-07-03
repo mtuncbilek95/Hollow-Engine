@@ -42,6 +42,7 @@ namespace Hollow
 			case TextureFormat::RGBA8_UInt:			return VK_FORMAT_R8G8B8A8_UINT;
 			case TextureFormat::RGBA8_Norm:			return VK_FORMAT_R8G8B8A8_SNORM;
 			case TextureFormat::RGBA8_Int:			return VK_FORMAT_R8G8B8A8_SINT;
+			case TextureFormat::RGBA8_SRGB:			return VK_FORMAT_R8G8B8A8_SRGB;
 
 			case TextureFormat::RG16_Float:			return VK_FORMAT_R16G16_SFLOAT;
 			case TextureFormat::RG16_UNorm:			return VK_FORMAT_R16G16_UNORM;

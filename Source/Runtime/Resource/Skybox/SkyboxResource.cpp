@@ -39,17 +39,38 @@ namespace Hollow
 			stageDesc.pMemory = mHostMemory;
 			stageDesc.ShareMode = ShareMode::Exclusive;
 			stageDesc.SubResourceCount = 1;
-			stageDesc.SubSizeInBytes = mTexture->GetImageSize().x * mTexture->GetImageSize().y * 4;
+			stageDesc.SubSizeInBytes = mTexture->GetImageSize().x * mTexture->GetImageSize().y * 4 * 6;
 			stageDesc.Usage = GraphicsBufferUsage::TransferSource;
 
 			mStageBuffer = mGraphicsDevice->CreateGraphicsBuffer(stageDesc);
 		}
 	}
 
-	void SkyboxResource::UpdateTextureAndBuffer(SkyboxResourceLayout pBuffer, u32 offset)
+	void SkyboxResource::UpdateTextureAndBuffer(DArray<TextureResourceLayout> pBuffer, u32 offset)
 	{
+		u64 totalSize = 0;
+
+		// Calculate the total size of the buffer that will be created for the skybox
+		for(auto& layout : pBuffer)
+			totalSize += layout.ImageData.GetSize();
+
+		// Create a memory owned buffer to hold the skybox data
+		void* pSkyboxData = malloc(totalSize);
+		CORE_ASSERT(pSkyboxData, "Skybox Resource", "Failed to allocate memory for skybox data");
+
+		// Copy the skybox data into the memory owned buffer
+		u64 offsetInBytes = 0;
+		for(auto& layout : pBuffer)
+		{
+			memcpy_s((u8*)pSkyboxData + (u64)offsetInBytes, totalSize, (u8*)layout.ImageData.GetData(), layout.ImageData.GetSize());
+			offsetInBytes += layout.ImageData.GetSize();
+		}
+
+		// Create a memory owned buffer to hold the skybox data
+		MemoryOwnedBuffer skyboxBuffer = { pSkyboxData, totalSize };
+
 		BufferDataUpdateDesc textureDataUpdateDesc = {};
-		textureDataUpdateDesc.Memory;
+		textureDataUpdateDesc.Memory = skyboxBuffer;
 		textureDataUpdateDesc.OffsetInBytes = 0;
 		mGraphicsDevice->UpdateBufferData(mStageBuffer, textureDataUpdateDesc);
 

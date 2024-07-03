@@ -25,7 +25,7 @@ namespace Hollow
 		Vec2u GetCameraSize() const { return mCameraSize; }
 
 		Mat4f GetViewMatrix() { return glm::lookAt(mPosition, mPosition + mOrientation, mUp); }
-		Mat4f GetProjectionMatrix() { return glm::perspective(glm::radians(70.0f), (float)mCameraSize.x / (float)mCameraSize.y, 0.1f, 1000.0f); }
+		Mat4f GetProjectionMatrix() { return glm::perspective(glm::radians(70.0f), (float)mCameraSize.x / (float)mCameraSize.y, 0.1f, 100.0f); }
 
 	private:
 		Vec3f mPosition;
