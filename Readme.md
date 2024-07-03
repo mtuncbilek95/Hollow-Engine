@@ -57,5 +57,7 @@ change the mDeviceMemory and the mHostMemory. Otherwise, the program will create
 ![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/88eb8afd-6a66-495c-89e5-1c19686b94fc)
 - [x] PBR Material without Skybox
 ![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/2a13819d-e582-479a-ba5d-273d25846c0a)
-- [ ] PRB Material with Skybox
+- [x] PRB Material with Skybox
+![image](https://github.com/mtuncbilek95/Hollow-Engine/assets/50660242/22da7fb1-0bcd-4ead-bc69-44a2ae1fa3c6)
+- [ ] BRDF - IDL - Irradiance
 - [ ] Basic Imgui Renderer
