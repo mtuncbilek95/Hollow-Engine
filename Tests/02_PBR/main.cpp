@@ -197,22 +197,25 @@ i32 main(i32 argC, char** argV)
 
 #pragma region Descriptor Creation
 	DescriptorLayoutDesc baseVertexDSLDesc = {};
+	baseVertexDSLDesc.Flags = DescriptorLayoutFlags::UpdateAfterBind;
 	baseVertexDSLDesc.Entries = {
 		{0, DescriptorType::UniformBuffer, ShaderStage::Vertex}
 	};
 	auto mBaseVertexDSL = mDevice->CreateDescriptorLayout(baseVertexDSLDesc);
 
 	DescriptorLayoutDesc baseFragmentDSLDesc = {};
+	baseFragmentDSLDesc.Flags = DescriptorLayoutFlags::UpdateAfterBind;
 	baseFragmentDSLDesc.Entries = {
-		{0, DescriptorType::CombinedImageSampler, ShaderStage::Fragment},
-		{1, DescriptorType::CombinedImageSampler, ShaderStage::Fragment},
-		{2, DescriptorType::CombinedImageSampler, ShaderStage::Fragment},
-		{3, DescriptorType::CombinedImageSampler, ShaderStage::Fragment},
-		{4, DescriptorType::CombinedImageSampler, ShaderStage::Fragment}
+		{0, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound },
+		{1, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound },
+		{2, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound },
+		{3, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound },
+		{4, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound }
 	};
 	auto mBaseFragmentDSL = mDevice->CreateDescriptorLayout(baseFragmentDSLDesc);
 
 	DescriptorPoolDesc baseDescriptorPoolDesc = {};
+	baseDescriptorPoolDesc.Flags = DescriptorPoolFlags::UpdateAfterBind;
 	baseDescriptorPoolDesc.MaxSets = 1000;
 	baseDescriptorPoolDesc.PoolSizes = {
 		{DescriptorType::UniformBuffer, 1000},
@@ -237,8 +240,9 @@ i32 main(i32 argC, char** argV)
 	auto mBaseFragmentDS = mDevice->CreateDescriptorSet(baseFragmentDSDesc);
 
 	DescriptorLayoutDesc baseCamFragDSLDesc = {};
+	baseCamFragDSLDesc.Flags = DescriptorLayoutFlags::UpdateAfterBind;
 	baseCamFragDSLDesc.Entries = {
-		{0, DescriptorType::UniformBuffer, ShaderStage::Fragment}
+		{0, DescriptorType::UniformBuffer, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound }
 	};
 	auto mBaseCamFragDSL = mDevice->CreateDescriptorLayout(baseCamFragDSLDesc);
 
@@ -248,12 +252,14 @@ i32 main(i32 argC, char** argV)
 	auto mBaseCamFragDS = mDevice->CreateDescriptorSet(baseCamFragDSDesc);
 
 	DescriptorLayoutDesc skyboxDSLDesc = {};
+	skyboxDSLDesc.Flags = DescriptorLayoutFlags::UpdateAfterBind;
 	skyboxDSLDesc.Entries = {
-		{0, DescriptorType::CombinedImageSampler, ShaderStage::Fragment}
+		{0, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound }
 	};
 	auto mSkyboxDSL = mDevice->CreateDescriptorLayout(skyboxDSLDesc);
 
 	DescriptorPoolDesc skyboxDescriptorPoolDesc = {};
+	skyboxDescriptorPoolDesc.Flags = DescriptorPoolFlags::UpdateAfterBind;
 	skyboxDescriptorPoolDesc.MaxSets = 10;
 	skyboxDescriptorPoolDesc.PoolSizes = {
 		{DescriptorType::UniformBuffer, 10},
@@ -486,7 +492,7 @@ i32 main(i32 argC, char** argV)
 	skyboxPipelineDesc.PushConstants = skyboxPushConstant;
 	skyboxPipelineDesc.ColorAttachmentCount = 1;
 	skyboxPipelineDesc.ColorAttachmentFormats = { TextureFormat::RGBA8_UNorm };
-	skyboxPipelineDesc.DepthAttachmentFormat =  TextureFormat::D32_Float;
+	skyboxPipelineDesc.DepthAttachmentFormat = TextureFormat::D32_Float;
 	skyboxPipelineDesc.StencilAttachmentFormat = TextureFormat::Unknown;
 
 	auto mSkyboxPipeline = mDevice->CreateGraphicsPipeline(skyboxPipelineDesc);

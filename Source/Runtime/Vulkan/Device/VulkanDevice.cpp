@@ -144,6 +144,7 @@ namespace Hollow
 		DArray<const char*> deviceExtensions;
 		deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 		deviceExtensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
+		deviceExtensions.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
 
 		//Check if the device supports the extensions
 		u32 extensionCount = 0;
@@ -155,13 +156,17 @@ namespace Hollow
 		VkPhysicalDeviceFeatures deviceFeatures = {};
 		vkGetPhysicalDeviceFeatures(mVkPhysicalDevice, &deviceFeatures);
 
-		VkPhysicalDeviceDescriptorIndexingFeaturesEXT descriptorIndexingFeatures = {};
-		descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
+		VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures = {};
+		descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
 		descriptorIndexingFeatures.pNext = nullptr;
 		descriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
+		descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
 		descriptorIndexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
 		descriptorIndexingFeatures.descriptorBindingUpdateUnusedWhilePending = VK_TRUE;
-
+		descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+		descriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind = VK_TRUE;
+		descriptorIndexingFeatures.descriptorBindingUniformBufferUpdateAfterBind = VK_TRUE;
+		descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
 
 		// Dynamic Rendering Features
 		VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeatures = {};

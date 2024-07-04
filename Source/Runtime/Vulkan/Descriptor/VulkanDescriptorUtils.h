@@ -4,6 +4,7 @@
 #include <Runtime/Graphics/Descriptor/DescriptorType.h>
 #include <Runtime/Graphics/Descriptor/DescriptorSetFlags.h>
 #include <Runtime/Graphics/Descriptor/DescriptorLayoutFlags.h>
+#include <Runtime/Graphics/Descriptor/DescriptorPoolFlags.h>
 
 #include <vulkan/vulkan.h>
 
@@ -69,6 +70,26 @@ namespace Hollow
 				vkFlags |= VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV;
 			if (flags & DescriptorLayoutFlags::IndirectBindable)
 				vkFlags |= VK_DESCRIPTOR_SET_LAYOUT_CREATE_INDIRECT_BINDABLE_BIT_NV;
+
+			return vkFlags;
+		}
+
+		static VkDescriptorPoolCreateFlags GetVkDescriptorPoolFlags(DescriptorPoolFlags flags)
+		{
+						VkDescriptorPoolCreateFlags vkFlags = 0;
+
+			if (flags == DescriptorPoolFlags::None)
+				return vkFlags;
+			if (flags & DescriptorPoolFlags::FreeDescriptorSet)
+				vkFlags |= VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+			if (flags & DescriptorPoolFlags::UpdateAfterBind)
+				vkFlags |= VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
+			if (flags & DescriptorPoolFlags::HostOnly)
+				vkFlags |= VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT;
+			if (flags & DescriptorPoolFlags::OverallAllocationSets)
+				vkFlags |= VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NV;
+			if (flags & DescriptorPoolFlags::OverallAllocationPool)
+				vkFlags |= VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_POOLS_BIT_NV;
 
 			return vkFlags;
 		}

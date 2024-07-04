@@ -1,5 +1,7 @@
 #include "VulkanDescriptorPool.h"
 
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorUtils.h>
+
 namespace Hollow
 {
 	VulkanDescriptorPool::VulkanDescriptorPool(const DescriptorPoolDesc& desc, const SharedPtr<VulkanDevice>& pDevice) : DescriptorPool(desc, pDevice), 
@@ -21,7 +23,7 @@ namespace Hollow
 		poolInfo.poolSizeCount = static_cast<u32>(poolSizes.size());
 		poolInfo.pPoolSizes = poolSizes.data();
 		poolInfo.maxSets = desc.MaxSets;
-		poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+		poolInfo.flags = VulkanDescriptorUtils::GetVkDescriptorPoolFlags(desc.Flags);
 		poolInfo.pNext = nullptr;
 
 		CORE_ASSERT(vkCreateDescriptorPool(mVkDevice, &poolInfo, nullptr, &mVkDescriptorPool) == VK_SUCCESS, "VulkanDescriptorPool", "Failed to create descriptor pool");
