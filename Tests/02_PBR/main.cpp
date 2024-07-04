@@ -45,7 +45,7 @@ i32 main(i32 argC, char** argV)
 
 	auto mSwapchain = mDevice->CreateSwapchain(swapchainDesc);
 
-	GraphicsManager::GetAPI().SetMemoryBudget(500, 500);
+	GraphicsManager::GetAPI().SetMemoryBudget(180, 285);
 	GraphicsManager::GetAPI().SetMsaaSamples(8);
 #pragma endregion
 
@@ -531,13 +531,12 @@ i32 main(i32 argC, char** argV)
 #pragma endregion
 
 #pragma region Skybox Texture Creation
-	DArray<TextureResourceLayout> skyboxImages(6);
-	skyboxImages[0] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Right.jpg");
-	skyboxImages[1] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Left.jpg");
-	skyboxImages[2] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Top.jpg");
-	skyboxImages[3] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Bottom.jpg");
-	skyboxImages[4] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Front.jpg");
-	skyboxImages[5] = ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Back.jpg");
+	DArray<TextureResourceLayout> skyboxImages;
+	DArray<String> skyboxImagesPaths;
+	PlatformDirectory::GetFiles(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Basic/", skyboxImagesPaths);
+
+	for (auto& el : skyboxImagesPaths)
+		skyboxImages.push_back(ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Basic/" + el));
 
 	auto mSkyboxResource = MakeShared<SkyboxResource>();
 	mSkyboxResource->ConnectMemory(GraphicsManager::GetAPI().GetHostMemory(), GraphicsManager::GetAPI().GetDeviceMemory(), true);
@@ -555,6 +554,10 @@ i32 main(i32 argC, char** argV)
 	mSkyboxResource->ConnectMemory(GraphicsManager::GetAPI().GetHostMemory(), GraphicsManager::GetAPI().GetDeviceMemory(), true);
 	mSkyboxResource->CreateTextureAndBuffer(skyboxTextureDesc, TextureType::TextureCube);
 	mSkyboxResource->UpdateTextureAndBuffer(skyboxImages, 0);
+
+	// Delete the skybox images as they are no longer needed
+	skyboxImages.clear();
+	skyboxImages.shrink_to_fit();
 #pragma endregion
 
 #pragma region Mesh Creation
@@ -855,10 +858,6 @@ i32 main(i32 argC, char** argV)
 		presentPostBarrier.AspectMask = TextureAspectFlags::ColorAspect;
 
 		mPresentRenderTarget->NewLayoutForColor(presentPostBarrier, imageIndex);
-
-		// I have my bloom effect on my RGBA16 texture
-		// I need to convert it to RGBA8 to present it to the screen
-		// I will use it to present it to the screen
 
 		mSwapchain->Present();
 	}

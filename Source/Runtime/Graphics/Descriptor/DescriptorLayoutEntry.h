@@ -3,6 +3,7 @@
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Shader/ShaderStage.h>
 #include <Runtime/Graphics/Descriptor/DescriptorType.h>
+#include <Runtime/Graphics/Descriptor/DescriptorSetFlags.h>
 
 namespace Hollow
 {
@@ -11,5 +12,6 @@ namespace Hollow
 		u32 Binding; 
 		DescriptorType Type;
 		ShaderStage ShaderStages;
+		DescriptorSetFlags Flags;
 	};
 }

@@ -17,6 +17,7 @@ FetchContent_MakeAvailable(assimp)
 FetchContent_MakeAvailable(entt)
 FetchContent_MakeAvailable(spirv-reflect)
 FetchContent_MakeAvailable(glfw)
+FetchContent_MakeAvailable(json)
 # ------------------------------------------------------------
 
 # ---------------------- FILE ADDITION -----------------------
@@ -54,6 +55,10 @@ endif()
 
 if(entt_POPULATED)
 	target_include_directories(Runtime PUBLIC ${entt_SOURCE_DIR}/src)
+endif()
+
+if(json_POPULATED)
+	target_include_directories(Runtime PUBLIC ${json_SOURCE_DIR}/include)
 endif()
 # ------------------------------------------------------------
 

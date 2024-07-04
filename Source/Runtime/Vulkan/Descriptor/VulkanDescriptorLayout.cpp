@@ -9,6 +9,7 @@ namespace Hollow
 		mVkDescriptorSetLayout(VK_NULL_HANDLE), mVkDevice(pDevice->GetVkDevice())
 	{
 		DArray<VkDescriptorSetLayoutBinding> bindings;
+		DArray<VkDescriptorBindingFlags> bindingFlags;
 
 		for (const DescriptorLayoutEntry& entry : desc.Entries)
 		{
@@ -20,14 +21,23 @@ namespace Hollow
 			binding.pImmutableSamplers = nullptr;
 
 			bindings.push_back(binding);
+
+			VkDescriptorBindingFlags bindingFlag = VulkanDescriptorUtils::GetVkDescriptorBindingFlags(entry.Flags);
+			bindingFlags.push_back(bindingFlag);
 		}
+
+		VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo = {};
+		bindingFlagsInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO;
+		bindingFlagsInfo.bindingCount = static_cast<uint32_t>(bindingFlags.size());
+		bindingFlagsInfo.pBindingFlags = bindingFlags.data();
+		bindingFlagsInfo.pNext = nullptr;
 
 		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
 		layoutInfo.pBindings = bindings.data();
-		layoutInfo.flags = 0;
-		layoutInfo.pNext = nullptr;
+		layoutInfo.flags = VulkanDescriptorUtils::GetVkDescriptorSetLayoutFlags(desc.Flags);
+		layoutInfo.pNext = &bindingFlagsInfo;
 
 		CORE_ASSERT(vkCreateDescriptorSetLayout(mVkDevice, &layoutInfo, nullptr, &mVkDescriptorSetLayout) == VK_SUCCESS, "VulkanDescriptorLayout", "Failed to create descriptor set layout");
 	}
@@ -40,6 +50,6 @@ namespace Hollow
 			mVkDescriptorSetLayout = VK_NULL_HANDLE;
 		}
 
-		mVkDevice = nullptr;
+		mVkDevice = nullptr; 
 	}
 }

@@ -69,6 +69,9 @@ namespace Hollow
 		// Create a memory owned buffer to hold the skybox data
 		MemoryOwnedBuffer skyboxBuffer = { pSkyboxData, totalSize };
 
+		if(pSkyboxData)
+			free(pSkyboxData);
+
 		BufferDataUpdateDesc textureDataUpdateDesc = {};
 		textureDataUpdateDesc.Memory = skyboxBuffer;
 		textureDataUpdateDesc.OffsetInBytes = 0;

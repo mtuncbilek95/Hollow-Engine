@@ -151,19 +151,22 @@ namespace Hollow
 		DArray<VkExtensionProperties> availableExtensions(extensionCount);
 		vkEnumerateDeviceExtensionProperties(mVkPhysicalDevice, nullptr, &extensionCount, availableExtensions.data());
 
-#if defined(HOLLOW_DEBUG)
-		for(auto& extension : availableExtensions)
-			CORE_LOG(HE_INFO, "VulkanDevice", "Available Extension: %s", extension.extensionName);
-#endif
-
 		// Device Features
 		VkPhysicalDeviceFeatures deviceFeatures = {};
 		vkGetPhysicalDeviceFeatures(mVkPhysicalDevice, &deviceFeatures);
 
+		VkPhysicalDeviceDescriptorIndexingFeaturesEXT descriptorIndexingFeatures = {};
+		descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
+		descriptorIndexingFeatures.pNext = nullptr;
+		descriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
+		descriptorIndexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
+		descriptorIndexingFeatures.descriptorBindingUpdateUnusedWhilePending = VK_TRUE;
+
+
 		// Dynamic Rendering Features
 		VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeatures = {};
 		dynamicRenderingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
-		dynamicRenderingFeatures.pNext = nullptr;
+		dynamicRenderingFeatures.pNext = &descriptorIndexingFeatures;
 		dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
 
 		// Device Info

@@ -19,6 +19,8 @@ namespace Hollow
 		MemoryOwnedBuffer& operator=(const MemoryOwnedBuffer& other);
 		MemoryOwnedBuffer& operator=(MemoryOwnedBuffer&& other) noexcept;
 
+		MemoryOwnedBuffer& operator+(const MemoryOwnedBuffer& other);
+
 	private:
 		void AllocateAndCopy(const void* pData, const u64 size);
 	private:

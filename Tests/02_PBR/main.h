@@ -2,6 +2,7 @@
 
 #include <Runtime/Platform/PlatformAPI.h>
 #include <Runtime/Platform/PlatformFile.h>
+#include <Runtime/Platform/PlatformDirectory.h>
 #include <Runtime/Window/WindowManager.h>
 #include <Runtime/Graphics/API/GraphicsManager.h>
 

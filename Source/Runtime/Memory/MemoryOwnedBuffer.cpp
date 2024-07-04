@@ -61,6 +61,25 @@ namespace Hollow
 		return *this;
 	}
 
+	MemoryOwnedBuffer& MemoryOwnedBuffer::operator+(const MemoryOwnedBuffer& other)
+	{
+		if (other.mData && other.mSize > 0)
+		{
+			u64 newSize = mSize + other.mSize;
+			void* newData = new char[newSize];
+
+			std::memcpy(newData, mData, mSize);
+			std::memcpy(static_cast<i8*>(newData) + mSize, other.mData, other.mSize);
+
+			delete[] static_cast<char*>(mData);
+
+			mData = newData;
+			mSize = newSize;
+		}
+		return *this;
+	
+	}
+
 	void MemoryOwnedBuffer::AllocateAndCopy(const void* pData, const u64 size)
 	{
 		if (pData && size > 0)
