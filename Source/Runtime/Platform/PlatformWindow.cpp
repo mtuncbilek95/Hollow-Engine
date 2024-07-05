@@ -29,7 +29,7 @@ namespace Hollow
 		if (mWindowMode == WindowMode::Windowed)
 		{
 			glfwSetWindowAttrib(mGLFWHandle, GLFW_DECORATED, GLFW_TRUE);
-			glfwSetWindowAttrib(mGLFWHandle, GLFW_RESIZABLE, GLFW_TRUE);
+			glfwSetWindowAttrib(mGLFWHandle, GLFW_RESIZABLE, GLFW_FALSE);
 			i32 centerX = primaryMonitor.GetMonitorPosition().x + (i32)primaryMonitor.GetMonitorResolution().x / 2 - (i32)mWindowSize.x / 2;
 			i32 centerY = primaryMonitor.GetMonitorPosition().y + (i32)primaryMonitor.GetMonitorResolution().y / 2 - (i32)mWindowSize.y / 2;
 

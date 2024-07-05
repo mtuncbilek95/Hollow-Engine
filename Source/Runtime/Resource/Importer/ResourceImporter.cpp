@@ -25,7 +25,7 @@ namespace Hollow
 		Assimp::Importer assimpImporter;
 
 		const aiScene* scene = assimpImporter.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs |
-			aiProcess_CalcTangentSpace | aiProcess_GenNormals);
+			aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_SortByPType | aiProcess_OptimizeMeshes);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{

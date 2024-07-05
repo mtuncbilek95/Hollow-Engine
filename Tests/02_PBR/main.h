@@ -64,13 +64,15 @@ namespace Hollow
 	Transform ObjectTransform
 	{
 		.Position = Vec3f(0.f),
-		.Rotation = Vec3f(Math::radians(90.f), Math::radians(0.f), Math::radians(180.f)),
+		.Rotation = Vec3f(Math::radians(90.f), Math::radians(0.f), Math::radians(0.f)),
 		.Scale = Vec3f(1.f)
 	};
 
 	void UpdateBuffers()
 	{
 		FreeLookCamera::GetAPI().Update();
+
+		ObjectTransform.Rotation.z += Math::radians(0.1f);
 
 		Mat4f model = Mat4f(1.0f);
 		model = Math::translate(model, ObjectTransform.Position);

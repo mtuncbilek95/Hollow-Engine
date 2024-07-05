@@ -15,8 +15,8 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
 // because it's used in many places
 float GeometrySchlickGGX(float NdotX, float roughness)
 {
-    float k = (roughness + 1.0) * (roughness + 1.0); // constant that dependent to roughness
-    k = k / 8.0; // constant that dependent to roughness
+    float r = (roughness + 1.0); // constant that dependent to roughness
+    float k = (r * r) / 8.0; // constant that dependent to roughness
 
     float sub = NdotX * (1.0 - k) + k; // denominator of the formula
 

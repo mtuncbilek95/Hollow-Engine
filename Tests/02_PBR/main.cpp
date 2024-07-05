@@ -210,7 +210,8 @@ i32 main(i32 argC, char** argV)
 		{1, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound },
 		{2, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound },
 		{3, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound },
-		{4, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound }
+		{4, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound },
+		{5, DescriptorType::CombinedImageSampler, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound }
 	};
 	auto mBaseFragmentDSL = mDevice->CreateDescriptorLayout(baseFragmentDSLDesc);
 
@@ -242,7 +243,8 @@ i32 main(i32 argC, char** argV)
 	DescriptorLayoutDesc baseCamFragDSLDesc = {};
 	baseCamFragDSLDesc.Flags = DescriptorLayoutFlags::UpdateAfterBind;
 	baseCamFragDSLDesc.Entries = {
-		{0, DescriptorType::UniformBuffer, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound }
+		{0, DescriptorType::UniformBuffer, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound },
+		{1, DescriptorType::UniformBuffer, ShaderStage::Fragment, DescriptorSetFlags::UpdateAfterBind | DescriptorSetFlags::PartiallyBound }
 	};
 	auto mBaseCamFragDSL = mDevice->CreateDescriptorLayout(baseCamFragDSLDesc);
 
@@ -378,8 +380,13 @@ i32 main(i32 argC, char** argV)
 	pushConstantRange.Size = sizeof(PushConstant);
 	pushConstantRange.Offset = 0;
 
+	PushConstantRange pushConstantRange2 = {};
+	pushConstantRange2.Stage = ShaderStage::Fragment;
+	pushConstantRange2.Size = sizeof(PushConstant);
+	pushConstantRange2.Offset = sizeof(PushConstant);
+
 	PushConstantDesc pushConstant = {};
-	pushConstant.PushConstantRanges = { pushConstantRange };
+	pushConstant.PushConstantRanges = { pushConstantRange, pushConstantRange2 };
 
 	// Create Pipeline
 	GraphicsPipelineDesc pipelineDesc = {};
@@ -719,6 +726,7 @@ i32 main(i32 argC, char** argV)
 	fragmentDSUpdate.Entries.push_back({ mMetallicTextureResource->GetTextureBuffer(), mSampler, DescriptorType::CombinedImageSampler, 1, 0, 0, 2 });
 	fragmentDSUpdate.Entries.push_back({ mAOTextureResource->GetTextureBuffer(), mSampler, DescriptorType::CombinedImageSampler, 1, 0, 0, 3 });
 	fragmentDSUpdate.Entries.push_back({ mEmissiveTextureResource->GetTextureBuffer(), mSampler, DescriptorType::CombinedImageSampler, 1, 0, 0, 4 });
+	fragmentDSUpdate.Entries.push_back({ mSkyboxResource->GetTextureBuffer(), mSkyboxSampler, DescriptorType::CombinedImageSampler, 1, 0, 0, 5 });
 	mDevice->UpdateDescriptorSet(mBaseFragmentDS, fragmentDSUpdate);
 
 	DescriptorSetUpdateDesc camFragmentDSUpdate = {};
@@ -845,6 +853,7 @@ i32 main(i32 argC, char** argV)
 		mRuntimeCmd[imageIndex]->BindDescriptors(&mBaseFragmentDS, 1, 1);
 		mRuntimeCmd[imageIndex]->BindDescriptors(&mBaseCamFragDS, 1, 2);
 		mRuntimeCmd[imageIndex]->PushConstants({ &BasePushConstant, sizeof(PushConstant) }, 0, ShaderStage::Vertex);
+		mRuntimeCmd[imageIndex]->PushConstants({ &SkyboxPushConstant, sizeof(PushConstant) }, sizeof(PushConstant), ShaderStage::Fragment);
 
 		mRuntimeCmd[imageIndex]->DrawIndexed(mMeshResource->GetIndexLength(), 0, 0, 0, 1);
 		mRuntimeCmd[imageIndex]->EndRendering();

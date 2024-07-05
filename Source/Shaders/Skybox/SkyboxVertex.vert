@@ -12,6 +12,6 @@ layout(std140, push_constant) uniform CameraMatrix
 
 void main()
 {
-	gl_Position = camConst.proj * camConst.view * vec4(vPosition, 1.0);
+	gl_Position = vec4(camConst.proj * camConst.view * vec4(vPosition, 1.0)).xyww;
 	fTexCoord = vPosition;
 }
