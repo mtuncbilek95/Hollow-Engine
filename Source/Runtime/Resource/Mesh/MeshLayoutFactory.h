@@ -2,7 +2,7 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Object/ManagerAPI.h>
-#include <Runtime/Resource/Mesh/MeshResourceLayout.h>
+#include <Runtime/Resource/Mesh/MeshResource.h>
 
 namespace Hollow
 {
@@ -12,10 +12,15 @@ namespace Hollow
 		MeshLayoutFactory() = default;
 		~MeshLayoutFactory() override = default;
 
-		void AddMeshLayout(const Guid& guid, const MeshResourceLayout& layout) { mMeshLayouts[guid] = layout; }
-		const MeshResourceLayout& GetMeshLayout(const Guid& guid) { return mMeshLayouts[guid]; }
+		void AddMeshLayout(SharedPtr<MeshResource> layout)
+		{
+			const Guid& guid = layout->GetResourceID();
+			mMeshLayouts[guid] = layout; 
+		}
+
+		SharedPtr<MeshResource> GetMeshLayout(const Guid& guid) { return mMeshLayouts[guid]; }
 
 	private:
-		HashMap<Guid, MeshResourceLayout> mMeshLayouts;
+		HashMap<Guid, SharedPtr<MeshResource>> mMeshLayouts;
 	};
 }

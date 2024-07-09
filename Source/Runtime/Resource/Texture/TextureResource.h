@@ -15,7 +15,7 @@ namespace Hollow
 	class RUNTIME_API TextureResource final : public ResourceSubObject
 	{
 	public:
-		TextureResource();
+		TextureResource(TextureResourceSubType type = TextureResourceSubType::Unknown);
 		virtual ~TextureResource() override = default;
 
 		SharedPtr<Texture> GetTexture() const { return mTexture; }
@@ -27,6 +27,8 @@ namespace Hollow
 		void UpdateTextureAndBuffer(MemoryOwnedBuffer pBuffer, u32 offset);
 
 		virtual ResourceObjectType GetObjectType() const noexcept final { return ResourceObjectType::Texture; }
+
+		TextureResourceSubType GetSubType() const { return mSubType; }
 
 	private:
 		void CreateInternalResources();
@@ -47,5 +49,7 @@ namespace Hollow
 
 		bool mPreAllocate;
 		TextureDesc mDesc;
+
+		TextureResourceSubType mSubType;
 	};
 }

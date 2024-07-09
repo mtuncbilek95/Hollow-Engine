@@ -24,7 +24,7 @@ void main()
 	vec4 texColor = texture(sampler2D(textureTest, samplerTest), fragTexCoord);
 	float texAlpha = texColor.a;
 
-	vec3 normColor = decodeNormal(texture(sampler2D(normalMap, samplerTest), fragTexCoord).xyz);
+	vec3 normColor = DecodeNormal(texture(sampler2D(normalMap, samplerTest), fragTexCoord).xyz);
 	vec3 ambientColor = GetAmbientLight(uboLights.ambient).rgb;
 
 	vec3 diffuse = GetDiffuseLight(uboLights.diffuse, fragNormal, fragPosition);

@@ -59,6 +59,4 @@ namespace Hollow
 		OTF,
 		Count
 	};
-
-
 }

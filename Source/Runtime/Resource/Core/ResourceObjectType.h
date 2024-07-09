@@ -12,6 +12,7 @@ namespace Hollow
 		Material,
 		RenderTarget,
 		Shader,
+		Skybox,
 		Scene,
 		Animation,
 		Audio,

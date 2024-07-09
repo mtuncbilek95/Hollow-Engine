@@ -546,10 +546,10 @@ i32 main(i32 argC, char** argV)
 #pragma region Skybox Texture Creation
 	DArray<TextureResourceLayout> skyboxImages;
 	DArray<String> skyboxImagesPaths;
-	PlatformDirectory::GetFiles(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Basic/", skyboxImagesPaths);
+	PlatformDirectory::GetFiles(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Objects/SkyboxCube/Textures/", skyboxImagesPaths);
 
 	for (auto& el : skyboxImagesPaths)
-		skyboxImages.push_back(ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Skybox/Basic/" + el));
+		skyboxImages.push_back(ResourceImporter::ImportTexture(PlatformAPI::GetAPI().GetEngineSourcePath() + "Resources/Objects/SkyboxCube/Textures/" + el));
 
 	auto mSkyboxResource = MakeShared<SkyboxResource>();
 	mSkyboxResource->ConnectMemory(GraphicsManager::GetAPI().GetHostMemory(), GraphicsManager::GetAPI().GetDeviceMemory(), true);
@@ -589,11 +589,11 @@ i32 main(i32 argC, char** argV)
 	mMeshLayout.SubMeshes.clear();
 	mMeshLayout.SubMeshes.shrink_to_fit();
 
-	SharedPtr<TextureResource> mBaseTextureResource = MakeShared<TextureResource>();
-	SharedPtr<TextureResource> mNormalTextureResource = MakeShared<TextureResource>();
-	SharedPtr<TextureResource> mMetallicTextureResource = MakeShared<TextureResource>();
-	SharedPtr<TextureResource> mAOTextureResource = MakeShared<TextureResource>();
-	SharedPtr<TextureResource> mEmissiveTextureResource = MakeShared<TextureResource>();
+	SharedPtr<TextureResource> mBaseTextureResource = MakeShared<TextureResource>(TextureResourceSubType::Albedo);
+	SharedPtr<TextureResource> mNormalTextureResource = MakeShared<TextureResource>(TextureResourceSubType::Normal);
+	SharedPtr<TextureResource> mMetallicTextureResource = MakeShared<TextureResource>(TextureResourceSubType::Metallic);
+	SharedPtr<TextureResource> mAOTextureResource = MakeShared<TextureResource>(TextureResourceSubType::AmbientOcclusion);
+	SharedPtr<TextureResource> mEmissiveTextureResource = MakeShared<TextureResource>(TextureResourceSubType::Emissive);
 
 	mBaseTextureResource->ConnectMemory(GraphicsManager::GetAPI().GetHostMemory(), GraphicsManager::GetAPI().GetDeviceMemory(), true);
 	mNormalTextureResource->ConnectMemory(GraphicsManager::GetAPI().GetHostMemory(), GraphicsManager::GetAPI().GetDeviceMemory(), true);

@@ -2,7 +2,7 @@
 
 #include <Runtime/Core/Core.h>
 #include <Runtime/Resource/Mesh/MeshResourceLayout.h>
-#include <Runtime/Resource/Mesh/SkyboxLayout.h>
+#include <Runtime/Resource/Skybox/SkyboxLayout.h>
 #include <Runtime/Resource/Texture/TextureResourceLayout.h>
 #include <Runtime/Resource/Material/MaterialResourceLayout.h>
 

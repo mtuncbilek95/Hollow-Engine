@@ -9,14 +9,18 @@
 
 namespace Hollow
 {
-	struct RUNTIME_API RenderObject
+	struct RUNTIME_API RenderObject : public ResourceSubObject
 	{
 		RenderObject();
+		~RenderObject() = default;
 
 	private:
-		SharedPtr<MeshResource> Mesh;
-		SharedPtr<MaterialResource> Material;
-		SharedPtr<Pipeline> Pipeline;
-		SharedPtr<DescriptorSet> TransformSet;
+		SharedPtr<MeshResource> mMesh;
+		SharedPtr<MaterialResource> mMaterial;
+
+		SharedPtr<Pipeline> mPipeline;
+
+		SharedPtr<DescriptorSet> mDescriptorSet;
+		SharedPtr<DescriptorPool> mDescriptorPool;
 	};
 }

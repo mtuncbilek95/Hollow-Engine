@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	TextureResource::TextureResource() : ResourceSubObject()
+	TextureResource::TextureResource(TextureResourceSubType type) : ResourceSubObject(), mSubType(type)
 	{
 		mGraphicsDevice = GraphicsManager::GetAPI().GetDefDevice();
 		CreateInternalResources();
