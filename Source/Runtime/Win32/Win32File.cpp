@@ -164,7 +164,7 @@ namespace Hollow
 #endif
 	}
 
-	bool Win32File::Read(const String& path, MemoryBuffer& view, const u64 startByte, const u64 endByte)
+	bool Win32File::Read(const String& path, MemoryOwnedBuffer& view, const u64 startByte, const u64 endByte)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
@@ -204,7 +204,7 @@ namespace Hollow
 		{
 			delete[] buffer;
 			CloseHandle(hFile);
-			view = MemoryBuffer();
+			view = MemoryOwnedBuffer();
 			return false;
 		}
 
@@ -212,7 +212,10 @@ namespace Hollow
 		CloseHandle(hFile);
 
 		// Copy the buffer to the content
-		view = MemoryBuffer(buffer, bytesRead);
+		view = MemoryOwnedBuffer(buffer, bytesRead);
+		// Free the buffer
+		delete[] buffer;
+
 		return true;
 #else
 		return false;

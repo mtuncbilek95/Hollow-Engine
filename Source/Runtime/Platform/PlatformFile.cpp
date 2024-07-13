@@ -37,7 +37,7 @@ namespace Hollow
 		return PlatformDependency::Read(path, contentOut, startByte, endByte);
 	}
 
-	bool PlatformFile::Read(const String& path, MemoryBuffer& view, const u64 startByte, const u64 endByte)
+	bool PlatformFile::Read(const String& path, MemoryOwnedBuffer& view, const u64 startByte, const u64 endByte)
 	{
 		return PlatformDependency::Read(path, view, startByte, endByte);
 	}

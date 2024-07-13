@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
-#include <Runtime/Object/Object.h>
+#include <Runtime/Object/IObject.h >
 
 #include <Runtime/Graphics/Device/GraphicsDeviceDesc.h>
 #include <Runtime/Graphics/Swapchain/SwapchainDesc.h>
@@ -53,7 +53,7 @@ namespace Hollow
 	 * @class GraphicsDevice
 	 * @brief Abstract class for graphics device
 	 */
-	class RUNTIME_API GraphicsDevice : public Object
+	class RUNTIME_API GraphicsDevice : public IObject
 	{
 	public:
 		GraphicsDevice(const GraphicsDeviceDesc& desc);

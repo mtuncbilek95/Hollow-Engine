@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
-#include <Runtime/Object/ManagerAPI.h>
+#include <Runtime/Object/API.h>
 
 namespace Hollow
 {
-	class RUNTIME_API PlatformAPI : public ManagerAPI<PlatformAPI>
+	class RUNTIME_API PlatformAPI : public API<PlatformAPI>
 	{
 	public:
 		PlatformAPI() = default;

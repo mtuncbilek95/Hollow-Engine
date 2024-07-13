@@ -31,8 +31,8 @@ namespace Hollow
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-		surfaceInfo.hinstance = WindowManager::GetAPI().GetDefaultWindow()->GetInstanceHandle();
-		surfaceInfo.hwnd = WindowManager::GetAPI().GetDefaultWindow()->GetWindowHandle();
+		surfaceInfo.hinstance = WindowManager::GetAPI()->GetDefaultWindow()->GetInstanceHandle();
+		surfaceInfo.hwnd = WindowManager::GetAPI()->GetDefaultWindow()->GetWindowHandle();
 		surfaceInfo.pNext = nullptr;
 
 		CORE_ASSERT(vkCreateWin32SurfaceKHR(mVkInstance, &surfaceInfo, nullptr, &mVkSurface) == VK_SUCCESS, "VulkanSwapchain", "Failed to create surface");
@@ -216,8 +216,8 @@ namespace Hollow
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-		surfaceInfo.hinstance = WindowManager::GetAPI().GetDefaultWindow()->GetInstanceHandle();
-		surfaceInfo.hwnd = WindowManager::GetAPI().GetDefaultWindow()->GetWindowHandle();
+		surfaceInfo.hinstance = WindowManager::GetAPI()->GetDefaultWindow()->GetInstanceHandle();
+		surfaceInfo.hwnd = WindowManager::GetAPI()->GetDefaultWindow()->GetWindowHandle();
 		surfaceInfo.pNext = nullptr;
 
 		CORE_ASSERT(vkCreateWin32SurfaceKHR(mVkInstance, &surfaceInfo, nullptr, &mVkSurface) == VK_SUCCESS, "VulkanSwapchain", "Failed to create surface");

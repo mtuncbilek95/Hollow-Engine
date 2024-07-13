@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
-#include <Runtime/Object/Object.h>
+#include <Runtime/Object/IObject.h >
 #include <Runtime/Application/ApplicationModuleState.h>
 
 namespace Hollow
 {
-	class RUNTIME_API ApplicationModule : public Object
+	class RUNTIME_API ApplicationModule : public IObject
 	{
 		friend class Application;
 

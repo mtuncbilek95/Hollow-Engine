@@ -2,10 +2,8 @@
 
 #include <Runtime/Core/Definitions.h>
 #include <Runtime/Core/StdFix.h>
-#include <Runtime/Object/Object.h>
+#include <Runtime/Object/IObject.h >
 #include <Runtime/Window/WindowDesc.h>
-
-#include <Runtime/Graphics/Swapchain/Swapchain.h>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -17,7 +15,7 @@
 
 namespace Hollow
 {
-	class RUNTIME_API PlatformWindow : public Object
+	class RUNTIME_API PlatformWindow : public IObject
 	{
 		friend class GraphicsDevice;
 		friend class WindowManager;

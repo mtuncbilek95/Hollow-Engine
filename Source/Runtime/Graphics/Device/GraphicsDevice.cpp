@@ -23,7 +23,7 @@
 
 namespace Hollow
 {
-	GraphicsDevice::GraphicsDevice(const GraphicsDeviceDesc& desc) : Object(), mInstance(desc.Instance), mGraphicsQueueCount(desc.GraphicsQueueCount), 
+	GraphicsDevice::GraphicsDevice(const GraphicsDeviceDesc& desc) : IObject(), mInstance(desc.Instance), mGraphicsQueueCount(desc.GraphicsQueueCount), 
 		mComputeQueueCount(desc.ComputeQueueCount), mTransferQueueCount(desc.TransferQueueCount), mOwnedSwapchain(nullptr), mDeviceObjects(), mAdapter()
 	{
 		mInstance->EnumerateAdapters();

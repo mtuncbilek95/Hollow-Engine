@@ -9,9 +9,6 @@
 #include <Runtime/Graphics/Core/AttachmentLoadOperation.h>
 #include <Runtime/Graphics/Core/AttachmentStoreOperation.h>
 
-#include <Runtime/Graphics/API/GraphicsManager.h>
-#include <Runtime/Graphics/Swapchain/Swapchain.h>
-
 #include <vulkan/vulkan.h>
 
 namespace Hollow

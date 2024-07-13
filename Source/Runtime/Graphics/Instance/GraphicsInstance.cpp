@@ -1,26 +1,11 @@
 #include "GraphicsInstance.h"
 
-#include <Runtime/Graphics/API/GraphicsManager.h>
-
 #include <Runtime/Vulkan/Instance/VulkanInstance.h>
 #include <Runtime/Vulkan/Device/VulkanDevice.h>
 
 namespace Hollow
 {
-	SharedPtr<GraphicsInstance> GraphicsInstance::CreateInstance(const GraphicsInstanceDesc& desc)
-	{
-		switch (desc.API)
-		{
-		case GraphicsAPI::DirectX12:
-			return SharedPtr<GraphicsInstance>();
-		case GraphicsAPI::Vulkan:
-			return std::make_shared<VulkanInstance>(desc);
-		default:
-			return SharedPtr<GraphicsInstance>();
-		}
-	}
-
-	GraphicsInstance::GraphicsInstance(const GraphicsInstanceDesc& desc) : Object(), mInstanceName(desc.InstanceName),
+	GraphicsInstance::GraphicsInstance(const GraphicsInstanceDesc& desc) : IObject(), mInstanceName(desc.InstanceName),
 		mApplicationName(desc.ApplicationName), mGraphicsAPI(desc.API)
 	{
 	}
@@ -45,7 +30,6 @@ namespace Hollow
 			break;
 		}
 
-		GraphicsManager::GetAPI().SetGraphicsDevice(mOwnedDevice);
 		return mOwnedDevice;
 	}
 }

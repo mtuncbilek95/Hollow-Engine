@@ -9,7 +9,7 @@ namespace Hollow
 	ShaderIncluder::ShaderIncluder()
 	{
 #if defined(HOLLOW_DEBUG)
-		mIncludePaths.push_back(PlatformAPI::GetAPI().GetEngineSourcePath() + "Source/Shaders/");
+		mIncludePaths.push_back(PlatformAPI::GetAPI()->GetEngineSourcePath() + "Source/Shaders/");
 #endif
 	}
 

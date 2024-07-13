@@ -34,6 +34,14 @@ using OwnedPtr = std::unique_ptr<T>;
 template<typename T>
 using WeakPtr = std::weak_ptr<T>;
 
+#include <functional>
+template<typename T>
+using Function = std::function<T>;
+
+#include <deque>
+template<typename T>
+using Deque = std::deque<T>;
+
 template<typename T, typename...Args>
 inline SharedPtr<T> MakeShared(Args&&...args)
 {

@@ -1,7 +1,6 @@
 #include "PlatformWindow.h"
 
 #include <Runtime/Platform/PlatformMonitor.h>
-#include <Runtime/Graphics/API/GraphicsManager.h>
 
 namespace Hollow
 {
@@ -53,7 +52,6 @@ namespace Hollow
 			{
 				PlatformWindow* platformWindow = static_cast<PlatformWindow*>(glfwGetWindowUserPointer(window));
 				platformWindow->mWindowSize = { (u32)width, (u32)height };
-				GraphicsManager::GetAPI().GetDefDevice()->GetSwapchain()->Resize(platformWindow->mWindowSize);
 			});
 	}
 

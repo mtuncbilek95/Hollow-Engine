@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
-#include <Runtime/Object/Object.h>
+#include <Runtime/Object/IObject.h >
 #include <Runtime/Graphics/Instance/GraphicsInstanceDesc.h>
 #include <Runtime/Graphics/Instance/GraphicsAdapter.h>
 
@@ -14,11 +14,8 @@ namespace Hollow
 	 * @class GraphicsInstance
 	 * @brief GraphicsInstance is the main entry point for the graphics API.
 	 */
-	class RUNTIME_API GraphicsInstance : public Object
+	class RUNTIME_API GraphicsInstance : public IObject
 	{
-	public:
-		static SharedPtr<GraphicsInstance> CreateInstance(const GraphicsInstanceDesc& desc);
-
 	public:
 		GraphicsInstance(const GraphicsInstanceDesc& desc);
 		virtual ~GraphicsInstance() = default;

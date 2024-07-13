@@ -1,0 +1,13 @@
+{
+  "EditorConfig": {
+    "EditorTitle": "Hollow Editor",
+    "EditorVersion": "0.0.1",
+    "EditorWindow": {
+      "Resolution": [ 1920, 1080 ],
+      "Fullscreen": false,
+      "Resizable": true,
+      "VSync": true,
+      "FPS": 60
+    }
+  }
+}
