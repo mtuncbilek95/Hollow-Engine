@@ -25,5 +25,5 @@ endif ()
 # --------------------------------------------------
 
 # ------------------ SUBDIRECTORIES ----------------
-add_subdirectory("Source/Runtime")
+add_subdirectory("Source/Engine")
 # --------------------------------------------------
