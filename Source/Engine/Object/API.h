@@ -8,13 +8,20 @@ namespace Hollow
 	class ENGINE_API API
 	{
 	public:
-		API() { mInstance = MakeShared<TObject>(); }
 		virtual ~API() = default;
 
 		static TObject* GetAPI()
 		{
-			CORE_ASSERT(mInstance != nullptr, "Manager Abstraction", "API is not initialized");
+			if (!mInstance)
+				CreateAPI();
+
 			return mInstance.get();
+		}
+
+	protected:
+		static void CreateAPI()
+		{
+			mInstance = MakeShared<TObject>();
 		}
 
 	private:
