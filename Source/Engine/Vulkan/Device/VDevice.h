@@ -54,16 +54,23 @@ namespace Hollow
 		VkInstance GetVkInstance() const { return mInstance; }
 		VkPhysicalDevice GetVkAdapter() const { return mAdapter; }
 
+		u32 GetGraphicsQueueFamilyIndex() const { return mGraphicsQueueFamily.FamilyIndex; }
+		u32 GetComputeQueueFamilyIndex() const { return mComputeQueueFamily.FamilyIndex; }
+		u32 GetTransferQueueFamilyIndex() const { return mTransferQueueFamily.FamilyIndex; }
+
 		void Shutdown() override;
+
+		SharedPtr<TextureImage> CreateSwapchainImage(const TextureImageDesc& desc, VkImage image);
 
 	protected:
 		virtual SharedPtr<GraphicsQueue> CreateQueueImpl(const GraphicsQueueDesc& desc) override;
-		// virtual SharedPtr<GraphicsMemory> CreateMemoryImpl(const GraphicsMemoryDesc& desc) = 0;
-		// virtual SharedPtr<TextureImage> CreateTextureImageImpl(const TextureImageDesc& desc) = 0;
-		// virtual SharedPtr<TextureView> CreateTextureViewImpl(const TextureViewDesc& desc) = 0;
-		// virtual SharedPtr<Sampler> CreateSamplerImpl(const SamplerDesc& desc) = 0;
-		// virtual SharedPtr<GraphicsBuffer> CreateBufferImpl(const GraphicsBufferDesc& desc) = 0;
-		// virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc) = 0;
+		virtual SharedPtr<GraphicsMemory> CreateMemoryImpl(const GraphicsMemoryDesc& desc) override;
+		virtual SharedPtr<TextureImage> CreateTextureImageImpl(const TextureImageDesc& desc)override;
+		virtual SharedPtr<TextureView> CreateTextureViewImpl(const TextureViewDesc& desc) override;
+		virtual SharedPtr<Sampler> CreateSamplerImpl(const SamplerDesc& desc) override;
+		virtual SharedPtr<GraphicsBuffer> CreateBufferImpl(const GraphicsBufferDesc& desc) override;
+		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc) override;
+		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc) override;
 		// virtual SharedPtr<DescriptorLayout> CreateDescriptorLayoutImpl(const DescriptorLayoutDesc& desc) = 0;
 		// virtual SharedPtr<DescriptorPool> CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc) = 0;
 		// virtual SharedPtr<DescriptorSet> CreateDescriptorSetImpl(const DescriptorSetDesc& desc) = 0;

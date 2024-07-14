@@ -26,6 +26,10 @@ using HashMap = std::unordered_map<K, V>;
 template<typename T>
 using HashSet = std::unordered_set<T>;
 
+#include <list>
+template<typename T>
+using List = std::list<T>;
+
 #include <memory>
 template<typename T>
 using SharedPtr = std::shared_ptr<T>;

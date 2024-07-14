@@ -17,10 +17,10 @@ typedef float f32;
 typedef double f64;
 #endif
 
-#define uint64_max 0xFFFFFFFFFFFFFFFF
-#define uint32_max 0xFFFFFFFF
-#define uint16_max 0xFFFF
-#define uint8_max 0xFF
+#define u64_max 0xFFFFFFFFFFFFFFFF
+#define u32_max 0xFFFFFFFF
+#define u16_max 0xFFFF
+#define u8_max 0xFF
 
 #define DEPRECATED_CLASS [[deprecated("This class is deprecated and will be removed in the future")]]
 #define DEPRECATED_FUNCTION [[deprecated("This function is deprecated and will be removed in the future")]]

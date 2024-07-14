@@ -1,12 +1,20 @@
 #include "VDevice.h"
 
 #include <Engine/Vulkan/Instance/VInstance.h>
+#include <Engine/Vulkan/Queue/VQueue.h>
+#include <Engine/Vulkan/Memory/VMemory.h>
+#include <Engine/Vulkan/Texture/VTextureImage.h>
+#include <Engine/Vulkan/Texture/VTextureView.h>
+#include <Engine/Vulkan/Sampler/VSampler.h>
+#include <Engine/Vulkan/Buffer/VBuffer.h>
+#include <Engine/Vulkan/Shader/VShader.h>
+#include <Engine/Vulkan/Swapchain/VSwapchain.h>
 
 #define QUEUE_COUNT 1
 
 namespace Hollow
 {
-	VDevice::VDevice(SharedInstance pInstance) : GraphicsDevice(pInstance), mAdapter(pInstance->GetVkAdapter()), 
+	VDevice::VDevice(SharedInstance pInstance) : GraphicsDevice(pInstance), mAdapter(pInstance->GetVkAdapter()),
 		mInstance(pInstance->GetVkInstance()), mDevice(VK_NULL_HANDLE)
 	{
 		CORE_ASSERT(mAdapter != VK_NULL_HANDLE, "VDevice", "Vulkan adapter is null");
@@ -159,8 +167,63 @@ namespace Hollow
 	{
 	}
 
+	SharedPtr<TextureImage> VDevice::CreateSwapchainImage(const TextureImageDesc& desc, VkImage image)
+	{
+		return MakeShared<VTextureImage>(desc, image, GetSharedPtrAs<VDevice>());
+	}
+
 	SharedPtr<GraphicsQueue> VDevice::CreateQueueImpl(const GraphicsQueueDesc& desc)
 	{
-		return SharedPtr<GraphicsQueue>();
+		switch (desc.QueueType)
+		{
+		case GraphicsQueueType::Graphics:
+			return MakeShared<VQueue>(desc, mGraphicsQueueFamily.GetFreeQueue(), GetSharedPtrAs<VDevice>());
+			break;
+		case GraphicsQueueType::Compute:
+			return MakeShared<VQueue>(desc, mComputeQueueFamily.GetFreeQueue(), GetSharedPtrAs<VDevice>());
+			break;
+		case GraphicsQueueType::Transfer:
+			return MakeShared<VQueue>(desc, mTransferQueueFamily.GetFreeQueue(), GetSharedPtrAs<VDevice>());
+			break;
+		default:
+			CORE_ASSERT(false, "VDevice", "Unknown queue type");
+			return nullptr;
+			break;
+		}
+	}
+
+	SharedPtr<GraphicsMemory> VDevice::CreateMemoryImpl(const GraphicsMemoryDesc& desc)
+	{
+		return MakeShared<VMemory>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<TextureImage> VDevice::CreateTextureImageImpl(const TextureImageDesc& desc)
+	{
+		return MakeShared<VTextureImage>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<TextureView> VDevice::CreateTextureViewImpl(const TextureViewDesc& desc)
+	{
+		return MakeShared<VTextureView>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<Sampler> VDevice::CreateSamplerImpl(const SamplerDesc& desc)
+	{
+		return MakeShared<VSampler>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<GraphicsBuffer> VDevice::CreateBufferImpl(const GraphicsBufferDesc& desc)
+	{
+		return MakeShared<VBuffer>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<Shader> VDevice::CreateShaderImpl(const ShaderDesc& desc)
+	{
+		return MakeShared<VShader>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<Swapchain> VDevice::CreateSwapchainImpl(const SwapchainDesc& desc)
+	{
+		return MakeShared<VSwapchain>(desc, GetSharedPtrAs<VDevice>());
 	}
 }

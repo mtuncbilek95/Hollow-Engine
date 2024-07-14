@@ -9,12 +9,12 @@ namespace Hollow
 	class ENGINE_API GraphicsQueue : public DeviceObject
 	{
 	public:
-		GraphicsQueue(const GraphicsQueueDesc& desc, SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice) {}
-		~GraphicsQueue() = default;
+		GraphicsQueue(const GraphicsQueueDesc& desc, SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), 
+			mQueueType(desc.QueueType), mQueueIndex(desc.QueueIndex) {}
+		virtual ~GraphicsQueue() override = default;
 
 		GraphicsQueueType GetQueueType() const { return mQueueType; }
 		u32 GetQueueIndex() const { return mQueueIndex; }
-
 	private:
 		GraphicsQueueType mQueueType;
 		u32 mQueueIndex;

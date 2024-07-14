@@ -10,7 +10,7 @@ namespace Hollow
 	{
 	public:
 		DeviceObject(SharedPtr<GraphicsDevice> pDevice) : mDevice(pDevice) {}
-		virtual ~DeviceObject() = default;
+		virtual ~DeviceObject() override = default;
 
 		SharedPtr<GraphicsDevice> GetOwnerDevice() const { return mDevice; }
 

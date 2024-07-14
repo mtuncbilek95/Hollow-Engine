@@ -12,7 +12,7 @@ namespace Hollow
 		GraphicsInstance(const GraphicsInstanceDesc& desc) : mAppName(desc.AppName), 
 			mAppVersion(desc.AppVersion), mEngineName(desc.EngineName), 
 			mEngineVersion(desc.EngineVersion) {}
-		~GraphicsInstance() override = default;
+		virtual ~GraphicsInstance() override = default;
 
 		const String& GetAppName() const { return mAppName; }
 		const Vec3f& GetAppVersion() const { return mAppVersion; }

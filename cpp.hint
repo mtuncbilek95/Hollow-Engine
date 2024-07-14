@@ -4,3 +4,5 @@ FORCEINLINE static bool operator & (EnumType a, EnumType b) { return (static_cas
 #define ENGINE_API __declspec(dllexport)
 #define FORCEINLINE inline
 
+#define CORE_ASSERT(condition, title, message, __VA_ARGS__) Hollow::GlobalConsole::Assert(condition, title, message, __VA_ARGS__)
+#define CORE_ASSERT(condition, title, message, __VA_ARGS__) (condition)
