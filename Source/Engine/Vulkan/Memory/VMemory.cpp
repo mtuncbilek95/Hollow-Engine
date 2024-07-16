@@ -18,7 +18,7 @@ namespace Hollow
 
 	u32 VMemory::FindMemoryType(GraphicsMemoryType memoryType)
 	{
-		VkMemoryPropertyFlags properties = Utils::GetVkMemoryPropertyFlags(memoryType);
+		VkMemoryPropertyFlags properties = VkUtils::GetVkMemoryPropertyFlags(memoryType);
 
 		VkPhysicalDeviceMemoryProperties memoryProperties;
 		vkGetPhysicalDeviceMemoryProperties(mVkAdapter, &memoryProperties);

@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	namespace Utils
+	namespace VkUtils
 	{
 		static VkBufferUsageFlags GetVKBufferUsage(GraphicsBufferUsage usage)
 		{

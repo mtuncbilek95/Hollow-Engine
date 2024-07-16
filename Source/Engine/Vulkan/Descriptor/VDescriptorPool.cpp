@@ -23,7 +23,7 @@ namespace Hollow
 		poolInfo.poolSizeCount = static_cast<u32>(poolSizes.size());
 		poolInfo.pPoolSizes = poolSizes.data();
 		poolInfo.maxSets = desc.MaxSets;
-		poolInfo.flags = Utils::GetVkDescriptorPoolFlags(desc.Flags);
+		poolInfo.flags = VkUtils::GetVkDescriptorPoolFlags(desc.Flags);
 		poolInfo.pNext = nullptr;
 
 		CORE_ASSERT(vkCreateDescriptorPool(mDevice, &poolInfo, nullptr, &mVkDescriptorPool) == VK_SUCCESS, "VDescriptorPool", "Failed to create descriptor pool");

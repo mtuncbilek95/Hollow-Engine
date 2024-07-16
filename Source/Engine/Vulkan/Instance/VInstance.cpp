@@ -27,16 +27,16 @@ namespace Hollow
 		switch (messageSeverity)
 		{
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-			CORE_LOG(HE_VERBOSE, "VDebugger", "%s", pCallbackData->pMessage);
+			CORE_LOG(HE_VERBOSE, "%s", pCallbackData->pMessage);
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-			CORE_LOG(HE_INFO, "VDebugger", "%s", pCallbackData->pMessage);
+			CORE_LOG(HE_INFO, "%s", pCallbackData->pMessage);
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-			CORE_LOG(HE_WARNING, "VDebugger", "%s", pCallbackData->pMessage);
+			CORE_LOG(HE_WARNING, "%s", pCallbackData->pMessage);
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-			CORE_LOG(HE_ERROR, "VDebugger", "%s", pCallbackData->pMessage);
+			CORE_LOG(HE_ERROR, "%s", pCallbackData->pMessage);
 			break;
 		default:
 			break;
@@ -224,7 +224,7 @@ namespace Hollow
 				return a.second.second < b.second.second;
 			});
 
-		CORE_LOG(HE_INFO, "VInstance", "Best device found: %s", bestDevice->first.c_str());
+		CORE_LOG(HE_INFO, "Best device found: %s", bestDevice->first.c_str());
 		return bestDevice->second.first;
 	}
 }

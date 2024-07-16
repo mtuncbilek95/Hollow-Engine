@@ -10,7 +10,7 @@
 
 namespace Hollow
 {
-	namespace Utils
+	namespace VkUtils
 	{
 		static VkDescriptorType GetVkDescriptorType(DescriptorType type)
 		{
@@ -35,7 +35,7 @@ namespace Hollow
 		{
 			VkDescriptorBindingFlags vkFlags = 0;
 
-			if (flags == DescriptorSetFlags::None)
+			if (flags == DescriptorSetFlags::Undefined)
 				return vkFlags;
 			if (flags & DescriptorSetFlags::UpdateAfterBind)
 				vkFlags |= VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;

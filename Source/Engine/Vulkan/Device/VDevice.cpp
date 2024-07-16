@@ -9,6 +9,12 @@
 #include <Engine/Vulkan/Buffer/VBuffer.h>
 #include <Engine/Vulkan/Shader/VShader.h>
 #include <Engine/Vulkan/Swapchain/VSwapchain.h>
+#include <Engine/Vulkan/Descriptor/VDescriptorLayout.h>
+#include <Engine/Vulkan/Descriptor/VDescriptorPool.h>
+#include <Engine/Vulkan/Descriptor/VDescriptorSet.h>
+#include <Engine/Vulkan/Pipeline/VPipeline.h>
+#include <Engine/Vulkan/Sync/VFence.h>
+#include <Engine/Vulkan/Sync/VSemaphore.h>
 
 #define QUEUE_COUNT 1
 
@@ -38,21 +44,21 @@ namespace Hollow
 				mGraphicsQueueFamily.FamilyIndex = index;
 				mGraphicsQueueFamily.QueueCapacity = prop.queueCount;
 				mGraphicsQueueFamily.RequestedCount = QUEUE_COUNT > prop.queueCount ? prop.queueCount : QUEUE_COUNT;
-				CORE_LOG(HE_INFO, "VDevice", "Graphics Queue: { Index:%d, Capacity:%d, RequestedCount:%d }", index, prop.queueCount, mGraphicsQueueFamily.RequestedCount);
+				CORE_LOG(HE_INFO, "Graphics Queue: { Index:%d, Capacity:%d, RequestedCount:%d }", index, prop.queueCount, mGraphicsQueueFamily.RequestedCount);
 			}
 			else if (prop.queueFlags & VK_QUEUE_COMPUTE_BIT && mComputeQueueFamily.FamilyIndex == 255)
 			{
 				mComputeQueueFamily.FamilyIndex = index;
 				mComputeQueueFamily.QueueCapacity = prop.queueCount;
 				mComputeQueueFamily.RequestedCount = QUEUE_COUNT > prop.queueCount ? prop.queueCount : QUEUE_COUNT;
-				CORE_LOG(HE_INFO, "VDevice", "Compute  Queue: { Index:%d, Capacity:%d,  RequestedCount:%d }", index, prop.queueCount, mComputeQueueFamily.RequestedCount);
+				CORE_LOG(HE_INFO, "Compute  Queue: { Index:%d, Capacity:%d,  RequestedCount:%d }", index, prop.queueCount, mComputeQueueFamily.RequestedCount);
 			}
 			else if (prop.queueFlags & VK_QUEUE_TRANSFER_BIT && mTransferQueueFamily.FamilyIndex == 255)
 			{
 				mTransferQueueFamily.FamilyIndex = index;
 				mTransferQueueFamily.QueueCapacity = prop.queueCount;
 				mTransferQueueFamily.RequestedCount = QUEUE_COUNT > prop.queueCount ? prop.queueCount : QUEUE_COUNT;
-				CORE_LOG(HE_INFO, "VDevice", "Transfer Queue: { Index:%d, Capacity:%d,  RequestedCount:%d }", index, prop.queueCount, mTransferQueueFamily.RequestedCount);
+				CORE_LOG(HE_INFO, "Transfer Queue: { Index:%d, Capacity:%d,  RequestedCount:%d }", index, prop.queueCount, mTransferQueueFamily.RequestedCount);
 			}
 			index++;
 		}
@@ -225,5 +231,35 @@ namespace Hollow
 	SharedPtr<Swapchain> VDevice::CreateSwapchainImpl(const SwapchainDesc& desc)
 	{
 		return MakeShared<VSwapchain>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<DescriptorLayout> VDevice::CreateDescriptorLayoutImpl(const DescriptorLayoutDesc& desc)
+	{
+		return MakeShared<VDescriptorLayout>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<DescriptorPool> VDevice::CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc)
+	{
+		return MakeShared<VDescriptorPool>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<DescriptorSet> VDevice::CreateDescriptorSetImpl(const DescriptorSetDesc& desc)
+	{
+		return MakeShared<VDescriptorSet>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<Pipeline> VDevice::CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc)
+	{
+		return MakeShared<VPipeline>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<Fence> VDevice::CreateGraphicsFenceImpl(bool bSignalled)
+	{
+		return MakeShared<VFence>(bSignalled, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<Semaphore> VDevice::CreateGraphicsSemaphoreImpl()
+	{
+		return MakeShared<VSemaphore>(GetSharedPtrAs<VDevice>());
 	}
 }

@@ -30,12 +30,12 @@ add_executable(Engine main.cpp ${SUBDIRECTORIES})
 target_include_directories(Engine PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 
 if(glfw_POPULATED)
-	target_link_libraries(Engine PUBLIC glfw)
+	target_link_libraries(Engine PRIVATE glfw)
 endif()
 
 if (stbi_POPULATED) 
-    target_compile_definitions(Engine PUBLIC STB_IMAGE_IMPLEMENTATION)
-    target_include_directories(Engine PUBLIC ${stbi_SOURCE_DIR})
+    target_compile_definitions(Engine PRIVATE STB_IMAGE_IMPLEMENTATION)
+    target_include_directories(Engine PRIVATE ${stbi_SOURCE_DIR})
 endif ()
 
 if(assimp_POPULATED)
@@ -44,45 +44,25 @@ if(assimp_POPULATED)
 endif()
 
 if(Vulkan_FOUND)
-    target_include_directories(Engine PUBLIC "${Vulkan_INCLUDE_DIRS}")
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/vulkan-1.lib")
+    target_include_directories(Engine PRIVATE "${Vulkan_INCLUDE_DIRS}")
+    target_link_libraries(Engine PRIVATE Vulkan::Vulkan)
+    find_package(Vulkan OPTIONAL_COMPONENTS shaderc_combined)
+        if (Vulkan_shaderc_combined_FOUND)
+            target_link_libraries(Engine PRIVATE Vulkan::shaderc_combined)
+        endif ()
 endif()
 
 if(spirv-reflect_POPULATED)
-	target_include_directories(Engine PUBLIC ${spirv-reflect_SOURCE_DIR})
-	target_link_libraries(Engine PUBLIC spirv-reflect-static)
+	target_include_directories(Engine PRIVATE ${spirv-reflect_SOURCE_DIR})
+	target_link_libraries(Engine PRIVATE spirv-reflect-static)
 endif()
 
 if(entt_POPULATED)
-	target_include_directories(Engine PUBLIC ${entt_SOURCE_DIR}/src)
+	target_include_directories(Engine PRIVATE ${entt_SOURCE_DIR}/src)
 endif()
 
 if(json_POPULATED)
-	target_include_directories(Engine PUBLIC ${json_SOURCE_DIR}/include)
-endif()
-# ------------------------------------------------------------
-
-# ------------------ SHADER DIRECTORY ------------------
-target_include_directories(Engine PUBLIC "${Vulkan_INCLUDE_DIRS}")
-
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/dxcompilerd.lib")
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/glslangd.lib")
-
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/shaderc_combinedd.lib")
-
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-cored.lib")
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-glsld.lib")
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-hlsld.lib")
-else()
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/dxcompiler.lib")
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/glslang.lib")
-
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/shaderc_combined.lib")
-
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-core.lib")
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-glsl.lib")
-    target_link_libraries(Engine PUBLIC "${Vulkan_SDK_DIR}/spirv-cross-hlsl.lib")
+	target_include_directories(Engine PRIVATE ${json_SOURCE_DIR}/include)
 endif()
 # ------------------------------------------------------------
 

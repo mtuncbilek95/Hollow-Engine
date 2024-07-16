@@ -11,7 +11,7 @@ namespace Hollow
 		VkBufferCreateInfo bufferInfo = {};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = desc.BlockSize * desc.BlockLength;
-		bufferInfo.usage = Utils::GetVKBufferUsage(desc.Usage);
+		bufferInfo.usage = VkUtils::GetVKBufferUsage(desc.Usage);
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		bufferInfo.flags = 0;
 

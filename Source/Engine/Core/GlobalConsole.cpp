@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include <Engine/Platform/PlatformMessage.h>
+#include <Engine/Platform/PlatformTime.h>
 
 namespace Hollow
 {
@@ -15,24 +16,25 @@ namespace Hollow
 		va_end(args);
 	}
 
-	void GlobalConsole::Log(ConsoleType type, const char* title, const char* message, ...)
+	void GlobalConsole::Log(ConsoleType type, const char* message, ...)
 	{
 		va_list args;
 		va_start(args, message);
 
+		Time time = PlatformTime::CurrentDateTime();
 		switch (type)
 		{
 		case ConsoleType::Info:
-			printf("\033[36m[%s]\033[39m -- ", title);
+			printf("[%02d:%02d:%02d][%02d:%02d:%02d][\033[36mDebug\033[39m] -- ", time.Day, time.Month, time.Year, time.Hour, time.Minute, time.Second);
 			break;
 		case ConsoleType::Verbose:
-			printf("\033[32m[%s]\033[39m -- ", title);
+			printf("[%02d:%02d:%02d][%02d:%02d:%02d][\033[32mTrace\033[39m] -- ", time.Day, time.Month, time.Year, time.Hour, time.Minute, time.Second);
 			break;
 		case ConsoleType::Warning:
-			printf("\033[33m[%s]\033[39m -- ", title);
+			printf("[%02d:%02d:%02d][%02d:%02d:%02d][\033[33mWarning\033[39m] -- ", time.Day, time.Month, time.Year, time.Hour, time.Minute, time.Second);
 			break;
 		case ConsoleType::Error:
-			printf("\033[31m[%s]\033[39m -- ", title);
+			printf("[%02d:%02d:%02d][%02d:%02d:%02d][\033[31mError\033[39m] -- ", time.Day, time.Month, time.Year, time.Hour, time.Minute, time.Second);
 			break;
 		}
 

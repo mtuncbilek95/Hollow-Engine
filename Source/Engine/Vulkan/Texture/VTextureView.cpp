@@ -11,13 +11,13 @@ namespace Hollow
 		VkImageViewCreateInfo imageViewInfo = {};
 		imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		imageViewInfo.image = desc.pTexture->GetSharedPtrAs<VTextureImage>()->GetVkTexture();
-		imageViewInfo.viewType = Utils::GetVkTextureViewType(desc.ViewType);
-		imageViewInfo.format = Utils::GetVkFormat(desc.pTexture->GetImageFormat());
+		imageViewInfo.viewType = VkUtils::GetVkTextureViewType(desc.ViewType);
+		imageViewInfo.format = VkUtils::GetVkFormat(desc.pTexture->GetImageFormat());
 		imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
 		imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
 		imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
 		imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-		imageViewInfo.subresourceRange.aspectMask = Utils::GetVkTextureAspectFlags(desc.AspectFlags);
+		imageViewInfo.subresourceRange.aspectMask = VkUtils::GetVkTextureAspectFlags(desc.AspectFlags);
 		imageViewInfo.subresourceRange.baseMipLevel = desc.MipLevel;
 		imageViewInfo.subresourceRange.levelCount = desc.MipCount;
 		imageViewInfo.subresourceRange.baseArrayLayer = desc.ArrayLayer;

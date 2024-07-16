@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	namespace Utils
+	namespace VkUtils
 	{
 		static VkMemoryPropertyFlags GetVkMemoryPropertyFlags(GraphicsMemoryType memoryType)
 		{

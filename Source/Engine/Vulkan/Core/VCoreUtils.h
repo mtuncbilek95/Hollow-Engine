@@ -8,7 +8,7 @@
 
 namespace Hollow
 {
-	namespace Utils
+	namespace VkUtils
 	{
 		static VkCompareOp GetVkCompareOp(CompareOperation operation)
 		{

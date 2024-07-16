@@ -16,13 +16,13 @@ namespace Hollow
 			{
 				if (pModule->OnInitialize())
 				{
-					CORE_LOG(HE_INFO, "Application", "Module %s validated", pModule->GetModuleName().c_str());
+					CORE_LOG(HE_INFO, "Module %s validated", pModule->GetModuleName().c_str());
 					pModule->SetState(ApplicationModuleState::Validated);
 					mHashModules.insert({ pModule->GetState(), pModule });
 				}
 				else
 				{
-					CORE_LOG(HE_INFO, "Application", "Module %s invalidated", pModule->GetModuleName().c_str());
+					CORE_LOG(HE_INFO, "Module %s invalidated", pModule->GetModuleName().c_str());
 					pModule->SetState(ApplicationModuleState::Invalidated);
 					mHashModules.insert({ pModule->GetState(), pModule });
 				}
@@ -79,6 +79,6 @@ namespace Hollow
 
 	void Application::QuitReason(const String& reason)
 	{
-		CORE_LOG(HE_WARNING, "Application Quit Reason", "%s", reason.c_str());
+		CORE_LOG(HE_WARNING, "%s", reason.c_str());
 	}
 }

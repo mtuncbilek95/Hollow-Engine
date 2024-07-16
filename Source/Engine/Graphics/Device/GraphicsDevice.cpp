@@ -45,4 +45,34 @@ namespace Hollow
 	{
 		return CreateSwapchainImpl(desc);
 	}
+
+	SharedPtr<DescriptorLayout> GraphicsDevice::CreateDescriptorLayout(const DescriptorLayoutDesc& desc)
+	{
+		return CreateDescriptorLayoutImpl(desc);
+	}
+
+	SharedPtr<DescriptorPool> GraphicsDevice::CreateDescriptorPool(const DescriptorPoolDesc& desc)
+	{
+		return CreateDescriptorPoolImpl(desc);
+	}
+
+	SharedPtr<DescriptorSet> GraphicsDevice::CreateDescriptorSet(const DescriptorSetDesc& desc)
+	{
+		return CreateDescriptorSetImpl(desc);
+	}
+
+	SharedPtr<Pipeline> GraphicsDevice::CreateGraphicsPipeline(const GraphicsPipelineDesc& desc)
+	{
+		return CreateGraphicsPipelineImpl(desc);
+	}
+
+	SharedPtr<Fence> GraphicsDevice::CreateGraphicsFence(bool bSignalled)
+	{
+		return CreateGraphicsFenceImpl(bSignalled);
+	}
+
+	SharedPtr<Semaphore> GraphicsDevice::CreateGraphicsSemaphore()
+	{
+		return CreateGraphicsSemaphoreImpl();
+	}
 }

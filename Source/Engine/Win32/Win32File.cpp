@@ -146,7 +146,7 @@ namespace Hollow
 		{
 			delete[] buffer;
 			CloseHandle(hFile);
-			contentOut = "";
+			contentOut = String();
 			return false;
 		}
 

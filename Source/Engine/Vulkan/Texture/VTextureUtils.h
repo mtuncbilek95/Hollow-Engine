@@ -13,7 +13,7 @@
 
 namespace Hollow
 {
-	namespace Utils
+	namespace VkUtils
 	{
 		static VkImageType GetVkImageType(TextureType type)
 		{

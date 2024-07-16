@@ -41,5 +41,7 @@ int main(i32 argC, char** argV)
 	swapchainDesc.pRequestQueue = GraphicsManager->GetGraphicsQueue();
 	SharedPtr<Swapchain> mSwapchain = GraphicsManager->CreateSwapchain(swapchainDesc);
 
+
+
 	return 0;
 }

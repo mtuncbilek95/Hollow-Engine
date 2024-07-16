@@ -46,7 +46,7 @@ namespace Hollow
 		VkColorSpaceKHR colorSpace = {};
 		for (auto& format : surfaceFormats)
 		{
-			if (format.format == Utils::GetVkFormat(desc.ImageFormat) && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+			if (format.format == VkUtils::GetVkFormat(desc.ImageFormat) && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
 			{
 				colorSpace = format.colorSpace;
 				break;
@@ -57,17 +57,17 @@ namespace Hollow
 		{
 			if (desc.ImageSize.x > surfaceCapabilities.maxImageExtent.width || desc.ImageSize.y > surfaceCapabilities.maxImageExtent.height)
 			{
-				CORE_LOG(HE_WARNING, "VulkanSwapchain", "Requested image size is not supported. Using the current extent size.");
+				CORE_LOG(HE_WARNING, "Requested image size is not supported. Using the current extent size.");
 				SetNewImageSize({ surfaceCapabilities.currentExtent.width, surfaceCapabilities.currentExtent.height });
 			}
 			else
-				CORE_LOG(HE_VERBOSE, "VulkanSwapchain", "Requested image size is supported");
+				CORE_LOG(HE_VERBOSE, "Requested image size is supported");
 		}
 
 		u32 presentModeCount = 0;
 		CORE_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(mAdapter, mSurface, &presentModeCount, nullptr) == VK_SUCCESS,
 			"CreateSurfaceSwapchain", "Failed to get present modes");
-		CORE_ASSERT(presentModeCount > 0, "VulkanSwapchain", "No present modes found");
+		CORE_ASSERT(presentModeCount > 0, "VSwapchan", "No present modes found");
 
 		DArray<VkPresentModeKHR> presentModes(presentModeCount);
 		CORE_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(mAdapter, mSurface, &presentModeCount, presentModes.data()) == VK_SUCCESS,
@@ -75,32 +75,32 @@ namespace Hollow
 
 		for (auto& mode : presentModes)
 		{
-			if (mode == Utils::GetVkPresentMode(desc.VSync))
+			if (mode == VkUtils::GetVkPresentMode(desc.VSync))
 			{
-				CORE_LOG(HE_VERBOSE, "VulkanSwapchain", "Requested present mode is supported");
+				CORE_LOG(HE_VERBOSE, "Requested present mode is supported");
 				break;
 			}
 		}
 
 		auto pVkQueue = desc.pRequestQueue->GetSharedPtrAs<VQueue>();
 		u32 presentQueueFamilyIndex = pVkQueue->GetQueueIndex();
-		CORE_ASSERT(presentQueueFamilyIndex != UINT32_MAX, "VulkanSwapchain", "Failed to get present queue family index");
+		CORE_ASSERT(presentQueueFamilyIndex != UINT32_MAX, "VSwapchan", "Failed to get present queue family index");
 		VkBool32 presentSupport = false;
 		CORE_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(mAdapter, presentQueueFamilyIndex, mSurface, &presentSupport) == VK_SUCCESS,
-			"VulkanSwapchain", "Failed to get present support");
+			"VSwapchan", "Failed to get present support");
 
-		CORE_ASSERT(presentSupport, "VulkanSwapchain", "Present support not found");
+		CORE_ASSERT(presentSupport, "VSwapchan", "Present support not found");
 
 		// Create the swapchain
 		VkSwapchainCreateInfoKHR swapchainInfo = {};
 		swapchainInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 		swapchainInfo.surface = mSurface;
 		swapchainInfo.minImageCount = desc.BufferCount;
-		swapchainInfo.imageFormat = Utils::GetVkFormat(desc.ImageFormat);
+		swapchainInfo.imageFormat = VkUtils::GetVkFormat(desc.ImageFormat);
 		swapchainInfo.imageColorSpace = colorSpace;
 		swapchainInfo.imageExtent = { GetImageSize().x, GetImageSize().y };
 		swapchainInfo.imageArrayLayers = 1;
-		swapchainInfo.imageUsage = Utils::GetVkImageUsageFlags(desc.TextureUsage);
+		swapchainInfo.imageUsage = VkUtils::GetVkImageUsageFlags(desc.TextureUsage);
 		swapchainInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		swapchainInfo.queueFamilyIndexCount = 1;
 		swapchainInfo.pQueueFamilyIndices = &presentQueueFamilyIndex;
@@ -108,7 +108,7 @@ namespace Hollow
 		swapchainInfo.preTransform = surfaceCapabilities.currentTransform;
 		swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		swapchainInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-		swapchainInfo.presentMode = Utils::GetVkPresentMode(desc.VSync);
+		swapchainInfo.presentMode = VkUtils::GetVkPresentMode(desc.VSync);
 		swapchainInfo.clipped = VK_FALSE;
 		swapchainInfo.oldSwapchain = VK_NULL_HANDLE;
 		swapchainInfo.flags = VkSwapchainCreateFlagsKHR();
@@ -117,11 +117,11 @@ namespace Hollow
 		CORE_ASSERT(vkCreateSwapchainKHR(mDevice, &swapchainInfo, nullptr, &mSwapchain) == VK_SUCCESS, "VSwapchain", "Failed to create swapchain");
 
 		u32 imageCount = 0;
-		CORE_ASSERT(vkGetSwapchainImagesKHR(mDevice, mSwapchain, &imageCount, nullptr) == VK_SUCCESS, "VulkanSwapchain", "Failed to get swapchain images");
-		CORE_ASSERT(imageCount > 0, "VulkanSwapchain", "No swapchain images found");
+		CORE_ASSERT(vkGetSwapchainImagesKHR(mDevice, mSwapchain, &imageCount, nullptr) == VK_SUCCESS, "VSwapchan", "Failed to get swapchain images");
+		CORE_ASSERT(imageCount > 0, "VSwapchan", "No swapchain images found");
 
 		DArray<VkImage> images(imageCount);
-		CORE_ASSERT(vkGetSwapchainImagesKHR(mDevice, mSwapchain, &imageCount, images.data()) == VK_SUCCESS, "VulkanSwapchain", "Failed to get swapchain images");
+		CORE_ASSERT(vkGetSwapchainImagesKHR(mDevice, mSwapchain, &imageCount, images.data()) == VK_SUCCESS, "VSwapchan", "Failed to get swapchain images");
 
 
 		// Nevertheless, we need to fill the VulkanTexture data

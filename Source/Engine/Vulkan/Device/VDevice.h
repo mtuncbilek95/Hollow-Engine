@@ -71,14 +71,12 @@ namespace Hollow
 		virtual SharedPtr<GraphicsBuffer> CreateBufferImpl(const GraphicsBufferDesc& desc) override;
 		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc) override;
 		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc) override;
-		// virtual SharedPtr<DescriptorLayout> CreateDescriptorLayoutImpl(const DescriptorLayoutDesc& desc) = 0;
-		// virtual SharedPtr<DescriptorPool> CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc) = 0;
-		// virtual SharedPtr<DescriptorSet> CreateDescriptorSetImpl(const DescriptorSetDesc& desc) = 0;
-		// virtual SharedPtr<GraphicsPipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) = 0;
-		// virtual SharedPtr<ComputePipeline> CreateComputePipelineImpl(const ComputePipelineDesc& desc) = 0;
-		// virtual SharedPtr<RayPipeline> CreateRayPipelineImpl(const RayPipelineDesc& desc) = 0;
-		// virtual SharedPtr<Fence> CreateGraphicsFenceImpl(const FenceDesc& desc) = 0;
-		// virtual SharedPtr<Semaphore> CreateGraphicsSemaphoreImpl(const SemaphoreDesc& desc) = 0;
+		virtual SharedPtr<DescriptorLayout> CreateDescriptorLayoutImpl(const DescriptorLayoutDesc& desc) override;
+		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc)override;
+		virtual SharedPtr<DescriptorSet> CreateDescriptorSetImpl(const DescriptorSetDesc& desc) override;
+		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) override;
+		virtual SharedPtr<Fence> CreateGraphicsFenceImpl(bool bSignalled)override;
+		virtual SharedPtr<Semaphore> CreateGraphicsSemaphoreImpl() override;
 		// virtual SharedPtr<CommandPool> CreateCommandPoolImpl(const CommandPoolDesc& desc) = 0;
 		// virtual SharedPtr<CommandBuffer> CreateCommandBufferImpl(const CommandBufferDesc& desc) = 0;
 

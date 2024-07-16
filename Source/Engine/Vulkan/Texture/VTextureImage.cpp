@@ -11,19 +11,19 @@ namespace Hollow
 	{
 		VkImageCreateInfo imageInfo = {};
 		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-		imageInfo.imageType = Utils::GetVkImageType(desc.ImageType);
+		imageInfo.imageType = VkUtils::GetVkImageType(desc.ImageType);
 		imageInfo.extent.width = desc.ImageSize.x;
 		imageInfo.extent.height = desc.ImageSize.y;
 		imageInfo.extent.depth = desc.ImageSize.z;
 		imageInfo.mipLevels = desc.MipLevels;
 		imageInfo.arrayLayers = desc.ArrayLayers;
-		imageInfo.format = Utils::GetVkFormat(desc.ImageFormat);
+		imageInfo.format = VkUtils::GetVkFormat(desc.ImageFormat);
 		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 		imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		imageInfo.usage = Utils::GetVkImageUsageFlags(desc.UsageFlags);
-		imageInfo.samples = Utils::GetVkSampleCountFlags(desc.Samples);
+		imageInfo.usage = VkUtils::GetVkImageUsageFlags(desc.UsageFlags);
+		imageInfo.samples = VkUtils::GetVkSampleCountFlags(desc.Samples);
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		imageInfo.flags = Utils::GetVkImageCreateFlags(desc.CreateFlags);
+		imageInfo.flags = VkUtils::GetVkImageCreateFlags(desc.CreateFlags);
 
 		CORE_ASSERT(vkCreateImage(mDevice, &imageInfo, nullptr, &mTexture) == VK_SUCCESS, "VTextureImage", "Failed to create image!");
 

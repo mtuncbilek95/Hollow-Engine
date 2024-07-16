@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	namespace Utils
+	namespace VkUtils
 	{
 		static VkShaderStageFlags GetVkShaderStage(ShaderStage stage)
 		{

@@ -10,7 +10,7 @@
 
 namespace Hollow
 {
-	namespace Utils
+	namespace VkUtils
 	{
 		static VkFilter GetVkFilter(SamplerFilter filter)
 		{
