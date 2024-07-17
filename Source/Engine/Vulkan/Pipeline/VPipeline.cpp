@@ -11,7 +11,7 @@
 
 namespace Hollow
 {
-	VPipeline::VPipeline(const GraphicsPipelineDesc& desc, SharedPtr<VDevice> pDevice) : Pipeline(desc, pDevice), mVkDevice(pDevice->GetVkDevice()),
+	VPipeline::VPipeline(const GraphicsPipelineDesc& desc, WeakPtr<VDevice> pDevice) : Pipeline(desc, pDevice), mVkDevice(pDevice.lock()->GetVkDevice()),
 		mVkPipeline(VK_NULL_HANDLE), mVkPipelineLayout(VK_NULL_HANDLE)
 	{
 		// Shader stage on pipeline
@@ -20,9 +20,9 @@ namespace Hollow
 		{
 			VkPipelineShaderStageCreateInfo stageInfo = {};
 			stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-			stageInfo.stage = VkUtils::GetVkShaderStageBit(shader->GetStage());
-			stageInfo.module = shader->GetSharedPtrAs<VShader>()->GetShaderModule();
-			stageInfo.pName = shader->GetEntry().c_str();
+			stageInfo.stage = VkUtils::GetVkShaderStageBit(shader.lock()->GetStage());
+			stageInfo.module = shader.lock()->GetSharedPtrAs<VShader>()->GetShaderModule();
+			stageInfo.pName = shader.lock()->GetEntry().c_str();
 
 			shaderStages.push_back(stageInfo);
 		}

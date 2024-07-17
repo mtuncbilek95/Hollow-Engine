@@ -11,7 +11,7 @@ namespace Hollow
 	class ENGINE_API VDescriptorSet final : public DescriptorSet
 	{
 	public:
-		VDescriptorSet(const DescriptorSetDesc& desc, const SharedPtr<VDevice>& pDevice);
+		VDescriptorSet(const DescriptorSetDesc& desc, const WeakPtr<VDevice>& pDevice);
 		~VDescriptorSet() override = default;
 
 		VkDescriptorSet GetVkDescriptorSet() const { return mVkDescriptorSet; }

@@ -12,7 +12,7 @@ namespace Hollow
 	class ENGINE_API Swapchain : public DeviceObject
 	{
 	public:
-		Swapchain(const SwapchainDesc& desc, SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), 
+		Swapchain(const SwapchainDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), 
 			ImageSize(desc.ImageSize), ImageFormat(desc.ImageFormat), TextureUsage(desc.TextureUsage), 
 			VSync(desc.VSync), BufferCount(desc.BufferCount), pRequestQueue(desc.pRequestQueue) 
 		{}
@@ -24,11 +24,8 @@ namespace Hollow
 		PresentMode GetVSync() const { return VSync; }
 		u8 GetBufferCount() const { return BufferCount; }
 
-		const DArray<SharedPtr<TextureImage>>& GetImages() const { return mImages; }
-		const DArray<SharedPtr<TextureView>>& GetImageViews() const { return mImageViews; }
-
-		SharedPtr<TextureImage> GetImage(u32 index) const { return mImages[index]; }
-		SharedPtr<TextureView> GetImageView(u32 index) const { return mImageViews[index]; }
+		WeakPtr<TextureImage> GetImage(u32 index) const { return mImages[index]; }
+		WeakPtr<TextureView> GetImageView(u32 index) const { return mImageViews[index]; }
 
 	protected:
 		void SetNewImageSize(Vec2u newSize) { ImageSize = newSize; }
@@ -42,6 +39,6 @@ namespace Hollow
 		TextureUsageFlags TextureUsage;
 		PresentMode VSync;
 		u8 BufferCount;
-		SharedPtr<GraphicsQueue> pRequestQueue;
+		WeakPtr<GraphicsQueue> pRequestQueue;
 	};
 }

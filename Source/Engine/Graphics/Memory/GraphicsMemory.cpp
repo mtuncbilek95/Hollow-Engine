@@ -2,7 +2,7 @@
 
 namespace Hollow
 {
-	GraphicsMemory::GraphicsMemory(const GraphicsMemoryDesc& desc, SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), 
+	GraphicsMemory::GraphicsMemory(const GraphicsMemoryDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),
 		mMemoryType(desc.MemoryType), mTotalSize(desc.MemorySize), mUsedSize(0)
 	{
 		SubMemory subMemory = { false, desc.MemorySize };

@@ -21,7 +21,7 @@ int main(i32 argC, char** argV)
 	windowDesc.WindowPosition = { 100, 100 };
 	windowDesc.WindowSize = { 800, 600 };
 	windowDesc.WindowTitle = "Hollow Editor";
-	SharedPtr<PlatformWindow> mWindow = WindowManager::GetAPI()->InitializeWindow(windowDesc);
+	WeakPtr<PlatformWindow> mWindow = WindowManager::GetAPI()->InitializeWindow(windowDesc);
 
 	GraphicsInstanceDesc instanceDesc = {};
 	instanceDesc.AppName = "Editor";
@@ -29,8 +29,8 @@ int main(i32 argC, char** argV)
 	instanceDesc.EngineName = "Hollow";
 	instanceDesc.EngineVersion = { 1, 0, 0 };
 
-	SharedPtr<GraphicsInstance> mInstance = GraphicsManager->CreateInstance(instanceDesc);
-	SharedPtr<GraphicsDevice> mDevice = GraphicsManager->CreateDevice();
+	WeakPtr<GraphicsInstance> mInstance = GraphicsManager->CreateInstance(instanceDesc);
+	WeakPtr<GraphicsDevice> mDevice = GraphicsManager->CreateDevice();
 
 	SwapchainDesc swapchainDesc = {};
 	swapchainDesc.ImageSize = { 800, 600 };
@@ -39,7 +39,7 @@ int main(i32 argC, char** argV)
 	swapchainDesc.TextureUsage = TextureUsageFlags::ColorAttachment;
 	swapchainDesc.VSync = PresentMode::FullVSync;
 	swapchainDesc.pRequestQueue = GraphicsManager->GetGraphicsQueue();
-	SharedPtr<Swapchain> mSwapchain = GraphicsManager->CreateSwapchain(swapchainDesc);
+	WeakPtr<Swapchain> mSwapchain = GraphicsManager->CreateSwapchain(swapchainDesc);
 
 
 

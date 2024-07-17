@@ -9,7 +9,7 @@ namespace Hollow
 	class ENGINE_API Sampler : public DeviceObject
 	{
 	public:
-		Sampler(const SamplerDesc& desc, SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),
+		Sampler(const SamplerDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),
 			mMagFilter(desc.MagFilter), mMinFilter(desc.MinFilter), mAddressMode(desc.AddressMode),
 			mAnisotropyEnabled(desc.bAnisotropyEnabled), mMaxAnisotropy(desc.MaxAnisotropy), mBorderColor(desc.BorderColor), 
 			mCompareEnabled(desc.bCompareEnabled), mCompareOp(desc.CompareOp), mMapMode(desc.MapMode), mMipLODBias(desc.MipLODBias), 

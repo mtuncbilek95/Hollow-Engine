@@ -11,7 +11,7 @@ namespace Hollow
 	class ENGINE_API VDescriptorPool final : public DescriptorPool
 	{
 	public:
-		VDescriptorPool(const DescriptorPoolDesc& desc, const SharedPtr<VDevice>& pDevice);
+		VDescriptorPool(const DescriptorPoolDesc& desc, const WeakPtr<VDevice>& pDevice);
 		~VDescriptorPool() override = default;
 
 		VkDescriptorPool GetVkDescriptorPool() const { return mVkDescriptorPool; }

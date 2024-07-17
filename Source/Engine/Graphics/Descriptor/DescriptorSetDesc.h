@@ -8,7 +8,7 @@ namespace Hollow
 {
 	struct ENGINE_API DescriptorSetDesc
 	{
-		SharedPtr<DescriptorLayout> pLayout;
-		SharedPtr<DescriptorPool> pOwnerPool;
+		WeakPtr<DescriptorLayout> pLayout;
+		WeakPtr<DescriptorPool> pOwnerPool;
 	};
 }

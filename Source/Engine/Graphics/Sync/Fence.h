@@ -9,7 +9,7 @@ namespace Hollow
 	class ENGINE_API Fence : public DeviceObject
 	{
 	public:
-		Fence(bool bSignalled, SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), mSignalled(bSignalled) {}
+		Fence(bool bSignalled, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), mSignalled(bSignalled) {}
 		~Fence() override = default;
 
 		bool IsSignalled() const { return mSignalled; }

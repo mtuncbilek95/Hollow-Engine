@@ -5,11 +5,11 @@
 
 namespace Hollow
 {
-	VDescriptorSet::VDescriptorSet(const DescriptorSetDesc& desc, const SharedPtr<VDevice>& pDevice) : DescriptorSet(desc, pDevice), 
-		mVkDescriptorSet(VK_NULL_HANDLE), mDevice(pDevice->GetVkDevice())
+	VDescriptorSet::VDescriptorSet(const DescriptorSetDesc& desc, const WeakPtr<VDevice>& pDevice) : DescriptorSet(desc, pDevice),
+		mVkDescriptorSet(VK_NULL_HANDLE), mDevice(pDevice.lock()->GetVkDevice())
 	{
-		VkDescriptorSetLayout layout = desc.pLayout->GetSharedPtrAs<VDescriptorLayout>()->GetVkDescriptorLayout();
-		VkDescriptorPool pool = desc.pOwnerPool->GetSharedPtrAs<VDescriptorPool>()->GetVkDescriptorPool();
+		VkDescriptorSetLayout layout = desc.pLayout.lock()->GetSharedPtrAs<VDescriptorLayout>()->GetVkDescriptorLayout();
+		VkDescriptorPool pool = desc.pOwnerPool.lock()->GetSharedPtrAs<VDescriptorPool>()->GetVkDescriptorPool();
 
 		VkDescriptorSetAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;

@@ -9,12 +9,12 @@ namespace Hollow
 	class ENGINE_API DeviceObject : public IObject
 	{
 	public:
-		DeviceObject(SharedPtr<GraphicsDevice> pDevice) : mDevice(pDevice) {}
+		DeviceObject(WeakPtr<GraphicsDevice> pDevice) : mDevice(pDevice) {}
 		virtual ~DeviceObject() override = default;
 
-		SharedPtr<GraphicsDevice> GetOwnerDevice() const { return mDevice; }
+		WeakPtr<GraphicsDevice> GetOwnerDevice() const { return mDevice; }
 
 	private:
-		SharedPtr<GraphicsDevice> mDevice;
+		WeakPtr<GraphicsDevice> mDevice;
 	};
 }

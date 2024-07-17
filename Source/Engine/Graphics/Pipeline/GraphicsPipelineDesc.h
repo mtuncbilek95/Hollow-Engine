@@ -23,7 +23,7 @@ namespace Hollow
         MultisampleDesc Multisample;
         RasterizerStateDesc RasterizerState;
         ResourceLayoutDesc ResourceLayout;
-        DArray<SharedPtr<Shader>> GraphicsShaders;
+        DArray<WeakPtr<Shader>> GraphicsShaders;
         PushConstantDesc PushConstants;
         ViewportDesc Viewport;
         ScissorDesc Scissor;

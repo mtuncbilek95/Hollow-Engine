@@ -10,7 +10,7 @@ namespace Hollow
 	class ENGINE_API Pipeline : public DeviceObject
 	{
 	public:
-		Pipeline(const GraphicsPipelineDesc& desc, SharedPtr<GraphicsDevice> device) : DeviceObject(device), mBlendState(desc.BlendState), 
+		Pipeline(const GraphicsPipelineDesc& desc, WeakPtr<GraphicsDevice> device) : DeviceObject(device), mBlendState(desc.BlendState),
             mDepthStencilState(desc.DepthStencilState), mInputLayout(desc.InputLayout), mMultisample(desc.Multisample), 
             mRasterizerState(desc.RasterizerState), mResourceLayout(desc.ResourceLayout), mGraphicsShaders(desc.GraphicsShaders), 
             mPushConstants(desc.PushConstants), mViewport(desc.Viewport), mScissor(desc.Scissor), mColorAttachmentCount(desc.ColorAttachmentCount),
@@ -24,7 +24,7 @@ namespace Hollow
         const MultisampleDesc& GetMultisample() const { return mMultisample; }
         const RasterizerStateDesc& GetRasterizerState() const { return mRasterizerState; }
         const ResourceLayoutDesc& GetResourceLayout() const { return mResourceLayout; }
-        const DArray<SharedPtr<Shader>>& GetGraphicsShaders() const { return mGraphicsShaders; }
+        const DArray<WeakPtr<Shader>>& GetGraphicsShaders() const { return mGraphicsShaders; }
         const PushConstantDesc& GetPushConstants() const { return mPushConstants; }
         const ViewportDesc& GetViewport() const { return mViewport; }
         const ScissorDesc& GetScissor() const { return mScissor; }
@@ -33,6 +33,7 @@ namespace Hollow
         TextureFormat GetDepthAttachmentFormat() const { return mDepthAttachmentFormat; }
         TextureFormat GetStencilAttachmentFormat() const { return mStencilAttachmentFormat; }
 
+        PipelineBindPoint GetBindPoint() const { return mBindPoint; }
 	private:
         BlendStateDesc mBlendState;
         DepthStencilStateDesc mDepthStencilState;
@@ -40,7 +41,7 @@ namespace Hollow
         MultisampleDesc mMultisample;
         RasterizerStateDesc mRasterizerState;
         ResourceLayoutDesc mResourceLayout;
-        DArray<SharedPtr<Shader>> mGraphicsShaders;
+        DArray<WeakPtr<Shader>> mGraphicsShaders;
         PushConstantDesc mPushConstants;
         ViewportDesc mViewport;
         ScissorDesc mScissor;

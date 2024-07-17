@@ -15,6 +15,8 @@
 #include <Engine/Graphics/Descriptor/DescriptorPoolDesc.h>
 #include <Engine/Graphics/Descriptor/DescriptorSetDesc.h>
 #include <Engine/Graphics/Pipeline/GraphicsPipelineDesc.h>
+#include <Engine/Graphics/Command/CmdPoolDesc.h>
+#include <Engine/Graphics/Command/CmdBufferDesc.h>
 
 namespace Hollow
 {
@@ -32,17 +34,19 @@ namespace Hollow
 	class ENGINE_API Pipeline;
 	class ENGINE_API Fence;
 	class ENGINE_API Semaphore;
+	class ENGINE_API CmdPool;
+	class ENGINE_API CmdBuffer;
 
 	class ENGINE_API GraphicsInstance;
 	class ENGINE_API GraphicsDevice : public IObject
 	{
-		using SharedInstance = SharedPtr<GraphicsInstance>;
+		using WeakInstance = WeakPtr<GraphicsInstance>;
 
 	public:
-		GraphicsDevice(SharedInstance pInstance);
+		GraphicsDevice(WeakInstance pInstance);
 		virtual ~GraphicsDevice() override = default;
 
-		SharedInstance GetInstance() const { return mInstance; }
+		WeakInstance GetInstance() const { return mInstance; }
 
 	public:
 		SharedPtr<GraphicsQueue> CreateQueue(const GraphicsQueueDesc& desc);
@@ -59,8 +63,8 @@ namespace Hollow
 		SharedPtr<Pipeline> CreateGraphicsPipeline(const GraphicsPipelineDesc& desc);
 		SharedPtr<Fence> CreateGraphicsFence(bool bSignalled);
 		SharedPtr<Semaphore> CreateGraphicsSemaphore();
-		// SharedPtr<CommandPool> CreateCommandPool(const CommandPoolDesc& desc);
-		// SharedPtr<CommandBuffer> CreateCommandBuffer(const CommandBufferDesc& desc);
+		SharedPtr<CmdPool> CreateCommandPool(const CmdPoolDesc& desc);
+		SharedPtr<CmdBuffer> CreateCommandBuffer(const CmdBufferDesc& desc);
 
 	protected:
 		virtual SharedPtr<GraphicsQueue> CreateQueueImpl(const GraphicsQueueDesc& desc) = 0;
@@ -77,10 +81,12 @@ namespace Hollow
 		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) = 0;
 		virtual SharedPtr<Fence> CreateGraphicsFenceImpl(bool bSignalled) = 0;
 		virtual SharedPtr<Semaphore> CreateGraphicsSemaphoreImpl() = 0;
-		// virtual SharedPtr<CommandPool> CreateCommandPoolImpl(const CommandPoolDesc& desc) = 0;
-		// virtual SharedPtr<CommandBuffer> CreateCommandBufferImpl(const CommandBufferDesc& desc) = 0;
+		virtual SharedPtr<CmdPool> CreateCommandPoolImpl(const CmdPoolDesc& desc) = 0;
+		virtual SharedPtr<CmdBuffer> CreateCommandBufferImpl(const CmdBufferDesc& desc) = 0;
 
 	private:
-		SharedInstance mInstance;
+		WeakInstance mInstance;
+
+		DArray<SharedPtr<DeviceObject>> mObjects;
 	};
 }

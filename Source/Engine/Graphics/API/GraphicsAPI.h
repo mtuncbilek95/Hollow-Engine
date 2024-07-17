@@ -19,21 +19,21 @@ namespace Hollow
 	public:
 		~GraphicsAPI() override = default;
 
-		SharedPtr<GraphicsInstance> CreateInstance(const GraphicsInstanceDesc& desc);
-		SharedPtr<GraphicsInstance> GetInstance() const { return mInstance; }
+		WeakPtr<GraphicsInstance> CreateInstance(const GraphicsInstanceDesc& desc);
+		WeakPtr<GraphicsInstance> GetInstance() const { return mInstance; }
 
-		SharedPtr<GraphicsDevice> CreateDevice();
-		SharedPtr<GraphicsDevice> GetDevice() const { return mDevice; }
+		WeakPtr<GraphicsDevice> CreateDevice();
+		WeakPtr<GraphicsDevice> GetDevice() const { return mDevice; }
 
-		SharedPtr<GraphicsQueue> GetGraphicsQueue() const { return mGraphicsQueue; }
-		SharedPtr<GraphicsQueue> GetComputeQueue() const { return mComputeQueue; }
-		SharedPtr<GraphicsQueue> GetTransferQueue() const { return mTransferQueue; }
+		WeakPtr<GraphicsQueue> GetGraphicsQueue() const { return mGraphicsQueue; }
+		WeakPtr<GraphicsQueue> GetComputeQueue() const { return mComputeQueue; }
+		WeakPtr<GraphicsQueue> GetTransferQueue() const { return mTransferQueue; }
 
-		SharedPtr<GraphicsMemory> GetAvailableDeviceMemory(u64 requestedSize);
-		SharedPtr<GraphicsMemory> GetAvailableHostMemory(u64 requestedSize);
+		WeakPtr<GraphicsMemory> GetAvailableDeviceMemory(u64 requestedSize);
+		WeakPtr<GraphicsMemory> GetAvailableHostMemory(u64 requestedSize);
 
-		SharedPtr<Swapchain> CreateSwapchain(const SwapchainDesc& desc);
-		SharedPtr<Swapchain> GetSwapchain() const { return mSwapchain; }
+		WeakPtr<Swapchain> CreateSwapchain(const SwapchainDesc& desc);
+		WeakPtr<Swapchain> GetSwapchain() const { return mSwapchain; }
 
 	private:
 		SharedPtr<GraphicsInstance> mInstance;

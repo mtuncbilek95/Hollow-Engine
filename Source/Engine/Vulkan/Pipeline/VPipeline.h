@@ -11,7 +11,7 @@ namespace Hollow
 	class ENGINE_API VPipeline final : public Pipeline
 	{
 	public:
-		VPipeline(const GraphicsPipelineDesc& desc, SharedPtr<VDevice> pDevice);
+		VPipeline(const GraphicsPipelineDesc& desc, WeakPtr<VDevice> pDevice);
 		~VPipeline() override = default;
 
 		VkPipeline GetVkPipeline() const { return mVkPipeline; }

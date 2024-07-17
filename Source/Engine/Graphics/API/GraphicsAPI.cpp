@@ -10,13 +10,13 @@
 
 namespace Hollow
 {
-	SharedPtr<GraphicsInstance> GraphicsAPI::CreateInstance(const GraphicsInstanceDesc& desc)
+	WeakPtr<GraphicsInstance> GraphicsAPI::CreateInstance(const GraphicsInstanceDesc& desc)
 	{
 		mInstance = MakeShared<VInstance>(desc);
 		return mInstance;
 	}
 
-	SharedPtr<GraphicsDevice> GraphicsAPI::CreateDevice()
+	WeakPtr<GraphicsDevice> GraphicsAPI::CreateDevice()
 	{
 		mDevice = MakeShared<VDevice>(mInstance->GetSharedPtrAs<VInstance>());
 
@@ -27,7 +27,7 @@ namespace Hollow
 		return mDevice;
 	}
 
-	SharedPtr<GraphicsMemory> GraphicsAPI::GetAvailableDeviceMemory(u64 requestedSize)
+	WeakPtr<GraphicsMemory> GraphicsAPI::GetAvailableDeviceMemory(u64 requestedSize)
 	{
 		// Check all the memories in the chunk and return the first one that has enough space
 		for (auto& memory : mDeviceMemChunks)
@@ -36,12 +36,12 @@ namespace Hollow
 
 		// If no memory chunk has enough space, create a new one
 		u64 newSize = requestedSize > DEFAULT_MEMORY_SIZE ? requestedSize : DEFAULT_MEMORY_SIZE;
-		SharedPtr<GraphicsMemory> newMemory = mDevice->CreateMemory({ GraphicsMemoryType::DeviceLocal, newSize });
-		mDeviceMemChunks.push_back(newMemory);
+		WeakPtr<GraphicsMemory> newMemory = mDevice->CreateMemory({ GraphicsMemoryType::DeviceLocal, newSize });
+		mDeviceMemChunks.push_back(newMemory.lock());
 		return newMemory;
 	}
 
-	SharedPtr<GraphicsMemory> GraphicsAPI::GetAvailableHostMemory(u64 requestedSize)
+	WeakPtr<GraphicsMemory> GraphicsAPI::GetAvailableHostMemory(u64 requestedSize)
 	{
 		// Check all the memories in the chunk and return the first one that has enough space
 		for (auto& memory : mHostMemChunks)
@@ -55,7 +55,7 @@ namespace Hollow
 		return newMemory;
 	}
 
-	SharedPtr<Swapchain> GraphicsAPI::CreateSwapchain(const SwapchainDesc& desc)
+	WeakPtr<Swapchain> GraphicsAPI::CreateSwapchain(const SwapchainDesc& desc)
 	{
 		mSwapchain = mDevice->CreateSwapchain(desc);
 		return mSwapchain;

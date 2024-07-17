@@ -20,8 +20,8 @@
 
 namespace Hollow
 {
-	VDevice::VDevice(SharedInstance pInstance) : GraphicsDevice(pInstance), mAdapter(pInstance->GetVkAdapter()),
-		mInstance(pInstance->GetVkInstance()), mDevice(VK_NULL_HANDLE)
+	VDevice::VDevice(WeakInstance pInstance) : GraphicsDevice(pInstance), mAdapter(pInstance.lock()->GetVkAdapter()),
+		mInstance(pInstance.lock()->GetVkInstance()), mDevice(VK_NULL_HANDLE)
 	{
 		CORE_ASSERT(mAdapter != VK_NULL_HANDLE, "VDevice", "Vulkan adapter is null");
 		CORE_ASSERT(mInstance != VK_NULL_HANDLE, "VDevice", "Vulkan instance is null");
@@ -169,13 +169,14 @@ namespace Hollow
 		}
 	}
 
-	void VDevice::Shutdown()
-	{
-	}
-
 	SharedPtr<TextureImage> VDevice::CreateSwapchainImage(const TextureImageDesc& desc, VkImage image)
 	{
 		return MakeShared<VTextureImage>(desc, image, GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<TextureView> VDevice::CreateSwapchainImageView(const TextureViewDesc& desc)
+	{
+		return MakeShared<VTextureView>(desc, GetSharedPtrAs<VDevice>());
 	}
 
 	SharedPtr<GraphicsQueue> VDevice::CreateQueueImpl(const GraphicsQueueDesc& desc)
@@ -184,17 +185,13 @@ namespace Hollow
 		{
 		case GraphicsQueueType::Graphics:
 			return MakeShared<VQueue>(desc, mGraphicsQueueFamily.GetFreeQueue(), GetSharedPtrAs<VDevice>());
-			break;
 		case GraphicsQueueType::Compute:
 			return MakeShared<VQueue>(desc, mComputeQueueFamily.GetFreeQueue(), GetSharedPtrAs<VDevice>());
-			break;
 		case GraphicsQueueType::Transfer:
 			return MakeShared<VQueue>(desc, mTransferQueueFamily.GetFreeQueue(), GetSharedPtrAs<VDevice>());
-			break;
 		default:
 			CORE_ASSERT(false, "VDevice", "Unknown queue type");
 			return nullptr;
-			break;
 		}
 	}
 
@@ -261,5 +258,15 @@ namespace Hollow
 	SharedPtr<Semaphore> VDevice::CreateGraphicsSemaphoreImpl()
 	{
 		return MakeShared<VSemaphore>(GetSharedPtrAs<VDevice>());
+	}
+
+	SharedPtr<CmdPool> VDevice::CreateCommandPoolImpl(const CmdPoolDesc& desc)
+	{
+		return SharedPtr<CmdPool>();
+	}
+
+	SharedPtr<CmdBuffer> VDevice::CreateCommandBufferImpl(const CmdBufferDesc& desc)
+	{
+		return SharedPtr<CmdBuffer>();
 	}
 }

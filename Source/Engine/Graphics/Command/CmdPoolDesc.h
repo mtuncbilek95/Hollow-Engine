@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine/Core/Core.h>
-#include <Engine/Graphics/Command/CommandPoolType.h>
+#include <Engine/Graphics/Command/CmdPoolType.h>
 
 namespace Hollow
 {
@@ -9,8 +9,8 @@ namespace Hollow
 	 * @struct CommandPoolDesc
 	 * @brief Description of a command pool
 	 */
-	struct ENGINE_API CommandPoolDesc
+	struct ENGINE_API CmdPoolDesc
 	{
-		CommandPoolType PoolType;
+		CmdPoolType PoolType;
 	};
 }

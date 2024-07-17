@@ -4,8 +4,8 @@
 
 namespace Hollow
 {
-	VDescriptorPool::VDescriptorPool(const DescriptorPoolDesc& desc, const SharedPtr<VDevice>& pDevice) : DescriptorPool(desc, pDevice), 
-		mVkDescriptorPool(VK_NULL_HANDLE), mDevice(pDevice->GetVkDevice())
+	VDescriptorPool::VDescriptorPool(const DescriptorPoolDesc& desc, const WeakPtr<VDevice>& pDevice) : DescriptorPool(desc, pDevice),
+		mVkDescriptorPool(VK_NULL_HANDLE), mDevice(pDevice.lock()->GetVkDevice())
 	{
 		DArray<VkDescriptorPoolSize> poolSizes;
 

@@ -10,7 +10,7 @@ namespace Hollow
 	class ENGINE_API Shader : public DeviceObject
 	{
 	public:
-		Shader(const ShaderDesc& desc, SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),
+		Shader(const ShaderDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),
 			mShaderName(desc.ShaderName), mEntry(desc.Entry), mStage(desc.Stage), mShaderCode(desc.ShaderCode) {}
 		virtual ~Shader() override = default;
 

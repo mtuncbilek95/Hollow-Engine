@@ -10,7 +10,7 @@ namespace Hollow
 	class ENGINE_API TextureImage : public DeviceObject
 	{
 	public:
-		TextureImage(const TextureImageDesc& desc, SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), 
+		TextureImage(const TextureImageDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),
 			mImageSize(desc.ImageSize), mMipLevels(desc.MipLevels), mArrayLayers(desc.ArrayLayers), 
 			mImageFormat(desc.ImageFormat), mUsageFlags(desc.UsageFlags), mImageType(desc.ImageType), 
 			mSamples(desc.Samples), mCreateFlags(desc.CreateFlags) {}

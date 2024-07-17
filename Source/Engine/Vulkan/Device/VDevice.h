@@ -10,7 +10,7 @@ namespace Hollow
 	class ENGINE_API VInstance;
 	class ENGINE_API VDevice : public GraphicsDevice
 	{
-		using SharedInstance = SharedPtr<VInstance>;
+		using WeakInstance = WeakPtr<VInstance>;
 
 		struct QueueFamily
 		{
@@ -47,7 +47,7 @@ namespace Hollow
 		};
 
 	public:
-		VDevice(SharedInstance pInstance);
+		VDevice(WeakInstance pInstance);
 		~VDevice() override = default;
 
 		VkDevice GetVkDevice() const { return mDevice; }
@@ -58,27 +58,26 @@ namespace Hollow
 		u32 GetComputeQueueFamilyIndex() const { return mComputeQueueFamily.FamilyIndex; }
 		u32 GetTransferQueueFamilyIndex() const { return mTransferQueueFamily.FamilyIndex; }
 
-		void Shutdown() override;
-
 		SharedPtr<TextureImage> CreateSwapchainImage(const TextureImageDesc& desc, VkImage image);
+		SharedPtr<TextureView> CreateSwapchainImageView(const TextureViewDesc& desc);
 
 	protected:
 		virtual SharedPtr<GraphicsQueue> CreateQueueImpl(const GraphicsQueueDesc& desc) override;
 		virtual SharedPtr<GraphicsMemory> CreateMemoryImpl(const GraphicsMemoryDesc& desc) override;
-		virtual SharedPtr<TextureImage> CreateTextureImageImpl(const TextureImageDesc& desc)override;
+		virtual SharedPtr<TextureImage> CreateTextureImageImpl(const TextureImageDesc& desc) override;
 		virtual SharedPtr<TextureView> CreateTextureViewImpl(const TextureViewDesc& desc) override;
 		virtual SharedPtr<Sampler> CreateSamplerImpl(const SamplerDesc& desc) override;
 		virtual SharedPtr<GraphicsBuffer> CreateBufferImpl(const GraphicsBufferDesc& desc) override;
 		virtual SharedPtr<Shader> CreateShaderImpl(const ShaderDesc& desc) override;
 		virtual SharedPtr<Swapchain> CreateSwapchainImpl(const SwapchainDesc& desc) override;
 		virtual SharedPtr<DescriptorLayout> CreateDescriptorLayoutImpl(const DescriptorLayoutDesc& desc) override;
-		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc)override;
+		virtual SharedPtr<DescriptorPool> CreateDescriptorPoolImpl(const DescriptorPoolDesc& desc) override;
 		virtual SharedPtr<DescriptorSet> CreateDescriptorSetImpl(const DescriptorSetDesc& desc) override;
 		virtual SharedPtr<Pipeline> CreateGraphicsPipelineImpl(const GraphicsPipelineDesc& desc) override;
-		virtual SharedPtr<Fence> CreateGraphicsFenceImpl(bool bSignalled)override;
+		virtual SharedPtr<Fence> CreateGraphicsFenceImpl(bool bSignalled) override;
 		virtual SharedPtr<Semaphore> CreateGraphicsSemaphoreImpl() override;
-		// virtual SharedPtr<CommandPool> CreateCommandPoolImpl(const CommandPoolDesc& desc) = 0;
-		// virtual SharedPtr<CommandBuffer> CreateCommandBufferImpl(const CommandBufferDesc& desc) = 0;
+		virtual SharedPtr<CmdPool> CreateCommandPoolImpl(const CmdPoolDesc& desc) override;
+		virtual SharedPtr<CmdBuffer> CreateCommandBufferImpl(const CmdBufferDesc& desc) override;
 
 	private:
 		VkDevice mDevice;

@@ -2,7 +2,7 @@
 
 namespace Hollow
 {
-	GraphicsDevice::GraphicsDevice(SharedInstance pInstance) : mInstance(pInstance)
+	GraphicsDevice::GraphicsDevice(WeakInstance pInstance) : mInstance(pInstance)
 	{
 	}
 
@@ -74,5 +74,15 @@ namespace Hollow
 	SharedPtr<Semaphore> GraphicsDevice::CreateGraphicsSemaphore()
 	{
 		return CreateGraphicsSemaphoreImpl();
+	}
+
+	SharedPtr<CmdPool> GraphicsDevice::CreateCommandPool(const CmdPoolDesc& desc)
+	{
+		return CreateCommandPoolImpl(desc);
+	}
+
+	SharedPtr<CmdBuffer> GraphicsDevice::CreateCommandBuffer(const CmdBufferDesc& desc)
+	{
+		return CreateCommandBufferImpl(desc);
 	}
 }

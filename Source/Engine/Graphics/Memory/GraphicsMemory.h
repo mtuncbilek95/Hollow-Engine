@@ -14,7 +14,7 @@ namespace Hollow
 			u64 SizeInBytes;
 		};
 	public:
-		GraphicsMemory(const GraphicsMemoryDesc& desc, SharedPtr<GraphicsDevice> pDevice);
+		GraphicsMemory(const GraphicsMemoryDesc& desc, WeakPtr<GraphicsDevice> pDevice);
 		virtual ~GraphicsMemory() override = default;
 
 		u64 Allocate(u64 size);

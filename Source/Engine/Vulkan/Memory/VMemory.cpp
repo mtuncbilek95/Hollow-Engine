@@ -5,8 +5,8 @@
 
 namespace Hollow
 {
-	VMemory::VMemory(const GraphicsMemoryDesc& desc, SharedPtr<VDevice> pDevice) : GraphicsMemory(desc, pDevice),
-		mVkAdapter(pDevice->GetVkAdapter()), mDevice(pDevice->GetVkDevice())
+	VMemory::VMemory(const GraphicsMemoryDesc& desc, WeakPtr<VDevice> pDevice) : GraphicsMemory(desc, pDevice),
+		mVkAdapter(pDevice.lock()->GetVkAdapter()), mDevice(pDevice.lock()->GetVkDevice())
 	{
 		VkMemoryAllocateInfo memoryAllocateInfo = {};
 		memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;

@@ -12,7 +12,7 @@ namespace Hollow
 	class ENGINE_API VMemory : public GraphicsMemory
 	{
 	public:
-		VMemory(const GraphicsMemoryDesc& desc, SharedPtr<VDevice> pDevice);
+		VMemory(const GraphicsMemoryDesc& desc, WeakPtr<VDevice> pDevice);
 		~VMemory() override = default;
 
 		VkDeviceMemory GetVkDeviceMemory() const { return mVkDeviceMemory; }

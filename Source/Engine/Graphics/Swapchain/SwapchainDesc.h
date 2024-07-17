@@ -16,6 +16,6 @@ namespace Hollow
 		TextureUsageFlags TextureUsage;
 		PresentMode VSync;
 		u8 BufferCount;
-		SharedPtr<GraphicsQueue> pRequestQueue;
+		WeakPtr<GraphicsQueue> pRequestQueue;
 	};
 }

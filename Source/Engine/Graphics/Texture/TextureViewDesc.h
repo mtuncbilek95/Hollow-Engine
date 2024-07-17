@@ -15,6 +15,6 @@ namespace Hollow
 		u8 ArrayCount;
 		TextureAspectFlags AspectFlags;
 		TextureViewType ViewType;
-		SharedPtr<TextureImage> pTexture;
+		WeakPtr<TextureImage> pTexture;
 	};
 }

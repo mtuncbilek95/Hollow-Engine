@@ -9,12 +9,12 @@ namespace Hollow
 	class ENGINE_API DescriptorSet : public DeviceObject
 	{
 	public:
-		DescriptorSet(const DescriptorSetDesc& desc, const SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice)
+		DescriptorSet(const DescriptorSetDesc& desc, const WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice)
 		{}
 		virtual ~DescriptorSet() override = default;
 
 	private:
-		SharedPtr<DescriptorPool> mOwnerPool;
-		SharedPtr<DescriptorLayout> mLayout;
+		WeakPtr<DescriptorPool> mOwnerPool;
+		WeakPtr<DescriptorLayout> mLayout;
 	};
 }

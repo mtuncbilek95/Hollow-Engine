@@ -11,6 +11,7 @@
 #include <Engine/Graphics/Pipeline/DepthStencilState/StencilOperation.h>
 #include <Engine/Graphics/Pipeline/PipelineBindPoint.h>
 #include <Engine/Graphics/Pipeline/PipelineStageFlags.h>
+#include <Engine/Graphics/Pipeline/DepthStencilState/StencilFaceDesc.h>
 
 #include <vulkan/vulkan.h>
 

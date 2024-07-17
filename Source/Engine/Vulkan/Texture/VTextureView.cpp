@@ -10,9 +10,9 @@ namespace Hollow
 	{
 		VkImageViewCreateInfo imageViewInfo = {};
 		imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		imageViewInfo.image = desc.pTexture->GetSharedPtrAs<VTextureImage>()->GetVkTexture();
+		imageViewInfo.image = desc.pTexture.lock()->GetSharedPtrAs<VTextureImage>()->GetVkTexture();
 		imageViewInfo.viewType = VkUtils::GetVkTextureViewType(desc.ViewType);
-		imageViewInfo.format = VkUtils::GetVkFormat(desc.pTexture->GetImageFormat());
+		imageViewInfo.format = VkUtils::GetVkFormat(desc.pTexture.lock()->GetImageFormat());
 		imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
 		imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
 		imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;

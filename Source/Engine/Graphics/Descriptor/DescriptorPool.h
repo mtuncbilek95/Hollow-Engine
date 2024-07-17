@@ -9,7 +9,7 @@ namespace Hollow
 	class ENGINE_API DescriptorPool : public DeviceObject
 	{
 	public:
-		DescriptorPool(const DescriptorPoolDesc& desc, const SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), mMaxSets(desc.MaxSets),
+		DescriptorPool(const DescriptorPoolDesc& desc, const WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), mMaxSets(desc.MaxSets),
 			mPoolSizes(desc.PoolSizes)
 		{}
 		virtual ~DescriptorPool() override = default;

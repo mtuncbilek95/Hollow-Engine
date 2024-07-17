@@ -82,7 +82,7 @@ namespace Hollow
 			}
 		}
 
-		auto pVkQueue = desc.pRequestQueue->GetSharedPtrAs<VQueue>();
+		auto pVkQueue = desc.pRequestQueue.lock()->GetSharedPtrAs<VQueue>();
 		u32 presentQueueFamilyIndex = pVkQueue->GetQueueIndex();
 		CORE_ASSERT(presentQueueFamilyIndex != UINT32_MAX, "VSwapchan", "Failed to get present queue family index");
 		VkBool32 presentSupport = false;
@@ -136,7 +136,7 @@ namespace Hollow
 			textureDesc.ImageType = TextureType::Texture2D;
 			textureDesc.UsageFlags = desc.TextureUsage;
 
-			auto pTexture = GetOwnerDevice()->GetSharedPtrAs<VDevice>()->CreateSwapchainImage(textureDesc, images[i]);
+			auto pTexture = GetOwnerDevice().lock()->GetSharedPtrAs<VDevice>()->CreateSwapchainImage(textureDesc, images[i]);
 			mImages.push_back(pTexture);
 
 			// After creating the VulkanTexture, we need to create the VulkanTextureView
@@ -149,7 +149,7 @@ namespace Hollow
 			viewDesc.AspectFlags = TextureAspectFlags::ColorAspect;
 			viewDesc.ViewType = TextureViewType::Texture2D;
 
-			auto pTextureView = GetOwnerDevice()->CreateTextureView(viewDesc);
+			auto pTextureView = GetOwnerDevice().lock()->GetSharedPtrAs<VDevice>()->CreateSwapchainImageView(viewDesc);
 			mImageViews.push_back(pTextureView);
 		}
 	}

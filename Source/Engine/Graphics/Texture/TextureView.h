@@ -10,7 +10,7 @@ namespace Hollow
 	class ENGINE_API TextureView : public DeviceObject
 	{
 	public:
-		TextureView(const TextureViewDesc& desc, SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), 
+		TextureView(const TextureViewDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),
 			mMipLevel(desc.MipLevel), mMipCount(desc.MipCount), mArrayLayer(desc.ArrayLayer), mArrayCount(desc.ArrayCount), 
 			mAspectFlags(desc.AspectFlags), mViewType(desc.ViewType), mTexture(desc.pTexture) {}
 		virtual ~TextureView() override = default;
@@ -21,7 +21,8 @@ namespace Hollow
 		u8 GetArrayCount() const { return mArrayCount; }
 		TextureAspectFlags GetAspectFlags() const { return mAspectFlags; }
 		TextureViewType GetViewType() const { return mViewType; }
-		SharedPtr<TextureImage> GetTexture() const { return mTexture; }
+		
+		WeakPtr<TextureImage> GetTexture() const { return mTexture; }
 
 	private:
 		u8 mMipLevel;
@@ -30,6 +31,6 @@ namespace Hollow
 		u8 mArrayCount;
 		TextureAspectFlags mAspectFlags;
 		TextureViewType mViewType;
-		SharedPtr<TextureImage> mTexture;
+		WeakPtr<TextureImage> mTexture;
 	};
 }
