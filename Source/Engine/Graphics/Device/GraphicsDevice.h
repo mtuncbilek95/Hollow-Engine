@@ -18,6 +18,10 @@
 #include <Engine/Graphics/Command/CmdPoolDesc.h>
 #include <Engine/Graphics/Command/CmdBufferDesc.h>
 
+#include <Engine/Graphics/Pipeline/PipelineStageFlags.h>
+#include <Engine/Graphics/Core/BufferDataUpdateDesc.h>
+#include <Engine/Graphics/Descriptor/DescriptorUpdateDesc.h>
+
 namespace Hollow
 {
 	class ENGINE_API GraphicsQueue;
@@ -66,6 +70,21 @@ namespace Hollow
 		SharedPtr<CmdPool> CreateCommandPool(const CmdPoolDesc& desc);
 		SharedPtr<CmdBuffer> CreateCommandBuffer(const CmdBufferDesc& desc);
 
+		void WaitFences(WeakPtr<Fence> pFences[], u32 count);
+		void WaitFence(WeakPtr<Fence> pFence);
+		void ResetFences(WeakPtr<Fence> pFences[], u32 count);
+		void ResetFence(WeakPtr<Fence> pFence);
+
+		void WaitIdle();
+		void WaitQueueIdle(WeakPtr<GraphicsQueue> pQueue);
+		void SubmitQueue(WeakPtr<GraphicsQueue> pQueue, WeakPtr<CmdBuffer> pCmdBuffer, u32 cmdCount, 
+			WeakPtr<Semaphore> pWaitSemaphores[], u32 waitCount, WeakPtr<Semaphore> pSignalSemaphores[], 
+			u32 signalCount, WeakPtr<Fence> pFence, PipelineStageFlags flags[]);
+
+		void UpdateHostBuffer(WeakPtr<GraphicsBuffer> pBuffer, const BufferDataUpdateDesc& desc);
+		void UpdateDescriptorSet(WeakPtr<DescriptorSet> pDescriptorSet, const DescriptorUpdateDesc& desc);
+
+
 	protected:
 		virtual SharedPtr<GraphicsQueue> CreateQueueImpl(const GraphicsQueueDesc& desc) = 0;
 		virtual SharedPtr<GraphicsMemory> CreateMemoryImpl(const GraphicsMemoryDesc& desc) = 0;
@@ -84,9 +103,21 @@ namespace Hollow
 		virtual SharedPtr<CmdPool> CreateCommandPoolImpl(const CmdPoolDesc& desc) = 0;
 		virtual SharedPtr<CmdBuffer> CreateCommandBufferImpl(const CmdBufferDesc& desc) = 0;
 
+		virtual void WaitFencesImpl(WeakPtr<Fence> pFences[], u32 count) = 0;
+		virtual void WaitFenceImpl(WeakPtr<Fence> pFence) = 0;
+		virtual void ResetFencesImpl(WeakPtr<Fence> pFences[], u32 count) = 0;
+		virtual void ResetFenceImpl(WeakPtr<Fence> pFence) = 0;
+
+		virtual void WaitIdleImpl() = 0;
+		virtual void WaitQueueIdleImpl(WeakPtr<GraphicsQueue> pQueue) = 0;
+		virtual void SubmitQueueImpl(WeakPtr<GraphicsQueue> pQueue, WeakPtr<CmdBuffer> pCmdBuffer, u32 cmdCount, 
+			WeakPtr<Semaphore> pWaitSemaphores[], u32 waitCount, WeakPtr<Semaphore> pSignalSemaphores[], 
+			u32 signalCount, WeakPtr<Fence> pFence, PipelineStageFlags flags[]) = 0;
+
+		virtual void UpdateHostBufferImpl(WeakPtr<GraphicsBuffer> pBuffer, const BufferDataUpdateDesc& desc) = 0;
+		virtual void UpdateDescriptorSetImpl(WeakPtr<DescriptorSet> pDescriptorSet, const DescriptorUpdateDesc& desc) = 0;
+
 	private:
 		WeakInstance mInstance;
-
-		DArray<SharedPtr<DeviceObject>> mObjects;
 	};
 }

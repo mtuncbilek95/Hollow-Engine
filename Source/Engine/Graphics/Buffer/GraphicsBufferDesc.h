@@ -11,6 +11,6 @@ namespace Hollow
 		u64 BlockSize;
 		u64 BlockLength;
 		GraphicsBufferUsage Usage;
-		SharedPtr<GraphicsMemory> pRequestMemory;
+		WeakPtr<GraphicsMemory> pRequestMemory;
 	};
 }

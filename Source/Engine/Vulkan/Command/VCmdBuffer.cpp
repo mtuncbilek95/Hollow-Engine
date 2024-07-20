@@ -6,6 +6,7 @@
 #include "../Pipeline/VPipelineUtils.h"
 #include "../Texture/VTextureUtils.h"
 #include "../Buffer/VBufferUtils.h"
+#include "../Memory/VMemoryUtils.h"
 
 #include <Engine/Vulkan/Device/VDevice.h>
 #include <Engine/Vulkan/Command/VCmdPool.h>
@@ -14,6 +15,8 @@
 #include <Engine/Vulkan/Pipeline/VPipeline.h>
 #include <Engine/Vulkan/Buffer/VBuffer.h>
 #include <Engine/Vulkan/Descriptor/VDescriptorSet.h>
+
+#include <Engine/Graphics/API/GraphicsAPI.h>
 
 namespace Hollow
 {
@@ -234,9 +237,110 @@ namespace Hollow
 
 	void VCmdBuffer::SetTextureBarrierImpl(WeakPtr<TextureImage> pTexture, TextureImageBarrier& desc)
 	{
+		auto pVTexture = pTexture.lock()->GetSharedPtrAs<VTextureImage>();
+		auto pDevice = GetOwnerDevice().lock()->GetSharedPtrAs<VDevice>();
+		u32 srcIndex;
+		u32 dstIndex;
+
+		switch (desc.SourceQueue)
+		{
+		case GraphicsQueueType::Graphics:
+			srcIndex = pDevice->GetGraphicsQueueFamilyIndex();
+			break;
+		case GraphicsQueueType::Compute:
+			srcIndex = pDevice->GetComputeQueueFamilyIndex();
+			break;
+		case GraphicsQueueType::Transfer:
+			srcIndex = pDevice->GetTransferQueueFamilyIndex();
+			break;
+		default:
+			srcIndex = VK_QUEUE_FAMILY_IGNORED;
+			break;
+		}
+
+		switch (desc.DestinationQueue)
+		{
+		case GraphicsQueueType::Graphics:
+			dstIndex = pDevice->GetGraphicsQueueFamilyIndex();
+			break;
+		case GraphicsQueueType::Compute:
+			dstIndex = pDevice->GetComputeQueueFamilyIndex();
+			break;
+		case GraphicsQueueType::Transfer:
+			dstIndex = pDevice->GetTransferQueueFamilyIndex();
+			break;
+		default:
+			dstIndex = VK_QUEUE_FAMILY_IGNORED;
+			break;
+		}
+
+		VkImageMemoryBarrier barrier = {};
+		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		barrier.oldLayout = VkUtils::GetVkImageLayout(desc.OldLayout);
+		barrier.newLayout = VkUtils::GetVkImageLayout(desc.NewLayout);
+		barrier.srcQueueFamilyIndex = srcIndex;
+		barrier.dstQueueFamilyIndex = dstIndex;
+		barrier.image = pVTexture->GetVkTexture();
+		barrier.subresourceRange.aspectMask = VkUtils::GetVkTextureAspectFlags(desc.AspectMask);
+		barrier.subresourceRange.baseMipLevel = desc.MipIndex;
+		barrier.subresourceRange.levelCount = pTexture.lock()->GetMipLevels();
+		barrier.subresourceRange.baseArrayLayer = desc.ArrayIndex;
+		barrier.subresourceRange.layerCount = pTexture.lock()->GetArrayLayers();
+		barrier.srcAccessMask = VkUtils::GetVkAccessFlags(desc.SourceAccessMask);
+		barrier.dstAccessMask = VkUtils::GetVkAccessFlags(desc.DestinationAccessMask);
+
+		vkCmdPipelineBarrier(mVkCmdBuffer, VkUtils::GetVkPipelineStageFlags(desc.SourceStageFlags), VkUtils::GetVkPipelineStageFlags(desc.DestinationStageFlags), 0, 0, nullptr, 0, nullptr, 1, &barrier);
 	}
 
 	void VCmdBuffer::SetBufferBarrierImpl(WeakPtr<GraphicsBuffer> pBuffer, BufferMemoryBarrier& desc)
 	{
+		auto pVBuffer = pBuffer.lock()->GetSharedPtrAs<VBuffer>();
+		auto pDevice = GetOwnerDevice().lock()->GetSharedPtrAs<VDevice>();
+		u32 srcIndex;
+		u32 dstIndex;
+
+		switch (desc.SourceQueue)
+		{
+		case GraphicsQueueType::Graphics:
+			srcIndex = pDevice->GetGraphicsQueueFamilyIndex();
+			break;
+		case GraphicsQueueType::Compute:
+			srcIndex = pDevice->GetComputeQueueFamilyIndex();
+			break;
+		case GraphicsQueueType::Transfer:
+			srcIndex = pDevice->GetTransferQueueFamilyIndex();
+			break;
+		default:
+			srcIndex = VK_QUEUE_FAMILY_IGNORED;
+			break;
+		}
+
+		switch (desc.DestinationQueue)
+		{
+		case GraphicsQueueType::Graphics:
+			dstIndex = pDevice->GetGraphicsQueueFamilyIndex();
+			break;
+		case GraphicsQueueType::Compute:
+			dstIndex = pDevice->GetComputeQueueFamilyIndex();
+			break;
+		case GraphicsQueueType::Transfer:
+			dstIndex = pDevice->GetTransferQueueFamilyIndex();
+			break;
+		default:
+			dstIndex = VK_QUEUE_FAMILY_IGNORED;
+			break;
+		}
+
+		VkBufferMemoryBarrier barrier = {};
+		barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+		barrier.srcAccessMask = VkUtils::GetVkAccessFlags(desc.SourceAccessMask);
+		barrier.dstAccessMask = VkUtils::GetVkAccessFlags(desc.DestinationAccessMask);
+		barrier.srcQueueFamilyIndex = srcIndex;
+		barrier.dstQueueFamilyIndex = dstIndex;
+		barrier.buffer = pVBuffer->GetBuffer();
+		barrier.offset = desc.Offset;
+		barrier.size = desc.Size;
+
+		vkCmdPipelineBarrier(mVkCmdBuffer, VkUtils::GetVkPipelineStageFlags(desc.SourceStageFlags), VkUtils::GetVkPipelineStageFlags(desc.DestinationStageFlags), 0, 0, nullptr, 1, &barrier, 0, nullptr);
 	}
 }

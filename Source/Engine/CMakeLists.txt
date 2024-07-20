@@ -23,7 +23,7 @@ FetchContent_MakeAvailable(json)
 # ---------------------- FILE ADDITION -----------------------
 file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Source/Engine/*.cpp" "${CMAKE_SOURCE_DIR}/Source/Engine/*.h")
 source_group(TREE "${CMAKE_SOURCE_DIR}/Source/Engine" FILES ${SUBDIRECTORIES})
-add_executable(Engine main.cpp ${SUBDIRECTORIES})
+add_library(Engine STATIC main.cpp ${SUBDIRECTORIES})
 # ------------------------------------------------------------
 
 # ------------------- INCLUDE DIRECTORIES --------------------

@@ -21,10 +21,12 @@ namespace Hollow
 		u32 GetBlockSize() const { return mBlockSize; }
 		u32 GetTotalSize() const { return mBlockSize * mBlockLength; }
 
+		WeakPtr<GraphicsMemory> GetMemory() const { return mRequestMemory; }
+
 	private:
 		u64 mBlockSize;
 		u64 mBlockLength;
 		GraphicsBufferUsage mUsage;
-		SharedPtr<GraphicsMemory> mRequestMemory;
+		WeakPtr<GraphicsMemory> mRequestMemory;
 	};
 }

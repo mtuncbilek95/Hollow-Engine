@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-    enum class ENGINE_API PipelineStageFlags : u16
+    enum class ENGINE_API PipelineStageFlags : u32
     {
         TopOfPipe = 1 << 0,
         VertexInput = 1 << 1,
@@ -24,5 +24,5 @@ namespace Hollow
 		AllCommands = 1 << 15
     };
 
-    GENERATE_ENUM_FLAG(PipelineStageFlags, u16);
+    GENERATE_ENUM_FLAG(PipelineStageFlags, u32);
 }

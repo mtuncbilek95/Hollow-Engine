@@ -8,8 +8,8 @@ namespace Hollow
 {
 	struct ENGINE_API DescriptorSetUpdateEntry
 	{
-		SharedPtr<DeviceObject> pResource;
-		SharedPtr<DeviceObject> pSampler;
+		WeakPtr<DeviceObject> pResource;
+		WeakPtr<DeviceObject> pSampler;
 		DescriptorType Type;
 		u32 Count;
 		u32 ArrayElement;

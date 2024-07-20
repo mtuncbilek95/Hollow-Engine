@@ -46,6 +46,10 @@ using Function = std::function<T>;
 template<typename T>
 using Deque = std::deque<T>;
 
+#include <queue>
+template<typename T>
+using Queue = std::queue<T>;
+
 template<typename T, typename...Args>
 inline SharedPtr<T> MakeShared(Args&&...args)
 {

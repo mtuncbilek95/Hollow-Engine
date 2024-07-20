@@ -85,4 +85,49 @@ namespace Hollow
 	{
 		return CreateCommandBufferImpl(desc);
 	}
+
+	void GraphicsDevice::WaitFences(WeakPtr<Fence> pFences[], u32 count)
+	{
+		WaitFencesImpl(pFences, count);
+	}
+
+	void GraphicsDevice::WaitFence(WeakPtr<Fence> pFence)
+	{
+		WaitFenceImpl(pFence);
+	}
+
+	void GraphicsDevice::ResetFences(WeakPtr<Fence> pFences[], u32 count)
+	{
+		ResetFencesImpl(pFences, count);
+	}
+
+	void GraphicsDevice::ResetFence(WeakPtr<Fence> pFence)
+	{
+		ResetFenceImpl(pFence);
+	}
+
+	void GraphicsDevice::WaitIdle()
+	{
+		WaitIdleImpl();
+	}
+
+	void GraphicsDevice::WaitQueueIdle(WeakPtr<GraphicsQueue> pQueue)
+	{
+		WaitQueueIdleImpl(pQueue);
+	}
+
+	void GraphicsDevice::SubmitQueue(WeakPtr<GraphicsQueue> pQueue, WeakPtr<CmdBuffer> pCmdBuffer, u32 cmdCount, WeakPtr<Semaphore> pWaitSemaphores[], u32 waitCount, WeakPtr<Semaphore> pSignalSemaphores[], u32 signalCount, WeakPtr<Fence> pFence, PipelineStageFlags flags[])
+	{
+		SubmitQueueImpl(pQueue, pCmdBuffer, cmdCount, pWaitSemaphores, waitCount, pSignalSemaphores, signalCount, pFence, flags);
+	}
+
+	void GraphicsDevice::UpdateHostBuffer(WeakPtr<GraphicsBuffer> pBuffer, const BufferDataUpdateDesc& desc)
+	{
+		UpdateHostBufferImpl(pBuffer, desc);
+	}
+
+	void GraphicsDevice::UpdateDescriptorSet(WeakPtr<DescriptorSet> pDescriptorSet, const DescriptorUpdateDesc& desc)
+	{
+		UpdateDescriptorSetImpl(pDescriptorSet, desc);
+	}
 }

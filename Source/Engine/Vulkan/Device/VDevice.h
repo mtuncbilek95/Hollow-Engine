@@ -79,6 +79,20 @@ namespace Hollow
 		virtual SharedPtr<CmdPool> CreateCommandPoolImpl(const CmdPoolDesc& desc) override;
 		virtual SharedPtr<CmdBuffer> CreateCommandBufferImpl(const CmdBufferDesc& desc) override;
 
+		virtual void WaitFencesImpl(WeakPtr<Fence> pFences[], u32 count) override;
+		virtual void WaitFenceImpl(WeakPtr<Fence> pFence) override;
+		virtual void ResetFencesImpl(WeakPtr<Fence> pFences[], u32 count) override;
+		virtual void ResetFenceImpl(WeakPtr<Fence> pFence) override;
+
+		virtual void WaitIdleImpl() override;
+		virtual void WaitQueueIdleImpl(WeakPtr<GraphicsQueue> pQueue) override;
+		virtual void SubmitQueueImpl(WeakPtr<GraphicsQueue> pQueue, WeakPtr<CmdBuffer> pCmdBuffer, u32 cmdCount,
+			WeakPtr<Semaphore> pWaitSemaphores[], u32 waitCount, WeakPtr<Semaphore> pSignalSemaphores[],
+			u32 signalCount, WeakPtr<Fence> pFence, PipelineStageFlags flags[]) override;
+
+		virtual void UpdateHostBufferImpl(WeakPtr<GraphicsBuffer> pBuffer, const BufferDataUpdateDesc& desc) override;
+		virtual void UpdateDescriptorSetImpl(WeakPtr<DescriptorSet> pDescriptorSet, const DescriptorUpdateDesc& desc) override;
+
 	private:
 		VkDevice mDevice;
 		VkInstance mInstance;

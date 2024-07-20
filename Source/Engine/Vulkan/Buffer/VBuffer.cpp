@@ -20,10 +20,10 @@ namespace Hollow
 		VkMemoryRequirements info;
 		vkGetBufferMemoryRequirements(mDevice, mBuffer, &info);
 
-		u64 memoryOffset = desc.pRequestMemory->Allocate(info.size + info.alignment);
+		u64 memoryOffset = desc.pRequestMemory.lock()->Allocate(info.size + info.alignment);
 		u64 alignedOffset = memoryOffset + (memoryOffset % info.alignment == 0 ? 0 : (info.alignment - (memoryOffset % info.alignment)));
 
-		auto memPtr = desc.pRequestMemory->GetSharedPtrAs<VMemory>();
+		auto memPtr = desc.pRequestMemory.lock()->GetSharedPtrAs<VMemory>();
 		CORE_ASSERT(vkBindBufferMemory(mDevice, mBuffer, memPtr->GetVkDeviceMemory(), alignedOffset) == VK_SUCCESS, "VBuffer", "Failed to bind buffer memory!");
 
 		mOffset = memoryOffset;

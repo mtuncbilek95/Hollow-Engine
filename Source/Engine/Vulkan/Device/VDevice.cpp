@@ -1,4 +1,5 @@
 #include "VDevice.h"
+#include "../Descriptor/VDescriptorUtils.h"
 
 #include <Engine/Vulkan/Instance/VInstance.h>
 #include <Engine/Vulkan/Queue/VQueue.h>
@@ -15,6 +16,8 @@
 #include <Engine/Vulkan/Pipeline/VPipeline.h>
 #include <Engine/Vulkan/Sync/VFence.h>
 #include <Engine/Vulkan/Sync/VSemaphore.h>
+#include <Engine/Vulkan/Command/VCmdPool.h>
+#include <Engine/Vulkan/Command/VCmdBuffer.h>
 
 #define QUEUE_COUNT 1
 
@@ -262,11 +265,251 @@ namespace Hollow
 
 	SharedPtr<CmdPool> VDevice::CreateCommandPoolImpl(const CmdPoolDesc& desc)
 	{
-		return SharedPtr<CmdPool>();
+		return MakeShared<VCmdPool>(desc, GetSharedPtrAs<VDevice>());
 	}
 
 	SharedPtr<CmdBuffer> VDevice::CreateCommandBufferImpl(const CmdBufferDesc& desc)
 	{
-		return SharedPtr<CmdBuffer>();
+		return MakeShared<VCmdBuffer>(desc, GetSharedPtrAs<VDevice>());
+	}
+
+	void VDevice::WaitFencesImpl(WeakPtr<Fence> pFences[], u32 count)
+	{
+		VkFence fences[32];
+		for (u8 i = 0; i < count; i++)
+			fences[i] = pFences[i].lock()->GetSharedPtrAs<VFence>()->GetVkFence();
+
+		vkWaitForFences(mDevice, count, fences, VK_TRUE, UINT64_MAX);
+	}
+
+	void VDevice::WaitFenceImpl(WeakPtr<Fence> pFence)
+	{
+		VkFence fence = pFence.lock()->GetSharedPtrAs<VFence>()->GetVkFence();
+		vkWaitForFences(mDevice, 1, &fence, VK_TRUE, UINT64_MAX);
+	}
+
+	void VDevice::ResetFencesImpl(WeakPtr<Fence> pFences[], u32 count)
+	{
+		VkFence fences[32];
+		for (u8 i = 0; i < count; i++)
+			fences[i] = pFences[i].lock()->GetSharedPtrAs<VFence>()->GetVkFence();
+
+		vkResetFences(mDevice, count, fences);
+	}
+
+	void VDevice::ResetFenceImpl(WeakPtr<Fence> pFence)
+	{
+		VkFence fence = pFence.lock()->GetSharedPtrAs<VFence>()->GetVkFence();
+		vkResetFences(mDevice, 1, &fence);
+	}
+
+	void VDevice::WaitIdleImpl()
+	{
+		vkDeviceWaitIdle(mDevice);
+	}
+
+	void VDevice::WaitQueueIdleImpl(WeakPtr<GraphicsQueue> pQueue)
+	{
+		vkQueueWaitIdle(pQueue.lock()->GetSharedPtrAs<VQueue>()->GetVkQueue());
+	}
+
+	void VDevice::SubmitQueueImpl(WeakPtr<GraphicsQueue> pQueue, WeakPtr<CmdBuffer> pCmdBuffer, u32 cmdCount,
+		WeakPtr<Semaphore> pWaitSemaphores[], u32 waitCount, WeakPtr<Semaphore> pSignalSemaphores[], u32 signalCount,
+		WeakPtr<Fence> pFence, PipelineStageFlags flags[])
+	{
+		VkCommandBuffer cmdBuffers[32];
+		VkSemaphore waitSemaphores[32];
+		VkSemaphore signalSemaphores[32];
+		VkPipelineStageFlags waitStages[32];
+
+		for (u8 i = 0; i < cmdCount; i++)
+			cmdBuffers[i] = pCmdBuffer.lock()->GetSharedPtrAs<VCmdBuffer>()->GetVkCmdBuffer();
+
+		for (u8 i = 0; i < waitCount; i++)
+			waitSemaphores[i] = pWaitSemaphores[i].lock()->GetSharedPtrAs<VSemaphore>()->GetVkSemaphore();
+
+		for (u8 i = 0; i < signalCount; i++)
+			signalSemaphores[i] = pSignalSemaphores[i].lock()->GetSharedPtrAs<VSemaphore>()->GetVkSemaphore();
+
+		for (u8 i = 0; i < waitCount; i++)
+			waitStages[i] = (VkPipelineStageFlags)flags[i];
+
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.waitSemaphoreCount = waitCount;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		submitInfo.pWaitDstStageMask = waitStages;
+		submitInfo.commandBufferCount = cmdCount;
+		submitInfo.pCommandBuffers = cmdBuffers;
+		submitInfo.signalSemaphoreCount = signalCount;
+		submitInfo.pSignalSemaphores = signalSemaphores;
+
+		VkFence fence = pFence.lock()->GetSharedPtrAs<VFence>()->GetVkFence();
+
+		vkQueueSubmit(pQueue.lock()->GetSharedPtrAs<VQueue>()->GetVkQueue(), 1, &submitInfo, fence);
+	}
+
+	void VDevice::UpdateHostBufferImpl(WeakPtr<GraphicsBuffer> pBuffer, const BufferDataUpdateDesc& desc)
+	{
+		auto pMemory = pBuffer.lock()->GetMemory().lock()->GetSharedPtrAs<VMemory>();
+		auto pDst = pBuffer.lock()->GetSharedPtrAs<VBuffer>();
+
+		void* data;
+		vkMapMemory(mDevice, pMemory->GetVkDeviceMemory(), pDst->GetAlignedOffset() + desc.OffsetInBytes, desc.Memory.GetSize(), 0, &data);
+		memcpy(data, desc.Memory.GetData(), desc.Memory.GetSize());
+		vkUnmapMemory(mDevice, pMemory->GetVkDeviceMemory());
+	}
+
+	void VDevice::UpdateDescriptorSetImpl(WeakPtr<DescriptorSet> pDescriptorSet, const DescriptorUpdateDesc& desc)
+	{
+		auto pDst = pDescriptorSet.lock()->GetSharedPtrAs<VDescriptorSet>();
+
+		VkWriteDescriptorSet writeInformations[32];
+		VkDescriptorBufferInfo writeBufferInformations[32];
+		VkDescriptorImageInfo writeImageInformations[32];
+		u32 bufferIndex = 0;
+		u32 imageIndex = 0;
+
+		for (u8 i = 0; i < desc.Entries.size(); i++)
+		{
+			VkWriteDescriptorSet writeInfo = {};
+			writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeInfo.dstSet = pDst->GetVkDescriptorSet();
+			writeInfo.dstBinding = desc.Entries[i].Binding;
+			writeInfo.dstArrayElement = desc.Entries[i].ArrayElement;
+			writeInfo.descriptorCount = desc.Entries[i].Count;
+			writeInfo.descriptorType = VkUtils::GetVkDescriptorType(desc.Entries[i].Type);
+			writeInfo.pNext = nullptr;
+
+			switch (desc.Entries[i].Type)
+			{
+			case DescriptorType::Sampler:
+			{
+				auto pSampler = desc.Entries[i].pResource.lock()->GetSharedPtrAs<VSampler>();
+
+				VkDescriptorImageInfo samplerInfo = {};
+				samplerInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				samplerInfo.imageView = VK_NULL_HANDLE;
+				samplerInfo.sampler = pSampler->GetVkSampler();
+				writeImageInformations[imageIndex] = samplerInfo;
+				writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+				imageIndex++;
+				break;
+			}
+			case DescriptorType::CombinedImageSampler:
+			{
+				auto pView = desc.Entries[i].pResource.lock()->GetSharedPtrAs<VTextureView>();
+				auto pSampler = desc.Entries[i].pResource.lock()->GetSharedPtrAs<VSampler>();
+
+				VkDescriptorImageInfo imageInfo = {};
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = pView->GetVkTextureView();
+				imageInfo.sampler = pSampler->GetVkSampler();
+				writeImageInformations[imageIndex] = imageInfo;
+				writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				imageIndex++;
+				break;
+			}
+			case DescriptorType::SampledImage:
+			{
+				auto pView = desc.Entries[i].pResource.lock()->GetSharedPtrAs<VTextureView>();
+
+				VkDescriptorImageInfo imageInfo = {};
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = pView->GetVkTextureView();
+				imageInfo.sampler = VK_NULL_HANDLE;
+				writeImageInformations[imageIndex] = imageInfo;
+				writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+				imageIndex++;
+				break;
+			}
+			case DescriptorType::StorageImage:
+			{
+				auto pView = desc.Entries[i].pResource.lock()->GetSharedPtrAs<VTextureView>();
+
+				VkDescriptorImageInfo imageInfo = {};
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+				imageInfo.imageView = pView->GetVkTextureView();
+				imageInfo.sampler = VK_NULL_HANDLE;
+				writeImageInformations[imageIndex] = imageInfo;
+				writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+				imageIndex++;
+				break;
+			}
+			case DescriptorType::UniformTexelBuffer:
+			{
+				// Add code for handling UniformTexelBuffer descriptor type
+				break;
+			}
+			case DescriptorType::StorageTexelBuffer:
+			{
+				// Add code for handling StorageTexelBuffer descriptor type
+				break;
+			}
+			case DescriptorType::UniformBuffer:
+			{
+				auto pBuffer = desc.Entries[i].pResource.lock()->GetSharedPtrAs<VBuffer>();
+
+				VkDescriptorBufferInfo bufferInfo = {};
+				bufferInfo.buffer = pBuffer->GetBuffer();
+				bufferInfo.offset = desc.Entries[i].BufferOffset;
+				bufferInfo.range = pBuffer->GetTotalSize();
+				writeBufferInformations[bufferIndex] = bufferInfo;
+				writeInfo.pBufferInfo = &writeBufferInformations[bufferIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				bufferIndex++;
+				break;
+			}
+			case DescriptorType::StorageBuffer:
+			{
+				auto pBuffer = desc.Entries[i].pResource.lock()->GetSharedPtrAs<VBuffer>();
+
+				VkDescriptorBufferInfo bufferInfo = {};
+				bufferInfo.buffer = pBuffer->GetBuffer();
+				bufferInfo.offset = desc.Entries[i].BufferOffset;
+				bufferInfo.range = pBuffer->GetTotalSize();
+				writeBufferInformations[bufferIndex] = bufferInfo;
+				writeInfo.pBufferInfo = &writeBufferInformations[bufferIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+				bufferIndex++;
+				break;
+			}
+			case DescriptorType::UniformBufferDynamic:
+			{
+				auto pBuffer = desc.Entries[i].pResource.lock()->GetSharedPtrAs<VBuffer>();
+
+				VkDescriptorBufferInfo bufferInfo = {};
+				bufferInfo.buffer = pBuffer->GetBuffer();
+				bufferInfo.offset = desc.Entries[i].BufferOffset;
+				bufferInfo.range = pBuffer->GetTotalSize();
+				writeBufferInformations[bufferIndex] = bufferInfo;
+				writeInfo.pBufferInfo = &writeBufferInformations[bufferIndex];
+				writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+				bufferIndex++;
+				break;
+			}
+			case DescriptorType::StorageBufferDynamic:
+			{
+				// Add code for handling StorageBufferDynamic descriptor type
+				break;
+			}
+			case DescriptorType::InputAttachment:
+			{
+				// Add code for handling InputAttachment descriptor type
+				break;
+			}
+			default:
+				CORE_LOG(HE_WARNING, "VDevice", "The DescriptorType that you are using is not valid for UpdateDescriptorSet()");
+				break;
+			}
+
+			writeInformations[i] = writeInfo;
+		}
+
+		vkUpdateDescriptorSets(mDevice, desc.Entries.size(), writeInformations, 0, nullptr);
 	}
 }

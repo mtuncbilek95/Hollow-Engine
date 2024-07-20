@@ -26,4 +26,5 @@ endif ()
 
 # ------------------ SUBDIRECTORIES ----------------
 add_subdirectory("Source/Engine")
+add_subdirectory("Source/Editor")
 # --------------------------------------------------
