@@ -6,15 +6,18 @@
 
 namespace Hollow
 {
+	class ENGINE_API GraphicsQueue;
+	class ENGINE_API Fence;
+	class ENGINE_API Semaphore;
 	class ENGINE_API GraphicsDevice;
 	class ENGINE_API TextureImage;
 	class ENGINE_API TextureView;
 	class ENGINE_API Swapchain : public DeviceObject
 	{
 	public:
-		Swapchain(const SwapchainDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), 
-			ImageSize(desc.ImageSize), ImageFormat(desc.ImageFormat), TextureUsage(desc.TextureUsage), 
-			VSync(desc.VSync), BufferCount(desc.BufferCount), pRequestQueue(desc.pRequestQueue) 
+		Swapchain(const SwapchainDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),
+			ImageSize(desc.ImageSize), ImageFormat(desc.ImageFormat), TextureUsage(desc.TextureUsage),
+			VSync(desc.VSync), BufferCount(desc.BufferCount), pRequestQueue(desc.pRequestQueue)
 		{}
 		virtual ~Swapchain() override = default;
 
@@ -27,7 +30,20 @@ namespace Hollow
 		WeakPtr<TextureImage> GetImage(u32 index) const { return mImages[index]; }
 		WeakPtr<TextureView> GetImageView(u32 index) const { return mImageViews[index]; }
 
+		u32 AcquireNextImage(SharedPtr<Fence> pFence, SharedPtr<Semaphore> pSemaphore)
+		{
+			return AcquireNextImageImpl(pFence, pSemaphore);
+		}
+
+		void Present(SharedPtr<Semaphore> pSemaphore, u32 indices)
+		{
+			PresentImpl(pSemaphore, indices);
+		}
+
 	protected:
+		virtual u32 AcquireNextImageImpl(WeakPtr<Fence> pFence, WeakPtr<Semaphore> pSemaphore) = 0;
+		virtual void PresentImpl(WeakPtr<Semaphore> pSemaphore, u32 indices) = 0;
+
 		void SetNewImageSize(Vec2u newSize) { ImageSize = newSize; }
 
 		DArray<SharedPtr<TextureImage>> mImages;

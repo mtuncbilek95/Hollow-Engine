@@ -18,7 +18,7 @@ namespace Hollow
 	class ENGINE_API PlatformWindow : public IObject
 	{
 		friend class GraphicsDevice;
-		friend class WindowManager;
+		friend class WindowAPI;
 	public:
 		static SharedPtr<PlatformWindow> InitializeWindow(const WindowDesc& desc);
 

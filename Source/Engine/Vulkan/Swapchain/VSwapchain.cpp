@@ -5,26 +5,29 @@
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 #include <Windows.h>
 #include <vulkan/vulkan_win32.h>
-#define VK_USE_PLATFORM_WIN32_KHR
 #endif
 
 #include <Engine/Vulkan/Device/VDevice.h>
 #include <Engine/Vulkan/Queue/VQueue.h>
+#include <Engine/Vulkan/Sync/VFence.h>
+#include <Engine/Vulkan/Sync/VSemaphore.h>
 
 #include <Engine/Window/WindowManager.h>
 #include <Engine/Graphics/Texture/TextureImage.h>
 #include <Engine/Graphics/Texture/TextureView.h>
 
+#include <Engine/Graphics/API/GraphicsAPI.h>
+
 namespace Hollow
 {
-	VSwapchain::VSwapchain(const SwapchainDesc& desc, SharedPtr<VDevice> pDevice) : Swapchain(desc, pDevice), mDevice(pDevice->GetVkDevice()), 
+	VSwapchain::VSwapchain(const SwapchainDesc& desc, SharedPtr<VDevice> pDevice) : Swapchain(desc, pDevice), mDevice(pDevice->GetVkDevice()),
 		mInstance(pDevice->GetVkInstance()), mAdapter(pDevice->GetVkAdapter()), mSwapchain(VK_NULL_HANDLE), mSurface(VK_NULL_HANDLE)
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-		surfaceInfo.hinstance = WindowManager::GetAPI()->GetDefaultWindow()->GetInstanceHandle();
-		surfaceInfo.hwnd = WindowManager::GetAPI()->GetDefaultWindow()->GetWindowHandle();
+		surfaceInfo.hinstance = WindowAPI::GetAPI()->GetDefaultWindow()->GetInstanceHandle();
+		surfaceInfo.hwnd = WindowAPI::GetAPI()->GetDefaultWindow()->GetWindowHandle();
 		surfaceInfo.pNext = nullptr;
 
 		CORE_ASSERT(vkCreateWin32SurfaceKHR(mInstance, &surfaceInfo, nullptr, &mSurface) == VK_SUCCESS, "VSwapchain", "Failed to create win32 surface");
@@ -152,5 +155,46 @@ namespace Hollow
 			auto pTextureView = GetOwnerDevice().lock()->GetSharedPtrAs<VDevice>()->CreateSwapchainImageView(viewDesc);
 			mImageViews.push_back(pTextureView);
 		}
+	}
+
+	u32 VSwapchain::AcquireNextImageImpl(WeakPtr<Fence> pFence, WeakPtr<Semaphore> pSemaphore)
+	{
+		u32 imageIndex = 0;
+		if(auto pF = pFence.lock())
+		{
+			VkFence fence = pF->GetSharedPtrAs<VFence>()->GetVkFence();
+			CORE_ASSERT(vkAcquireNextImageKHR(mDevice, mSwapchain, UINT64_MAX, VK_NULL_HANDLE, fence, &imageIndex) == VK_SUCCESS, "VSwapchain",
+				"Failed to acquire next image");
+		}
+
+		if (auto pS = pSemaphore.lock())
+		{
+			VkSemaphore semaphore = pS->GetSharedPtrAs<VSemaphore>()->GetVkSemaphore();
+			CORE_ASSERT(vkAcquireNextImageKHR(mDevice, mSwapchain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &imageIndex) == VK_SUCCESS, "VSwapchain",
+				"Failed to acquire next image");
+		}
+		return imageIndex;
+	}
+
+	void VSwapchain::PresentImpl(WeakPtr<Semaphore> pSemaphore, u32 indices)
+	{
+		VkPresentInfoKHR presentInfo = {};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.pNext = nullptr;
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = &mSwapchain;
+		presentInfo.pImageIndices = &indices;
+
+		if (auto pS = pSemaphore.lock())
+		{
+			VkSemaphore semaphore = pS->GetSharedPtrAs<VSemaphore>()->GetVkSemaphore();
+			presentInfo.waitSemaphoreCount = 1;
+			presentInfo.pWaitSemaphores = &semaphore;
+		}
+
+		VkQueue queue = GraphicsAPI::GetAPI()->GetGraphicsQueue().lock()->GetSharedPtrAs<VQueue>()->GetVkQueue();
+
+		CORE_ASSERT(vkQueuePresentKHR(queue, &presentInfo) == VK_SUCCESS, "VSwapchain",
+			"Failed to present image");
 	}
 }

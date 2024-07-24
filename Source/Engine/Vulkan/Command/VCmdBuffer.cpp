@@ -23,7 +23,7 @@ namespace Hollow
 	VCmdBuffer::VCmdBuffer(const CmdBufferDesc& desc, WeakPtr<VDevice> pDevice) : CmdBuffer(desc, pDevice),
 		mDevice(pDevice.lock()->GetVkDevice()), mVkCmdBuffer(VK_NULL_HANDLE)
 	{
-		mVkCmdPool = pDevice.lock()->GetSharedPtrAs<VCmdPool>()->GetVkCommandPool();
+		mVkCmdPool = desc.pOwnerPool.lock()->GetSharedPtrAs<VCmdPool>()->GetVkCommandPool();
 
 		VkCommandBufferAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -85,6 +85,7 @@ namespace Hollow
 		VkRenderingAttachmentInfo depthAttachment = {};
 		if (!desc.DepthAttachment.ImageBuffer.expired())
 		{
+			depthAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
 			depthAttachment.imageView = desc.DepthAttachment.ImageBuffer.lock()->GetSharedPtrAs<VTextureView>()->GetVkTextureView();
 			depthAttachment.imageLayout = VkUtils::GetVkImageLayout(desc.DepthAttachment.ImageLayout);
 			depthAttachment.loadOp = VkUtils::GetVkAttachmentLoadOp(desc.DepthAttachment.LoadOperation);
@@ -95,6 +96,7 @@ namespace Hollow
 		VkRenderingAttachmentInfo stencilAttachment = {};
 		if (!desc.StencilAttachment.ImageBuffer.expired())
 		{
+			stencilAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
 			stencilAttachment.imageView = desc.StencilAttachment.ImageBuffer.lock()->GetSharedPtrAs<VTextureView>()->GetVkTextureView();
 			stencilAttachment.imageLayout = VkUtils::GetVkImageLayout(desc.StencilAttachment.ImageLayout);
 			stencilAttachment.loadOp = VkUtils::GetVkAttachmentLoadOp(desc.StencilAttachment.LoadOperation);
@@ -109,8 +111,12 @@ namespace Hollow
 		renderingInfo.viewMask = desc.viewMask;
 		renderingInfo.colorAttachmentCount = attachmentInfos.size();
 		renderingInfo.pColorAttachments = attachmentInfos.data();
-		renderingInfo.pDepthAttachment = &depthAttachment;
-		renderingInfo.pStencilAttachment = &stencilAttachment;
+		
+		if(!desc.DepthAttachment.ImageBuffer.expired())
+			renderingInfo.pDepthAttachment = &depthAttachment;
+		if(!desc.StencilAttachment.ImageBuffer.expired())
+			renderingInfo.pStencilAttachment = &stencilAttachment;
+		
 		renderingInfo.flags = VkRenderingFlags();
 		renderingInfo.pNext = nullptr;
 

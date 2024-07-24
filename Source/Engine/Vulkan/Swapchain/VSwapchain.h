@@ -17,6 +17,10 @@ namespace Hollow
 		VkSwapchainKHR GetSwapchain() const { return mSwapchain; }
 		VkSurfaceKHR GetSurfaceFormat() const { return mSurface; }
 
+	protected:
+		virtual u32 AcquireNextImageImpl(WeakPtr<Fence> pFence, WeakPtr<Semaphore> pSemaphore) override;
+		virtual void PresentImpl(WeakPtr<Semaphore> pSemaphore, u32 indices) override;
+
 	private:
 		VkSwapchainKHR mSwapchain;
 		VkSurfaceKHR mSurface;

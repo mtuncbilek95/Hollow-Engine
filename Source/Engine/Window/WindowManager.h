@@ -6,11 +6,11 @@
 
 namespace Hollow
 {
-	class ENGINE_API WindowManager : public API<WindowManager>
+	class ENGINE_API WindowAPI : public API<WindowAPI>
 	{
 	public:
-		WindowManager() = default;
-		~WindowManager() = default;
+		WindowAPI() = default;
+		~WindowAPI() = default;
 
 		SharedPtr<PlatformWindow> InitializeWindow(const WindowDesc& desc)
 		{
