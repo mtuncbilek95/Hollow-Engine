@@ -16,64 +16,56 @@ namespace Hollow
 			{
 				if (pModule->OnInitialize())
 				{
-					CORE_LOG(HE_INFO, "Module %s validated", pModule->GetModuleName().c_str());
+					CORE_LOG(HE_VERBOSE, "Module %s validated", pModule->GetModuleName().c_str());
 					pModule->SetState(ApplicationModuleState::Validated);
-					mHashModules.insert({ pModule->GetState(), pModule });
 				}
 				else
 				{
-					CORE_LOG(HE_INFO, "Module %s invalidated", pModule->GetModuleName().c_str());
+					CORE_LOG(HE_WARNING, "Module %s invalidated", pModule->GetModuleName().c_str());
 					pModule->SetState(ApplicationModuleState::Invalidated);
-					mHashModules.insert({ pModule->GetState(), pModule });
 				}
 			}
 		}
 
-		for (auto& [key, value] : mHashModules)
+		for (auto& module : mTotalModules)
 		{
-			if (key == ApplicationModuleState::Validated)
+			if (module->GetState() == ApplicationModuleState::Validated)
 			{
-				value->Start();
+				module->Start();
 			}
 		}
 
 		while (!mQuitRequested)
 		{
-			for (auto& [key, value] : mHashModules)
+			for (auto& module : mTotalModules)
 			{
-				if (key == ApplicationModuleState::Validated)
+				if (module->GetState() == ApplicationModuleState::Validated)
 				{
-					value->OnPreUpdate();
+					module->OnPreUpdate();
 				}
 			}
 
-			for (auto& [key, value] : mHashModules)
+			for (auto& module : mTotalModules)
 			{
-				if (key == ApplicationModuleState::Validated)
+				if (module->GetState() == ApplicationModuleState::Validated)
 				{
-					value->Update();
+					module->Update();
 				}
 			}
 
-			for (auto& [key, value] : mHashModules)
+			for (auto& module : mTotalModules)
 			{
-				if (key == ApplicationModuleState::Validated)
+				if (module->GetState() == ApplicationModuleState::Validated)
 				{
-					value->OnPostUpdate();
+					module->OnPostUpdate();
 				}
-			}
-
-			if (GetAsyncKeyState(VK_ESCAPE))
-			{
-				QuitReason("User Pressed Escape Key");
-				mQuitRequested = true;
 			}
 		}
 
-		for (auto& [key, value] : mHashModules)
+		for (auto& module : mTotalModules)
 		{
-			if (key == ApplicationModuleState::Validated)
-				value->Stop();
+			if (module->GetState() == ApplicationModuleState::Validated)
+				module->Stop();
 		}
 	}
 

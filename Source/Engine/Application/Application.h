@@ -15,9 +15,8 @@ namespace Hollow
 		template<typename ModuleType, typename... Args>
 		void RegisterModule(Args&&... args)
 		{
-			auto pModule = std::make_shared<ModuleType>(std::forward<Args>(args)...);
-			auto pApp = std::static_pointer_cast<Application>(GetSharedPtr());
-			pModule->SetOwnerApplication(pApp);
+			SharedPtr<ModuleType> pModule = MakeShared<ModuleType>(std::forward<Args>(args)...);
+			pModule->SetOwnerApplication(GetSharedPtrAs<Application>());
 			pModule->SetState(ApplicationModuleState::NeedValidation);
 			mTotalModules.push_back(pModule);
 			CORE_LOG(HE_INFO, "Application", "Module %s registered", pModule->GetModuleName().c_str());
@@ -33,7 +32,6 @@ namespace Hollow
 
 	private:
 		DArray<SharedPtr<ApplicationModule>> mTotalModules;
-		HashMap<ApplicationModuleState, SharedPtr<ApplicationModule>> mHashModules;
 		bool mQuitRequested = false;
 	};
 }

@@ -14,8 +14,8 @@ namespace Hollow
 		ApplicationModule() = default;
 		virtual ~ApplicationModule() override = default;
 
-		FORCEINLINE SharedPtr<Application> GetOwnerApp() const { return mOwnerApp; }
-		FORCEINLINE String GetModuleName() const { return mModuleName; }
+		FORCEINLINE WeakPtr<Application> GetOwnerApp() { return mOwnerApp; }
+		FORCEINLINE const String& GetModuleName() const { return mModuleName; }
 		FORCEINLINE ApplicationModuleState GetState() const { return mState; }
 
 		virtual void Start() noexcept = 0;
@@ -32,7 +32,7 @@ namespace Hollow
 		void SetModuleName(const String& name) { mModuleName = name; }
 
 	private:
-		SharedPtr<Application> mOwnerApp;
+		WeakPtr<Application> mOwnerApp;
 		ApplicationModuleState mState = ApplicationModuleState::NeedValidation;
 		String mModuleName;
 	};
