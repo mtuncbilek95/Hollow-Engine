@@ -1,6 +1,6 @@
 #include "ImguiRenderer.h"
 
-#include <Engine/Window/WindowManager.h>
+#include <Engine/Window/WindowAPI.h>
 #include <Engine/Graphics/API/GraphicsAPI.h>
 
 #include <backends/imgui_impl_vulkan.h>

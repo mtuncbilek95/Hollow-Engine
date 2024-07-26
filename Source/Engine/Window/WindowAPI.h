@@ -12,7 +12,7 @@ namespace Hollow
 		WindowAPI() = default;
 		~WindowAPI() = default;
 
-		SharedPtr<PlatformWindow> InitializeWindow(const WindowDesc& desc)
+		WeakPtr<PlatformWindow> InitializeWindow(const WindowDesc& desc)
 		{
 			if(mDefaultWindow == nullptr)
 				return mDefaultWindow = PlatformWindow::InitializeWindow(desc);
