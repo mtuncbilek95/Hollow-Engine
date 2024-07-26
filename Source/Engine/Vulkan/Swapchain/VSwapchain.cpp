@@ -12,7 +12,7 @@
 #include <Engine/Vulkan/Sync/VFence.h>
 #include <Engine/Vulkan/Sync/VSemaphore.h>
 
-#include <Engine/Window/WindowManager.h>
+#include <Engine/Window/WindowAPI.h>
 #include <Engine/Graphics/Texture/TextureImage.h>
 #include <Engine/Graphics/Texture/TextureView.h>
 
@@ -63,8 +63,6 @@ namespace Hollow
 				CORE_LOG(HE_WARNING, "Requested image size is not supported. Using the current extent size.");
 				SetNewImageSize({ surfaceCapabilities.currentExtent.width, surfaceCapabilities.currentExtent.height });
 			}
-			else
-				CORE_LOG(HE_VERBOSE, "Requested image size is supported");
 		}
 
 		u32 presentModeCount = 0;
@@ -75,15 +73,6 @@ namespace Hollow
 		DArray<VkPresentModeKHR> presentModes(presentModeCount);
 		CORE_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(mAdapter, mSurface, &presentModeCount, presentModes.data()) == VK_SUCCESS,
 			"CreateSurfaceSwapchain", "Failed to get present modes");
-
-		for (auto& mode : presentModes)
-		{
-			if (mode == VkUtils::GetVkPresentMode(desc.VSync))
-			{
-				CORE_LOG(HE_VERBOSE, "Requested present mode is supported");
-				break;
-			}
-		}
 
 		auto pVkQueue = desc.pRequestQueue.lock()->GetSharedPtrAs<VQueue>();
 		u32 presentQueueFamilyIndex = pVkQueue->GetQueueIndex();
