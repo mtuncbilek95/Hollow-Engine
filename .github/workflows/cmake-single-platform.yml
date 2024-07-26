@@ -27,7 +27,6 @@ jobs:
         with:
           submodules: true
       - name: Install Vulkan SDK
-        if: matrix.config.os == 'ubuntu-latest'
         uses: humbletim/install-vulkan-sdk@v1.1.1
         with:
           version: default
