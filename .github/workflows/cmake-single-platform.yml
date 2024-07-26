@@ -1,0 +1,47 @@
+name: "Build Hollow"
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    name: Build desktop
+    runs-on: ${{matrix.config.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "Windows",
+            os: windows_x64
+            }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install Vulkan SDK
+        if: matrix.config.os == 'ubuntu-latest'
+        uses: humbletim/install-vulkan-sdk@v1.1.1
+        with:
+          version: default
+          cache: true
+      - name: Install GLFW Deps
+        uses: RpxdYTX/install-glfw-deps@v2
+        with:
+          version: default
+          cache: true
+      - name: Install Dev Packages
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      - name: Test
+        working-directory: ${{github.workspace}}/build
+        run: ctest -C ${{env.BUILD_TYPE}}
