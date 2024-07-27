@@ -7,7 +7,7 @@ namespace Hollow
 	namespace Color
 	{
 		// Convert Hex to RGB
-		static Vec4f HexToRGB(const String& hexString)
+		static Vec4f HexToRGB_F(const String& hexString)
 		{
 			Vec4f color;
 			color.x = std::stoul(hexString.substr(1, 2), nullptr, 16) / 255.0f;
@@ -18,13 +18,23 @@ namespace Hollow
 		}
 
 		// Convert RGB to Hex
-		static String RGBToHex(const Vec4f& color)
+		static String RGB_FToHex(const Vec4f& color)
 		{
 			String hexString = "#";
 			hexString += std::to_string(static_cast<int>(color.x * 255));
 			hexString += std::to_string(static_cast<int>(color.y * 255));
 			hexString += std::to_string(static_cast<int>(color.z * 255));
 			return hexString;
+		}
+
+		static Vec4s HexToRGB_B(const String& hexString)
+		{
+			Vec4s color;
+			color.x = static_cast<u8>(std::stoul(hexString.substr(1, 2), nullptr, 16));
+			color.y = static_cast<u8>(std::stoul(hexString.substr(3, 2), nullptr, 16));
+			color.z = static_cast<u8>(std::stoul(hexString.substr(5, 2), nullptr, 16));
+			color.w = 255;
+			return color;
 		}
 	}
 }

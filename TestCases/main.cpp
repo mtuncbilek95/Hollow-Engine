@@ -9,8 +9,6 @@ int main(i32 argC, char** argV)
 {
 	PlatformAPI::GetAPI()->InitializeArguments(argC, argV);
 
-	//Color::HexToRGB("")
-
 	SharedPtr<TestApp> app = MakeShared<TestApp>();
 	app->Run();
 }
