@@ -62,10 +62,13 @@ namespace Hollow
 			}
 		}
 
-		for (auto& module : mTotalModules)
+		// Stop all modules reversed
+		for (auto it = mTotalModules.rbegin(); it != mTotalModules.rend(); ++it)
 		{
-			if (module->GetState() == ApplicationModuleState::Validated)
-				module->Stop();
+			if ((*it)->GetState() == ApplicationModuleState::Validated)
+			{
+				(*it)->Stop();
+			}
 		}
 	}
 

@@ -165,14 +165,14 @@ namespace Hollow
 		return imageIndex;
 	}
 
-	void VSwapchain::PresentImpl(WeakPtr<Semaphore> pSemaphore, u32 indices)
+	void VSwapchain::PresentImpl(WeakPtr<Semaphore> pSemaphore)
 	{
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		presentInfo.pNext = nullptr;
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = &mSwapchain;
-		presentInfo.pImageIndices = &indices;
+		presentInfo.pImageIndices = &mImageIndex;
 
 		if (auto pS = pSemaphore.lock())
 		{

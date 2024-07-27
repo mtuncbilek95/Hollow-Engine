@@ -42,7 +42,6 @@ namespace Hollow
 		beginInfo.pInheritanceInfo = nullptr;
 
 		CORE_ASSERT(vkBeginCommandBuffer(mVkCmdBuffer, &beginInfo) == VK_SUCCESS, "VCmdBuffer", "Failed to begin recording command buffer");
-
 	}
 
 	void VCmdBuffer::EndRecordingImpl()

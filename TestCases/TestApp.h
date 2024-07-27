@@ -5,6 +5,9 @@
 
 #include <Engine/Window/WindowModule.h>
 #include <Engine/Graphics/API/GraphicsModule.h>
+#include <Editor/RenderModules/ImGuiRenderModule.h>
+#include <Editor/RenderModules/ImGuiBeginModule.h>
+#include <Editor/RenderModules/ImGuiEndModule.h>
 
 namespace Hollow
 {
@@ -21,6 +24,10 @@ namespace Hollow
 			// TODO: Add reflection 
 			RegisterModule<WindowModule>();
 			RegisterModule<GraphicsModule>();
+			RegisterModule<ImGuiRenderModule>();
+			RegisterModule<ImGuiBeginModule>();
+			RegisterModule<ImGuiEndModule>();
+
 			// TODO: Add every singleton structure as modules so we wont have to worry about them in future.
 		}
 	};

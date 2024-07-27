@@ -1,7 +1,8 @@
-#include "ImguiRenderer.h"
+#include "ImGuiRenderer.h"
 
 #include <Engine/Window/WindowAPI.h>
 #include <Engine/Graphics/API/GraphicsAPI.h>
+#include <Engine/Platform/API/PlatformAPI.h>
 
 #include <backends/imgui_impl_vulkan.h>
 #include <backends/imgui_impl_glfw.h>
@@ -10,20 +11,12 @@
 #include <Engine/Vulkan/Device/VDevice.h>
 #include <Engine/Vulkan/Queue/VQueue.h>
 #include <Engine/Vulkan/Descriptor/VDescriptorPool.h>
-#include <Engine/Vulkan/Command/VCmdPool.h>
-#include <Engine/Vulkan/Command/VCmdBuffer.h>
-
-#include <Engine/Graphics/Swapchain/Swapchain.h>
-#include <Engine/Graphics/Sync/Fence.h>
 
 namespace Hollow
 {
-	ImguiRenderer::ImguiRenderer()
+	ImGuiRenderer::ImGuiRenderer()
 	{
-		auto instance = GraphicsAPI::GetAPI()->GetInstance();
 		auto device = GraphicsAPI::GetAPI()->GetDevice();
-		auto gQueue = GraphicsAPI::GetAPI()->GetGraphicsQueue();
-		auto swapchain = GraphicsAPI::GetAPI()->GetSwapchain();
 
 		DescriptorPoolDesc poolDesc = {};
 		poolDesc.MaxSets = 1000;
@@ -39,11 +32,55 @@ namespace Hollow
 			{DescriptorType::SampledImage, 1000},
 			{DescriptorType::Sampler, 1000}
 		};
-
+		
 		mDescriptorPool = device.lock()->CreateDescriptorPool(poolDesc);
 
 		mContext = ImGui::CreateContext();
 		ImGui::SetCurrentContext(mContext);
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+		ImGui::StyleColorsDark();
+
+		ImGuiStyle& style = ImGui::GetStyle();
+
+		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0333f, 0.0568f, 0.0921f, 1.f);
+		style.Colors[ImGuiCol_Border] = ImVec4(0.0333f, 0.0568f, 0.0921f, 1.f);
+		style.Colors[ImGuiCol_TitleBg] = ImVec4(0.1235f, 0.1431f, 0.1745f, 1.f);
+		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.1235f, 0.1431f, 0.1745f, 1.f);
+		style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+		style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.1235f, 0.1431f, 0.1745f, 1.f);
+		style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_Button] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_Header] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+		style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
+
+		String path = PlatformAPI::GetAPI()->GetEngineSourcePath() + "Resources/Fonts/Poppins/Regular.ttf";
+		io.Fonts->AddFontFromFileTTF(path.c_str(), 24.f);
+
+		InitVk();
+	}
+
+	ImGuiRenderer::~ImGuiRenderer()
+	{
+		ImGui_ImplVulkan_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext(mContext);
+	}
+
+	void ImGuiRenderer::InitVk()
+	{
+		auto instance = GraphicsAPI::GetAPI()->GetInstance();
+		auto device = GraphicsAPI::GetAPI()->GetDevice();
+		auto gQueue = GraphicsAPI::GetAPI()->GetGraphicsQueue();
 
 		ImGui_ImplVulkan_InitInfo initInfo = {};
 		initInfo.Instance = instance.lock()->GetSharedPtrAs<VInstance>()->GetVkInstance();
@@ -75,65 +112,12 @@ namespace Hollow
 		GLFWwindow* window = WindowAPI::GetAPI()->GetDefaultWindow()->GetGLFWHandle();
 		ImGui_ImplGlfw_InitForVulkan(window, true);
 
-		CmdPoolDesc cmdPoolDesc = {};
-		cmdPoolDesc.PoolType = CmdPoolType::Graphics;
-		mCmdPool = device.lock()->CreateCommandPool(cmdPoolDesc);
+		CmdPoolDesc poolDesc = {};
+		poolDesc.PoolType = CmdPoolType::Graphics;
+		mCmdPool = device.lock()->CreateCommandPool(poolDesc);
 
-		CmdBufferDesc cmdBufferDesc = {};
-		cmdBufferDesc.pOwnerPool = mCmdPool;
-		mCmdBuffer = device.lock()->CreateCommandBuffer(cmdBufferDesc);
-
-		mGraphicsQueue = gQueue;
-
-		mFence = device.lock()->CreateGraphicsFence(false);
-	}
-
-	ImguiRenderer::~ImguiRenderer()
-	{
-		ImGui_ImplVulkan_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext(mContext);
-	}
-
-	void ImguiRenderer::BeginFrame()
-	{
-		mCmdBuffer->BeginRecording();
-
-		DynamicPassAttachmentDesc passColorAttachmentDesc = {};
-		passColorAttachmentDesc.ImageBuffer = GraphicsAPI::GetAPI()->GetSwapchain().lock()->GetImageView(0);
-		passColorAttachmentDesc.ImageLayout = TextureLayout::ColorAttachment;
-		passColorAttachmentDesc.LoadOperation = AttachmentLoadOperation::Clear;
-		passColorAttachmentDesc.StoreOperation = AttachmentStoreOperation::Store;
-		passColorAttachmentDesc.ClearColor = { 0.1f, 0.2f, 0.3f, 1.0f };
-
-		DynamicPassDesc passDesc = {};
-		passDesc.ColorAttachments = { passColorAttachmentDesc };
-		passDesc.layerCount = 1;
-		passDesc.Extent = { GraphicsAPI::GetAPI()->GetSwapchain().lock()->GetImageSize().x, GraphicsAPI::GetAPI()->GetSwapchain().lock()->GetImageSize().y };
-		passDesc.Offset = { 0, 0 };
-		passDesc.viewMask = 0;
-
-		mCmdBuffer->BeginRendering(passDesc);
-
-		ImGui_ImplVulkan_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		ImGui::ShowDemoWindow();
-	}
-
-	void ImguiRenderer::EndFrame()
-	{
-		ImGui::Render();
-		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), mCmdBuffer->GetSharedPtrAs<VCmdBuffer>()->GetVkCmdBuffer());
-
-		mCmdBuffer->EndRendering();
-		mCmdBuffer->EndRecording();
-
-		PipelineStageFlags flags[] = { PipelineStageFlags::ColorAttachmentOutput };
-		GraphicsAPI::GetAPI()->GetDevice().lock()->SubmitQueue(mGraphicsQueue, mCmdBuffer, 1, nullptr, 0, nullptr, 0, mFence, flags);
-
-		GraphicsAPI::GetAPI()->GetDevice().lock()->WaitFence(mFence);
-		GraphicsAPI::GetAPI()->GetDevice().lock()->ResetFence(mFence);
+		CmdBufferDesc bufferDesc = {};
+		bufferDesc.pOwnerPool = mCmdPool;
+		mCmdBuffer = device.lock()->CreateCommandBuffer(bufferDesc);
 	}
 }

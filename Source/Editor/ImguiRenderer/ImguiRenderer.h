@@ -12,25 +12,29 @@ namespace Hollow
 	class ENGINE_API CmdPool;
 	class ENGINE_API CmdBuffer;
 	class ENGINE_API DescriptorPool;
-	class EDITOR_API ImguiRenderer : public IObject
+
+	class EDITOR_API ImGuiRenderer : public IObject
 	{
 	public:
-		ImguiRenderer();
-		~ImguiRenderer();
+		ImGuiRenderer();
+		~ImGuiRenderer();
 
-		void BeginFrame();
-		void EndFrame();
+		WeakPtr<CmdBuffer> GetCmdBuffer() { return mCmdBuffer; }
+		WeakPtr<CmdPool> GetCmdPool() { return mCmdPool; }
+		WeakPtr<GraphicsQueue> GetGraphicsQueue() { return mGraphicsQueue; }
+
+	private:
+		void InitVk();
 
 	private:
 		ImGuiContext* mContext;
 
 		SharedPtr<DescriptorPool> mDescriptorPool;
 
+		WeakPtr<GraphicsQueue> mGraphicsQueue;
+		SharedPtr<Fence> mFence;
+
 		SharedPtr<CmdBuffer> mCmdBuffer;
 		SharedPtr<CmdPool> mCmdPool;
-
-		WeakPtr<GraphicsQueue> mGraphicsQueue;
-
-		SharedPtr<Fence> mFence;
 	};
 }

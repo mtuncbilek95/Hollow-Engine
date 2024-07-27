@@ -1,0 +1,17 @@
+{
+	"FrameStyle": {
+		"FrameRounding": 2,
+		"WindowRounding": 4
+	},
+	"ColorStyle": {
+		"TextEnable": "#DEDEDE",
+		"TextDisable": "#7D7D7D",
+		"WindowBack": "#1E1E1E",
+		"Border": "#3A3A3A",
+		"FrameBack": "#2A2A2A",
+		"FrameHover": "#3A3A3A",
+		"FrameActive": "#4A4A4A",
+		"TitleBack": "#2A2A2A",
+		"TitleActiveBack": "#3A3A3A"
+	}
+}

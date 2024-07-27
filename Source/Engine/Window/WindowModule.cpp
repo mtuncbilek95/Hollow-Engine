@@ -34,7 +34,7 @@ namespace Hollow
 		WindowDesc windowDesc = {};
 		windowDesc.WindowMode = WindowMode::Windowed; // TODO: Get from config
 		windowDesc.WindowPosition = Vec2i(100, 100); // TODO: Get from config
-		windowDesc.WindowSize = Vec2u(1920, 1080); // TODO: Get from config
+		windowDesc.WindowSize = Vec2u(2560, 1440); // TODO: Get from config
 		windowDesc.WindowTitle = "Hollow Editor"; // TODO: Get from config
 
 		auto tempRefWindow = mWindowAPI->InitializeWindow(windowDesc);

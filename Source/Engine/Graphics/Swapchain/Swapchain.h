@@ -26,28 +26,31 @@ namespace Hollow
 		TextureUsageFlags GetTextureUsage() const { return TextureUsage; }
 		PresentMode GetVSync() const { return VSync; }
 		u8 GetBufferCount() const { return BufferCount; }
+		u32 GetImageIndex() const { return mImageIndex; }
 
-		WeakPtr<TextureImage> GetImage(u32 index) const { return mImages[index]; }
+		WeakPtr<TextureImage> GetImage(u32 index) { return mImages[index]; }
 		WeakPtr<TextureView> GetImageView(u32 index) const { return mImageViews[index]; }
 
 		u32 AcquireNextImage(SharedPtr<Fence> pFence, SharedPtr<Semaphore> pSemaphore)
 		{
-			return AcquireNextImageImpl(pFence, pSemaphore);
+			mImageIndex = AcquireNextImageImpl(pFence, pSemaphore);
+			return mImageIndex;
 		}
 
-		void Present(SharedPtr<Semaphore> pSemaphore, u32 indices)
+		void Present(SharedPtr<Semaphore> pSemaphore)
 		{
-			PresentImpl(pSemaphore, indices);
+			PresentImpl(pSemaphore);
 		}
 
 	protected:
 		virtual u32 AcquireNextImageImpl(WeakPtr<Fence> pFence, WeakPtr<Semaphore> pSemaphore) = 0;
-		virtual void PresentImpl(WeakPtr<Semaphore> pSemaphore, u32 indices) = 0;
+		virtual void PresentImpl(WeakPtr<Semaphore> pSemaphore) = 0;
 
 		void SetNewImageSize(Vec2u newSize) { ImageSize = newSize; }
 
 		DArray<SharedPtr<TextureImage>> mImages;
 		DArray<SharedPtr<TextureView>> mImageViews;
+		u32 mImageIndex = 0;
 
 	private:
 		Vec2u ImageSize;

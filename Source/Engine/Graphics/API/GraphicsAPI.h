@@ -16,13 +16,11 @@ namespace Hollow
 
 	class ENGINE_API GraphicsAPI : public API<GraphicsAPI>
 	{
+		friend class GraphicsModule;
 	public:
 		~GraphicsAPI() override = default;
 
-		WeakPtr<GraphicsInstance> CreateInstance(const GraphicsInstanceDesc& desc);
 		WeakPtr<GraphicsInstance> GetInstance() const { return mInstance; }
-
-		WeakPtr<GraphicsDevice> CreateDevice();
 		WeakPtr<GraphicsDevice> GetDevice() const { return mDevice; }
 
 		WeakPtr<GraphicsQueue> GetGraphicsQueue() const { return mGraphicsQueue; }
@@ -32,8 +30,12 @@ namespace Hollow
 		WeakPtr<GraphicsMemory> GetAvailableDeviceMemory(u64 requestedSize);
 		WeakPtr<GraphicsMemory> GetAvailableHostMemory(u64 requestedSize);
 
-		WeakPtr<Swapchain> CreateSwapchain(const SwapchainDesc& desc);
 		WeakPtr<Swapchain> GetSwapchain() const { return mSwapchain; }
+
+	private:
+		WeakPtr<GraphicsInstance> CreateInstance(const GraphicsInstanceDesc& desc);
+		WeakPtr<GraphicsDevice> CreateDevice();
+		WeakPtr<Swapchain> CreateSwapchain(const SwapchainDesc& desc);
 
 	private:
 		SharedPtr<GraphicsInstance> mInstance;

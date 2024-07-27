@@ -19,7 +19,7 @@ namespace Hollow
 
 	protected:
 		virtual u32 AcquireNextImageImpl(WeakPtr<Fence> pFence, WeakPtr<Semaphore> pSemaphore) override;
-		virtual void PresentImpl(WeakPtr<Semaphore> pSemaphore, u32 indices) override;
+		virtual void PresentImpl(WeakPtr<Semaphore> pSemaphore) override;
 
 	private:
 		VkSwapchainKHR mSwapchain;

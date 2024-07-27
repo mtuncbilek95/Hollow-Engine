@@ -3,6 +3,8 @@
 #include <Engine/Graphics/API/GraphicsAPI.h>
 #include <Engine/Window/WindowAPI.h>
 
+#include <Engine/Graphics/Device/GraphicsDevice.h>
+
 namespace Hollow
 {
 	GraphicsModule::GraphicsModule()
@@ -25,6 +27,7 @@ namespace Hollow
 
 	void GraphicsModule::Stop() noexcept
 	{
+		mGraphicsAPI->GetDevice().lock()->WaitIdle();
 	}
 
 	bool GraphicsModule::OnInitialize() noexcept
