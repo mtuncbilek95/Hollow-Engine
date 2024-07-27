@@ -43,26 +43,6 @@ namespace Hollow
 
 		ImGuiStyle& style = ImGui::GetStyle();
 
-		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0333f, 0.0568f, 0.0921f, 1.f);
-		style.Colors[ImGuiCol_Border] = ImVec4(0.0333f, 0.0568f, 0.0921f, 1.f);
-		style.Colors[ImGuiCol_TitleBg] = ImVec4(0.1235f, 0.1431f, 0.1745f, 1.f);
-		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.1235f, 0.1431f, 0.1745f, 1.f);
-		style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-		style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.1235f, 0.1431f, 0.1745f, 1.f);
-		style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_Button] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_Header] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-		style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.9f, 0.72745f, 0.31176f, 1.f);
-
 		String path = PlatformAPI::GetAPI()->GetEngineSourcePath() + "Resources/Fonts/Poppins/Regular.ttf";
 		io.Fonts->AddFontFromFileTTF(path.c_str(), 24.f);
 
