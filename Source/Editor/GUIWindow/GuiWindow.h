@@ -15,6 +15,13 @@ namespace Hollow
 		virtual void OnPaint() = 0;
 		virtual void OnClose() = 0;
 
+		const String& GetWindowName() const { return mWindowName; }
+		const Vec2f& GetPosition() const { return mPosition; }
+		const Vec2f& GetWindowSize() const { return mWindowSize; }
+
+		bool IsOpen() const { return mIsOpen; }
+		bool IsDirty() const { return mIsDirty; }
+
 	protected:
 		String mWindowName;
 		Vec2f mPosition;
@@ -22,7 +29,5 @@ namespace Hollow
 
 		bool mIsOpen;
 		bool mIsDirty;
-		bool mIsFocused;
-		bool mIsHovered;
 	};
 }

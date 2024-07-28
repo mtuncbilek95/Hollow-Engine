@@ -34,9 +34,26 @@ namespace Hollow
 			return nullptr;
 		}
 
+		void UnregisterGuiWindow(const String& windowName)
+		{
+			for (auto it = mGuiWindows.begin(); it != mGuiWindows.end();)
+			{
+				if ((*it)->GetWindowName() == windowName)
+					it = mGuiWindows.erase(it);
+				else
+					++it;
+			}
+
+			CORE_LOG(HE_ERROR, "%s GuiWindow has not been found!", windowName.c_str());
+		}
+
 		DArray<SharedPtr<GuiWindow>>& GetGuiWindows() { return mGuiWindows; }
+
+		bool IsRequestQuit() { return mRequestQuit; }
+		void RequestQuit() { mRequestQuit = true; }
 
 	private:
 		DArray<SharedPtr<GuiWindow>> mGuiWindows;
+		bool mRequestQuit = false;
 	};
 }

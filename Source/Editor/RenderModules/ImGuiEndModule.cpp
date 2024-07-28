@@ -28,8 +28,6 @@ namespace Hollow
 
 	void ImGuiEndModule::Update() noexcept
 	{
-		ImGui::ShowStyleEditor(); // Test
-
 		ImGui::Render();
 
 		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

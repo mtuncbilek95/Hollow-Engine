@@ -51,27 +51,36 @@ namespace Hollow
 	{
 #if defined(HOLLOW_PLATFORM_WINDOWS)
 		HANDLE hFile;
-
-		// Check if the file exists
-		if(Exists(path))
-			hFile = CreateFileA(path.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-		else
-			hFile = CreateFileA(path.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		hFile = CreateFileA(path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 		// Check if the file was created
-		if (hFile == INVALID_HANDLE_VALUE || hFile == NULL)
+		if (hFile == INVALID_HANDLE_VALUE)
 			return false;
 
 		// Set the file pointer to the offset
-		SetFilePointer(hFile, offset, NULL, FILE_BEGIN);
+		if (SetFilePointer(hFile, static_cast<LONG>(offset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR) {
+			CloseHandle(hFile);
+			return false;
+		}
 
 		// Write the data to the file
 		DWORD bytesWritten;
-		const bool result = WriteFile(hFile, data.c_str(), data.size(), &bytesWritten, NULL);
+		DWORD dataSize = static_cast<DWORD>(data.size());
+
+		if (dataSize != data.size()) {
+			CloseHandle(hFile);
+			return false;
+		}
+
+		if (!WriteFile(hFile, data.data(), dataSize, &bytesWritten, nullptr) || bytesWritten != dataSize)
+		{
+			CloseHandle(hFile);
+			return false;
+		}
 
 		// Close the file
 		CloseHandle(hFile);
-		return result;
+		return true;
 #else
 		return false;
 #endif
@@ -105,7 +114,7 @@ namespace Hollow
 #else
 		return false;
 #endif
-	}
+}
 
 	bool Win32File::Read(const String& path, String& contentOut, const u64 startByte, const u64 endByte)
 	{
@@ -298,7 +307,7 @@ namespace Hollow
 		// Get the name of the file
 		String name = path;
 		// find the last slash as '/' or '\'
-		size_t lastSlash = name.find_last_of("/\\"); 
+		size_t lastSlash = name.find_last_of("/\\");
 		if (lastSlash != String::npos)
 			name = name.substr(lastSlash + 1);
 

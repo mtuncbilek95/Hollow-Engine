@@ -5,20 +5,15 @@
 
 namespace Hollow
 {
-	class EDITOR_API MenuBar;
-
-	class EDITOR_API DockWindow : public GuiWindow
+	class EDITOR_API ContentWindow : public GuiWindow
 	{
 	public:
-		DockWindow();
-		~DockWindow() override = default;
+		ContentWindow();
+		~ContentWindow() override = default;
 
 		virtual void OnInitialize() override;
 		virtual void OnUpdate() override;
 		virtual void OnPaint() override;
 		virtual void OnClose() override;
-
-	private:
-		SharedPtr<MenuBar> mMenuBar;
 	};
 }

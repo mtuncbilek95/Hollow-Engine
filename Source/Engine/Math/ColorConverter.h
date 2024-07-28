@@ -2,6 +2,10 @@
 
 #include <Engine/Core/Core.h>
 
+#include <ostream>
+#include <iomanip>
+#include <sstream>
+
 namespace Hollow
 {
 	namespace Color
@@ -20,11 +24,13 @@ namespace Hollow
 		// Convert RGB to Hex
 		static String RGB_FToHex(const Vec4f& color)
 		{
-			String hexString = "#";
-			hexString += std::to_string(static_cast<int>(color.x * 255));
-			hexString += std::to_string(static_cast<int>(color.y * 255));
-			hexString += std::to_string(static_cast<int>(color.z * 255));
-			return hexString;
+			std::ostringstream hexStream;
+			hexStream << "#"
+				<< std::setfill('0') << std::setw(2) << std::hex << (int)(color.x * 255)
+				<< std::setfill('0') << std::setw(2) << std::hex << (int)(color.y * 255)
+				<< std::setfill('0') << std::setw(2) << std::hex << (int)(color.z * 255)
+				<< std::setfill('0') << std::setw(2) << std::hex << (int)(color.w * 255);
+			return hexStream.str();
 		}
 
 		static Vec4s HexToRGB_B(const String& hexString)
