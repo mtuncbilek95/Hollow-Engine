@@ -5,6 +5,8 @@
 
 #include <imgui.h>
 
+#include <Engine/Math/ColorConverter.h>
+
 namespace Hollow
 {
 
@@ -28,12 +30,42 @@ namespace Hollow
 			{
 				if (ImGui::MenuItem("New Level"))
 				{
-					// Do something
+
+				}
+				ImGui::SameLine();
+				ImGui::TextDisabled("(?)");
+
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::TextUnformatted("Create a new empty level. You can also use");
+					Vec4f color = Color::HexToRGB_F("#FED1524");
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(color.x, color.y, color.z, 1.0f));
+					ImGui::TextUnformatted("Ctrl+Alt+N");
+					ImGui::PopStyleColor();
+					ImGui::SameLine();
+					ImGui::TextUnformatted("to create with shortcut");
+					ImGui::EndTooltip();
 				}
 
 				if (ImGui::MenuItem("Open Level"))
 				{
 					// Do something
+				}
+				ImGui::SameLine();
+				ImGui::TextDisabled("(?)");
+
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::TextUnformatted("Open an existing level. You can also use");
+					Vec4f color = Color::HexToRGB_F("#FED1524");
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(color.x, color.y, color.z, 1.0f));
+					ImGui::TextUnformatted("Ctrl+Alt+O");
+					ImGui::PopStyleColor();
+					ImGui::SameLine();
+					ImGui::TextUnformatted("to open with shortcut");
+					ImGui::EndTooltip();
 				}
 
 				if (ImGui::MenuItem("Save Level"))
@@ -76,6 +108,15 @@ namespace Hollow
 				if (ImGui::MenuItem("Editor Style Layout"))
 				{
 					ImGuiWindowAPI::GetAPI()->RegisterGuiWindow<StyleWindow>();
+				}
+				ImGui::SameLine();
+				ImGui::TextDisabled("(?)");
+
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::TextUnformatted("Editor's layout configuration panel for\nthose who want to edit the layout\nfor their preferences");
+					ImGui::EndTooltip();
 				}
 
 				ImGui::EndMenu();

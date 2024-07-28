@@ -21,7 +21,6 @@ namespace Hollow
 		mImGuiAPI->RegisterGuiWindow<PropertyWindow>();
 		mImGuiAPI->RegisterGuiWindow<SceneWindow>();
 		mImGuiAPI->RegisterGuiWindow<WorldWindow>();
-
 	}
 
 	void ImGuiWindowModule::Start() noexcept

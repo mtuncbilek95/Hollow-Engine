@@ -36,7 +36,7 @@ namespace Hollow
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
 
-			String path = PlatformAPI::GetAPI()->GetEngineSourcePath() + "Config/EditorStyle.json";
+			String path = PlatformAPI::GetAPI()->GetEngineSourcePath() + "Config/DefaultEditor.json";
 			String json;
 
 			PlatformFile::Read(path, json);

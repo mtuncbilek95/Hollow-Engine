@@ -23,7 +23,6 @@ namespace Hollow::ShaderCompiler
 		options.SetGenerateDebugInfo();
 		options.SetOptimizationLevel(shaderc_optimization_level_performance);
 		options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_3);
-		options.SetInvertY(true);
 
 		shaderc::PreprocessedSourceCompilationResult preResult = shaderCompiler.PreprocessGlsl(sourceCode, shaderc_glsl_infer_from_source, Entry.c_str(), options);
 		CORE_ASSERT(preResult.GetCompilationStatus() == shaderc_compilation_status_success, "SPIRV", "Failed to process shader: %s", preResult.GetErrorMessage().c_str());

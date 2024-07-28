@@ -1,6 +1,4 @@
 function(SetupConfig)
-	set_property(GLOBAL PROPERTY MSVC_RUNTIME_LIBRARY  "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-
 	if(WIN32)
 		add_compile_definitions(HOLLOW_PLATFORM_WINDOWS)
 	elseif(UNIX)
