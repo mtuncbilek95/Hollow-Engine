@@ -7,10 +7,13 @@
 
 #include <Windows.h>
 #include <vulkan/vulkan_win32.h>
-#define VK_USE_PLATFORM_WIN32_KHR
 #endif
 
+#if defined(HOLLOW_DEBUG)
 #define EXTENSION_SIZE 5
+#else
+#define EXTENSION_SIZE 2
+#endif
 
 namespace Hollow
 {
@@ -63,10 +66,10 @@ namespace Hollow
 		extensions[0] = { VK_KHR_SURFACE_EXTENSION_NAME, false };
 		extensions[1] = { VK_KHR_WIN32_SURFACE_EXTENSION_NAME, false };
 
-#if defined(HOLLOW_PLATFORM_WINDOWS)
-		extensions[2] = { VK_EXT_DEBUG_UTILS_EXTENSION_NAME, false };
-#endif // HOLLOW_PLATFORM_WINDOWS
 #if defined(HOLLOW_DEBUG)
+		extensions[2] = { VK_EXT_DEBUG_UTILS_EXTENSION_NAME, false };
+#if defined(HOLLOW_PLATFORM_WINDOWS)
+#endif // HOLLOW_PLATFORM_WINDOWS
 		extensions[3] = { VK_EXT_DEBUG_REPORT_EXTENSION_NAME, false };
 		extensions[4] = { VK_EXT_DEBUG_UTILS_EXTENSION_NAME, false };
 #endif // HOLLOW_DEBUG
@@ -123,7 +126,6 @@ namespace Hollow
 #if defined(HOLLOW_DEBUG)
 		layers.push_back("VK_LAYER_KHRONOS_validation");
 		layers.push_back("VK_LAYER_LUNARG_screenshot");
-		layers.push_back("VK_LAYER_LUNARG_monitor");
 #endif // HOLLOW_DEBUG
 
 		// Create the application info

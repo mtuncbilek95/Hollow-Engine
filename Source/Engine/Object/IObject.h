@@ -2,9 +2,6 @@
 
 #include <Engine/Core/Core.h>
 
-#include <Engine/Platform/PlatformGuid.h>
-#include <Engine/Core/Guid.h>
-
 namespace Hollow
 {
 	class ENGINE_API IObject : public std::enable_shared_from_this<IObject>

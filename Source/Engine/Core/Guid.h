@@ -20,6 +20,9 @@ namespace Hollow
 
 		String ToString();
 
+		bool operator==(const Guid& other) const;
+		bool operator!=(const Guid& other) const;
+
 	private:
 		u32 mA;
 		u16 mB;

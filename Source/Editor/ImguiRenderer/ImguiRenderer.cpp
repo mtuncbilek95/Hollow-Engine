@@ -3,6 +3,7 @@
 #include <Engine/Window/WindowAPI.h>
 #include <Engine/Graphics/API/GraphicsAPI.h>
 #include <Engine/Platform/API/PlatformAPI.h>
+#include <Engine/Platform/PlatformMonitor.h>
 
 #include <backends/imgui_impl_vulkan.h>
 #include <backends/imgui_impl_glfw.h>
@@ -11,6 +12,8 @@
 #include <Engine/Vulkan/Device/VDevice.h>
 #include <Engine/Vulkan/Queue/VQueue.h>
 #include <Engine/Vulkan/Descriptor/VDescriptorPool.h>
+
+static const VkFormat format[1] = { VK_FORMAT_R8G8B8A8_UNORM };
 
 namespace Hollow
 {
@@ -37,14 +40,22 @@ namespace Hollow
 
 		mContext = ImGui::CreateContext();
 		ImGui::SetCurrentContext(mContext);
+
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+		io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;
+		io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
 
 		ImGui::StyleColorsDark();
 
 		ImGuiStyle& style = ImGui::GetStyle();
+		int x = PlatformMonitor::GetPrimaryMonitor().GetMonitorResolution().y;
+		float fontSize = x * 24.f / 1440.f;
 
 		String path = PlatformAPI::GetAPI()->GetEngineSourcePath() + "Resources/Fonts/Poppins/Regular.ttf";
-		io.Fonts->AddFontFromFileTTF(path.c_str(), 24.f);
+		io.Fonts->AddFontFromFileTTF(path.c_str(), fontSize);
 
 		InitVk();
 	}
@@ -75,7 +86,6 @@ namespace Hollow
 		initInfo.MinAllocationSize = 1024 * 1024;
 		initInfo.UseDynamicRendering = true;
 
-		const VkFormat format[] = { VK_FORMAT_R8G8B8A8_UNORM };
 		VkPipelineRenderingCreateInfo renderingInfo = {};
 		renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
 		renderingInfo.colorAttachmentCount = 1;
@@ -87,10 +97,10 @@ namespace Hollow
 		initInfo.PipelineRenderingCreateInfo = renderingInfo;
 		initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
-		ImGui_ImplVulkan_Init(&initInfo);
-
 		GLFWwindow* window = WindowAPI::GetAPI()->GetDefaultWindow()->GetGLFWHandle();
 		ImGui_ImplGlfw_InitForVulkan(window, true);
+
+		ImGui_ImplVulkan_Init(&initInfo);
 
 		CmdPoolDesc poolDesc = {};
 		poolDesc.PoolType = CmdPoolType::Graphics;

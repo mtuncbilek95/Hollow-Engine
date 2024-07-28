@@ -5,6 +5,8 @@
 
 #include "imgui.h"
 
+#include <vulkan/vulkan.h>
+
 namespace Hollow
 {
 	class ENGINE_API Fence;

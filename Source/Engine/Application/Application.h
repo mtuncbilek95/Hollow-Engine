@@ -19,7 +19,6 @@ namespace Hollow
 			pModule->SetOwnerApplication(GetSharedPtrAs<Application>());
 			pModule->SetState(ApplicationModuleState::NeedValidation);
 			mTotalModules.push_back(pModule);
-			CORE_LOG(HE_INFO, "Application", "Module %s registered", pModule->GetModuleName().c_str());
 		}
 
 		void Run();

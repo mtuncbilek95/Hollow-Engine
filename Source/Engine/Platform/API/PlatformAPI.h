@@ -25,8 +25,22 @@ namespace Hollow
 					mEngineSourcePath = enginePath.substr(0, pos + searchString.length()) + "\\";
 			}
 
+			// Change \\ to / for cross-platform compatibility
+			std::replace(mEngineSourcePath.begin(), mEngineSourcePath.end(), '\\', '/');
+
 			if (argc > 1)
+			{
 				mProjectPath = argv[1];
+				std::replace(mProjectPath.begin(), mEngineSourcePath.end(), '\\', '/');
+			}
+
+			if (!mEngineSourcePath.empty())
+				CORE_LOG(HE_WARNING, "Engine source path has been set to: %s", mEngineSourcePath.c_str());
+
+			if (!mProjectPath.empty())
+				CORE_LOG(HE_WARNING, "Project path has been set to: %s", mProjectPath.c_str());
+			else
+				CORE_LOG(HE_ERROR, "No project path has been set!");
 		}
 
 		const String& GetEngineSourcePath() const { return mEngineSourcePath; }

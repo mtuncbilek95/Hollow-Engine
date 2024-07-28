@@ -28,9 +28,16 @@ namespace Hollow
 
 	void ImGuiEndModule::Update() noexcept
 	{
-		ImGui::ShowDemoWindow(); // Test
+		ImGui::ShowStyleEditor(); // Test
 
 		ImGui::Render();
+
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+		}
+
 		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), mCmdBuffer.lock()->GetSharedPtrAs<VCmdBuffer>()->GetVkCmdBuffer());
 	}
 

@@ -27,4 +27,14 @@ namespace Hollow
 		std::snprintf(buffer, sizeof(buffer), "%08x-%04x-%04x-%04x-%012llx", mA, mB, mC, (u16)mD, mD >> 16);
 		return buffer;
 	}
+
+	bool Guid::operator==(const Guid& other) const
+	{
+		return other.mA == mA && other.mB == mB && other.mC == mC && other.mD == mD;
+	}
+
+	bool Guid::operator!=(const Guid& other) const
+	{
+		return !(other == *this);
+	}
 }

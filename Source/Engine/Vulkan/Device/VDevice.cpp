@@ -99,6 +99,7 @@ namespace Hollow
 		extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 		extensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
 		extensions.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+		extensions.push_back(VK_EXT_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_EXTENSION_NAME);
 
 		//Check if the device supports the extensions
 		u32 extensionCount = 0;
@@ -110,10 +111,15 @@ namespace Hollow
 		VkPhysicalDeviceFeatures deviceFeatures;
 		vkGetPhysicalDeviceFeatures(mAdapter, &deviceFeatures);
 
+		VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT dynamicRenderingUnusedAttachmentsFeatures = {};
+		dynamicRenderingUnusedAttachmentsFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_FEATURES_EXT;
+		dynamicRenderingUnusedAttachmentsFeatures.pNext = nullptr;
+		dynamicRenderingUnusedAttachmentsFeatures.dynamicRenderingUnusedAttachments = VK_TRUE;
+
 		// Add bindless descriptor support
 		VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures = {};
 		descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
-		descriptorIndexingFeatures.pNext = nullptr;
+		descriptorIndexingFeatures.pNext = &dynamicRenderingUnusedAttachmentsFeatures;
 		descriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
 		descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
 		descriptorIndexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
