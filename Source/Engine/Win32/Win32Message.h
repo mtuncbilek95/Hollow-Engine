@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Win32Message final
+	class Win32Message final
 	{
 	public:
 		static void ShowMessage(const String& title, const String& message,const i32 flags);

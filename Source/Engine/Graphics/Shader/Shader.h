@@ -6,8 +6,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsDevice;
-	class ENGINE_API Shader : public DeviceObject
+	class GraphicsDevice;
+	class Shader : public DeviceObject
 	{
 	public:
 		Shader(const ShaderDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),

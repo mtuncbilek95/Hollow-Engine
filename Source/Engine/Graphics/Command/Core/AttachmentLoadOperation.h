@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API AttachmentLoadOperation : u8
+	enum class AttachmentLoadOperation : u8
 	{
 		Load,
 		Clear,

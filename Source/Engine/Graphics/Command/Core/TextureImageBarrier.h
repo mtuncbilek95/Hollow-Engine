@@ -9,7 +9,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API TextureImageBarrier
+	struct TextureImageBarrier
 	{
 		GraphicsMemoryAccessFlags SourceAccessMask;
 		TextureLayout OldLayout;

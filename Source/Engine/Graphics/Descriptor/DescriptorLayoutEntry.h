@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API DescriptorLayoutEntry
+	struct DescriptorLayoutEntry
 	{
 		u32 Binding; 
 		DescriptorType Type;

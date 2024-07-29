@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API PlatformGuid final
+	class PlatformGuid final
 	{
 	public:
 		static void GenerateGuid(Guid& guidOut);

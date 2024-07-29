@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-    enum class ENGINE_API StencilOperation : u8
+    enum class StencilOperation : u8
     {
         Keep,
         Zero,

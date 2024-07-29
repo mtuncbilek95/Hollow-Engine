@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VFence : public Fence
+	class VDevice;
+	class VFence : public Fence
 	{
 	public:
 		VFence(bool bSignalled, SharedPtr<VDevice> pDevice);

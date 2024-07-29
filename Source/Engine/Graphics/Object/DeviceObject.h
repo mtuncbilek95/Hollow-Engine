@@ -5,8 +5,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsDevice;
-	class ENGINE_API DeviceObject : public IObject
+	class GraphicsDevice;
+	class DeviceObject : public IObject
 	{
 	public:
 		DeviceObject(WeakPtr<GraphicsDevice> pDevice) : mDevice(pDevice) {}

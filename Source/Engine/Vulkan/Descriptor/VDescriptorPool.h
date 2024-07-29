@@ -8,7 +8,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDescriptorPool final : public DescriptorPool
+	class VDescriptorPool final : public DescriptorPool
 	{
 	public:
 		VDescriptorPool(const DescriptorPoolDesc& desc, const WeakPtr<VDevice>& pDevice);

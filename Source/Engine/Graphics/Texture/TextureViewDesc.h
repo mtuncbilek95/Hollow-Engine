@@ -6,8 +6,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API TextureImage;
-	struct ENGINE_API TextureViewDesc
+	class TextureImage;
+	struct TextureViewDesc
 	{
 		u8 MipLevel;
 		u8 MipCount;

@@ -11,7 +11,7 @@ namespace Hollow
 	using EventBlock = std::function<void(const T&)>;
 
 	template<typename EventType>
-	class ENGINE_API EventHandler
+	class EventHandler
 	{
 	public:
 		EventHandler() = default;

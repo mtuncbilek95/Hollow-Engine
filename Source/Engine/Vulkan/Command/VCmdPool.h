@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VCmdPool : public CmdPool
+	class VDevice;
+	class VCmdPool : public CmdPool
 	{
 	public:
 		VCmdPool(const CmdPoolDesc& desc, const WeakPtr<VDevice> pDevice);

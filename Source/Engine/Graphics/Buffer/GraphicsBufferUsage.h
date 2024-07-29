@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API GraphicsBufferUsage : u8
+	enum class GraphicsBufferUsage : u8
 	{
 		Vertex = 1 << 0,
 		Index = 1 << 1,

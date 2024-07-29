@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API SamplerMapMode : u8
+	enum class SamplerMapMode : u8
 	{
 		Nearest,
 		Linear

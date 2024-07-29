@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API PlatformPath final
+	class PlatformPath final
 	{
 	public:
 		static String GetExecutableDir();

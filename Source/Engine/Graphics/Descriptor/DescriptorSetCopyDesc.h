@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API DescriptorSetCopyDesc
+	struct DescriptorSetCopyDesc
 	{
 		DArray<DescriptorSetCopyEntry> Entries;
 	};

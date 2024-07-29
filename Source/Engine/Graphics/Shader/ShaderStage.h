@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API ShaderStage : u8
+	enum class ShaderStage : u8
 	{
 		Vertex = 1,
 		TessellationControl = 1 << 1,

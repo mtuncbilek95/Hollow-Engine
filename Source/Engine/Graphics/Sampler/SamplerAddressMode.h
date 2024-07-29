@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API SamplerAddressMode : u8
+	enum class SamplerAddressMode : u8
 	{
 		Repeat,
 		MirroredRepeat,

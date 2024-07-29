@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-    enum class ENGINE_API PipelineStageFlags : u32
+    enum class PipelineStageFlags : u32
     {
         TopOfPipe = 1 << 0,
         VertexInput = 1 << 1,

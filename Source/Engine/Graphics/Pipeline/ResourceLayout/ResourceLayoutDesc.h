@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-    struct ENGINE_API ResourceLayoutDesc
+    struct ResourceLayoutDesc
     {
         DArray<SharedPtr<DescriptorLayout>> ResourceLayouts;
     };

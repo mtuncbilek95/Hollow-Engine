@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API DescriptorPoolFlags : u8
+	enum class DescriptorPoolFlags : u8
 	{
 		None = 0,
 		FreeDescriptorSet = 1 << 0,

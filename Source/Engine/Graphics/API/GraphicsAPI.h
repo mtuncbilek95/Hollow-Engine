@@ -8,13 +8,13 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsInstance;
-	class ENGINE_API GraphicsDevice;
-	class ENGINE_API GraphicsQueue;
-	class ENGINE_API GraphicsMemory;
-	class ENGINE_API Swapchain;
+	class GraphicsInstance;
+	class GraphicsDevice;
+	class GraphicsQueue;
+	class GraphicsMemory;
+	class Swapchain;
 
-	class ENGINE_API GraphicsAPI : public API<GraphicsAPI>
+	class GraphicsAPI : public API<GraphicsAPI>
 	{
 		friend class GraphicsModule;
 	public:

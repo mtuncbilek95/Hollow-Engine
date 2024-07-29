@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API JobThread
+	class JobThread
 	{
 	public:
 		JobThread();

@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API DescriptorLayout : public DeviceObject
+	class DescriptorLayout : public DeviceObject
 	{
 	public:
 		DescriptorLayout(const DescriptorLayoutDesc& desc, const WeakPtr<GraphicsDevice> device) : DeviceObject(device), mEntries(desc.Entries) {}

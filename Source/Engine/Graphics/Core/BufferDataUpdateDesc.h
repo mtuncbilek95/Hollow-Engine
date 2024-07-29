@@ -9,7 +9,7 @@ namespace Hollow
 	 * @struct BufferDataUpdateDesc
 	 * @brief Mostly used to update the data of host buffer
 	 */
-	struct ENGINE_API BufferDataUpdateDesc
+	struct BufferDataUpdateDesc
 	{
 		MemoryBuffer Memory = {};
 		u32 OffsetInBytes = 0;

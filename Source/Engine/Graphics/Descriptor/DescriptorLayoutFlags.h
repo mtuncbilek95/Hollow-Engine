@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API DescriptorLayoutFlags : u8
+	enum class DescriptorLayoutFlags : u8
 	{
         None = 0,
         PushDescriptor = 1 << 0,

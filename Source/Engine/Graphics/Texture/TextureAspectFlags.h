@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API TextureAspectFlags : u8
+	enum class TextureAspectFlags : u8
 	{
 		Undefined = 0,
 		ColorAspect = 1 << 0,

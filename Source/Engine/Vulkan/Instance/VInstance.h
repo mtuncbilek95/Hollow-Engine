@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API VInstance : public GraphicsInstance
+	class VInstance : public GraphicsInstance
 	{
 	public:
 		VInstance(const GraphicsInstanceDesc& desc);

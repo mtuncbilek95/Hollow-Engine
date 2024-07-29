@@ -5,9 +5,9 @@
 
 namespace Hollow
 {
-	class EDITOR_API MenuBar;
+	class MenuBar;
 
-	class EDITOR_API DockWindow : public GuiWindow
+	class DockWindow : public GuiWindow
 	{
 	public:
 		DockWindow();

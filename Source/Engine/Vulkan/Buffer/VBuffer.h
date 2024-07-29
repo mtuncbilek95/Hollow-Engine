@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VBuffer : public GraphicsBuffer
+	class VDevice;
+	class VBuffer : public GraphicsBuffer
 	{
 	public:
 		VBuffer(const GraphicsBufferDesc& desc, SharedPtr<VDevice> pDevice);

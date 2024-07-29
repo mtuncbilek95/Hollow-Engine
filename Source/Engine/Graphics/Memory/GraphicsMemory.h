@@ -6,9 +6,9 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsMemory : public DeviceObject
+	class GraphicsMemory : public DeviceObject
 	{
-		struct ENGINE_API SubMemory
+		struct SubMemory
 		{
 			bool bOwned;
 			u64 SizeInBytes;

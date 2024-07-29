@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API LogicOperation : u8
+	enum class LogicOperation : u8
 	{
 		Clear,
 		Set,

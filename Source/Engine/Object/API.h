@@ -5,7 +5,7 @@
 namespace Hollow
 {
 	template<typename TObject>
-	class ENGINE_API API
+	class API
 	{
 	public:
 		virtual ~API() = default;

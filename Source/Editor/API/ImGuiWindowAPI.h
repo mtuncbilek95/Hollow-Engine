@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	class EDITOR_API ImGuiWindowAPI : public API<ImGuiWindowAPI>
+	class ImGuiWindowAPI : public API<ImGuiWindowAPI>
 	{
 		friend class GuiWindowModule;
 	public:

@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Monitor
+	class Monitor
 	{
 	public:
 		Monitor() = default;

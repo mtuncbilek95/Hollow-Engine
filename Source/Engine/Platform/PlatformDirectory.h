@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API PlatformDirectory final
+	class PlatformDirectory final
 	{
 	public:
 		static bool Exists(const String& path);

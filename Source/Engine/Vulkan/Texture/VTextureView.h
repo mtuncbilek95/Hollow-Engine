@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VTextureView : public TextureView
+	class VDevice;
+	class VTextureView : public TextureView
 	{
 	public:
 		VTextureView(const TextureViewDesc& desc, SharedPtr<VDevice> pDevice);

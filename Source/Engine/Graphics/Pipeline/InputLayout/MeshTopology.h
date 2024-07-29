@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API MeshTopology : u8
+	enum class MeshTopology : u8
 	{
 		PointList,
 		LineList,

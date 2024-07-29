@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API FaceCullMode : u8
+	enum class FaceCullMode : u8
 	{
 		None = 1,
 		Front = 2,

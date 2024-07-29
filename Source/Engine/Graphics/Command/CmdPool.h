@@ -10,7 +10,7 @@ namespace Hollow
 	 * @class CmdPool
 	 * @brief Abstract class for command pool
 	 */
-	class ENGINE_API CmdPool : public DeviceObject
+	class CmdPool : public DeviceObject
 	{
 	public:
 		CmdPool(const CmdPoolDesc& desc, const WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), mPoolType(desc.PoolType) {}

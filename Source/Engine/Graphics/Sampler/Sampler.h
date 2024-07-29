@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Sampler : public DeviceObject
+	class Sampler : public DeviceObject
 	{
 	public:
 		Sampler(const SamplerDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),

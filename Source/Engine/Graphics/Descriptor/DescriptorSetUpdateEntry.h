@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API DescriptorSetUpdateEntry
+	struct DescriptorSetUpdateEntry
 	{
 		WeakPtr<DeviceObject> pResource;
 		WeakPtr<DeviceObject> pSampler;

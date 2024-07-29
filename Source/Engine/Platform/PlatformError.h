@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API PlatformError final
+	class PlatformError final
 	{
 	public:
 		static String GetPlatformError();

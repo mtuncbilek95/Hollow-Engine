@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API GraphicsQueueDesc
+	struct GraphicsQueueDesc
 	{
 		GraphicsQueueType QueueType;
 		u32 QueueIndex;

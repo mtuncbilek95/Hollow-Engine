@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API MemoryOwnedBuffer final
+	class MemoryOwnedBuffer final
 	{
 	public:
 		MemoryOwnedBuffer();

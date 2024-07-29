@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API PlatformAPI : public API<PlatformAPI>
+	class PlatformAPI : public API<PlatformAPI>
 	{
 	public:
 		PlatformAPI() = default;

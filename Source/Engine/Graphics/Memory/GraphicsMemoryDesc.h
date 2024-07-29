@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API GraphicsMemoryDesc
+	struct GraphicsMemoryDesc
 	{
 		GraphicsMemoryType MemoryType;
 		u64 MemorySize;

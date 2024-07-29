@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VInstance;
-	class ENGINE_API VDevice : public GraphicsDevice
+	class VInstance;
+	class VDevice : public GraphicsDevice
 	{
 		using WeakInstance = WeakPtr<VInstance>;
 

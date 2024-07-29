@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API WindowMode : i8
+	enum class WindowMode : i64
 	{
 		Windowed = 0,
 		Borderless = 1,

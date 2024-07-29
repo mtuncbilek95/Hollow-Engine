@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-    enum class ENGINE_API InputBindingStepRate : u8
+    enum class InputBindingStepRate : u8
     {
         Vertex,
         Instance

@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API GraphicsQueueType
+	enum class GraphicsQueueType
 	{
 		Graphics,
 		Compute,

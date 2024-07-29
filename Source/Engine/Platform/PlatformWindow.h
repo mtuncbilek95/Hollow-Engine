@@ -15,7 +15,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API PlatformWindow : public IObject
+	class PlatformWindow : public IObject
 	{
 		friend class GraphicsDevice;
 		friend class WindowAPI;

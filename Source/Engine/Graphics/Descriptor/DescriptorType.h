@@ -2,7 +2,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API DescriptorType : u8
+	enum class DescriptorType : u8
 	{
 		Sampler,
 		CombinedImageSampler,

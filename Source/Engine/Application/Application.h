@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Application : public IObject
+	class Application : public IObject
 	{
 	public:
 		Application() = default;

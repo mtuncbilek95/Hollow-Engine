@@ -6,7 +6,7 @@ namespace Hollow
 {
 	// Base class for the event types. If you need to create a new event type, you should inherit from this class.
 	template<typename Event0>
-	class ENGINE_API Event
+	class Event
 	{
 		typedef Event0 MainEvent;
 	public:

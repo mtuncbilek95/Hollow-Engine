@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API GraphicsMemoryAccessFlags : u32
+	enum class GraphicsMemoryAccessFlags : u32
 	{
 		Unknown = 0,
 		IndexRead = 1 << 0,

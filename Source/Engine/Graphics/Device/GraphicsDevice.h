@@ -24,25 +24,25 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsQueue;
-	class ENGINE_API GraphicsMemory;
-	class ENGINE_API TextureImage;
-	class ENGINE_API TextureView;
-	class ENGINE_API Sampler;
-	class ENGINE_API GraphicsBuffer;
-	class ENGINE_API Shader;
-	class ENGINE_API Swapchain;
-	class ENGINE_API DescriptorLayout;
-	class ENGINE_API DescriptorPool;
-	class ENGINE_API DescriptorSet;
-	class ENGINE_API Pipeline;
-	class ENGINE_API Fence;
-	class ENGINE_API Semaphore;
-	class ENGINE_API CmdPool;
-	class ENGINE_API CmdBuffer;
+	class GraphicsQueue;
+	class GraphicsMemory;
+	class TextureImage;
+	class TextureView;
+	class Sampler;
+	class GraphicsBuffer;
+	class Shader;
+	class Swapchain;
+	class DescriptorLayout;
+	class DescriptorPool;
+	class DescriptorSet;
+	class Pipeline;
+	class Fence;
+	class Semaphore;
+	class CmdPool;
+	class CmdBuffer;
 
-	class ENGINE_API GraphicsInstance;
-	class ENGINE_API GraphicsDevice : public IObject
+	class GraphicsInstance;
+	class GraphicsDevice : public IObject
 	{
 		using WeakInstance = WeakPtr<GraphicsInstance>;
 

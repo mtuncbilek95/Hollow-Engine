@@ -5,14 +5,14 @@
 
 namespace Hollow
 {
-	struct ENGINE_API PushConstantRange
+	struct PushConstantRange
 	{
 		ShaderStage Stage;
 		u32 Offset;
 		u32 Size;
 	};
 
-	struct ENGINE_API PushConstantDesc
+	struct PushConstantDesc
 	{
 		DArray<PushConstantRange> PushConstantRanges;
 	};

@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API GraphicsMemoryType : u8
+	enum class GraphicsMemoryType : u8
 	{
 		DeviceLocal = 1 << 0,
 		HostVisible = 1 << 1,

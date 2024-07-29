@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Win32Error final
+	class Win32Error final
 	{
 	public:
 		static String GetPlatformError();

@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VQueue : public GraphicsQueue
+	class VDevice;
+	class VQueue : public GraphicsQueue
 	{
 	public:
 		VQueue(const GraphicsQueueDesc& desc, VkQueue queue, SharedPtr<GraphicsDevice> pDevice);

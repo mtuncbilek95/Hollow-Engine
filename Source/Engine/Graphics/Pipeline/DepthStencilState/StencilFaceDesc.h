@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-    struct ENGINE_API StencilFaceDesc
+    struct StencilFaceDesc
     {
         StencilOperation FailOperation;
         StencilOperation PassOperation;

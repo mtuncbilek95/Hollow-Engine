@@ -5,14 +5,14 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsDevice;
-	class ENGINE_API Swapchain;
-	class ENGINE_API Fence;
-	class ENGINE_API GraphicsQueue;
-	class ENGINE_API CmdBuffer;
-	class ENGINE_API CmdPool;
+	class GraphicsDevice;
+	class Swapchain;
+	class Fence;
+	class GraphicsQueue;
+	class CmdBuffer;
+	class CmdPool;
 
-	class EDITOR_API ImGuiBeginModule : public ApplicationModule
+	class ImGuiBeginModule : public ApplicationModule
 	{
 	public:
 		ImGuiBeginModule();

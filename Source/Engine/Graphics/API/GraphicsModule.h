@@ -5,8 +5,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsAPI;
-	class ENGINE_API GraphicsModule : public ApplicationModule
+	class GraphicsAPI;
+	class GraphicsModule : public ApplicationModule
 	{
 	public:
 		GraphicsModule();

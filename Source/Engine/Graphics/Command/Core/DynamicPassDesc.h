@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API DynamicPassDesc
+	struct DynamicPassDesc
 	{
 		Vec2u Extent;
 		Vec2i Offset;

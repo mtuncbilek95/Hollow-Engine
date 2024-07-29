@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API AttachmentStoreOperation : u8
+	enum class AttachmentStoreOperation : u8
 	{
 		Store,
 		DontCare,

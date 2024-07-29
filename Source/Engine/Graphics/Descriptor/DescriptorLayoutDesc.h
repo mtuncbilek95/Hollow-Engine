@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API DescriptorLayoutDesc
+	struct DescriptorLayoutDesc
 	{
 		DArray<DescriptorLayoutEntry> Entries;
 		DescriptorLayoutFlags Flags;

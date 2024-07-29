@@ -5,8 +5,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsDevice;
-	class ENGINE_API Fence : public DeviceObject
+	class GraphicsDevice;
+	class Fence : public DeviceObject
 	{
 	public:
 		Fence(bool bSignalled, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), mSignalled(bSignalled) {}

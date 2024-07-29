@@ -5,8 +5,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsMemory;
-	struct ENGINE_API GraphicsBufferDesc
+	class GraphicsMemory;
+	struct GraphicsBufferDesc
 	{
 		u64 BlockSize;
 		u64 BlockLength;

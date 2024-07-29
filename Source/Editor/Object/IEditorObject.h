@@ -8,7 +8,7 @@
 namespace Hollow
 {
 	// Interface for all gui window objects
-	class ENGINE_API IEditorObject : public std::enable_shared_from_this<IEditorObject>
+	class IEditorObject : public std::enable_shared_from_this<IEditorObject>
 	{
 	public:
 		IEditorObject() { PlatformGuid::GenerateGuid(mGuid); }

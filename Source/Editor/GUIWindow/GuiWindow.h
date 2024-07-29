@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class EDITOR_API GuiWindow : public IEditorObject
+	class GuiWindow : public IEditorObject
 	{
 	public:
 		virtual ~GuiWindow() = default;

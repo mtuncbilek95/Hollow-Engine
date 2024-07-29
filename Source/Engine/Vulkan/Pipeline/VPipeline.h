@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VPipeline final : public Pipeline
+	class VDevice;
+	class VPipeline final : public Pipeline
 	{
 	public:
 		VPipeline(const GraphicsPipelineDesc& desc, WeakPtr<VDevice> pDevice);

@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-    struct ENGINE_API RasterizerStateDesc
+    struct RasterizerStateDesc
     {
         bool bDepthBiasEnabled;
         f32 DepthBiasClamp;

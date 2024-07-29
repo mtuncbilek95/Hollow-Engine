@@ -7,7 +7,7 @@
 namespace Hollow
 {
 	class GraphicsMemory;
-	class ENGINE_API GraphicsBuffer : public DeviceObject
+	class GraphicsBuffer : public DeviceObject
 	{
 	public:
 		GraphicsBuffer(const GraphicsBufferDesc& desc, const SharedPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),

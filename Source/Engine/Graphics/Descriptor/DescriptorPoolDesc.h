@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API DescriptorPoolDesc
+	struct DescriptorPoolDesc
 	{
 		u64 MaxSets;
 		DArray<DescriptorPoolSize> PoolSizes;

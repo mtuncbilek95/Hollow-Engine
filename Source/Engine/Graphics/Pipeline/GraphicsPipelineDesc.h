@@ -15,7 +15,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API GraphicsPipelineDesc
+	struct GraphicsPipelineDesc
 	{
         BlendStateDesc BlendState;
         DepthStencilStateDesc DepthStencilState;

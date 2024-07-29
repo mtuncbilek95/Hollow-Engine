@@ -2,7 +2,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API ApplicationModuleState
+	enum class ApplicationModuleState
 	{
 		NeedValidation,
 		Validated,

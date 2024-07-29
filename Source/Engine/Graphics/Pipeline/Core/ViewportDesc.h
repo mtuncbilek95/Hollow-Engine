@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API ViewportDesc
+	struct ViewportDesc
 	{
 		Vec2u ViewportSize;
 		Vec2u OffsetSize;

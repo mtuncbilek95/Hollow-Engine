@@ -6,8 +6,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsDevice;
-	class ENGINE_API TextureView : public DeviceObject
+	class GraphicsDevice;
+	class TextureView : public DeviceObject
 	{
 	public:
 		TextureView(const TextureViewDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),

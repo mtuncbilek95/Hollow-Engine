@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API DescriptorUpdateDesc
+	struct DescriptorUpdateDesc
 	{
 		DArray<DescriptorSetUpdateEntry> Entries;
 	};

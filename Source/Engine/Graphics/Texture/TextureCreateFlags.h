@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API TextureCreateFlags : u32
+	enum class TextureCreateFlags : u32
 	{
 		Undefined = 0,
 		SparseBinding = 1 << 0,

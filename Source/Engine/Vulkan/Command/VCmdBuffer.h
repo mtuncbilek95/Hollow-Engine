@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
+	class VDevice;
 	class VCmdBuffer : public CmdBuffer
 	{
 	public:

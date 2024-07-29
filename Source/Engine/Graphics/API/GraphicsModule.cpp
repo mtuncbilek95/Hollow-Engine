@@ -32,7 +32,6 @@ namespace Hollow
 
 	bool GraphicsModule::OnInitialize() noexcept
 	{
-
 		GraphicsInstanceDesc instanceDesc = {};
 		instanceDesc.AppName = "Editor"; // TODO: Get from config
 		instanceDesc.EngineName = "Hollow"; // TODO: Get from config

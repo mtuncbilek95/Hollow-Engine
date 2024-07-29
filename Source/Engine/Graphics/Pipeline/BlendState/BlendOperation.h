@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-    enum class ENGINE_API BlendOperation : u8
+    enum class BlendOperation : u8
     {
         Add,
         Subtract,

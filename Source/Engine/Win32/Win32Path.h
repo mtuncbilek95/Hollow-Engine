@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Win32Path final
+	class Win32Path final
 	{
 	public:
 		static String GetExecutableDir();

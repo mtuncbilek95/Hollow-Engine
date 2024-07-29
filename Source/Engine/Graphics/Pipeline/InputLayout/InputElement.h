@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-    struct ENGINE_API InputElement
+    struct InputElement
     {
         TextureFormat Format;
         InputElementSemantic Semantic;

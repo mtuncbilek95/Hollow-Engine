@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	enum ENGINE_API MessageBoxFlags
+	enum MessageBoxFlags
 	{
 		Mb_Ok = 0x00000000L,
 		Mb_OkCancel = 0x00000001L,
@@ -19,7 +19,7 @@ namespace Hollow
 		Mb_IconQuestion = 0x00000020L,
 	};
 
-	class ENGINE_API PlatformMessage final
+	class PlatformMessage final
 	{
 	public:
 		static void ShowMessage(const String& title, const String& message, const i32 flags);

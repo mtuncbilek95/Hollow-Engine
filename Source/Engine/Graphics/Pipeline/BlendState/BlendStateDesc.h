@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-    struct ENGINE_API BlendStateDesc
+    struct BlendStateDesc
     {
         bool bLogicOperationEnabled;
         LogicOperation LogicOperation;

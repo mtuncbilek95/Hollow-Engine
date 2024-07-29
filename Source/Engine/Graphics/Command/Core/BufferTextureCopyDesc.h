@@ -8,7 +8,7 @@ namespace Hollow
 	 * @struct BufferTextureCopyDesc
 	 * @brief Mostly used for copying between host texture data and device buffers
 	 */
-	struct ENGINE_API BufferTextureCopyDesc
+	struct BufferTextureCopyDesc
 	{
 		u64 BufferOffsetInBytes;
 		Vec3i TextureOffset;

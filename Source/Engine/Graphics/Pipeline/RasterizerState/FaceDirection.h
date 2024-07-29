@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API FaceDirection : u8
+	enum class FaceDirection : u8
 	{
 		Clockwise,
 		CounterClockwise

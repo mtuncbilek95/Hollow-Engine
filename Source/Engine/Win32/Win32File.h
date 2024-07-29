@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Win32File final
+	class Win32File final
 	{
 	public:
 		static bool Exists(const String& path);

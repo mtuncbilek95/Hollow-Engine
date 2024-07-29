@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-    enum class ENGINE_API BlendColorWriteMask : u8
+    enum class BlendColorWriteMask : u8
     {
         Red = 1,
         Green = 2,

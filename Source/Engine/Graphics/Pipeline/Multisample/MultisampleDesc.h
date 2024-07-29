@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-    struct ENGINE_API MultisampleDesc
+    struct MultisampleDesc
     {
         bool bSampleShadingEnabled;
         SampleCount Samples;

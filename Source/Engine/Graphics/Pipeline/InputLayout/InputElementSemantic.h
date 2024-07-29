@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-    enum class ENGINE_API InputElementSemantic : u8
+    enum class InputElementSemantic : u8
     {
         Position,
         Normal,

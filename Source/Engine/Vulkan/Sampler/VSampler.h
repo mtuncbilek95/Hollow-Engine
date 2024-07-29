@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VSampler : public Sampler
+	class VDevice;
+	class VSampler : public Sampler
 	{
 	public:
 		VSampler(const SamplerDesc& desc, SharedPtr<VDevice> pDevice);

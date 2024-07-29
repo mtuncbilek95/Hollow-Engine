@@ -11,13 +11,12 @@ target_include_directories(Editor PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 # ------------------------------------------------------------
 
 # --------------------- LINK LIBRARIES -----------------------
-target_link_libraries(Editor PRIVATE Engine)
+target_link_libraries(Editor PUBLIC Engine)
 target_link_libraries(Editor PUBLIC Imgui)
 # ------------------------------------------------------------
 
 # -------------------- MACRO DEFINITIONS ---------------------
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_compile_definitions(Editor PUBLIC EDITOR_API=__declspec\(dllexport\))
 else()
 	message(FATAL_ERROR "[CMAKE ERROR] -- UNSUPPORTED COMPILER. PLEASE CHECK YOUR COMPILER AND PLATFORM.")
 endif()

@@ -8,7 +8,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API PlatformFile final
+	class PlatformFile final
 	{
 	public:
 		static bool Exists(const String& path);

@@ -8,8 +8,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VMemory : public GraphicsMemory
+	class VDevice;
+	class VMemory : public GraphicsMemory
 	{
 	public:
 		VMemory(const GraphicsMemoryDesc& desc, WeakPtr<VDevice> pDevice);

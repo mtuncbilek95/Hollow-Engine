@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Pipeline : public DeviceObject
+	class Pipeline : public DeviceObject
 	{
 	public:
 		Pipeline(const GraphicsPipelineDesc& desc, WeakPtr<GraphicsDevice> device) : DeviceObject(device), mBlendState(desc.BlendState),

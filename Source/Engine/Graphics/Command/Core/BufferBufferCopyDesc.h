@@ -8,7 +8,7 @@ namespace Hollow
 	 * @struct BufferBufferCopyDesc
 	 * @brief Mostly used for copying between host and device buffers
 	 */
-	struct ENGINE_API BufferBufferCopyDesc
+	struct BufferBufferCopyDesc
 	{
 		u64 SourceOffset;
 		u64 DestinationOffset;

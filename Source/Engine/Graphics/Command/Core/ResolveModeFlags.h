@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API ResolveModeFlags : u8
+	enum class ResolveModeFlags : u8
 	{
 		None,
 		SampleZero,

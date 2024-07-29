@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API CmdPoolType : u8
+	enum class CmdPoolType : u8
 	{
 		Graphics = 1,
 		Compute = 2,

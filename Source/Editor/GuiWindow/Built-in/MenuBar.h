@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class EDITOR_API MenuBar : public GuiWindow
+	class MenuBar : public GuiWindow
 	{
 	public:
 		MenuBar();

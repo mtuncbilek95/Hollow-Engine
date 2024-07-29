@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API MonitorDesc
+	struct MonitorDesc
 	{
 		String MonitorName;
 		Vec2u MonitorResolution;

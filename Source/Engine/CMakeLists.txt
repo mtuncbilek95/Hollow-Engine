@@ -21,7 +21,6 @@ target_link_libraries(Engine PUBLIC nlohmann_json::nlohmann_json)
 
 # -------------------- MACRO DEFINITIONS ---------------------
 if(WIN32)
-    target_compile_definitions(Engine PUBLIC ENGINE_API=__declspec\(dllexport\))
 endif()
 # ------------------------------------------------------------
 

@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Win32Clipboard final
+	class Win32Clipboard final
 	{
 	public:
 		static void SetClipboardText(const String& text);

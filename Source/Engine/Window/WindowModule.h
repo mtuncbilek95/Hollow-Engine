@@ -5,8 +5,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API WindowAPI;
-	class ENGINE_API WindowModule : public ApplicationModule
+	class WindowAPI;
+	class WindowModule : public ApplicationModule
 	{
 	public:
 		WindowModule();

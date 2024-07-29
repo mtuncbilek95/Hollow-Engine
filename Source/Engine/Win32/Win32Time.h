@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Win32Time final
+	class Win32Time final
 	{
 	public:
 		static Time CurrentDateTime();

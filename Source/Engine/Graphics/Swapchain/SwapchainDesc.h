@@ -8,8 +8,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsQueue;
-	struct ENGINE_API SwapchainDesc
+	class GraphicsQueue;
+	struct SwapchainDesc
 	{
 		Vec2u ImageSize;
 		TextureFormat ImageFormat;

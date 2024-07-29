@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API DescriptorSetFlags : u8
+	enum class DescriptorSetFlags : u8
 	{
 		Undefined = 0,
 		UpdateAfterBind = 1 << 0,

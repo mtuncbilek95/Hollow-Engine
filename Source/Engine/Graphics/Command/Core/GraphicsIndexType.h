@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API GraphicsIndexType : u8
+	enum class GraphicsIndexType : u8
 	{
 		Index16,
 		Index32

@@ -9,8 +9,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsMemory;
-	struct ENGINE_API TextureImageDesc
+	class GraphicsMemory;
+	struct TextureImageDesc
 	{
 		Vec3u ImageSize;
 		u32 MipLevels;

@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-    enum class ENGINE_API TextureFormat : u8
+    enum class TextureFormat : u8
     {
         Unknown,
         RGBA32_Float,

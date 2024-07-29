@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API TextureType : u8
+	enum class TextureType : u8
 	{
 		Undefined,
 		Texture1D,

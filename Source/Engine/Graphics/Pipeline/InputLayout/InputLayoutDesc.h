@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-    struct ENGINE_API InputLayoutDesc
+    struct InputLayoutDesc
     {
         MeshTopology Topology;
         DArray<InputBinding> Bindings;

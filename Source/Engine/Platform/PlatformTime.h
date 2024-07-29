@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API PlatformTime final
+	class PlatformTime final
 	{
 	public:
 		static Time CurrentDateTime();

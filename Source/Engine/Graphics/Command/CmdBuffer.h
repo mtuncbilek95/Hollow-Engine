@@ -17,13 +17,13 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsBuffer;
-	class ENGINE_API Pipeline;
-	class ENGINE_API DescriptorSet;
-	class ENGINE_API TextureImage;
-	class ENGINE_API CmdPool;
+	class GraphicsBuffer;
+	class Pipeline;
+	class DescriptorSet;
+	class TextureImage;
+	class CmdPool;
 
-	class ENGINE_API CmdBuffer : public DeviceObject
+	class CmdBuffer : public DeviceObject
 	{
 	public:
 		CmdBuffer(const CmdBufferDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice) , mOwnerPool(desc.pOwnerPool), mRecording(false) 

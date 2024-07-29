@@ -13,7 +13,7 @@ namespace Hollow
 		Error
 	};
 
-	class ENGINE_API GlobalConsole final
+	class GlobalConsole final
 	{
 	public:
 		static void Print(const char* message, ...);

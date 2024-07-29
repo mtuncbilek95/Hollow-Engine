@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class EDITOR_API StyleWindow : public GuiWindow
+	class StyleWindow : public GuiWindow
 	{
 	public:
 		StyleWindow();

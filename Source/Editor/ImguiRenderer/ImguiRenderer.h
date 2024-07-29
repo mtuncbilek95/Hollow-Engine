@@ -9,13 +9,13 @@
 
 namespace Hollow
 {
-	class ENGINE_API Fence;
-	class ENGINE_API GraphicsQueue;
-	class ENGINE_API CmdPool;
-	class ENGINE_API CmdBuffer;
-	class ENGINE_API DescriptorPool;
+	class Fence;
+	class GraphicsQueue;
+	class CmdPool;
+	class CmdBuffer;
+	class DescriptorPool;
 
-	class EDITOR_API ImGuiRenderer : public IObject
+	class ImGuiRenderer : public IObject
 	{
 	public:
 		ImGuiRenderer();

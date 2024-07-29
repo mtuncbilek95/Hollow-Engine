@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VSemaphore : public Semaphore
+	class VDevice;
+	class VSemaphore : public Semaphore
 	{
 	public:
 		VSemaphore(SharedPtr<VDevice> pDevice);

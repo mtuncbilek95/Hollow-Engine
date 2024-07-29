@@ -9,7 +9,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API SamplerDesc
+	struct SamplerDesc
 	{
 		SamplerFilter MagFilter;
 		SamplerFilter MinFilter;

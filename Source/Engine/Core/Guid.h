@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API Guid final
+	class Guid final
 	{
 	public:
 		Guid();

@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API SampleCount : u8
+	enum class SampleCount : u8
 	{
 		Sample1 = 1,
 		Sample2 = 2,

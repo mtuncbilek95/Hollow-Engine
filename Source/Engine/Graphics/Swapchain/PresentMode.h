@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API PresentMode : u8
+	enum class PresentMode : u8
 	{
 		Immediate = 0, // VK_IMMEDIATE
 		VSyncImmediate = 1, // VK_FIFO_RELAXED

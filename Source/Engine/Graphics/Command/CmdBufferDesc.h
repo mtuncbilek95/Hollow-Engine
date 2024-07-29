@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API CmdBufferDesc
+	struct CmdBufferDesc
 	{
 		WeakPtr<CmdPool> pOwnerPool;
 	};

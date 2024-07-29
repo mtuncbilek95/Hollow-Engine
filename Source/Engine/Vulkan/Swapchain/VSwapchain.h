@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VSwapchain : public Swapchain
+	class VDevice;
+	class VSwapchain : public Swapchain
 	{
 	public:
 		VSwapchain(const SwapchainDesc& desc, SharedPtr<VDevice> pDevice);

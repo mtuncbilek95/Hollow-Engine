@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API TextureLayout : u16
+	enum class TextureLayout : u16
 	{
 		Undefined,
 		General,

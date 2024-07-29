@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API PipelineBindPoint : u8
+	enum class PipelineBindPoint : u8
 	{
 		Graphics,
 		Compute,

@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API Time
+	struct Time
 	{
 		u16 Day;
 		u16 Month;

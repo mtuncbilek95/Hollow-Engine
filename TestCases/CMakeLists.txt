@@ -9,5 +9,5 @@ add_executable(TestCases main.cpp ${SUBDIRECTORIES})
 # ---------------------- INCLUDE DIRECTORIES ----------------
 target_include_directories(TestCases PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 
-target_link_libraries(TestCases PRIVATE Engine Editor)
+target_link_libraries(TestCases PRIVATE Editor Engine)
 # ------------------------------------------------------------

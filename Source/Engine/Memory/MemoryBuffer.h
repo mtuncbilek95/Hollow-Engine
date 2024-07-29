@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API MemoryBuffer final
+	class MemoryBuffer final
 	{
 	public:
 		MemoryBuffer();

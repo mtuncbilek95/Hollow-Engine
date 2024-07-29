@@ -8,7 +8,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDescriptorLayout final : public DescriptorLayout
+	class VDescriptorLayout final : public DescriptorLayout
 	{
 	public:
 		VDescriptorLayout(const DescriptorLayoutDesc& desc, const WeakPtr<VDevice> pDevice);

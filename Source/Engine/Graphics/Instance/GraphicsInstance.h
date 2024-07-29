@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsInstance : public IObject
+	class GraphicsInstance : public IObject
 	{
 	public:
 		GraphicsInstance(const GraphicsInstanceDesc& desc) : mAppName(desc.AppName), 

@@ -6,13 +6,13 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsQueue;
-	class ENGINE_API Fence;
-	class ENGINE_API Semaphore;
-	class ENGINE_API GraphicsDevice;
-	class ENGINE_API TextureImage;
-	class ENGINE_API TextureView;
-	class ENGINE_API Swapchain : public DeviceObject
+	class GraphicsQueue;
+	class Fence;
+	class Semaphore;
+	class GraphicsDevice;
+	class TextureImage;
+	class TextureView;
+	class Swapchain : public DeviceObject
 	{
 	public:
 		Swapchain(const SwapchainDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),

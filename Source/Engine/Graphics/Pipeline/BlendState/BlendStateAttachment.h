@@ -7,7 +7,7 @@
 
 namespace Hollow
 {
-    struct ENGINE_API BlendStateAttachment
+    struct BlendStateAttachment
     {
         bool bEnabled;
         BlendFactor SourceColorFactor;

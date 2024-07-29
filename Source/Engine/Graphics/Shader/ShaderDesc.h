@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API ShaderDesc
+	struct ShaderDesc
 	{
 		String ShaderName;
 		String Entry;

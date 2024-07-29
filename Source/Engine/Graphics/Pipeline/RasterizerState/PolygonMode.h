@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API PolygonMode : u8
+	enum class PolygonMode : u8
 	{
 		Fill,
 		Line,

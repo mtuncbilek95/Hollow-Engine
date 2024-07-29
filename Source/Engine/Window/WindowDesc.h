@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API WindowDesc
+	struct WindowDesc
 	{
 		Vec2u WindowSize;
 		Vec2i WindowPosition;

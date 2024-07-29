@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-    struct ENGINE_API InputBinding
+    struct InputBinding
     {
         InputBindingStepRate StepRate;
         DArray<InputElement> Elements;

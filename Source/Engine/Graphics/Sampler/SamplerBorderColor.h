@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API SamplerBorderColor : u8
+	enum class SamplerBorderColor : u8
 	{
 		TransparentBlack,
 		OpaqueBlack,

@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API TextureUsageFlags : u16
+	enum class TextureUsageFlags : u16
 	{
 		None = 0,
 		SampledImage = 1 << 0,

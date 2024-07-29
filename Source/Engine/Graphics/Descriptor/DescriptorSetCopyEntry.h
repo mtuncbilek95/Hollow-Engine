@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API DescriptorSetCopyEntry
+	struct DescriptorSetCopyEntry
 	{
 		u32 SourceBinding;
 		u32 SourceArrayElement;

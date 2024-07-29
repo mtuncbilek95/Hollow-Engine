@@ -5,9 +5,9 @@
 
 namespace Hollow
 {
-	class ENGINE_API Guid;
+	class Guid;
 
-	class ENGINE_API Win32Guid final
+	class Win32Guid final
 	{
 	public:
 		static void GenerateGuid(Guid& guidOut);

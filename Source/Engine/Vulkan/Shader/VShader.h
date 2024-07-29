@@ -7,8 +7,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API VDevice;
-	class ENGINE_API VShader : public Shader
+	class VDevice;
+	class VShader : public Shader
 	{
 	public:
 		VShader(const ShaderDesc& desc, SharedPtr<VDevice> pDevice);

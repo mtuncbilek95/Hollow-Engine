@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API GraphicsQueue : public DeviceObject
+	class GraphicsQueue : public DeviceObject
 	{
 	public:
 		GraphicsQueue(const GraphicsQueueDesc& desc, WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice),

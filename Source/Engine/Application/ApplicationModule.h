@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API ApplicationModule : public IObject
+	class ApplicationModule : public IObject
 	{
 		friend class Application;
 

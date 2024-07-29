@@ -5,9 +5,9 @@
 
 namespace Hollow
 {
-	class ENGINE_API ShaderIncluder : public shaderc::CompileOptions::IncluderInterface
+	class ShaderIncluder : public shaderc::CompileOptions::IncluderInterface
 	{
-		struct ENGINE_API IncludeData
+		struct IncludeData
 		{
 			shaderc_include_result result = {};
 			String FullPath;

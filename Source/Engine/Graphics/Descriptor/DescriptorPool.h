@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API DescriptorPool : public DeviceObject
+	class DescriptorPool : public DeviceObject
 	{
 	public:
 		DescriptorPool(const DescriptorPoolDesc& desc, const WeakPtr<GraphicsDevice> pDevice) : DeviceObject(pDevice), mMaxSets(desc.MaxSets),

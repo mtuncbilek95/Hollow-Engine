@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-    enum class ENGINE_API BlendFactor : u8
+    enum class BlendFactor : u8
     {
         Zero,
         One,

@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API JobQueue : public API<JobQueue>
+	class JobQueue : public API<JobQueue>
 	{
 	public:
 		JobQueue() = default;

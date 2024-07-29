@@ -8,8 +8,8 @@
 
 namespace Hollow
 {
-	class ENGINE_API TextureView;
-	struct ENGINE_API DynamicPassAttachmentDesc
+	class TextureView;
+	struct DynamicPassAttachmentDesc
 	{
 		WeakPtr<TextureView> ImageBuffer;
 		TextureLayout ImageLayout;

@@ -8,7 +8,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API BufferMemoryBarrier
+	struct BufferMemoryBarrier
 	{
 		PipelineStageFlags SourceStageFlags;
 		GraphicsMemoryAccessFlags SourceAccessMask;

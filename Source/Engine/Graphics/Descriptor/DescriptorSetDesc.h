@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API DescriptorSetDesc
+	struct DescriptorSetDesc
 	{
 		WeakPtr<DescriptorLayout> pLayout;
 		WeakPtr<DescriptorPool> pOwnerPool;

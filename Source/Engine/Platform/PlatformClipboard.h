@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API PlatformClipboard final
+	class PlatformClipboard final
 	{
 	public:
 		static void SetClipboardText(const String& text);

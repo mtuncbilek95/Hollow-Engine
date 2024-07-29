@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API DescriptorPoolSize
+	struct DescriptorPoolSize
 	{
 		DescriptorType Type;
 		u64 Count;

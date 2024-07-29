@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-    struct ENGINE_API DepthStencilStateDesc
+    struct DepthStencilStateDesc
     {
         bool bDepthTestEnabled;
         bool bDepthWriteEnabled;

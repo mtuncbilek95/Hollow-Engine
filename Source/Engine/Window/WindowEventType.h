@@ -5,7 +5,7 @@
 
 namespace Hollow
 {
-	enum class ENGINE_API WindowEventType
+	enum class WindowEventType
 	{
 		None,
 		WindowClosed,

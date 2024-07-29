@@ -5,8 +5,8 @@
 
 namespace Hollow
 {
-	class EDITOR_API ImGuiAPI;
-	class EDITOR_API ImGuiRenderModule : public ApplicationModule
+	class ImGuiAPI;
+	class ImGuiRenderModule : public ApplicationModule
 	{
 	public:
 		ImGuiRenderModule();

@@ -6,7 +6,7 @@
 
 namespace Hollow
 {
-	class ENGINE_API WindowAPI : public API<WindowAPI>
+	class WindowAPI : public API<WindowAPI>
 	{
 	public:
 		WindowAPI() = default;

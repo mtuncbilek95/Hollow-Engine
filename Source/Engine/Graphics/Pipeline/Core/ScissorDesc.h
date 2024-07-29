@@ -4,7 +4,7 @@
 
 namespace Hollow
 {
-	struct ENGINE_API ScissorDesc
+	struct ScissorDesc
 	{
 		Vec2u ScissorSize;
 		Vec2u OffsetSize;
