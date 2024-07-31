@@ -24,6 +24,7 @@ SetupConfig()
 # ----------------------- SUBDIRECTORIES ---------------------
 add_subdirectory("External")
 add_subdirectory("Source/Engine")
+add_subdirectory("Source/Resource")
 add_subdirectory("Source/Editor")
 
 add_subdirectory("TestCases")
