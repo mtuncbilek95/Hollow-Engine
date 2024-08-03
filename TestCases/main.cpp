@@ -116,21 +116,55 @@ struct TypeReflection<bool>
 	static constexpr PrimitiveType GetType() { return PrimitiveType::Bool; }
 };
 
-#define REGISTER_TYPE(varName) \
-	class Reflect \
-	{ \
+#define REGISTER_BEGIN_REFLECTION(className) \
 	public: \
-		static constexpr PrimitiveType GetType() { \
+	class className##Reflect \
+	{ \
+	public:
+
+#define REGISTER_END_REFLECTION() \
+	};
+
+#define REGISTER_TYPE(varName) \
+		static constexpr PrimitiveType varName##GetType() { \
 		return TypeReflection<std::remove_reference_t<decltype(varName)>>::GetType(); \
 	}\
-	};
+
+#define REFLECT_OBJECT(className) \
+	friend class className##Reflect;
+
+class Test
+{
+	REFLECT_OBJECT(Test);
+public:
+	Test() {}
+	~Test() {}
+
+private:
+	i8 a;
+	f32 b;
+	std::string c;
+	bool d;
+
+	REGISTER_BEGIN_REFLECTION(Test);
+	REGISTER_TYPE(a);
+	REGISTER_TYPE(b);
+	REGISTER_TYPE(c);
+	REGISTER_TYPE(d);
+	REGISTER_END_REFLECTION();
+};
 
 int main()
 {
-	std::string str;
-	REGISTER_TYPE(str);
+	Test t;
 
-	int a = (int)Reflect::GetType();
+	int a = (int)Test::TestReflect::aGetType();
+	int b = (int)Test::TestReflect::bGetType();
+	int c = (int)Test::TestReflect::cGetType();
+	int d = (int)Test::TestReflect::dGetType();
 
-	printf("type: %d\n", a);
+	printf("type for a: %d\n", a);
+	printf("type for b: %d\n", b);
+	printf("type for c: %d\n", c);
+	printf("type for d: %d\n", d);
 }
