@@ -22,6 +22,9 @@ namespace Hollow
 		bool IsOpen() const { return mIsOpen; }
 		bool IsDirty() const { return mIsDirty; }
 
+		void SetOpen(bool open) { mIsOpen = open; }
+		void SetDirty(bool dirty) { mIsDirty = dirty; }
+
 	protected:
 		String mWindowName;
 		Vec2f mPosition;

@@ -3,6 +3,14 @@
 #include <Engine/Core/Core.h>
 #include <Engine/Serialization/Core/JNode.h>
 
+#include <Engine/Serialization/JNumber.h>
+#include <Engine/Serialization/JArray.h>
+#include <Engine/Serialization/JString.h>
+#include <Engine/Serialization/JBool.h>
+
+#include <any>
+#include <optional>
+
 namespace Hollow
 {
 	class JObject : public JNode

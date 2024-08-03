@@ -107,7 +107,10 @@ namespace Hollow
 			{
 				if (ImGui::MenuItem("Editor Style Layout"))
 				{
-					ImGuiWindowAPI::GetAPI()->RegisterGuiWindow<StyleWindow>();
+					if (auto newWindow = ImGuiWindowAPI::GetAPI()->GetGuiWindow<StyleWindow>("Style Editor"))
+						ImGuiWindowAPI::GetAPI()->UnregisterGuiWindow("Style Editor");
+					else
+						ImGuiWindowAPI::GetAPI()->RegisterGuiWindow<StyleWindow>();
 				}
 				ImGui::SameLine();
 				ImGui::TextDisabled("(?)");

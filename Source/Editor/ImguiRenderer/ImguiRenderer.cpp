@@ -13,6 +13,8 @@
 #include <Engine/Vulkan/Queue/VQueue.h>
 #include <Engine/Vulkan/Descriptor/VDescriptorPool.h>
 
+#include <Editor/Utils/ImGuiUtils.h>
+
 const VkFormat format[1] = { VK_FORMAT_R8G8B8A8_UNORM };
 
 namespace Hollow
@@ -51,15 +53,13 @@ namespace Hollow
 		// Win32 should trigger the scale factor.
 		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 
-		ImGui::StyleColorsDark();
+		ImGuiUtils::LoadStyleLayout();
 
-		// FramebufferSize 
-		ImGuiStyle& style = ImGui::GetStyle();
-		int x = PlatformMonitor::GetPrimaryMonitor().GetMonitorResolution().y;
-		float fontSize = x * 24.f / 1440.f;
+		// FramebufferSize
+		auto window = WindowAPI::GetAPI()->GetDefaultWindow();
 
 		String path = PlatformAPI::GetAPI()->GetEngineSourcePath() + "Resources/Fonts/Poppins/Regular.ttf";
-		io.Fonts->AddFontFromFileTTF(path.c_str(), fontSize);
+		io.Fonts->AddFontFromFileTTF(path.c_str(), 18.f);
 
 		InitVk();
 	}

@@ -22,15 +22,13 @@ namespace Hollow
 		}
 
 		template<typename T>
-		SharedPtr<T> GetGuiWindow(SharedPtr<GuiWindow> pWindow)
+		SharedPtr<T> GetGuiWindow(const String& windowName)
 		{
 			for (auto& window : mGuiWindows)
 			{
-				if (window->GetGuid() == pWindow->GetGuid())
-					return window->GetSharedPtrAs<T>();
+				if (window->GetWindowName() == windowName)
+					return std::static_pointer_cast<T>(window);
 			}
-
-			CORE_LOG(HE_ERROR, "%s GuiWindow [ID:%s] has not been found!", pWindow->mWindowName.c_str(), pWindow->GetGuid().ToString().c_str());
 			return nullptr;
 		}
 
@@ -43,8 +41,6 @@ namespace Hollow
 				else
 					++it;
 			}
-
-			CORE_LOG(HE_ERROR, "%s GuiWindow has not been found!", windowName.c_str());
 		}
 
 		DArray<SharedPtr<GuiWindow>>& GetGuiWindows() { return mGuiWindows; }

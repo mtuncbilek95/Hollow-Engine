@@ -9,11 +9,13 @@ namespace Hollow
 	{
 	public:
 		StyleWindow();
-		~StyleWindow() override = default;
+		~StyleWindow() override;
 
 		virtual void OnInitialize() override;
 		virtual void OnUpdate() override;
 		virtual void OnPaint() override;
 		virtual void OnClose() override;
+
+	private:
 	};
 }
